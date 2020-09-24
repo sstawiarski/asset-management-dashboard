@@ -32,26 +32,24 @@
 
 -The complicated merges should all be resolved on User Story branches.
 
-**Unit Tests Blackbox** (due start Sprint 2)
-  > Blackbox tests will be created in the src/test.java package
+**Unit Tests Blackbox** 
+  > Blackbox tests will be created in the src/test package
   > Each test scenario will have comments related to what is being tested and why
   > The majority of the testing should be Whitebox testing as code is accessible
 
-**Unit Tests Whitebox** (due Feb 25th)
-  > Whitebox tests will be created in the src/test.java package
+**Unit Tests Whitebox** 
+  > Whitebox tests will be created in the src/test package
   > Whitebox testing should be performed on any new or modified methods
   > 90% code coverage is expected with all tests passed
 
 
-**Code Review** (due Feb 25th)
+**Code Review** 
   > As part of a pull request into Development, informal code reviews shall be performed by the person completing the pull request.    
 
   > Include a checklist/questions list which every developer will need to fill out/answer when creating a Pull Request to the Dev branch.
 
   > For the purposes of code reviews, the code review checklist and coding standards used in class shall be utilized.  All NEW or MODIFIED code will be expected to comply.  A completed checklist can be drag-and-dropped into the comment section of the pull request.  This shall be done for all pull requests merging into Development where code has been altered.
 
-**Static Analysis**  (due start Sprint 3)
-  > It is expected that CheckStyle and SpotBugs will be run individually on the code prior to pushing it to github.  These should be configured to run automatically through Gradle as well.  YOU are responsible for correcting identified errors in your own code.  Any errors identified in another person's code will be added to the code review checklist.   
 
-**Continuous Integration**  (due start Sprint 3)
-  > Travis-CI is up and running already.  If you push code to github, it is YOUR responsibility to ensure the code passes the Travis checks.  If a build fails for any reason, fixing that build fail will take priority over tackling a new task/user story.  Ensure your build passes BEFORE initiating a pull request to Development.  There should be zero reason Development build will ever fail.  These bugs should be worked out beforehand.
+**Continuous Integration**  
+  > CI tool TBD
