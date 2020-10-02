@@ -1,28 +1,38 @@
 ### Quality Policy
-> Describe your Quality Policy in detail for this Sprint (remember what I ask you to do when I talk about the "In your Project" part in the lectures and what is mentioned after each assignment (in due course you will need to fill out all of them, check which ones are needed for each Deliverable). You should keep adding things to this file and adjusting your policy as you go.
+-Git Master: Shawn Stawiarski
+-Scrum Master: Eric Fritts
 
-**GitHub Workflow** (due Feb 2nd)
-  > Your Workflow
-  
--Copied judiciously from suggestions made by amehlhase316:
-
+**GitHub Workflow** 
+ 
 –Branch from Development (Dev) into your US# branch (this branch shouldalways have a working version).
+
+  -Branches should be labeled "US-XX" applicable to the user story. If creating a branch for User Story 8, branch should be named "US-8", etc.
 
 –Work on your new US branch.
 
+  -If a new branch is required for a User Story subtask, ensure the subtask branch is created from within the applicable user story branch.
+
+  -Subtask branches may encounter unintended merge conflicts when merging back to the parent branch, due to multiple people working within the branch.  It is the responsibility of the merger to satisfactorily resolve all conflicts.
+
 –Each commit message needs to state the US and task number and describe what you did.
+
+  -Example: I work on User Story 99 which adds OAuth login credentials.  A commit message would say "US-99, adds OAuth functionality to user login"
 
 –Push to the remote repo often.
 
-–When User Story is done, merge current Dev into your US branch.
+–When User Story is done, merge current development branch into the User Story branch
 
 –Test if everything works after Dev was merged into your US branch
 
-–If everything worked well, create a Pull Request to Dev and request a reviewfrom someone to double check.
+  -It is the merger's responsibility to ensure all conflicts are addressed
+
+–If everything worked well, create a Pull Request to Dev and request a review from someone to double check.
 
 –Reviews of Pull Requests should include good comments.
 
-–If the Dev is in good shape, create a Pull Request to Master (this should bea fast forward and the Dev should be thoroughly tested).
+-Merging into Master should only occur at the end of each sprint, after all User Stories have been merged into development branch with no outstanding errors or conflicts
+
+  –If the Dev is in good shape, create a Pull Request to Master (this should be a fast forward and the Dev should be thoroughly tested).
 
 –Team members should review and write comments on the Request.
 
