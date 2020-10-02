@@ -4,7 +4,9 @@
 
 >Scrum Master: Eric Fritts
 
->Sponsor POC: TBD
+>Sponsor Liaison: Charles Dawkins
+
+>Video Master: Maija Kingston
 
 
 
