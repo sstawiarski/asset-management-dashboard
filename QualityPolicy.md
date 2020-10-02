@@ -43,6 +43,8 @@
 
 -The complicated merges should all be resolved on User Story branches.
 
+*-If a User Story branch merge contains NO CODE, and is only a documentation modification, the branch may be merged into development following the process above, but you may exclude the code reviews and pull request review*
+
 **Unit Tests Blackbox** 
   > Blackbox tests will be created in the src/test package
   > Each test scenario will have comments related to what is being tested and why
