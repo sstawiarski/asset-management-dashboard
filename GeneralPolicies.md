@@ -4,7 +4,9 @@
 
 >Scrum Master: Eric Fritts
 
->Sponsor POC: TBD
+>Sponsor Liaison: Charles Dawkins
+
+>Video Master: Maija Kingston
 
 
 
@@ -18,13 +20,13 @@
 
 **Scrum Processes**
 
->There will be a sprint planning meeting the day before a sprint will begin.  The meeting will be used to finalize User Stories, assign points where needed, and determine which User Stories to accomplish during the sprint.
-
 >Sprints will last 2 weeks.
 
->The day after a sprint is concluded, a retrospective meeting will be held.
+>The day a sprint ends, a retrospective meeting will be held.
 
->The next 2 days will be used to finalize new user stories and work on feedback from sponsor, as applicable.
+>Immediately following the retrospective meeting, there will be a sprint planning meeting.  This meeting will be used to finalize User Stories, assign points where needed, and determine which User Stories to accomplish during the sprint to meet our sprint goal.
+
+>The sprint will start the day after the retrospective and planning meeting.
 
 >A new sprint planning meeting will now be scheduled and the process will repeat.
 
