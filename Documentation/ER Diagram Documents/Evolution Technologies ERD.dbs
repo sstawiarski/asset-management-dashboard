@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Evolution Energy Technologies" id="Project_1b54" database="MongoDb" >
+	<schema name="Evolution Energy Technologies" >
+		<table name="Assembly" prior="Collection" >
+			<column name="AssemblyID" type="string" jt="12" />
+			<column name="Name" type="string" jt="12" />
+			<column name="AssemblyType" type="string" jt="12" />
+			<column name="Serial" type="string" jt="12" />
+			<column name="Group Tag" type="string" jt="12" />
+			<column name="Updated" type="date" jt="91" />
+		</table>
+		<table name="Asset" prior="Asseet" >
+			<column name="AssetID" prior="ProductID" type="string" jt="12" mandatory="y" />
+			<column name="DeployedLocation" prior="AssetLocation" type="string" jt="12" />
+			<column name="Owner" type="string" jt="12" />
+			<column name="Quantity" type="integer" jt="4" />
+			<column name="ParentID" prior="AssemblyID" type="string" jt="12" mandatory="y" />
+			<column name="DateCreated" type="date" jt="91" mandatory="y" />
+			<column name="LastUpdated" type="date" jt="91" />
+			<column name="Serial" type="string" jt="12" />
+			<column name="CheckedOut" type="boolean" jt="16" />
+			<column name="Group Tag" type="string" jt="12" />
+			<column name="AsssignmentType" type="string" jt="12" />
+			<column name="Asignee" type="string" jt="12" />
+			<column name="ContractNumber" type="string" jt="12" />
+			<column name="Retired" type="boolean" jt="16" />
+			<column name="OwnerID" type="string" jt="12" />
+			<fk name="Fk_Product_Assembly" virtual="y" to_schema="Evolution Energy Technologies" to_table="Assembly" >
+				<fk_column name="ParentID" pk="AssemblyID" />
+			</fk>
+		</table>
+		<table name="Customer" prior="Collection" >
+			<comment><![CDATA[A Customer Performs a transaction with the company]]></comment>
+			<column name="CustomerID" type="string" jt="12" mandatory="y" />
+			<column name="FirstName" type="string" jt="12" />
+			<column name="LastName" type="string" jt="12" />
+			<column name="AddressLine1" type="string" jt="12" />
+			<column name="AddressLine2" type="string" jt="12" />
+			<column name="City" type="string" jt="12" />
+			<column name="State" type="string" jt="12" />
+			<column name="Zip" type="string" jt="12" />
+		</table>
+		<table name="Employee" prior="Emplouee" >
+			<comment><![CDATA[An Employee works for the company]]></comment>
+			<column name="EmployeeID" type="integer" jt="4" mandatory="y" />
+			<column name="FirstName" prior="Name" type="string" jt="12" mandatory="y" />
+			<column name="LastName" type="string" jt="12" />
+			<column name="Username" type="string" jt="12" mandatory="y" />
+			<column name="Email" type="string" jt="12" mandatory="y" />
+			<column name="JobTitle" type="string" jt="12" mandatory="y" />
+			<column name="BirthDate" type="date" jt="91" mandatory="y" />
+			<column name="Gender" type="string" jt="12" mandatory="y" />
+			<column name="Password" type="string" jt="12" mandatory="y" />
+		</table>
+		<table name="EventDocument" prior="EventD" >
+			<column name="EventID" type="string" jt="12" mandatory="y" />
+			<column name="ProductID" type="string" jt="12" mandatory="y" />
+			<column name="Key" type="string" jt="12" />
+			<column name="EventType" type="string" jt="12" />
+			<column name="EventTime" type="string" jt="12" />
+			<column name="EventData" type="object" jt="4999544" >
+				<column name="PropertyID" type="integer" jt="4" />
+				<column name="Created" type="date" jt="91" />
+				<column name="Updated" type="date" jt="91" />
+				<column name="Completed" type="date" jt="91" />
+				<column name="Status" type="string" jt="12" />
+				<column name="ShipmentType" type="string" jt="12" />
+				<column name="ShipFrom" type="object" jt="4999544" >
+					<column name="Origin" type="string" jt="12" />
+					<column name="Shipdate" type="date" jt="91" />
+				</column>
+				<column name="ShipTo" type="object" jt="4999544" >
+					<column name="Destination" type="string" jt="12" />
+					<column name="DeliveryDate" type="date" jt="91" />
+				</column>
+				<column name="SpecialInstructions" type="string" jt="12" />
+				<column name="ContractID" type="string" jt="12" />
+				<column name="Manifest" type="array" jt="4999545" >
+					<column name="Item" type="string" jt="12" />
+					<column name="Type" type="string" jt="12" />
+					<column name="Quantity" type="integer" jt="4" />
+					<column name="Notes" type="string" jt="12" />
+				</column>
+			</column>
+		</table>
+		<table name="Repair Facility" prior="Collection" >
+			<column name="Repair Facility Name" type="string" jt="12" />
+			<column name="Address" type="string" jt="12" />
+			<column name="City" type="string" jt="12" />
+			<column name="State" type="string" jt="12" />
+			<column name="Zip" type="string" jt="12" />
+			<column name="Contact Name" type="string" jt="12" />
+			<column name="Contact Number" type="string" jt="12" />
+		</table>
+		<table name="Rig" prior="Collection" >
+			<column name="Rig Name" type="string" jt="12" />
+			<column name="Client" type="string" jt="12" />
+			<column name="Operator" type="string" jt="12" />
+			<column name="Contact Name" type="string" jt="12" />
+			<column name="Contact Number" type="string" jt="12" />
+		</table>
+		<table name="Ship From " prior="Location" >
+			<column name="Origin" prior="LocationID" type="string" jt="12" />
+			<column name="Ship Date" type="date" jt="91" />
+		</table>
+		<table name="Staging Facility" prior="Staging Facilit" >
+			<column name="Client Facility Name" type="string" jt="12" />
+			<column name="Operator" type="string" jt="12" />
+			<column name="Rig Name" type="string" jt="12" />
+			<column name="Contact Number" type="string" jt="12" />
+			<column name="Contact Name" type="string" jt="12" />
+		</table>
+	</schema>
+	<layout name="Default Layout" id="Layout_182d" show_relation="columns" >
+		<comment><![CDATA[Evolution Energy Technologies]]></comment>
+		<entity schema="Evolution Energy Technologies" name="Assembly" color="C1D8EE" x="320" y="240" />
+		<entity schema="Evolution Energy Technologies" name="Asset" color="C1D8EE" x="96" y="240" />
+		<entity schema="Evolution Energy Technologies" name="Customer" color="EEE8C1" x="784" y="64" />
+		<entity schema="Evolution Energy Technologies" name="Employee" color="C1C9EE" x="784" y="288" />
+		<entity schema="Evolution Energy Technologies" name="EventDocument" column="EventData" color="3986C1" x="256" y="480" />
+		<entity schema="Evolution Energy Technologies" name="EventDocument" color="C1EEC8" x="624" y="416" />
+		<entity schema="Evolution Energy Technologies" name="EventDocument" column="EventData.Manifest" color="3986C1" x="496" y="720" />
+		<entity schema="Evolution Energy Technologies" name="Repair Facility" color="C1D8EE" x="992" y="304" />
+		<entity schema="Evolution Energy Technologies" name="Rig" color="C1EEE8" x="912" y="640" />
+		<entity schema="Evolution Energy Technologies" name="EventDocument" column="EventData.ShipFrom" color="3986C1" x="480" y="528" />
+		<entity schema="Evolution Energy Technologies" name="EventDocument" column="EventData.ShipTo" color="3986C1" x="480" y="608" />
+		<entity schema="Evolution Energy Technologies" name="Staging Facility" color="C1D8EE" x="976" y="64" />
+		<callout x="48" y="48" pointer="Round" >
+			<comment><![CDATA[DbSchema is in offline mode.
+New designed tables will be saved to model file and later can be create in any database.
+Right-click the layout to create new tables. Drop this callout from its context menu.]]></comment>
+		</callout>
+	</layout>
+</project>
