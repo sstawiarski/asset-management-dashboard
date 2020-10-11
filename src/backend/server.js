@@ -10,11 +10,11 @@ app.use(cors({
     origin: "http://localhost:3000"
 }));
 app.use(bodyParser.json());
-app.listen(PORT, function() {
-    console.log("Server is running on Port: " + PORT);
-});
+// app.listen(PORT, function() {
+//     console.log("Server is running on Port: " + PORT);
+// });
 
-mongoose.connect("mongodb+srv://ser401:<ser401>@cluster0.bjvvr.mongodb.net/<Explore>?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore?retryWrites=true&w=majority", {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
