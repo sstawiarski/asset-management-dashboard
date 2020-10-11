@@ -21,7 +21,7 @@ mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore
 }).then(() => {
 
 
-    
+    console.log('MongoDB connected...')
     app.listen(PORT, function () {
         console.log("Server is running on Port: " + PORT);
     });
