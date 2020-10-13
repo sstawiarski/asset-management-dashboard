@@ -3,7 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
+
+const assetRoutes = require('./routes/assets.routes')
+
+const swaggerConfig = require('./documentation/swagger.config');
 
 const PORT = 4000;
 app.use(cors({
@@ -56,3 +61,6 @@ app.get("/events", async (req, res) => {
 
     
 })
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
+
+app.use('/assets', assetRoutes);

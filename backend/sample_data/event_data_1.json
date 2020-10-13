@@ -1,0 +1,56 @@
+{
+    "eventId": "0934J",
+    "productId": [
+        "1234",
+        "2345",
+        "3456"
+    ],
+    "key": "SHIP-1010",
+    "eventType": "Outgoing Shipment",
+    "eventData": {
+        "propertyId": "0148rth",
+        "created": {
+            "$date": {
+                "$numberLong": "1318222800000"
+            }
+        },
+        "updated": {
+            "$date": {
+                "$numberLong": "1349845200000"
+            }
+        },
+        "completed": {
+            "$date": {
+                "$numberLong": "1349931600000"
+            }
+        },
+        "status": "ready to ship",
+        "shipmentType": "freight",
+        "shipFrom": {
+            "origin": "Evolution Calgary",
+            "shipDate": {
+                "$date": {
+                    "$numberLong": "1589518800000"
+                }
+            }
+        },
+        "shipTo": {
+            "destination": "Nabors Rig 1212",
+            "deliveryDate": {
+                "$date": {
+                    "$numberLong": "1609480800000"
+                }
+            }
+        },
+        "specialInstructions": "",
+        "contractId": "123456",
+        "manifest": {
+            "item": "09184735",
+            "type": "assembly",
+            "quantity": {
+                "$numberInt": "1"
+            },
+            "notes": ""
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "employeeId": {
+        "$numberInt": "99802"
+    },
+    "firstName": "Joanna",
+    "lastName": "Smith",
+    "username": "jsmith2",
+    "email": "jsmith2@company.com",
+    "jobTitle": "sub-honcho",
+    "birthDate": {
+        "$date": {
+            "$numberLong": "503219200000"
+        }
+    },
+    "gender": "f",
+    "password": "password1"
+}

@@ -1,0 +1,54 @@
+{
+    "eventId": "6654",
+    "productId": [
+        "45996"
+    ],
+    "key": "SHIP-98",
+    "eventType": "Outbound Shipment",
+    "eventData": {
+        "propertyId": "987",
+        "created": {
+            "$date": {
+                "$numberLong": "1319222800000"
+            }
+        },
+        "updated": {
+            "$date": {
+                "$numberLong": "1349845200000"
+            }
+        },
+        "completed": {
+            "$date": {
+                "$numberLong": "1350131600000"
+            }
+        },
+        "status": "outbound",
+        "shipmentType": "hotshot",
+        "shipFrom": {
+            "origin": "Evolution Arizona",
+            "shipDate": {
+                "$date": {
+                    "$numberLong": "1589528800000"
+                }
+            }
+        },
+        "shipTo": {
+            "destination": "Evolution Calgary",
+            "deliveryDate": {
+                "$date": {
+                    "$numberLong": "1609520800000"
+                }
+            }
+        },
+        "specialInstructions": "",
+        "contractId": "1456",
+        "manifest": {
+            "item": "09135",
+            "type": "assembly",
+            "quantity": {
+                "$numberInt": "1"
+            },
+            "notes": ""
+        }
+    }
+}
