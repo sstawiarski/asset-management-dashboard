@@ -1,0 +1,27 @@
+{
+    "assetID": "YUIC756345",
+    "deployedLocation": "",
+    "owner": "Evolution-USA",
+    "quantity": {
+        "$numberInt": "3"
+    },
+    "parentID": "ABC5475",
+    "dateCreated": {
+        "$date": {
+            "$numberLong": "1286857600000"
+        }
+    },
+    "lastUpdated": {
+        "$date": {
+            "$numberLong": "1602567200000"
+        }
+    },
+    "serial": "12",
+    "checkedOut": false,
+    "groupTag": "",
+    "assignmentType": "owned",
+    "assignee": "",
+    "contractNumber": "",
+    "retired": true,
+    "ownerId": ""
+}
