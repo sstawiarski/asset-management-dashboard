@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import debounce from 'lodash/debounce'
 
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl'
@@ -39,10 +40,18 @@ const useStyles = makeStyles((theme) => ({
         float: 'right',
         color: "#15ADFF",
         display: 'inline-block'
-    }
+    },
 }));
 
 const Searchbar = () => {
+
+    const debounceSearch = useCallback(debounce(eventTarget =>
+        setState({
+            ...state,
+            searchTerm: eventTarget.value,
+            anchor: eventTarget
+        })
+    , 400), [])
 
     const classes = useStyles();
 
@@ -66,13 +75,13 @@ const Searchbar = () => {
         if (state.searchTerm) {
 
             searchAssets(state.searchTerm)
-            .then(result => {
-                setState({
-                    ...state,
-                    resultsOpen: true,
-                    result: result
+                .then(result => {
+                    setState({
+                        ...state,
+                        resultsOpen: true,
+                        result: result
+                    })
                 })
-            })
         } else {
             setState({
                 ...state,
@@ -83,11 +92,7 @@ const Searchbar = () => {
     }, [state.searchTerm])
 
     const handleChange = (event) => {
-        setState({
-            ...state,
-            searchTerm: event.target.value,
-            anchor: event.target
-        });
+        debounceSearch(event.target)
     }
 
     return (
@@ -101,9 +106,10 @@ const Searchbar = () => {
                             <br />
                             {
                                 state.result.length ?
-                                state.result.map(item => (<SearchResult data={item} />))
-                                :
-                                <Typography className={classes.viewAllButton} variant="button">No results found</Typography>
+                                    state.result.map(item => (<SearchResult data={item} />))
+                                    :
+                                    <Typography variant="body1" align="center">No results found</Typography>
+
                             }
                         </Paper>
                     </Fade>
@@ -114,7 +120,6 @@ const Searchbar = () => {
                 <OutlinedInput
                     id="searchbar"
                     type="text"
-                    value={state.searchTerm}
                     onChange={handleChange}
                     startAdornment={
                         <InputAdornment position="start"><Search /></InputAdornment>
