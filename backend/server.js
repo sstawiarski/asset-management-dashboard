@@ -7,6 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
 const assetRoutes = require('./routes/assets.routes')
+const eventRoutes = require('./routes/events.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
@@ -64,3 +65,4 @@ app.get("/events", async (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
 app.use('/assets', assetRoutes);
+app.use('/events', eventRoutes);
