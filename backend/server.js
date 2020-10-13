@@ -24,5 +24,35 @@ mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore
     console.log('MongoDB connected...')
     app.listen(PORT, function () {
         console.log("Server is running on Port: " + PORT);
+        
     });
 });
+
+app.get("/", async (req, res) => {
+    if (req.query.type === "parent") {
+        mongoose.connection.db.collection('assembly', (err, collection) => {
+            collection.find({ serial: req.query.search }).toArray((err, data) => {
+                res.json(data);
+            })
+        });
+    } else {
+        mongoose.connection.db.collection('asset', (err, collection) => {
+            collection.find({ serial: req.query.search }).toArray((err, data) => {
+                res.json(data);
+            })
+        });
+    }
+    
+})
+
+app.get("/events", async (req, res) => {
+        mongoose.connection.db.collection('event_data', (err, collection) => {
+            collection.find({
+                    productId: req.query.search
+                }).toArray((err, data) => {
+                res.json(data);
+            })
+        });
+
+    
+})

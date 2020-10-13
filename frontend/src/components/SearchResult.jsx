@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -35,31 +35,50 @@ const SearchResult = ({ data }) => {
     const classes = useStyles();
 
     const [showEvents, toggleEvents] = useState(false);
+    const [events, setEvents] = useState([]);
 
     const container = React.useRef(null);
+
+    useEffect(() => {
+        const id = data.assetID;
+        const fetchEvents = async (id) => {
+            const result = await fetch(`http://localhost:4000/events?search=${id}`);
+            const json = await result.json();
+            return json;
+        };
+        
+        fetchEvents(id)
+        .then(result => {
+            setEvents(result);
+        });
+
+    }, [data])
 
     return (
         <div className={classes.root}>
             <div className={classes.searchItem}>
-                <Link to={`/assets/${data.serial}`} style={{textDecoration: "none", color: "inherit"}}>
+                <Link to={`/assets/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
                     <Typography variant="body1">{data.serial}</Typography>
                     <Typography variant="body1">{data.description}</Typography>
                 </Link>
             </div>
             <div>
-                <Grid container direction="row">
-                    <Grid item>
-                        <Typography variant="subtitle2">Events</Typography>
+                {events ?
+                    <Grid container direction="row">
+                        <Grid item>
+                            <Typography variant="subtitle2">Events</Typography>
+                        </Grid>
+                        <Grid item>
+                            {showEvents ? <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} /> : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />}
+                        </Grid>
                     </Grid>
-                    <Grid item>
-                        {showEvents ? <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} /> : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />}
-                    </Grid>
-                </Grid>
-                {showEvents ?
+                    : null}
+
+                {showEvents && events.length ?
                     (<Portal container={container.current}>
                         <div className={classes.events}>
-                            {data.events.map(event => {
-                                return (<Typography variant="body2" className={classes.eventItem} key={event.date}><b>{event.date}</b> <br /> {event.eventType}</Typography>)
+                            {events.map(event => {
+                                return (<Typography variant="body2" className={classes.eventItem} key={event.key}><b>{event.key}</b> <br /> {event.eventType}</Typography>)
                             })}
                         </div>
                     </Portal>) : null}

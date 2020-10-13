@@ -48,7 +48,7 @@ const Searchbar = () => {
 
     const [state, setState] = useState({
         searchTerm: '',
-        result: null,
+        result: [],
         resultsOpen: false,
         anchor: null,
         eventsOpen: false,
@@ -57,17 +57,27 @@ const Searchbar = () => {
     })
 
     useEffect(() => {
+        const searchAssets = async (serial) => {
+            const result = await fetch(`http://localhost:4000/?search=${serial}`);
+            const json = await result.json();
+            return json;
+        };
+
         if (state.searchTerm) {
-            setState({
-                ...state,
-                resultsOpen: true,
-                result: sampleItems[0]
+
+            searchAssets(state.searchTerm)
+            .then(result => {
+                setState({
+                    ...state,
+                    resultsOpen: true,
+                    result: result
+                })
             })
         } else {
             setState({
                 ...state,
                 resultsOpen: false,
-                result: null
+                result: []
             })
         }
     }, [state.searchTerm])
@@ -90,8 +100,8 @@ const Searchbar = () => {
                             <Typography className={classes.viewAllButton} variant="button">View All</Typography>
                             <br />
                             {
-                                state.result ?
-                                sampleItems.map(item => (<SearchResult data={item} />))
+                                state.result.length ?
+                                state.result.map(item => (<SearchResult data={item} />))
                                 :
                                 <Typography className={classes.viewAllButton} variant="button">No results found</Typography>
                             }
