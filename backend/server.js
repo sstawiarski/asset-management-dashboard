@@ -3,7 +3,12 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
+
+const assetRoutes = require('./routes/assets.routes')
+
+const swaggerConfig = require('./documentation/swagger.config');
 
 const PORT = 4000;
 app.use(cors({
@@ -26,3 +31,7 @@ mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore
         console.log("Server is running on Port: " + PORT);
     });
 });
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
+
+app.use('/assets', assetRoutes);
