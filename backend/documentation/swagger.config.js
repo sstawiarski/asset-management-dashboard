@@ -1,3 +1,8 @@
+const servers = require('./servers')
+const tags = require('./tags');
+const paths = require('./paths/paths')
+const schemas = require('./schemas')
+
 const swaggerConfig = {
     openapi: '3.0.3',
     info: {
@@ -14,6 +19,12 @@ const swaggerConfig = {
             name: 'Apache 2.0',
             url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
         }
+    },
+    servers: servers,
+    tags: tags,
+    paths: paths,
+    components: {
+        schemas: schemas
     }
 };
 
