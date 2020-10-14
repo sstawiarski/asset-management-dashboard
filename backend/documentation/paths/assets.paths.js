@@ -66,7 +66,7 @@ const assetPaths = {
                     }
                 },
                 '500': {
-                    description: 'No matching assets fount',
+                    description: 'No matching assets found',
                     content: {
                         'application/json': {
                             schema: {

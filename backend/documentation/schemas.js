@@ -94,14 +94,9 @@ const schemas = {
         }
     },
     Assets: {
-        type: 'object',
-        properties: {
-            assets: {
-                type: 'array',
-                items: {
-                    $ref: '#/components/schemas/Asset'
-                }
-            }
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/Asset'
         }
     },
     Error: {
@@ -113,6 +108,62 @@ const schemas = {
             internalCode: {
                 type: 'string'
             }
+        }
+    },
+    productIds: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/serial'
+        }
+    },
+    key: {
+        type: 'string',
+        example: 'OWN909'
+    },
+    eventType: {
+        type: 'string',
+        enum: [
+            'Incoming Shipment',
+            'Outgoing Shipment',
+            'Change of Ownership',
+            'Change of Group Tag',
+            'Change of Retirement Status',
+            'Change of Assignment Type',
+            'Reassignment'
+        ],
+        example: 'Incoming Shipment'
+    },
+    eventData: {
+        type: 'object'
+    },
+    eventTime: {
+        type: 'string',
+        description: 'Date the event occurred'
+    },
+    Event: {
+        type: 'object',
+        properties: {
+            productIds: {
+                $ref: '#/components/schemas/productIds'
+            },
+            key: {
+                $ref: '#/components/schemas/key'
+            },
+            eventType: {
+                $ref: '#/components/schemas/eventType'
+            },
+            eventData: {
+                $ref: '#/components/schemas/eventData'
+            },
+            eventTime: {
+                $ref: '#/components/schemas/eventTime'
+            },
+        }
+    },
+    Events: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/Event'
         }
     }
 }
