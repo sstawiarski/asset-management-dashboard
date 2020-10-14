@@ -51,17 +51,6 @@ app.get("/", async (req, res) => {
     
 })
 
-app.get("/events", async (req, res) => {
-        mongoose.connection.db.collection('event_data', (err, collection) => {
-            collection.find({
-                    productId: req.query.search
-                }).toArray((err, data) => {
-                res.json(data);
-            })
-        });
-
-    
-})
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
 app.use('/assets', assetRoutes);
