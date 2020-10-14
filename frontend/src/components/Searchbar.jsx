@@ -8,21 +8,6 @@ import Search from '@material-ui/icons/Search'
 
 import SearchResult from './SearchResult'
 
-const sampleItems = [{
-    serial: "ELP-8089",
-    description: "Electronic Pulser",
-    events: [
-        {
-            date: "September 29th, 2020",
-            eventType: "Ownership Change"
-        },
-        {
-            date: "September 20th, 2020",
-            eventType: "Reassignment"
-        }
-    ]
-}]
-
 const useStyles = makeStyles((theme) => ({
     searchbar: {
         width: '75%',
@@ -61,13 +46,11 @@ const Searchbar = () => {
         resultsOpen: false,
         anchor: null,
         eventsOpen: false,
-        hasParent: false,
-        inShipment: false
     })
 
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const result = await fetch(`http://localhost:4000/?search=${serial}`);
+            const result = await fetch(`http://localhost:4000/assets/findBySerial?serial=${serial}`);
             const json = await result.json();
             return json;
         };

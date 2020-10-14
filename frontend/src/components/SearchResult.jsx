@@ -3,15 +3,21 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import { Link } from 'react-router-dom';
-import { KeyboardArrowDown, KeyboardArrowRight } from '@material-ui/icons';
+import { AssignmentReturn, KeyboardArrowDown, KeyboardArrowRight } from '@material-ui/icons';
 import Typography from '@material-ui/core/Typography';
 import Portal from '@material-ui/core/Portal';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 
+const dateOptions = {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+}
+
 const useStyles = makeStyles((theme) => ({
     root: {
-        paddingTop: "10px"
+        paddingTop: "10px",
     },
     events: {
         paddingLeft: "5ch"
@@ -36,13 +42,14 @@ const SearchResult = ({ data }) => {
 
     const [showEvents, toggleEvents] = useState(false);
     const [events, setEvents] = useState([]);
+    const [parent, setParent] = useState(null);
 
     const container = React.useRef(null);
 
     useEffect(() => {
-        const id = data.assetID;
+        const id = data.serial;
         const fetchEvents = async (id) => {
-            const result = await fetch(`http://localhost:4000/events?search=${id}`);
+            const result = await fetch(`http://localhost:4000/events/findEventsForSerial?serial=${id}`);
             const json = await result.json();
             return json;
         };
@@ -54,16 +61,40 @@ const SearchResult = ({ data }) => {
 
     }, [data])
 
+    useEffect(() => {
+        const fetchParentInfo = async (id) => {
+            const result = await fetch(`http://localhost:4000/assets/findBySerial?serial=${id}`);
+            const json = await result.json();
+            if (json.length) {
+                return json[0];
+            }
+            return null;
+        };
+
+        if (data.parentId) {
+            fetchParentInfo(data.parentId)
+            .then(result => {
+                setParent(result);
+            })
+        }
+    }, [data.parentId])
+
     return (
         <div className={classes.root}>
             <div className={classes.searchItem}>
                 <Link to={`/assets/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    <Typography variant="body1">{data.serial}</Typography>
-                    <Typography variant="body1">{data.description}</Typography>
+                    <Typography variant="body1"><b>{data.serial}</b></Typography>
+                    <Typography variant="body2">{data.assetName}</Typography>
+                    <Typography variant="body2">{data.assetType}</Typography>
                 </Link>
             </div>
             <div>
-                {events ?
+                {parent ? 
+                <Link to={`/assets/${parent.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <Typography variant="body2"><b>Parent Assembly: </b>{parent.assetName} ({parent.serial})</Typography>
+                </Link>
+                : null}
+                {events.length ?
                     <Grid container direction="row">
                         <Grid item>
                             <Typography variant="subtitle2">Events</Typography>
@@ -78,11 +109,11 @@ const SearchResult = ({ data }) => {
                     (<Portal container={container.current}>
                         <div className={classes.events}>
                             {events.map(event => {
-                                return (<Typography variant="body2" className={classes.eventItem} key={event.key}><b>{event.key}</b> <br /> {event.eventType}</Typography>)
+                                return (<Typography variant="body2" className={classes.eventItem} key={event.key}><b>{new Date(event.eventTime).toLocaleDateString('en-US', dateOptions)}</b><br />{event.key} <br /> {event.eventType}</Typography>)
                             })}
                         </div>
                     </Portal>) : null}
-                <div ref={container} />
+                <div ref={container} className={classes.eventItem} />
                 <Divider />
             </div>
 
