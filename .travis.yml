@@ -3,4 +3,4 @@ node_js:
   - "stable"
   cache :
     directories:
-      - "node_modules"
+      - "SER-401-Project-24/backend/"
