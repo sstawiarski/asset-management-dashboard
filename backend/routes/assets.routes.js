@@ -18,11 +18,26 @@ router.get('/', async (req, res, err) => {
 })
 
 router.get('/findBySerial', async (req, res) => {
-    mongoose.connection.db.collection('asset', (err, collection) => {
-        collection.find({ serial: req.query.serial }).toArray((err, data) => {
-            res.json(data);
-        })
-    });});
+    const serial = req.query.serial;
+    try {
+        const assets = await Asset.fuzzySearch(serial).limit(5);
+
+        if (assets.length) {
+            res.status(200).json(assets);
+        } else {
+            res.status(500).json({
+                message: 'No assets found for serial',
+                internalCode: 'no_assets_found'
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
+            message: 'serial is missing',
+            interalCode: 'missing_parameters'
+        });
+    }
+});
 
 router.put('/loadSampleData', async (req, res) => {
     try {

@@ -22,4 +22,19 @@ router.put('/loadSampleEvents', async (req, res) => {
     }
 })
 
+router.get('/findEventsForSerial', async (req, res) => {
+    const serial = req.query.serial;
+    try {
+        const events = await Event.find({
+            productIds: {
+                $in: serial
+            }
+        });
+        res.status(200).json(events);
+    }
+    catch (err) {
+        console.log(err)
+    }
+})
+
 module.exports = router;
