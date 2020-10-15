@@ -1,10 +1,10 @@
 const sampleEvents = [
     {
         "productIds": [
-            "G8001111",
-            "C8001011"
+            "G800-1111",
+            "C800-1011"
         ],
-        "key": "SHIP1010",
+        "key": "SHIP-1010",
         "eventType": "Outgoing Shipment",
         "eventData": {
             "status": "Staging",
@@ -19,13 +19,13 @@ const sampleEvents = [
             "contractId": "123456",
             "manifest": [
                 {
-                    "serial": "G8001111",
+                    "serial": "G800-1111",
                     "type": "Asset",
                     "quantity": 1,
                     "notes": ""
                 },
                 {
-                    "serial": "C8001011",
+                    "serial": "C800-1011",
                     "type": "Asset",
                     "quantity": 1,
                     "notes": ""
@@ -35,7 +35,7 @@ const sampleEvents = [
     },
     {
         "productIds": [
-            "G8001111",
+            "G800-1111",
         ],
         "key": "OWN-909",
         "eventType": "Change of Ownership",
@@ -47,9 +47,9 @@ const sampleEvents = [
     },
     {
         "productIds": [
-            "X800920"
+            "X800-920"
         ],
-        "key": "REA98",
+        "key": "REA-98",
         "eventType": "Reassignment",
         "eventData": {
             "authorizor": "Jane Doe",
