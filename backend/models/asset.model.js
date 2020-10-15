@@ -20,7 +20,12 @@ const Asset = new Schema({
 });
 
 Asset.plugin(mongoose_fuzzy_searching, {
-    fields: ['serial']
+    fields: [
+        {
+            name: 'serial',
+            escapeSpecialCharacters: true
+        }
+    ]
 })
 
 const Assets = mongoose.model('asset', Asset);

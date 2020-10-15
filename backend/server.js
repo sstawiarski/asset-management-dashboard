@@ -8,6 +8,9 @@ require('dotenv').config();
 
 const assetRoutes = require('./routes/assets.routes')
 const eventRoutes = require('./routes/events.routes')
+const employeeRoutes = require('./routes/employees.routes')
+const customerRoutes = require('./routes/customers.routes')
+const locationRoutes = require('./routes/locations.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
@@ -55,3 +58,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
 app.use('/assets', assetRoutes);
 app.use('/events', eventRoutes);
+app.use('/employees', employeeRoutes);
+app.use('/customers', customerRoutes);
+app.use('/locations', locationRoutes);
