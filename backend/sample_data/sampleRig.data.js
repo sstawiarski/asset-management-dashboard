@@ -26,7 +26,7 @@ const sampleRig = [
     {
 
         "rigName": "Rowan 39",
-        "client": "",
+        "client": "Supply Chain USA",
         "operator": "Rowan Energy",
         "contactName": "Samantha Rowan",
         "contactNumber": "979-571-6547"

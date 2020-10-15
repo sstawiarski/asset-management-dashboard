@@ -17,7 +17,7 @@ const sampleRepairFacility = [
         "state": "Ontario",
         "zip": "77077-987",
         "contactName": "",
-        "contactNumber": ""
+        "contactNumber": "923-287-2981"
     },
     {
    

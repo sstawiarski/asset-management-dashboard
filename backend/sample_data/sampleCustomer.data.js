@@ -1,7 +1,7 @@
 const sampleCustomer = [
     {
   
-        "customerId": "0981764325",
+        "customerId": 0981764325,
         "firstName": "",
         "lastName": "",
         "companyName": "BHGE Drilling",
@@ -9,11 +9,11 @@ const sampleCustomer = [
         "addressLine2": "Suite 1912",
         "city": "Houston",
         "state": "TX",
-        "zip": "77049"
+        "zip": 77049
     },
     {
 
-        "customerId": "09825",
+        "customerId": 09825,
         "firstName": "John",
         "lastName": "Martin",
         "companyName": "JM Drilling",
@@ -21,11 +21,11 @@ const sampleCustomer = [
         "addressLine2": "Suite 1909",
         "city": "Katy",
         "state": "TX",
-        "zip": "77084"
+        "zip": 77084
     },
     {
 
-        "customerId": "098223455",
+        "customerId": 098223455,
         "firstName": "",
         "lastName": "",
         "companyName": "Bob's Drilling",
@@ -33,7 +33,7 @@ const sampleCustomer = [
         "addressLine2": "",
         "city": "Broken Arrow",
         "state": "OK",
-        "zip": "79958"
+        "zip": 79958
     }
 ];
 
