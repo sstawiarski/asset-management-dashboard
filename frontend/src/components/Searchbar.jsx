@@ -50,7 +50,8 @@ const Searchbar = () => {
 
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const result = await fetch(`http://localhost:4000/assets/findBySerial?serial=${serial}`);
+            const search = serial.replace("-", "");
+            const result = await fetch(`http://localhost:4000/assets?search=${search}`);
             const json = await result.json();
             return json;
         };

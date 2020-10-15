@@ -47,14 +47,13 @@ const SearchResult = ({ data }) => {
     const container = React.useRef(null);
 
     useEffect(() => {
-        const id = data.serial;
         const fetchEvents = async (id) => {
-            const result = await fetch(`http://localhost:4000/events/findEventsForSerial?serial=${id}`);
+            const result = await fetch(`http://localhost:4000/events/${id}`);
             const json = await result.json();
             return json;
         };
         
-        fetchEvents(id)
+        fetchEvents(data.serial)
         .then(result => {
             setEvents(result);
         });
@@ -63,12 +62,9 @@ const SearchResult = ({ data }) => {
 
     useEffect(() => {
         const fetchParentInfo = async (id) => {
-            const result = await fetch(`http://localhost:4000/assets/findBySerial?serial=${id}`);
+            const result = await fetch(`http://localhost:4000/assets/${id}`);
             const json = await result.json();
-            if (json.length) {
-                return json[0];
-            }
-            return null;
+            return json;
         };
 
         if (data.parentId) {
