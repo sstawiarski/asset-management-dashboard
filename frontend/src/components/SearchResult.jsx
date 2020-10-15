@@ -1,3 +1,8 @@
+/*
+ * Author: Shawn Stawiarski
+ * October 2020
+ * License: MIT
+ */
 import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -44,22 +49,24 @@ const SearchResult = ({ data }) => {
     const [events, setEvents] = useState([]);
     const [parent, setParent] = useState(null);
 
-    const container = React.useRef(null);
+    const container = React.useRef(null); //location of events dropdown to open
 
+    {/* Fetch events for the given data */}
     useEffect(() => {
         const fetchEvents = async (id) => {
             const result = await fetch(`http://localhost:4000/events/${id}`);
             const json = await result.json();
             return json;
         };
-        
+
         fetchEvents(data.serial)
-        .then(result => {
-            setEvents(result);
-        });
+            .then(result => {
+                setEvents(result);
+            });
 
     }, [data])
 
+    {/* Fetch information about parent assembly if applicable */}
     useEffect(() => {
         const fetchParentInfo = async (id) => {
             const result = await fetch(`http://localhost:4000/assets/${id}`);
@@ -69,50 +76,71 @@ const SearchResult = ({ data }) => {
 
         if (data.parentId) {
             fetchParentInfo(data.parentId)
-            .then(result => {
-                setParent(result);
-            })
+                .then(result => {
+                    setParent(result);
+                })
         }
     }, [data.parentId])
 
     return (
         <div className={classes.root}>
             <div className={classes.searchItem}>
-                <Link to={`/assets/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    <Typography variant="body1"><b>{data.serial}</b></Typography>
-                    <Typography variant="body2">{data.assetName}</Typography>
-                    <Typography variant="body2">{data.assetType}</Typography>
-                </Link>
+                <div style={{ marginLeft: '5px' }}>
+                    <Link to={`/assets/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
+                        <Typography variant="body1"><b>{data.serial}</b></Typography>
+                        <Typography variant="body2">{data.assetName}</Typography>
+                        <Typography variant="body2">{data.assetType}</Typography>
+                    </Link>
+                </div>
             </div>
-            <div>
-                {parent ? 
-                <Link to={`/assets/${parent.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
-                    <Typography variant="body2"><b>Parent Assembly: </b>{parent.assetName} ({parent.serial})</Typography>
-                </Link>
-                : null}
-                {events.length ?
-                    <Grid container direction="row">
-                        <Grid item>
-                            <Typography variant="subtitle2">Events</Typography>
-                        </Grid>
-                        <Grid item>
-                            {showEvents ? <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} /> : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />}
-                        </Grid>
-                    </Grid>
-                    : null}
+            <div style={{ marginLeft: '5px' }}>
 
-                {showEvents && events.length ?
-                    (<Portal container={container.current}>
-                        <div className={classes.events}>
-                            {events.map(event => {
-                                return (<Typography variant="body2" className={classes.eventItem} key={event.key}><b>{new Date(event.eventTime).toLocaleDateString('en-US', dateOptions)}</b><br />{event.key} <br /> {event.eventType}</Typography>)
-                            })}
-                        </div>
-                    </Portal>) : null}
+                {
+                    parent ?
+                        <Link to={`/assets/${parent.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
+                            <Typography variant="body2"><b>Parent Assembly: </b>{parent.assetName} ({parent.serial})</Typography>
+                        </Link>
+                        : null
+                }
+
+                {
+                    events.length ?
+                        <Grid container direction="row">
+                            <Grid item>
+                                <Typography variant="subtitle2">Events</Typography>
+                            </Grid>
+                            <Grid item>
+                                {showEvents ? <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} /> : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />}
+                            </Grid>
+                        </Grid>
+                        : null
+                }
+
+                {
+                    showEvents && events.length ?
+                        <Portal container={container.current}>
+                            <div className={classes.events}>
+
+                                {events.map(event => {
+                                    return (
+                                        <Typography variant="body2" className={classes.eventItem} key={event.key}>
+                                            <b>{new Date(event.eventTime).toLocaleDateString('en-US', dateOptions)}</b>
+                                            <br />
+                                            {event.key}
+                                            <br />
+                                            {event.eventType}
+                                        </Typography>
+                                    )
+                                })}
+
+                            </div>
+                        </Portal>
+                        : null
+                }
+
                 <div ref={container} className={classes.eventItem} />
                 <Divider />
             </div>
-
         </div>
     );
 };
