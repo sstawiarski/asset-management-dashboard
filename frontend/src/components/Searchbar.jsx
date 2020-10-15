@@ -60,18 +60,18 @@ const Searchbar = () => {
 
             searchAssets(state.searchTerm)
                 .then(result => {
-                    setState({
-                        ...state,
+                    setState(s => ({
+                        ...s,
                         resultsOpen: true,
                         result: result
-                    })
+                    }))
                 })
         } else {
-            setState({
-                ...state,
+            setState(s => ({
+                ...s,
                 resultsOpen: false,
                 result: []
-            })
+            }))
         }
     }, [state.searchTerm])
 
