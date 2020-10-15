@@ -3,6 +3,11 @@ const schemas = {
         type: 'string',
         example: 'ELP-9001'
     },
+    searchSerial: {
+        type: 'string',
+        example: 'ELP9001',
+        description: 'Serial without dashes for use with search'
+    },
     assetType: {
         type: 'string',
         example: 'Carrier'

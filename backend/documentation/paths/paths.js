@@ -3,8 +3,9 @@ const eventsPaths = require('./events.paths')
 
 const paths = {
     '/assets': assetsPaths.getAllAssets,
-    '/assets/findBySerial': assetsPaths.findBySerial,
-    '/events/findEventsForSerial': eventsPaths.findEventsForSerial
+    '/assets/:serial': assetsPaths.findBySerial,
+    
+    '/events/:serial': eventsPaths.findEventsForSerial
 }
 
 module.exports = paths;

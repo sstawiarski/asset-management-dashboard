@@ -6,7 +6,7 @@ const eventsPath = {
             operationId: 'findEventsForSerial',
             parameters: [{
                 name: 'serial',
-                in: 'query',
+                in: 'path',
                 schema: {
                     $ref: '#/components/schemas/serial'
                 },

@@ -22,8 +22,8 @@ router.put('/loadSampleEvents', async (req, res) => {
     }
 })
 
-router.get('/findEventsForSerial', async (req, res) => {
-    const serial = req.query.serial;
+router.get('/:serial', async (req, res) => {
+    const serial = req.params.serial;
     try {
         const events = await Event.find({
             productIds: {

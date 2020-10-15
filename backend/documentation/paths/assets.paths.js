@@ -4,10 +4,28 @@ const assetPaths = {
             tags: ['Assets'],
             description: 'Get a document containing all assets in the database',
             operationId: 'getAllAssets',
-            parameters: [],
+            parameters: [
+                {
+                    name: 'search',
+                    in: 'query',
+                    schema: {
+                        $ref: '#/components/schemas/searchSerial'
+                    }
+                }
+            ],
             responses: {
                 '200': {
-                    description: 'Assets were found in the database',
+                    description: 'All assets were found in the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Assets'
+                            }
+                        }
+                    }
+                },
+                '201': {
+                    description: 'Assets were found in the database matching the fuzzy search string',
                     content: {
                         'application/json': {
                             schema: {
@@ -17,7 +35,7 @@ const assetPaths = {
                     }
                 },
                 '400': {
-                    description: 'No assets founds',
+                    description: 'No assets found',
                     schema: {
                         $ref: '#/components/schemas/Error'
                     }
@@ -33,7 +51,7 @@ const assetPaths = {
             parameters: [
                 {
                     name: 'serial',
-                    in: 'query',
+                    in: 'path',
                     schema: {
                         $ref: '#/components/schemas/serial'
                     },
@@ -42,11 +60,11 @@ const assetPaths = {
             ],
             responses: {
                 '200': {
-                    description: 'Up to 5 fuzzy-matched assets were obtained',
+                    description: 'A single matching asset to the serial path parameter',
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/Assets'
+                                $ref: '#/components/schemas/Asset'
                             }
                         }
                     }
