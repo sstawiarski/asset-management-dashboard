@@ -6,7 +6,7 @@ const RepairFacility = new Schema({
     address: { type: String, required: true, unique: false },
     city: { type: String, required: true, unique: false },
     state: { type: String, required: true, unique: false },
-    zip: { type: Number, required: true, unique: false },
+    zip: { type: String, required: true, unique: false },
     contactName: { type: String, required: false, unique: false },
     contactNumber: { type: String, required: true, unique: false }
 });
