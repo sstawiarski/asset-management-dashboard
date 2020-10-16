@@ -39,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
     },
     eventItem: {
         paddingBottom: "6px"
+    },
+    viewMoreEvents: {
+        color: "#15ADFF",
+        textDecoration: 'none'
     }
 }))
 
@@ -48,10 +52,12 @@ const SearchResult = ({ data }) => {
     const [showEvents, toggleEvents] = useState(false);
     const [events, setEvents] = useState([]);
     const [parent, setParent] = useState(null);
+    const [viewMoreEvents, toggleViewMoreEvents] = useState(false);
 
     const container = React.useRef(null); //location of events dropdown to open
+    const eventLimit = 3;
 
-    {/* Fetch events for the given data */}
+    {/* Fetch events for the given data */ }
     useEffect(() => {
         const fetchEvents = async (id) => {
             const result = await fetch(`http://localhost:4000/events/${id}`);
@@ -61,12 +67,18 @@ const SearchResult = ({ data }) => {
 
         fetchEvents(data.serial)
             .then(result => {
-                setEvents(result);
+                if (result.length >= eventLimit) {
+                    const shorterEvents = result.slice(0, eventLimit);
+                    setEvents(shorterEvents);
+                    toggleViewMoreEvents(true);
+                } else {
+                    setEvents(result);
+                }
             });
 
     }, [data])
 
-    {/* Fetch information about parent assembly if applicable */}
+    {/* Fetch information about parent assembly if applicable */ }
     useEffect(() => {
         const fetchParentInfo = async (id) => {
             const result = await fetch(`http://localhost:4000/assets/${id}`);
@@ -110,7 +122,11 @@ const SearchResult = ({ data }) => {
                                 <Typography variant="subtitle2">Events</Typography>
                             </Grid>
                             <Grid item>
-                                {showEvents ? <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} /> : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />}
+                                {
+                                    showEvents ?
+                                        <KeyboardArrowDown className={classes.button} onClick={() => toggleEvents(!showEvents)} />
+                                        : <KeyboardArrowRight className={classes.button} onClick={() => toggleEvents(!showEvents)} />
+                                }
                             </Grid>
                         </Grid>
                         : null
@@ -132,6 +148,12 @@ const SearchResult = ({ data }) => {
                                         </Typography>
                                     )
                                 })}
+
+                                {
+                                    viewMoreEvents ?
+                                    <Link to={`/assets/${data.serial}`} className={classes.viewMoreEvents}>View more events</Link>
+                                    : null
+                                }
 
                             </div>
                         </Portal>
