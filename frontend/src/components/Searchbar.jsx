@@ -57,8 +57,7 @@ const Searchbar = () => {
     {/* Fuzzy search assets using API call */}
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const search = serial.replace("-", "");
-            const result = await fetch(`http://localhost:4000/assets?search=${search}`);
+            const result = await fetch(`http://localhost:4000/assets?search=${serial}`);
             const json = await result.json();
             return json;
         };
