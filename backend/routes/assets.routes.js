@@ -8,9 +8,22 @@ const sampleAssets = require('../sample_data/sampleAssets.data')
 router.get('/', async (req, res, err) => {
     try {
         if (req.query.search) {
-            const assets = await Asset.fuzzySearch(req.query.search).limit(5);
+            const searchTerm = req.query.search.replace("-", "");
+            const assets = await Asset.fuzzySearch(searchTerm).limit(5);
             if (assets.length) {
-                res.status(200).json(assets);
+                if (assets[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
+                    const result = [assets[0]]
+                    res.status(200).json(result)
+                }
+                else {
+                    if (assets[0].confidenceScore > 10) {
+                        const result = assets.filter(asset => asset.confidenceScore > 10);
+                        res.status(200).json(result);
+                        
+                    } else {
+                        res.status(200).json(assets);
+                    }
+                }
             } else {
                 res.status(500).json({
                     message: 'No assets found for serial',
