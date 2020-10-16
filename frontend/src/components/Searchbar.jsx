@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Searchbar = () => {
 
-    {/* Delay API call on user input by 400ms */}
+    /* Delay API call on user input by 400ms */
     const debounceSearch = useCallback(debounce(eventTarget =>
         setState({
             ...state,
@@ -54,7 +54,7 @@ const Searchbar = () => {
         eventsOpen: false,
     })
 
-    {/* Fuzzy search assets using API call */}
+    /* Fuzzy search assets using API call */
     useEffect(() => {
         const searchAssets = async (serial) => {
             const result = await fetch(`http://localhost:4000/assets?search=${serial}`);
