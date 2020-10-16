@@ -34,7 +34,7 @@ router.put('/load', (req, res) => {
 })
 
 router.get('/:serial', async (req, res) => {
-    const serial = req.params.serial;
+    const serial = req.params.serial.toUpperCase();
     try {
         const events = await Event.find({
             productIds: {
