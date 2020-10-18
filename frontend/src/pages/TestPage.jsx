@@ -1,10 +1,14 @@
 import React from 'react';
-
+import AssetList from '../components/AssetList';
 import Searchbar from '../components/Searchbar'
 
 const TestPage = () => {
 
-    return (<Searchbar />);
+    return (
+    <div>
+        <Searchbar />
+        <AssetList />
+    </div>);
 
 }
 
