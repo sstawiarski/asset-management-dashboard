@@ -4,7 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
-
+import { CheckBoxOutlineBlank } from '@material-ui/icons';
+import { Button } from '@material-ui/core';
+import GroupTag from './GroupTag'
 //taken to modify from material-ui.com/components/grid/
 
 const useStyles = makeStyles((theme) => ({
@@ -14,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: 'auto',
-    maxWidth: 500,
+    maxWidth: 1200,
   },
   image: {
     width: 128,
@@ -34,36 +36,53 @@ export default function AssetCard() {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Grid container spacing={2}>
+        <Grid container spacing={2}
+        direction ='row'
+        alignItems ='center'
+        justify = 'space-evenly'
+
+        >
           <Grid item>
-            <ButtonBase className={classes.image}>
-              <img className={classes.img} alt="complex" src="/static/images/grid/complex.jpg" />
+            <ButtonBase>
+              <CheckBoxOutlineBlank />
             </ButtonBase>
           </Grid>
-          <Grid item xs={12} sm container>
-            <Grid item xs container direction="column" spacing={2}>
-              <Grid item xs>
-                <Typography gutterBottom variant="subtitle1">
-                  Standard license
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  Full resolution 1920x1080 • JPEG
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  ID: 1030114
-                </Typography>
+
+          <Grid item> 
+            1
+          </Grid>
+
+          <Grid item>
+            Asset
+          </Grid>
+
+          <Grid item>
+            Oil Can
+          </Grid>
+
+            <Grid
+            display = 'column'>
+              <Grid item>
+                yes
               </Grid>
               <Grid item>
-                <Typography variant="body2" style={{ cursor: 'pointer' }}>
-                  Remove
-                </Typography>
+                <h6>Sample Company</h6>
               </Grid>
             </Grid>
+
             <Grid item>
-              <Typography variant="subtitle1">$19.00</Typography>
+              Warehouse 3
+            </Grid> 
+
+            <Grid item>
+             Evolution-Canada
             </Grid>
-          </Grid>
-        </Grid>
+
+            <Grid item >
+             <GroupTag groupType= {'important'} />
+            </Grid>
+      </Grid>
+
       </Paper>
     </div>
   );
