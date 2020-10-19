@@ -35,14 +35,14 @@ const useStyles = makeStyles((theme) => ({
 
 const Searchbar = () => {
 
-    /* Delay API call on user input by 400ms */
+    /* Delay API call on user input by 500ms */
     const debounceSearch = useCallback(debounce(eventTarget =>
         setState({
             ...state,
             searchTerm: eventTarget.value,
             anchor: eventTarget
         })
-    , 400), [])
+    , 500), [])
 
     const classes = useStyles();
 
