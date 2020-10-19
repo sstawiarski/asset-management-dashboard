@@ -106,13 +106,13 @@ const AssetDetails = () => {
         <div>
             <Grid container>
                 <Grid item xs={12}>
-                    <Header heading="Assets" />
+                    <Header heading="Products" />
                 </Grid>
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <Grid item>
                             <Paper className={classes.paper}>
-                                <Typography className={classes.item} variant="h6">Asset Details</Typography>
+                                <Typography className={classes.item} variant="h6">Product Details</Typography>
                                 <Divider />
                                 <Grid container>
                                     <Grid item xs={3} className={classes.item}>
