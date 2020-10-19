@@ -10,15 +10,15 @@ router.get('/', async (req, res) => {
     try {
         if (req.query.search) {
             const search = req.query.search.replace("-", "");
-            const events = await Event.fuzzySearch(search).limit(5);
-            
+            const events = await Event.fuzzySearch(search).limit(5).select({ eventData: 0, _id: 0, __v: 0 });
+
             if (events.length) {
                 if (events[0].key.toUpperCase() === req.query.search) {
                     const result = [events[0]];
                     res.status(200).json(result);
                 }
                 else {
-                    if (assets[0].confidenceScore > 10) {
+                    if (events[0].confidenceScore > 10) {
                         const result = events.filter(item => item.confidenceScore > 10);
                         res.status(200).json(result)
                     } else {
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
             }
         } else {
             const events = await Event.find({});
-            if (assets) res.status(200).json(assets);
+            if (events) res.status(200).json(events);
             else res.status(500).json({
                 message: "No events found in database",
                 interalCode: "no_events_found"

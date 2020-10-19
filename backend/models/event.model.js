@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 
 const eventTypes = [
     'Incoming Shipment',
