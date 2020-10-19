@@ -1,6 +1,10 @@
+import { Container, Grid } from '@material-ui/core';
 import { CallMissedSharp } from '@material-ui/icons';
 import React, {useState, useEffect} from 'react';
 import AssetCard from './AssetCard';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import DropDownButton from './DropDownButton';
+
 
 const AssetList = ({ data }) => {
 
@@ -37,20 +41,44 @@ const AssetList = ({ data }) => {
     }, [data])
     return( 
         <div>
-        {isLoading && <div> Loading... </div>}
-        {hasErrored && (
-            <div>
-                Loading error... try "npm run json-server" in terminal
-                <br />
-                <b>ERROR: {error.message}</b>
-            </div>
-        )}
-        {success && (
-            <div>
-                {assets.map((AssetCard))}
-            </div>
-        )}
+            <Container>
+                <DropDownButton />
+                <Grid
+                    container
+                    direction ='row'
+                    justify="flex-start"
+                    alighnItems="flex-start"
+                    spacing={4}
+                    >
+                        <Grid item
+                        direction='row'>
+                            <DropDownButton name={'New'} />
+                        </Grid>
+                        <Grid item>
+                             <DropDownButton name={'Edit'}/>  
+                        </Grid>
+                        <Grid item>
+                            <DropDownButton name={'More'}/>
+                        </Grid>
+                    </Grid>
+            </Container>
+            <AssetCard  />
         </div>
+        // <div>
+        // {isLoading && <div> Loading... </div>}
+        // {hasErrored && (
+        //     <div>
+        //         Loading error... try "npm run json-server" in terminal
+        //         <br />
+        //         <b>ERROR: {error.message}</b>
+        //     </div>
+        // )}
+        // {success && (
+        //     <div>
+        //         {assets.map((AssetCard))}
+        //     </div>
+        // )}
+        // </div>
     );
 }
 

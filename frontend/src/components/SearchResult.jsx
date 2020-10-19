@@ -53,7 +53,7 @@ const SearchResult = ({ data }) => {
             return json;
         };
         
-        fetchEvents(data)
+        fetchEvents(data.serial)
         .then(result => {
             setEvents(result);
         });

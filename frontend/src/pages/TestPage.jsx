@@ -6,6 +6,7 @@ const TestPage = () => {
 
     return (
     <div>
+        <h1> Assets </h1>
         <Searchbar />
         <AssetList />
     </div>);
