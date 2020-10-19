@@ -1,17 +1,20 @@
 const assetsPaths = require('./assets.paths')
+const eventsPaths = require('./events.paths')
 const customerPaths = require('./customers.paths')
 const employeePaths = require('./employees.paths')
-const eventPaths = require('./events.paths')
 const locationPaths = require('./locations.paths')
+
 const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
+    '/assets/:serial': assetsPaths.findBySerial,
+    
+    '/events/load': eventsPaths.load,
+    '/events/:serial': eventsPaths.findEventsForSerial,
 
     '/customers/load': customerPaths.load,
 
     '/employees/load': employeePaths.load,
-
-    '/events/load': eventPaths.load,
 
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,

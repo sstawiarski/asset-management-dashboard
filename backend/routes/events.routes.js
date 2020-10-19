@@ -33,4 +33,19 @@ router.put('/load', (req, res) => {
     }
 })
 
+router.get('/:serial', async (req, res) => {
+    const serial = req.params.serial.toUpperCase();
+    try {
+        const events = await Event.find({
+            productIds: {
+                $in: serial
+            }
+        });
+        res.status(200).json(events);
+    }
+    catch (err) {
+        console.log(err)
+    }
+})
+
 module.exports = router;
