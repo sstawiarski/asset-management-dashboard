@@ -2,10 +2,10 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+
 import ButtonBase from '@material-ui/core/ButtonBase';
 import { CheckBoxOutlineBlank } from '@material-ui/icons';
-import { Button } from '@material-ui/core';
+
 import GroupTag from './GroupTag'
 //taken to modify from material-ui.com/components/grid/
 
@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
     margin: 'auto',
-    maxWidth: 1200,
+    maxWidth: '100%',
   },
   image: {
     width: 128,
@@ -39,46 +39,51 @@ export default function AssetCard() {
         <Grid container spacing={2}
         direction ='row'
         alignItems ='center'
-        justify = 'space-evenly'
+        justify = 'flex-start'
 
         >
-          <Grid item>
+          <Grid item xs={0}>
             <ButtonBase>
               <CheckBoxOutlineBlank />
             </ButtonBase>
           </Grid>
 
-          <Grid item> 
+          <Grid item xs={1}> 
             1
           </Grid>
 
-          <Grid item>
+          <Grid item xs={2}>
             Asset
           </Grid>
 
-          <Grid item>
+          <Grid item xs={1}>
             Oil Can
           </Grid>
 
             <Grid
-            display = 'column'>
-              <Grid item>
-                yes
+            display = 'column'
+            container
+            justify = 'center'
+            xs={3}>
+              <Grid item xs={12}>
+                Yes
               </Grid>
               <Grid item>
-                <h6>Sample Company</h6>
+                <span
+                style = {{fontSize: '10px'}}>
+                  Sample Company</span>
               </Grid>
             </Grid>
 
-            <Grid item>
+            <Grid item xs={0}>
               Warehouse 3
             </Grid> 
 
-            <Grid item>
+            <Grid item xs={3}>
              Evolution-Canada
             </Grid>
 
-            <Grid item >
+            <Grid item xs={0}>
              <GroupTag groupType= {'important'} />
             </Grid>
       </Grid>

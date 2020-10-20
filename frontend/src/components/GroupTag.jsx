@@ -12,8 +12,6 @@ const GroupTag= ({groupType}) =>{
                             <PriorityHigh />
                         </div>
                         )
-                        break;
-                        
                     default:
                         break;
                 }

@@ -1,9 +1,10 @@
 import { Container, Grid } from '@material-ui/core';
-import { CallMissedSharp } from '@material-ui/icons';
+
 import React, {useState, useEffect} from 'react';
 import AssetCard from './AssetCard';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import DropDownButton from './DropDownButton';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
 
 const AssetList = ({ data }) => {
@@ -52,8 +53,7 @@ const AssetList = ({ data }) => {
                     direction ='row'
                     justify="flex-start"
                     alignItems="flex-start"
-                    spacing={4}
-                    style={{border: 'px solid black'}}
+                    spacing={3}
                     >
                         <Grid item>
                             <DropDownButton name={'New'} />
@@ -67,8 +67,42 @@ const AssetList = ({ data }) => {
 
                     </Grid>
                 </div>
+                <div
+                style = {{border: '1px solid lightgrey'}}>
+                    <Grid
+                    container
+                    direction = 'row'
+                    alignItems = 'flex-start'
+                    justify = 'flex-start'
+                    spacing={1}
+                    style = {{border: '1px lightgrey'}}>
+                        <Grid item xs={2}>
+                        <span style = {{fontSize: '20px'}}>
+                            ID #
+                        <ButtonBase><ArrowDropDownIcon /> </ButtonBase>
+                        </span>
+                        </Grid>
+                        <Grid item xs={1}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Product</span></Grid>
+                        <Grid item xs={2}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Description</span></Grid>
+                        <Grid item xs={2}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Checked Out</span></Grid>
+                        <Grid item xs={2}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Location</span></Grid>
+                        <Grid item xs={2}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Owner</span></Grid>
+                        <Grid item xs={0}>
+                        <span style = {{fontSize: '20px',color: 'grey'}}>Group Tag</span></Grid>
+                        </Grid>
+
+                </div>
+                <div>
+                    {assets.map((AssetCard))}
+                </div>
+                <AssetCard  />
             </Container>
-            <AssetCard  />
+
         </div>
         // <div>
         // {isLoading && <div> Loading... </div>}
