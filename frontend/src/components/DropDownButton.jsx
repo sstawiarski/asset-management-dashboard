@@ -11,9 +11,11 @@ const DropDownButton = ({name}) => {
                 switch (name) {
                     case 'New':
                         return(
-                            <div id = 'dropbutton'>
+                            <div 
+                            style = {{padding: '3px 17px 3px 17px'}}>
                                 <Add />
-                                New
+                                <span 
+                                style = {{padding: '3px 10px 3px 10px'}}>New</span>
                                 <button><ArrowDropDownIcon/></button>
                             </div>
 
@@ -21,29 +23,35 @@ const DropDownButton = ({name}) => {
                         break;
                     case 'Edit':
                         return(
-                            <div>
+                            <div
+                            style = {{padding: '3px 10px 3px 10px'}}>
                                 <Edit />
-                                 Edit
+                                 <span
+                                 style = {{padding: '3px 10px 3px 10px'}} >Edit</span>
                                  <button><ArrowDropDownIcon/></button>
                             </div>
                         )                   
                         break;
                         case 'More':
                         return(
-                           <div>
+                           <div
+                           style = {{padding: '3px 1px 3px 17px'}}>
                                <MoreHoriz />
-                                  More
+                                  <span
+                                  style = {{padding: '3px 10px 3px 10px'}}>More</span>
                                   <button><ArrowDropDownIcon/></button>
                             </div>
                         )
                         break;
                     default:
                         return(
-                                <span>
+                                <div
+                                style = {{padding: '3px 17px 3px 17px'}}>
                                     <MoreHoriz />
-                                    Test
+                                    <span
+                                  style = {{padding: '3px 10px 3px 10px'}}>Test</span>
                                     <button><ArrowDropDownIcon/></button>
-                                </span>
+                                </div>
                          )
                         break;
                 }

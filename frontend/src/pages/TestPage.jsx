@@ -8,7 +8,10 @@ const TestPage = () => {
     <div>
         <h1> Assets </h1>
         <Searchbar />
-        <AssetList />
+        <div
+        style = {{margin: '10px 0px 0px 0px'}}>        
+            <AssetList />
+        </div>
     </div>);
 
 }

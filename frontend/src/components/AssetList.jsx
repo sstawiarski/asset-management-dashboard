@@ -40,18 +40,22 @@ const AssetList = ({ data }) => {
         });
     }, [data])
     return( 
-        <div>
+        <div
+        style = {{spacing: '10px 0px 0px 0px'}}>
             <Container>
-                <DropDownButton />
+                <div 
+                style = {{border: '2px solid black',
+                backgroundColor : 'lightgrey'}}
+                >
                 <Grid
                     container
                     direction ='row'
                     justify="flex-start"
-                    alighnItems="flex-start"
+                    alignItems="flex-start"
                     spacing={4}
+                    style={{border: 'px solid black'}}
                     >
-                        <Grid item
-                        direction='row'>
+                        <Grid item>
                             <DropDownButton name={'New'} />
                         </Grid>
                         <Grid item>
@@ -60,7 +64,9 @@ const AssetList = ({ data }) => {
                         <Grid item>
                             <DropDownButton name={'More'}/>
                         </Grid>
+
                     </Grid>
+                </div>
             </Container>
             <AssetCard  />
         </div>
