@@ -13,7 +13,7 @@ const DropDownButton = ({name}) => {
                         return(
                             <div id = 'dropbutton'>
                                 <Add />
-                                <h3>New</h3>
+                                New
                                 <button><ArrowDropDownIcon/></button>
                             </div>
 
@@ -23,7 +23,7 @@ const DropDownButton = ({name}) => {
                         return(
                             <div>
                                 <Edit />
-                                 <h3>Edit</h3>
+                                 Edit
                                  <button><ArrowDropDownIcon/></button>
                             </div>
                         )                   
@@ -32,21 +32,18 @@ const DropDownButton = ({name}) => {
                         return(
                            <div>
                                <MoreHoriz />
-                                  <h3>More</h3>
+                                  More
                                   <button><ArrowDropDownIcon/></button>
                             </div>
                         )
                         break;
                     default:
                         return(
-                            <div id='dropbutton'>
-                                <Grid>
-                                    <Grid item ><MoreHoriz />
-                                    <h3>More</h3>
+                                <span>
+                                    <MoreHoriz />
+                                    Test
                                     <button><ArrowDropDownIcon/></button>
-                                    </Grid>
-                                </Grid>
-                             </div>
+                                </span>
                          )
                         break;
                 }
