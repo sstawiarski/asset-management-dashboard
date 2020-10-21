@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "A full stack MERN application for asset management and tracking for Evolution Engineering &amp; Energy Technology.",
   "main": "index.js",
-  "scripts": {
-    "test": "make test"
-  },
+  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sstawiarski/SER-401-Project-24.git"
