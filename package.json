@@ -26,5 +26,8 @@
     "url": "https://github.com/sstawiarski/SER-401-Project-24/issues"
   },
   "homepage": "https://github.com/sstawiarski/SER-401-Project-24#readme",
-  "devDependencies": {}
+  "devDependencies": {},
+  "directories": {
+    "test": "test"
+  }
 }
