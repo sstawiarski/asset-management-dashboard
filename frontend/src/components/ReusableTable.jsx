@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from 'react';
-
+/*
+ * Author: Shawn Stawiarski
+ * October 2020
+ * License: MIT
+ */
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles'
-import { Paper, Grid, Divider, Button, Box, Dialog, DialogTitle, Select, FormControl, InputLabel, MenuItem, DialogActions, DialogContent, TextField, Table } from '@material-ui/core';
+
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 
 const descendingComparator = (a, b, orderBy) => {
     if (b[orderBy] < a[orderBy]) {
@@ -93,8 +91,8 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     },
     paper: {
-        width: '100%',
-        marginBottom: theme.spacing(2),
+        marginLeft: "20px",
+        marginRight: "15px",
     },
     table: {
         minWidth: 750,
@@ -114,11 +112,10 @@ const useStyles = makeStyles((theme) => ({
 
 const ReusableTable = (props) => {
     const classes = useStyles();
-    const { rows, headCells } = props;
+    const { rows, headCells, selected, setSelected } = props;
 
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState(props.initialOrder);
-    const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(props.rowsPerPage);
 
@@ -168,62 +165,63 @@ const ReusableTable = (props) => {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
     return (
-        <>
+        <Paper className={classes.paper}>
             <TableContainer>
-              <Table
-                className={classes.table}
-                aria-labelledby="tableTitle"
-                size='medium'
-                aria-label="enhanced table"
-              >
-                <EnhancedTableHead
-                  classes={classes}
-                  numSelected={selected.length}
-                  order={order}
-                  orderBy={orderBy}
-                  onSelectAllClick={handleSelectAllClick}
-                  onRequestSort={handleRequestSort}
-                  rowCount={rows.length}
-                  headCells={headCells}
-                />
-                <TableBody>
-                  {stableSort(rows, getComparator(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                      const isItemSelected = isSelected(row.serial);
-                      const labelId = `enhanced-table-checkbox-${index}`;
-    
-                      return (
-                        <TableRow
-                          hover
-                          onClick={(event) => handleClick(event, row.serial)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.serial}
-                          selected={isItemSelected}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={isItemSelected}
-                              inputProps={{ 'aria-labelledby': labelId }}
-                            />
-                          </TableCell>
-                          {Object.values(row).map(thing => (<TableCell align="left">{thing}</TableCell>))}
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                <Table
+                    className={classes.table}
+                    aria-labelledby="tableTitle"
+                    size='medium'
+                    aria-label="enhanced table"
+                >
+                    <EnhancedTableHead
+                        classes={classes}
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={handleSelectAllClick}
+                        onRequestSort={handleRequestSort}
+                        rowCount={rows.length}
+                        headCells={headCells}
+                    />
+                    <TableBody>
+                        {stableSort(rows, getComparator(order, orderBy))
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                                const isItemSelected = isSelected(row.serial);
+                                const labelId = `enhanced-table-checkbox-${index}`;
+
+                                return (
+                                    <TableRow
+                                        hover
+                                        onClick={(event) => handleClick(event, row.serial)}
+                                        role="checkbox"
+                                        aria-checked={isItemSelected}
+                                        tabIndex={-1}
+                                        key={row.serial}
+                                        selected={isItemSelected}
+                                    >
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                checked={isItemSelected}
+                                                inputProps={{ 'aria-labelledby': labelId }}
+                                            />
+                                        </TableCell>
+                                        {Object.values(row).map(thing => (<TableCell align="left">{thing}</TableCell>))}
+                                    </TableRow>
+                                );
+                            })}
+                        {emptyRows > 0 && (
+                            <TableRow style={{ height: 53 * emptyRows }}>
+                                <TableCell colSpan={6} />
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
             </TableContainer>
-            <Button onClick={() => props.addHandler(selected)} disabled={selected.length ? false : true }>Add to Assembly</Button> 
-        </>
-      );
+            <Button onClick={() => props.addHandler(selected)} disabled={selected.length ? false : true}>Add to Assembly</Button>
+            {/* TODO: Add pagination support */}
+        </Paper>
+    );
 }
 
 export default ReusableTable;

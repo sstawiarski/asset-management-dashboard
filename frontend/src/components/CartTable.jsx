@@ -1,3 +1,8 @@
+/*
+ * Author: Shawn Stawiarski
+ * October 2020
+ * License: MIT
+ */
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -22,10 +27,11 @@ const CartTable = (props) => {
 
     const { rows, header } = props;
 
-    const newHeader = header.filter(item => item.label === "Serial" || item.label === "Description");
+    const newHeader = header.filter(item => item.label === "Serial");
 
     return (
-        <TableContainer component={Paper}>
+        <Paper elevation={3}>
+        <TableContainer>
             <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                     <TableRow>
@@ -37,17 +43,19 @@ const CartTable = (props) => {
                 <TableBody>
                     {rows.map((row, idx) => {
                         const number = idx + 1;
-                        const { serial, description } = row;
-                        return (<TableRow key={row.name}>
+                        return (<TableRow key={row}>
                             <TableCell align="left">{number}</TableCell>
-                            <TableCell align="left">{serial}</TableCell>
-                            <TableCell align="left">{description}</TableCell>
-                            <TableCell><Button className={classes.button}>Remove</Button></TableCell>
+                            <TableCell align="left">{row}</TableCell>
+                            <TableCell><Button className={classes.button} onClick={() => props.handleRemove(row)}>Remove</Button></TableCell>
                         </TableRow>)
                     })}
                 </TableBody>
-            </Table>
+            </Table> 
+            <Button className={classes.button} disabled={rows.length ? false : true}>Submit Assembly</Button>
+            {/* TODO: Add dialog for confirming and actually submitting assembly */}
+            {/* TODO: Add check to ensure assembly items were not already taken by someone else in the meantime */}
         </TableContainer>
+        </Paper>
     );
 }
 
