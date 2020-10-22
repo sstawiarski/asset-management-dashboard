@@ -3,7 +3,7 @@ import React from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, RadioGroup, TextField, FormControl } from '@material-ui/core';
+import { Grid, RadioGroup, TextField, FormControl, Checkbox } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
@@ -25,8 +25,8 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
         width: 'fit-content',
     },
-    
-      formControl: {
+
+    formControl: {
         marginTop: theme.spacing(1),
         minWidth: 400,
     },
@@ -48,7 +48,7 @@ export default function FormDialog() {
     const handleClose = () => {
         setOpen(false);
     };
-    const [selectedDate, setSelectedDate] = React.useState(new Date('2014-08-18T21:11:54'));
+    const [selectedDate, setSelectedDate] = React.useState(new Date());
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
@@ -64,7 +64,7 @@ export default function FormDialog() {
             <Button variant="outlined" color="primary" onClick={handleClickOpen}>
                 Filter Assets
             </Button>
-            
+
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <Grid container alignContent="space-around" alignItems="center">
                     <div>
@@ -76,9 +76,9 @@ export default function FormDialog() {
                         </Grid>
                         <Grid container justify="space-around">
                             <Grid item xs={3}>
-                                <FormControl component ="fieldset">
+                                <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Status</formLabel>
-                                    <RadioGroup aria-label="status" name="status1" >
+                                    <RadioGroup aria-label="status" name="status1" value={"all"}>
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="active" control={<Radio />} label="Active" />
                                         <FormControlLabel value="retired" control={<Radio />} label="Retired" />
@@ -87,34 +87,35 @@ export default function FormDialog() {
                             </Grid>
 
                             <Grid item xs={3}>
-                                <FormControl component ="fieldset">
+                                <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Assignment</formLabel>
-                                    <RadioGroup aria-label="assignment" name="assignment1" >
+                                    <RadioGroup aria-label="assignment" name="assignment1" value={"all"} >
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="owned" control={<Radio />} label="Owned" />
                                         <FormControlLabel value="rented" control={<Radio />} label="Rented" />
                                     </RadioGroup>
                                 </FormControl>
-                            
+
                             </Grid>
                             <Grid item xs={3}>
-                                <FormControl component ="fieldset">
+                                <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Assignment</formLabel>
-                                    <RadioGroup aria-label="types" name="types1" >
+                                    <RadioGroup aria-label="types" name="types1" value={"all"} >
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="asset" control={<Radio />} label="Asset" />
                                         <FormControlLabel value="assembly" control={<Radio />} label="Assembly" />
                                     </RadioGroup>
                                 </FormControl>
                             </Grid>
-                        </Grid>  
-                      
+                        </Grid>
+
                         <Grid container justify="space-evenly">
                             <Grid item xs={5}>
                                 Date Created
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <Grid container justify="space-evenly">
                                         <KeyboardDatePicker
+                                            clearable
                                             disableToolbar
                                             variant="inline"
                                             format="MM/dd/yyyy"
@@ -135,6 +136,7 @@ export default function FormDialog() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <Grid container justify="space-evenly">
                                         <KeyboardDatePicker
+                                            clearable
                                             disableToolbar
                                             variant="inline"
                                             format="MM/dd/yyyy"
@@ -152,9 +154,8 @@ export default function FormDialog() {
                             </Grid>
 
                         </Grid>
-                        <Grid container xs={12}/>
                         <Grid container justify="flex-start">
-                            <Grid item xs={1}/>
+                            <Checkbox inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} />
                             <Grid item xs={6}>
                                 <TextField
                                     autoFocus
@@ -178,7 +179,7 @@ export default function FormDialog() {
           </Button>
                 </DialogActions>
             </Dialog>
-                                            
+
         </div>
     )
 }
