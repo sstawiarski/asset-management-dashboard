@@ -25,11 +25,16 @@ router.get('/', async (req, res) => {
                         res.status(200).json(events)
                     }
                 }
+            } else {
+                res.status(400).json({
+                    message: "No events found in database",
+                    interalCode: "no_events_found"
+                })
             }
         } else {
             const events = await Event.find({});
             if (events) res.status(200).json(events);
-            else res.status(500).json({
+            else res.status(400).json({
                 message: "No events found in database",
                 interalCode: "no_events_found"
             })

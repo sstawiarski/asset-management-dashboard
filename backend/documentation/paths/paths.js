@@ -9,6 +9,7 @@ const paths = {
     '/assets/load': assetsPaths.load,
     '/assets/:serial': assetsPaths.findBySerial,
     
+    '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,
     '/events/:serial': eventsPaths.findEventsForSerial,
 
