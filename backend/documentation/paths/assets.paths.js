@@ -82,6 +82,63 @@ const assetPaths = {
             }
         }
     },
+    findByFilter: {
+        get: {
+            tags: ['Assets'],
+            description: 'Find an array of up to 5 assets based on the filter input',
+            operationId: 'findByFilter',
+            parameters: [
+                {
+                    name: 'searchFilter',
+                    in: 'path',
+                    schema: {
+                        $ref: '#/components/schemas/searchFilter'
+                    },
+                    required: true
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'A single matching asset to the serial path parameter',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Asset'
+                            }
+                        }
+                    }
+                },
+                '400': {
+                    description: 'Missing parameters',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'serial is missing',
+                                internalCode: 'missing_parameters'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'No matching assets found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'No assets found for serial',
+                                internalCode: 'no_assets_found'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     findBySerial: {
         get: {
             tags: ['Assets'],
