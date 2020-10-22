@@ -1,0 +1,54 @@
+{
+    "eventId": "0934Q",
+    "productId": [
+        "199876"
+    ],
+    "key": "SHIP-1010",
+    "eventType": "Incoming Shipment",
+    "eventData": {
+        "propertyId": "0148rth",
+        "created": {
+            "$date": {
+                "$numberLong": "1311222800000"
+            }
+        },
+        "updated": {
+            "$date": {
+                "$numberLong": "1341845200000"
+            }
+        },
+        "completed": {
+            "$date": {
+                "$numberLong": "1349131600000"
+            }
+        },
+        "status": "incoming",
+        "shipmentType": "freight",
+        "shipFrom": {
+            "origin": "Nabors 124",
+            "shipDate": {
+                "$date": {
+                    "$numberLong": "1589418800000"
+                }
+            }
+        },
+        "shipTo": {
+            "destination": "Evolution Calgary",
+            "deliveryDate": {
+                "$date": {
+                    "$numberLong": "1609480800000"
+                }
+            }
+        },
+        "specialInstructions": "",
+        "contractId": "1456",
+        "manifest": {
+            "item": "09135",
+            "type": "assembly",
+            "quantity": {
+                "$numberInt": "1"
+            },
+            "notes": ""
+        }
+    }
+}

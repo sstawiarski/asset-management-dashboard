@@ -1,0 +1,13 @@
+{
+
+    "assemblyId": "ASBO786340587",
+    "name": "gewgaw",
+    "assemblyType": "dd rig",
+    "serial": "ABUI8765",
+    "groupTag": "",
+    "updated": {
+        "$date": {
+            "$numberLong": "1547532000000"
+        }
+    }
+}
