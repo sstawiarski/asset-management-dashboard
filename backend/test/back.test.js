@@ -2,4 +2,6 @@ const assert = require('assert');
 
 const testing = "Just testing";
 
-assert.deepStrictEqual(testing, "Just testin");
+describe('Sample test', () => {
+    it('assert sample equals', () => assert.deepStrictEqual(testing, "Just testing"));
+});
