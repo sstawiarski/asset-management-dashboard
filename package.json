@@ -25,7 +25,4 @@
   },
   "homepage": "https://github.com/sstawiarski/SER-401-Project-24#readme",
   "devDependencies": {},
-  "directories": {
-    "test": "test"
-  }
 }
