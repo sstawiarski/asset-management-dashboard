@@ -6,11 +6,17 @@ const tags = [
         name: "Shipments"
     },
     {
-        name: "Users"
-    },
-    {
         name: "Events"
     },
+    {
+        name: "Customers"
+    },
+    {
+        name: 'Locations'
+    },
+    {
+        name: 'Employees'
+    }
 ]
 
 module.exports = tags;
