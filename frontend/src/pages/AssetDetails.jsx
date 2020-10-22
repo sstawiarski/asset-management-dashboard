@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles'
-import { Typography, Paper, Grid, Divider } from '@material-ui/core';
 
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
 import AssetTimeline from '../components/AssetTimeline'
 

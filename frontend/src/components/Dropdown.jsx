@@ -6,12 +6,6 @@ import { KeyboardArrowDown, KeyboardArrowRight } from '@material-ui/icons';
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography';
 
-const dateOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric"
-}
-
 const useStyles = makeStyles((theme) => ({
     button: {
         cursor: "pointer"

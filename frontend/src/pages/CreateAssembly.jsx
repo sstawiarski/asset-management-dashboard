@@ -69,20 +69,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-//table sort helper methods, found at https://material-ui.com/components/tables/#EnhancedTable.js
-const descendingComparator = (a, b, orderBy) => {
-    if (b[orderBy] < a[orderBy]) {
-        return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-        return 1;
-    }
-    return 0;
-}
-
-const getComparator = (order, orderBy) => order === 'desc' ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
-
-
 //table headings and sample data
 const headCells = [
     { id: 'serial', numeric: false, disablePadding: false, label: 'Serial' },

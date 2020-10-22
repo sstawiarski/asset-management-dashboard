@@ -17,6 +17,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+//table sort helper methods, found at https://material-ui.com/components/tables/#EnhancedTable.js
 const descendingComparator = (a, b, orderBy) => {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -43,6 +44,7 @@ const stableSort = (array, comparator) => {
     return stabilizedThis.map((el) => el[0]);
 }
 
+//table header
 const EnhancedTableHead = (props) => {
     const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort, headCells } = props;
     const createSortHandler = (property) => (event) => {
