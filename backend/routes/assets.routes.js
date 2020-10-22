@@ -19,8 +19,7 @@ router.get('/', async (req, res, err) => {
             }
         }
         else {
-            const assets = await Asset.find({});
-            assets.sort({'dateCreated': 1});
+            const assets = await Asset.find({}).sort({'dateCreated': 1});
             if (assets) res.status(200).json(assets);
             else res.status(500).json({
                 message: "No assets found in database",

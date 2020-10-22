@@ -7,7 +7,7 @@ import DropDownButton from './DropDownButton';
 import ButtonBase from '@material-ui/core/ButtonBase';
 
 
-const AssetList = ({ data }) => {
+const AssetList = () => {
 
     const REQUEST_STATUS = {
         LOADING: "loading",
@@ -23,9 +23,9 @@ const AssetList = ({ data }) => {
     const hasErrored = status === REQUEST_STATUS.ERROR;
 
     useEffect(() =>{
-        const fetchAssets = async (id) => {
+        const fetchAssets = async () => {
             try {
-            const result = await fetch(`http://localhost:4000/assets/${id}`);
+            const result = await fetch(`http://localhost:4000/assets/`);
             const json = await result.json();
             setStatus(REQUEST_STATUS.SUCCESS);
             return json;
@@ -39,7 +39,7 @@ const AssetList = ({ data }) => {
         .then(result => {
             setAssets(result);
         });
-    }, [data])
+    },)
     return( 
         <div
         style = {{spacing: '10px 0px 0px 0px'}}>
