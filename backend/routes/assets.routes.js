@@ -65,8 +65,6 @@ router.put('/load', async (req, res) => {
             message: "Error loading sample data into database",
             internal_code: "database_load_error"
         })
-<<<<<<< HEAD
-=======
     }
 })
 
@@ -89,11 +87,10 @@ router.get('/:serial', async (req, res, err) => {
             message: 'serial is missing',
             interalCode: 'missing_parameters'
         });
->>>>>>> US-4
     }
 })
 
-router.get('/:searchFilter', async (req, res, err) => {
+router.get('/searchFilter', async (req, res, err) => {
     const filter = req.params.search;
     try {
         const asset = await Asset.find({ searchFilter: searchFilter });
