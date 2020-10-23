@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AssetCard() {
+export default function AssetCard(asset) {
   const classes = useStyles();
 
   return (

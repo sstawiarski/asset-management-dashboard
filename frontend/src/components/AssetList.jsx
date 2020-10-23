@@ -35,7 +35,7 @@ const AssetList = () => {
             }
         };
 
-        fetchAssets(data)
+        fetchAssets()
         .then(result => {
             setAssets(result);
         });
