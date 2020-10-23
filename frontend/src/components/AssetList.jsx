@@ -99,29 +99,23 @@ const AssetList = () => {
 
                 </div>
                 <div>
-                    {assets.map((arrayItem) => {
-                        return( <AssetCard data= {arrayItem}/>)})
-                    }
+                    {isLoading && <div> Loading... </div>}
+                    {hasErrored && (
+                        <div>
+                        Loading error...
+                        <b> ERROR: error.message</b>
+                        </div>
+                    )}
+                    {success && (
+                    <div>
+                        {assets.map((arrayItem) => {
+                            return( <AssetCard data= {arrayItem}/>)})
+                        }
+                    </div>)}
                 </div>
-                <AssetCard  />
             </Container>
 
         </div>
-        // <div>
-        // {isLoading && <div> Loading... </div>}
-        // {hasErrored && (
-        //     <div>
-        //         Loading error... try "npm run json-server" in terminal
-        //         <br />
-        //         <b>ERROR: {error.message}</b>
-        //     </div>
-        // )}
-        // {success && (
-        //     <div>
-        //         {assets.map((AssetCard))}
-        //     </div>
-        // )}
-        // </div>
     );
 }
 
