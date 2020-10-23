@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "run-s test:frontend test:backend",
-    "test:frontend": "cd frontend && npm test",
+    "test:frontend": "cd frontend/src && npm test",
     "test:backend": "cd backend && npm test"
   },
   "author": "",
