@@ -3,7 +3,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import classNames from "classnames";
+import * as classNames from "classNames";
 import { withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
@@ -90,9 +90,9 @@ const styles = (theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    width: theme.spacing.unit * 7,
+    width: theme.spacing(7),
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing.unit * 9,
+      width: theme.spacing(9),
     },
   },
 });
@@ -121,7 +121,7 @@ class Sidebar extends React.Component {
       <div className={classes.root}>
         <Drawer
           variant="permanent"
-          className={Drawer}
+          className={classes.Drawer}
           classes={{
             paper: classNames(
               classes.drawerPaper,
