@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function AssetCard(asset) {
+export default function AssetCard(props) {
   const classes = useStyles();
 
   return (
@@ -49,15 +49,15 @@ export default function AssetCard(asset) {
           </Grid>
 
           <Grid item xs={1}> 
-            1
+            {props.data.serial}
           </Grid>
 
           <Grid item xs={2}>
-            Asset
+            {props.data.assetName}
           </Grid>
 
           <Grid item xs={1}>
-            Oil Can
+            {props.data.assetType}
           </Grid>
 
             <Grid
@@ -66,25 +66,25 @@ export default function AssetCard(asset) {
             justify = 'center'
             xs={3}>
               <Grid item xs={12}>
-                Yes
+                {props.data.checkedOut}
               </Grid>
               <Grid item>
                 <span
                 style = {{fontSize: '10px'}}>
-                  Sample Company</span>
+                  {props.data.checkedOut}</span>
               </Grid>
             </Grid>
 
             <Grid item xs={0}>
-              Warehouse 3
+              {props.data.deployedLocation}
             </Grid> 
 
             <Grid item xs={3}>
-             Evolution-Canada
+             {props.data.owner}
             </Grid>
 
             <Grid item xs={0}>
-             <GroupTag groupType= {'important'} />
+             {props.data.groupTag}
             </Grid>
       </Grid>
 

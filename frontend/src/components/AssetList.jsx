@@ -7,6 +7,7 @@ import DropDownButton from './DropDownButton';
 import ButtonBase from '@material-ui/core/ButtonBase';
 
 
+
 const AssetList = () => {
 
     const REQUEST_STATUS = {
@@ -38,8 +39,8 @@ const AssetList = () => {
         fetchAssets()
         .then(result => {
             setAssets(result);
-        });
-    },)
+        },);
+    },[])
     return( 
         <div
         style = {{spacing: '10px 0px 0px 0px'}}>
@@ -98,7 +99,9 @@ const AssetList = () => {
 
                 </div>
                 <div>
-                    {assets.map((AssetCard))}
+                    {assets.map((arrayItem) => {
+                        return( <AssetCard data= {arrayItem}/>)})
+                    }
                 </div>
                 <AssetCard  />
             </Container>
