@@ -6,6 +6,7 @@ import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Searchbar from './components/Searchbar';
 
+
 function App() {
   return (
     <div className="App">
