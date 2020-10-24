@@ -9,10 +9,6 @@ import Searchbar from './components/Searchbar';
 function App() {
   return (
     <div className="App">
-<<<<<<< HEAD
-      <Searchbar />
-=======
->>>>>>> development
       <BrowserRouter>
         <Switch>
           <Route path="/details" component={AssetDetails} />
