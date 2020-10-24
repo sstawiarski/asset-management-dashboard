@@ -1,7 +1,7 @@
 import { Container, Grid } from '@material-ui/core';
 
 import React, {useState, useEffect} from 'react';
-import AssetCard from './AssetCard';
+import AssetCard from './AssetCard'
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import DropDownButton from './DropDownButton';
 import ButtonBase from '@material-ui/core/ButtonBase';
