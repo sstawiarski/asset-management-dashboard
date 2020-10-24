@@ -1,6 +1,60 @@
 const eventsPath = {
     'root': {
-
+        get: {
+            tags: ['Events'],
+            description: 'Get all events or search based on event key',
+            operationId: 'findAllEvents',
+            parameters: [
+                {
+                    name: 'search',
+                    in: 'query',
+                    schema: {
+                        $ref: '#/components/schemas/key'
+                    },
+                    required: false
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Event(s) were found in the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                    $ref: '#/components/schemas/Events'
+                            }
+                        }
+                    }
+                },
+                '400': {
+                    description: 'No events found in the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'No events found in database',
+                                internalCode: 'no_events_found'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error loading sample data into database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'Error searching for events in database',
+                                internalCode: 'event_search_error'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     },
     'load': {
         put: {
