@@ -1,12 +1,12 @@
-
 import React from 'react';
-import AssetList from '../components/AssetList';
-import AssetPageHeader from '../components/AssetPageHeader';
+import AssetPageHeader from '../components/AssetPageHeader'
+import AssetList from '../components/AssetList'
 import Searchbar from '../components/Searchbar'
-const TestPage = () => {
+
+const AllAssets = () => {
 
     return (
-    <div>
+        <div>
         <AssetPageHeader />
         <div
         style = {{margin: '10px 0 20px 0'}}>
@@ -18,4 +18,4 @@ const TestPage = () => {
 
 }
 
-export default TestPage;
+export default AllAssets;

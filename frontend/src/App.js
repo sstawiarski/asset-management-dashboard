@@ -5,6 +5,7 @@ import './App.css';
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Searchbar from './components/Searchbar';
+import AllAssets from './pages/AllAssets';
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Switch>
           <Route path="/details" component={AssetDetails} />
           <Route path="/create-assembly" component={CreateAssembly} />
+          <Route path="/all-assets" component = {allAssets} />
         </Switch>
       </BrowserRouter>
     </div>
