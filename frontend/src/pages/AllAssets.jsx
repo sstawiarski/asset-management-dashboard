@@ -3,7 +3,7 @@ import AssetPageHeader from '../components/AssetPageHeader'
 import AssetList from '../components/AssetList'
 import Searchbar from '../components/Searchbar'
 
-const allAssets = () => {
+const AllAssets = () => {
 
     return (
         <div>
@@ -18,4 +18,4 @@ const allAssets = () => {
 
 }
 
-export default allAssets;
+export default AllAssets;
