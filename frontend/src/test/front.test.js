@@ -10,8 +10,5 @@ import App from '../App';
 test('test 1', () => {
   console.log('test for describe outer');
   expect(true).toEqual(true);
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> development
+
