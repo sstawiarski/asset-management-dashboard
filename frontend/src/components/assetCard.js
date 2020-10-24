@@ -39,7 +39,7 @@ export default function AssetCard(props) {
         <Grid container spacing={2}
         direction ='row'
         alignItems ='center'
-        justify = 'flex-start'
+        justify = 'fixed'
 
         >
           <Grid item xs={0}>
