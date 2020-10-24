@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/sstawiarski/SER-401-Project-24#readme",
   "devDependencies": {
+    "har-validator": "^5.1.5",
     "npm-run-all": "^4.1.5"
   }
 }
