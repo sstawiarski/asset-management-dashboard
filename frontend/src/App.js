@@ -7,6 +7,8 @@ import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
+import AllAssets from './pages/AllAssets';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex'
@@ -31,7 +33,8 @@ function App() {
             <Switch>
               <Route path="/" exact component={Dashboard} />
               <Route path="/details" component={AssetDetails} />
-              <Route path="/create-assembly" component={CreateAssembly} />
+              <Route path="/assets/create-assembly" component={CreateAssembly} />
+              <Route path="/assets/view-all" component={AllAssets} />
             </Switch>
         </main>
       </div>
