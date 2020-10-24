@@ -3,7 +3,6 @@ import React from 'react';
 import AssetList from '../components/AssetList';
 import AssetPageHeader from '../components/AssetPageHeader';
 import Searchbar from '../components/Searchbar'
-<<<<<<< HEAD
 const TestPage = () => {
 
     return (
@@ -16,13 +15,6 @@ const TestPage = () => {
             <AssetList />
         </div>
     </div>);
-=======
-import AssetFilter from '../components/AssetFilter'
-
-const TestPage = () => {
-
-    return (<AssetFilter />);
->>>>>>> development
 
 }
 
