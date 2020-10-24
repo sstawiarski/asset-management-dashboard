@@ -1,16 +1,13 @@
 import React from 'react';
-import AssetPageHeader from '../components/AssetPageHeader'
+
 import AssetList from '../components/AssetList'
-import Searchbar from '../components/Searchbar'
+import Header from '../components/Header'
 
 const AllAssets = () => {
 
     return (
         <div>
-        <AssetPageHeader />
-        <div
-        style = {{margin: '10px 0 20px 0'}}>
-            <Searchbar /></div>
+        <Header heading="Assets" subheading="View All" />
         <div>    
             <AssetList />
         </div>

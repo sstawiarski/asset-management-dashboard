@@ -51,7 +51,7 @@ const Dashboard = () => {
                     <Link to="/shipments/view-all" className={classes.link}>
                         <LocalShippingIcon className={classes.moduleIcon} />
                     </Link>
-                    <Link to="/shipments/view-all" className={classes.link}>
+                    <Link to="/assets/view-all" className={classes.link}>
                         <DomainIcon className={classes.moduleIcon} />
                     </Link>
                 </div>

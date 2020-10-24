@@ -369,7 +369,7 @@ class Sidebar extends React.Component {
                 </Grid>
               </Link>
 
-              <Link to="/assets/view-all" className={classes.link}>
+              <Link to="/assets/create-assembly" className={classes.link}>
                 <Grid
                   item
                   container
