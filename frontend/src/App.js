@@ -5,7 +5,7 @@ import './App.css';
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Searchbar from './components/Searchbar';
-import allAssets from './pages/AllAssets';
+import AllAssets from './pages/AllAssets';
 
 
 function App() {
