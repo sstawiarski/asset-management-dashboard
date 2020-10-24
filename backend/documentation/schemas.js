@@ -1,4 +1,9 @@
 const schemas = {
+    searchFilter:{
+        type: 'string',
+        example: 'assetType + dateCreated',
+        description: 'Concatenates search queries based on filtered input'
+    },
     serial: {
         type: 'string',
         example: 'ELP-9001'

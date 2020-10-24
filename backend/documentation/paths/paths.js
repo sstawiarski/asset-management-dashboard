@@ -8,6 +8,7 @@ const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
     '/assets/:serial': assetsPaths.findBySerial,
+    '/assets/:searchFilter': assetsPaths.findByFilter,
     
     '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,

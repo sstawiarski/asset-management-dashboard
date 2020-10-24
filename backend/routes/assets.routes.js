@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const { searchFilter } = require('../documentation/schemas');
 const connection = mongoose.connection;
 const Asset = require('../models/asset.model');
 const sampleAssets = require('../sample_data/sampleAssets.data')
@@ -89,4 +90,25 @@ router.get('/:serial', async (req, res, err) => {
     }
 })
 
+router.get('/searchFilter', async (req, res, err) => {
+    const filter = req.params.search;
+    try {
+        const asset = await Asset.find({ searchFilter: searchFilter });
+
+        if (asset.length) {
+            res.status(200).json(asset[0]);
+        } else {
+            res.status(500).json({
+                message: 'No assets found for serial',
+                internalCode: 'no_assets_found'
+            })
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({
+            message: 'serial is missing',
+            interalCode: 'missing_parameters'
+        });
+    }
+})
 module.exports = router;
