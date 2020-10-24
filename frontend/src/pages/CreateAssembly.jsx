@@ -25,6 +25,9 @@ import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+
+    },
     paper: {
         marginLeft: "15px",
         marginRight: "15px",
@@ -161,11 +164,13 @@ const CreateAssembly = () => {
     }
 
     return (
-        <div>
-            <Header heading="Products" subheading="Assembly Creator" />
+        <div className={classes.root}>
+
             <div className="picker-window">
                 <Grid container spacing={2}>
-
+                    <Grid item xs={12}>
+                        <Header heading="Products" subheading="Assembly Creator" />
+                    </Grid>
                     <Grid item xs={12} sm={8} lg={9}>
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Product Selection</Typography>
@@ -175,6 +180,7 @@ const CreateAssembly = () => {
                         {
                             assemblyStarted
                                 ? <ReusableTable
+                                    className={classes.paper}
                                     headCells={headCells}
                                     rows={rows}
                                     rowsPerPage={15}
@@ -198,7 +204,7 @@ const CreateAssembly = () => {
                             <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
-                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
+                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
 
 
                     </Grid>

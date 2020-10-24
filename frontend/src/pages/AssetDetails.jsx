@@ -9,8 +9,11 @@ import Header from '../components/Header'
 import AssetTimeline from '../components/AssetTimeline'
 
 const useStyles = makeStyles((theme) => ({
+    root: {
+        marginLeft: "10px"
+    },
     paper: {
-        width: "85vw",
+        width: "100%",
     },
     item: {
         padding: "10px"
@@ -105,11 +108,9 @@ const AssetDetails = () => {
 
 
     return (
-        <div>
+        <div className={classes.root}>
+            <Header heading="Products" />
             <Grid container>
-                <Grid item xs={12}>
-                    <Header heading="Products" />
-                </Grid>
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <Grid item>
