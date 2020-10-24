@@ -1,3 +1,8 @@
+/*
+ * Author: Shawn Stawiarski
+ * October 2020
+ * License: MIT
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import debounce from 'lodash/debounce'
 
@@ -6,7 +11,8 @@ import FormControl from '@material-ui/core/FormControl'
 import { Fade, InputAdornment, InputLabel, OutlinedInput, Paper, Typography, Popper } from '@material-ui/core';
 import Search from '@material-ui/icons/Search'
 
-import SearchResult from './SearchResult'
+import AssetResult from './AssetResult'
+import EventResult from './EventResult'
 
 const useStyles = makeStyles((theme) => ({
     searchbar: {
@@ -30,49 +36,68 @@ const useStyles = makeStyles((theme) => ({
 
 const Searchbar = () => {
 
+    /* Delay API call on user input by 500ms */
     const debounceSearch = useCallback(debounce(eventTarget =>
         setState({
             ...state,
             searchTerm: eventTarget.value,
             anchor: eventTarget
         })
-    , 400), [])
+    , 500), [])
 
     const classes = useStyles();
 
     const [state, setState] = useState({
         searchTerm: '',
-        result: [],
+        assetResult: [],
+        eventResult: [],
         resultsOpen: false,
         anchor: null,
         eventsOpen: false,
     })
 
+    /* Fuzzy search assets using API call */
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const search = serial.replace("-", "");
-            const result = await fetch(`http://localhost:4000/assets?search=${search}`);
+            const result = await fetch(`http://localhost:4000/assets?search=${serial}`);
+            const json = await result.json();
+            return json;
+        };
+
+        const searchEvents = async (key) => {
+            const result = await fetch(`http://localhost:4000/events?search=${key}`);
             const json = await result.json();
             return json;
         };
 
         if (state.searchTerm) {
-
             searchAssets(state.searchTerm)
                 .then(result => {
                     setState(s => ({
                         ...s,
                         resultsOpen: true,
-                        result: result
+                        assetResult: result
                     }))
-                })
+                });
+
+            searchEvents(state.searchTerm)
+                .then(result => {
+                    setState(s => ({
+                        ...s,
+                        resultsOpen: true,
+                        eventResult: result
+                    }))
+                });
+
         } else {
             setState(s => ({
                 ...s,
                 resultsOpen: false,
-                result: []
+                assetResult: [],
+                eventResult: []
             }))
         }
+
     }, [state.searchTerm])
 
     const handleChange = (event) => {
@@ -82,25 +107,35 @@ const Searchbar = () => {
     return (
         <div>
             <Popper className={classes.popper} open={state.resultsOpen} anchorEl={state.anchor} placement='bottom' transition>
+
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={250}>
                         <Paper className={classes.paper}>
                             <Typography variant="h6" style={{ display: 'inline-block' }}>Search results</Typography>
                             <Typography className={classes.viewAllButton} variant="button">View All</Typography>
+                            <Typography variant="body1" align="left"><b>Products</b></Typography>
                             <br />
                             {
-                                state.result.length ?
-                                    state.result.map(item => (<SearchResult data={item} />))
-                                    :
-                                    <Typography variant="body1" align="center">No results found</Typography>
-
+                                state.assetResult.length ?
+                                state.assetResult.map(item => (<AssetResult data={item} key={item.serial} />))
+                                : <Typography variant="body1" align="center">No products found</Typography>
+                            }
+                            <hr />
+                            <Typography variant="body1" align="left"><b>Events</b></Typography>
+                            <br />
+                            {
+                                state.eventResult.length ?
+                                state.eventResult.map(item => (<EventResult data={item} key={item.key} />))
+                                : <Typography variant="body1" align="center">No events found</Typography>
                             }
                         </Paper>
                     </Fade>
                 )}
+
             </Popper>
+
             <FormControl className={classes.searchbar} variant="outlined">
-                <InputLabel htmlFor="searchbar">Enter an asset serial</InputLabel>
+                <InputLabel htmlFor="searchbar">Enter a product serial or event key</InputLabel>
                 <OutlinedInput
                     id="searchbar"
                     type="text"
@@ -108,7 +143,7 @@ const Searchbar = () => {
                     startAdornment={
                         <InputAdornment position="start"><Search /></InputAdornment>
                     }
-                    labelWidth={150} />
+                    labelWidth={250} />
             </FormControl>
         </div>
     );
