@@ -19,9 +19,10 @@ import Header from './Header'
 
 
 const useStyles = makeStyles((theme) => ({
+    
     form: {
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         margin: 'auto',
         width: 'fit-content',
     },
@@ -49,9 +50,14 @@ export default function FormDialog() {
         setOpen(false);
     };
     const [selectedDate, setSelectedDate] = React.useState(new Date());
+    const [selectedDate2, setSelectedDate2] = React.useState(new Date());
+
 
     const handleDateChange = (date) => {
         setSelectedDate(date);
+    };
+    const handleDateChange2 = (date) => {
+        setSelectedDate2(date);
     };
 
     const classes = (useStyles);
@@ -61,7 +67,7 @@ export default function FormDialog() {
 
         <div>
 
-            <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+            <Button size="large" color="primary" onClick={handleClickOpen}>
                 Filter Assets
             </Button>
 
@@ -78,7 +84,7 @@ export default function FormDialog() {
                             <Grid item xs={3}>
                                 <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Status</formLabel>
-                                    <RadioGroup aria-label="status" name="status1" value={"all"}>
+                                    <RadioGroup aria-label="status" name="status1" defaultValue="all">
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="active" control={<Radio />} label="Active" />
                                         <FormControlLabel value="retired" control={<Radio />} label="Retired" />
@@ -89,7 +95,7 @@ export default function FormDialog() {
                             <Grid item xs={3}>
                                 <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Assignment</formLabel>
-                                    <RadioGroup aria-label="assignment" name="assignment1" value={"all"} >
+                                    <RadioGroup aria-label="assignment" name="assignment1" defaultValue="all" >
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="owned" control={<Radio />} label="Owned" />
                                         <FormControlLabel value="rented" control={<Radio />} label="Rented" />
@@ -100,7 +106,7 @@ export default function FormDialog() {
                             <Grid item xs={3}>
                                 <FormControl component="fieldset">
                                     <formLabel compoonent="legend">Assignment</formLabel>
-                                    <RadioGroup aria-label="types" name="types1" value={"all"} >
+                                    <RadioGroup aria-label="types" name="types1" defaultValue="all" >
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="asset" control={<Radio />} label="Asset" />
                                         <FormControlLabel value="assembly" control={<Radio />} label="Assembly" />
@@ -115,13 +121,11 @@ export default function FormDialog() {
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <Grid container justify="space-evenly">
                                         <KeyboardDatePicker
-                                            clearable
-                                            disableToolbar
-                                            variant="inline"
+                                            
                                             format="MM/dd/yyyy"
                                             margin="normal"
                                             id="date-picker-inline"
-                                            label="Date picker inline"
+                                            
                                             value={selectedDate}
                                             onChange={handleDateChange}
                                             KeyboardButtonProps={{
@@ -131,23 +135,22 @@ export default function FormDialog() {
                                     </Grid>
                                 </MuiPickersUtilsProvider>
                             </Grid>
+                            <div></div>
                             <Grid item xs={5}>
                                 Date Updated
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <Grid container justify="space-evenly">
                                         <KeyboardDatePicker
-                                            clearable
-                                            disableToolbar
-                                            variant="inline"
                                             format="MM/dd/yyyy"
                                             margin="normal"
                                             id="date-picker-inline"
-                                            label="Date picker inline"
-                                            value={selectedDate}
-                                            onChange={handleDateChange}
+                                        
+                                            value={selectedDate2}
+                                            onChange={handleDateChange2}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date',
                                             }}
+                                            
                                         />
                                     </Grid>
                                 </MuiPickersUtilsProvider>
