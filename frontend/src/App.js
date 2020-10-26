@@ -8,6 +8,7 @@ import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
+import SearchDetails from './pages/SearchDetails';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +36,7 @@ function App() {
               <Route path="/details" component={AssetDetails} />
               <Route path="/assets/create-assembly" component={CreateAssembly} />
               <Route path="/assets/view-all" component={AllAssets} />
+              <Route path="/search/:query" component={SearchDetails} />
             </Switch>
         </main>
       </div>
