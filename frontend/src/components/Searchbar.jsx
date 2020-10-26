@@ -115,7 +115,7 @@ const Searchbar = () => {
                         <Paper className={classes.paper}>
                             <Typography variant="h6" style={{ display: 'inline-block' }}>Search results</Typography>
                             <Link to={`/search/${state.searchTerm}`}>
-                                <Typography className={classes.viewAllButton} variant="button">View All</Typography>
+                                <Typography className={classes.viewAllButton} variant="button" id="details-button">View All</Typography>
                             </Link>
                             <Typography variant="body1" align="left"><b>Products</b></Typography>
                             <br />
