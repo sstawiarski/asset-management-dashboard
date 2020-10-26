@@ -4,9 +4,11 @@
  * License: MIT
  */
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import debounce from 'lodash/debounce'
 
 import { makeStyles } from '@material-ui/core/styles';
+
 import FormControl from '@material-ui/core/FormControl'
 import { Fade, InputAdornment, InputLabel, OutlinedInput, Paper, Typography, Popper } from '@material-ui/core';
 import Search from '@material-ui/icons/Search'
@@ -43,7 +45,7 @@ const Searchbar = () => {
             searchTerm: eventTarget.value,
             anchor: eventTarget
         })
-    , 500), [])
+        , 500), [])
 
     const classes = useStyles();
 
@@ -112,21 +114,23 @@ const Searchbar = () => {
                     <Fade {...TransitionProps} timeout={250}>
                         <Paper className={classes.paper}>
                             <Typography variant="h6" style={{ display: 'inline-block' }}>Search results</Typography>
-                            <Typography className={classes.viewAllButton} variant="button">View All</Typography>
+                            <Link to={`/search/${state.searchTerm}`}>
+                                <Typography className={classes.viewAllButton} variant="button">View All</Typography>
+                            </Link>
                             <Typography variant="body1" align="left"><b>Products</b></Typography>
                             <br />
                             {
                                 state.assetResult.length ?
-                                state.assetResult.map(item => (<AssetResult data={item} key={item.serial} />))
-                                : <Typography variant="body1" align="center">No products found</Typography>
+                                    state.assetResult.map(item => (<AssetResult data={item} key={item.serial} />))
+                                    : <Typography variant="body1" align="center">No products found</Typography>
                             }
                             <hr />
                             <Typography variant="body1" align="left"><b>Events</b></Typography>
                             <br />
                             {
                                 state.eventResult.length ?
-                                state.eventResult.map(item => (<EventResult data={item} key={item.key} />))
-                                : <Typography variant="body1" align="center">No events found</Typography>
+                                    state.eventResult.map(item => (<EventResult data={item} key={item.key} />))
+                                    : <Typography variant="body1" align="center">No events found</Typography>
                             }
                         </Paper>
                     </Fade>
