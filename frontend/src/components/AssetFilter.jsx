@@ -38,9 +38,10 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function FormDialog() {
+export default function FormDialog(props) {
 
     const [open, setOpen] = React.useState(false);
+    const [reset, setDefault] = React.useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -49,6 +50,11 @@ export default function FormDialog() {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleReset = () => {
+        setDefault(true);
+        
+    }
     const [selectedDate, setSelectedDate] = React.useState(new Date());
     const [selectedDate2, setSelectedDate2] = React.useState(new Date());
 
@@ -61,6 +67,8 @@ export default function FormDialog() {
     };
 
     const classes = (useStyles);
+
+ 
 
 
     return (
@@ -105,7 +113,7 @@ export default function FormDialog() {
                             </Grid>
                             <Grid item xs={3}>
                                 <FormControl component="fieldset">
-                                    <formLabel compoonent="legend">Assignment</formLabel>
+                                    <formLabel compoonent="legend">Type</formLabel>
                                     <RadioGroup aria-label="types" name="types1" defaultValue="all" >
                                         <FormControlLabel value="all" control={<Radio />} label="Show All" />
                                         <FormControlLabel value="asset" control={<Radio />} label="Asset" />
@@ -174,7 +182,7 @@ export default function FormDialog() {
                     </div>
                 </Grid>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={handleReset} color="primary">
                         Reset
           </Button>
                     <Button onClick={handleClose} color="primary">
