@@ -9,6 +9,7 @@ const sampleAssets = require('../sample_data/sampleAssets.data')
 router.get('/', async (req, res, err) => {
     try {
         if (req.query.search) {
+        	const sort = req.params.sort;
             const searchTerm = req.query.search.replace("-", "");
             const assets = await Asset.fuzzySearch(searchTerm).limit(5);
             if (assets.length) {
@@ -111,4 +112,5 @@ router.get('/searchFilter', async (req, res, err) => {
         });
     }
 })
+
 module.exports = router;

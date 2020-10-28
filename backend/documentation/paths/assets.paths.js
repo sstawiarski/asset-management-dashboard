@@ -7,6 +7,7 @@ const assetPaths = {
             parameters: [
                 {
                     name: 'search',
+                    sort:  'date',
                     in: 'query',
                     schema: {
                         $ref: '#/components/schemas/searchSerial'

@@ -8,6 +8,7 @@ const eventsPath = {
                 {
                     name: 'search',
                     in: 'query',
+                    sort: 'date',
                     schema: {
                         $ref: '#/components/schemas/key'
                     },
