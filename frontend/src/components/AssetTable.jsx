@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -149,9 +148,6 @@ let EnhancedTableToolbar = props => {
 
   return (
     <Toolbar
-      className={classNames(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
     >
       <div className={classes.title}>
         {numSelected > 0 ? (
@@ -206,8 +202,8 @@ const styles = theme => ({
 
 class EnhancedTable extends React.Component {
   state = {
-    order: 'asc',
-    orderBy: 'calories',
+    order: 'desc',
+    orderBy: 'serial',
     selected: [],
     data: [
       createData('Cupcake', 305, 3.7, 67, 4.3),
@@ -278,7 +274,7 @@ class EnhancedTable extends React.Component {
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
-  render() {
+  render(props) {
     const { classes } = this.props;
     const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);

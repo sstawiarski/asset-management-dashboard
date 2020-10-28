@@ -5,7 +5,8 @@ import './App.css';
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Searchbar from './components/Searchbar';
-import allAssets from './pages/AllAssets';
+import AllAssets from './pages/AllAssets';
+import TestPage from './pages/TestPage';
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
         <Switch>
           <Route path="/details" component={AssetDetails} />
           <Route path="/create-assembly" component={CreateAssembly} />
-          <Route path="/all-assets" component = {allAssets} />
+          <Route path="/all-assets" component = {AllAssets} />
+          <Route path='/table-test' component = {TestPage} />
         </Switch>
       </BrowserRouter>
     </div>
