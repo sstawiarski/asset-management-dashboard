@@ -19,7 +19,7 @@ import Header from '../components/Header'
 
 const useStyles = makeStyles({
     root: {
-
+        marginLeft: "20px"
     },
     table: {
         overflow: "hidden",
@@ -44,12 +44,20 @@ const SearchDetails = (props) => {
 
     const [productRows, setProductRows] = useState([]);
     const [eventRows, setEventRows] = useState([]);
+    const [eventRowsPerPage, setEventRowsPerPage] = useState(5);
+    const [productRowsPerPage, setProductRowsPerPage] = useState(5);
+    const [eventPage, setEventPage] = useState(0);
+    const [productPage, setProductPage] = useState(0);
+    const [eventCount, setEventCount] = useState(0);
+    const [productCount, setProductCount] = useState(0);
+
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets?search=${searchTerm}`)
+        fetch(`http://localhost:4000/assets?search=${searchTerm}&viewAll=true&page=${productPage}&limit=${productRowsPerPage}`)
             .then(res => res.json())
             .then(json => {
-                setProductRows(json);
+                setProductRows(json.assets);
+                setProductCount(json.count);
             });
 
         fetch(`http://localhost:4000/events?search=${searchTerm}`)
@@ -58,7 +66,24 @@ const SearchDetails = (props) => {
                 setEventRows(json);
             });
 
-    }, [props.match.params.query])
+    }, [props.match.params.query, productRowsPerPage, productPage])
+
+    const handleEventChangePage = () => {
+
+    }
+
+    const handleProductChangePage = (event, newPage) => {
+        setProductPage(newPage);
+    }
+
+    const handleProductChangeRowsPerPage = (event) => {
+        setProductRowsPerPage(parseInt(event.target.value, 10));
+        setProductPage(0);
+    }
+
+    const handleEventChangeRowsPerPage = () => {
+
+    }
 
     return (
         <div className={classes.root}>
@@ -75,19 +100,31 @@ const SearchDetails = (props) => {
                     </TableHead>
                     <TableBody>
                         {productRows.length ? productRows.map(product => (
-                                <TableRow hover key={product.serial} component={Link} to={`/details/${product.serial}`} style={{textDecoration: "none"}}>
-                                    <TableCell align="left">{product.serial}</TableCell>
-                                    <TableCell align="left">{product.assetType}</TableCell>
-                                    <TableCell align="left">{product.assetName}</TableCell>
-                                    <TableCell align="left">{product.checkedOut ? "Yes" : "No"}</TableCell>
-                                    <TableCell align="left">{product.deployedLocation}</TableCell>
-                                    <TableCell align="left">{product.owner}</TableCell>
-                                    <TableCell align="left">{product.groupTag}</TableCell>
-                                </TableRow>
+                            <TableRow hover key={product.serial} component={Link} to={`/details/${product.serial}`} style={{ textDecoration: "none" }}>
+                                <TableCell align="left">{product.serial}</TableCell>
+                                <TableCell align="left">{product.assetType}</TableCell>
+                                <TableCell align="left">{product.assetName}</TableCell>
+                                <TableCell align="left">{product.checkedOut ? "Yes" : "No"}</TableCell>
+                                <TableCell align="left">{product.deployedLocation}</TableCell>
+                                <TableCell align="left">{product.owner}</TableCell>
+                                <TableCell align="left">{product.groupTag}</TableCell>
+                            </TableRow>
                         )) : null}
                     </TableBody>
                 </Table>
             </TableContainer>
+            { productRows.length ?
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={productRows.length}
+                    rowsPerPage={productRowsPerPage}
+                    page={productPage}
+                    onChangePage={handleProductChangePage}
+                    onChangeRowsPerPage={handleProductChangeRowsPerPage}
+                />
+                : null}
+
             <Typography variant="h6" style={{ float: "left", marginLeft: "15px", paddingTop: "20px" }}>Event Results</Typography>
             <TableContainer className={classes.table} component={Paper}>
                 <Table size="large">
@@ -100,7 +137,7 @@ const SearchDetails = (props) => {
                     </TableHead>
                     <TableBody>
                         {eventRows.length ? eventRows.map(event => (
-                            <TableRow hover key={event.key} component={Link} to={`/shipments/${event.key}`} style={{textDecoration: "none"}}>
+                            <TableRow hover key={event.key} component={Link} to={`/shipments/${event.key}`} style={{ textDecoration: "none" }}>
                                 <TableCell align="left">{event.key}</TableCell>
                                 <TableCell align="left">{new Date(event.eventTime).toLocaleDateString('en-US', dateOptions)}</TableCell>
                                 <TableCell align="left">{event.eventType}</TableCell>
@@ -110,6 +147,20 @@ const SearchDetails = (props) => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            {
+                eventRows.length ?
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={eventRows.length}
+                        rowsPerPage={eventRowsPerPage}
+                        page={eventPage}
+                        onChangePage={handleEventChangePage}
+                        onChangeRowsPerPage={handleEventChangeRowsPerPage}
+                    />
+                    : null
+            }
+
         </div>
     )
 };

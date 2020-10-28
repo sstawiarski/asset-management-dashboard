@@ -2,15 +2,30 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const { searchFilter } = require('../documentation/schemas');
+const { count } = require('../models/asset.model');
 const connection = mongoose.connection;
 const Asset = require('../models/asset.model');
 const sampleAssets = require('../sample_data/sampleAssets.data')
+const options = {
+    page: 1,
+    limit: 2,
+    collation: {
+      locale: 'en'
+    }
+};
 
 router.get('/', async (req, res, err) => {
     try {
         if (req.query.search) {
             const searchTerm = req.query.search.replace("-", "");
-            const assets = await Asset.fuzzySearch(searchTerm).limit(5);
+            let assets = [];
+            if (req.query.viewAll) {
+                const limit = parseInt(req.query.limit, 10);
+                const page = parseInt(req.query.page, 10);
+                assets = await Asset.fuzzySearch(searchTerm).limit(limit).skip(limit * page).exec();
+            } else {
+                assets = await Asset.fuzzySearch(searchTerm).limit(5);
+            }
             if (assets.length) {
                 if (assets[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
                     const result = [assets[0]]
@@ -22,7 +37,16 @@ router.get('/', async (req, res, err) => {
                         res.status(200).json(result);
                         
                     } else {
-                        res.status(200).json(assets);
+                        if (req.query.viewAll) {
+                            const count = await Asset.fuzzySearch(searchTerm).countDocuments();
+                            let result = {
+                                assets: assets,
+                                count: count
+                            }
+                            res.status(200).json(result);
+                        } else {
+                            res.status(200).json(assets);
+                        }
                     }
                 }
             } else {
@@ -43,7 +67,7 @@ router.get('/', async (req, res, err) => {
 
     }
     catch (err) {
-        console.log(err.message)
+        console.log(err)
     }
 })
 
