@@ -11,7 +11,7 @@ const TestPage = () => {
     return (
         <div>
             <Button onClick={() => setRetireOpen(!retireOpen)} variant="contained" color="primary">Change asset status</Button>
-            <RetireAssetDialog open={retireOpen} setOpen={setRetireOpen} assets={[]} />
+            <RetireAssetDialog open={retireOpen} setOpen={setRetireOpen} assets={['G800-1111']} />
         </div>
     );
 };
