@@ -8,13 +8,33 @@ const eventsPath = {
                 {
                     name: 'search',
                     in: 'query',
-                    sort: 'date',
                     schema: {
                         $ref: '#/components/schemas/key'
                     },
                     required: false
+                },
+
+                {
+                    name: 'sort_by',
+                    in: 'query',
+                    schema: {
+                        type: 'string'
+                    },
+                    required: false
+
+                },
+
+                {
+                    name: 'order',
+                    in: 'query',
+                    schema: {
+                        type: 'string'
+                    },
+                    required: false
                 }
+
             ],
+
             responses: {
                 '200': {
                     description: 'Event(s) were found in the database',
@@ -146,7 +166,119 @@ const eventsPath = {
                 }
             }
         }
+    },
+
+    order: {
+        get: {
+            tags: ['Events'],
+            description: 'Order search results in asc or desc order specified by user',
+            operationId: 'order',
+            parameters: [{
+                name: 'order',
+                in: 'path',
+                schema: {
+                    type: 'string'
+                },
+                required: true
+            }],
+            responses: {
+                '200': {
+                    description: 'Successfully specified asc or desc sort order',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#components/schemas/Events'
+                            }
+                        }
+                    }
+                },
+                '400': {
+                    description: 'Incorrect parameters: enter asc or desc',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'order type is missing',
+                                internalCode: 'missing_parameters'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'No matching events found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'No events found',
+                                internalCode: 'no_events_found'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    sort_by: {
+        get: {
+            tags: ['Events'],
+            description: 'sort events by the provided sort type',
+            operationId: 'findEventsForSerial',
+            parameters: [{
+                name: 'serial',
+                in: 'path',
+                schema: {
+                    $ref: '#/components/schemas/serial'
+                },
+                required: true
+            }],
+            responses: {
+                '200': {
+                    description: 'All related events associated with the serial number provided',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#components/schemas/Events'
+                            }
+                        }
+                    }
+                },
+                '400': {
+                    description: 'Missing parameters',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'serial is missing',
+                                internalCode: 'missing_parameters'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'No matching events found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            },
+                            example: {
+                                message: 'No events found for serial',
+                                internalCode: 'no_events_found'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
-};
+}
 
 module.exports = eventsPath;
