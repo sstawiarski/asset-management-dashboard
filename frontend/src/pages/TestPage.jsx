@@ -6,12 +6,15 @@ import RetireAssetDialog from '../components/RetireAssetDialog';
 
 const TestPage = () => {
 
+    {/* Control open/close of retire dialog */}
     const [retireOpen, setRetireOpen] = useState(false);
 
     return (
         <div>
             <Button onClick={() => setRetireOpen(!retireOpen)} variant="contained" color="primary">Change asset status</Button>
-            <RetireAssetDialog open={retireOpen} setOpen={setRetireOpen} assets={['G800-1111']} />
+            
+            {/* Take in open and assets from parent component so dialog can know what is selected */}
+            <RetireAssetDialog open={retireOpen} setOpen={setRetireOpen} assets={['G800-1119']} />
         </div>
     );
 };
