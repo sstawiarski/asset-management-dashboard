@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 const { searchFilter } = require('../documentation/schemas');
 const connection = mongoose.connection;
 const Asset = require('../models/asset.model');
+const Event = require('../models/event.model');
+const Counter = require('../models/counter.model');
+
 const sampleAssets = require('../sample_data/sampleAssets.data')
 
 router.get('/', async (req, res, err) => {
@@ -59,16 +62,22 @@ router.patch("/", async (req, res) => {
         //object from client representing fields to update
         //should really only be one
         const field = req.body.update;
+        const fieldName = Object.getOwnPropertyNames(field)[0];
 
         //get all parent assembly documents so we can get their serial and update children
         //searches through array we got from client using $in
-        let parentAssemblies = await Asset.find({ serial: { $in: list }, assetType: "Assembly" });
+        const parentAssemblies = await Asset.find({ serial: { $in: list }, assetType: "Assembly" }).select({ serial: 1 });
+
+        //get assets too so we can link to the new event
+        let foundAssets = [];
+        foundAssets = await Asset.find({ serial: { $in: list }, assetType: "Asset" }).select({ serial: 1 });
+        
 
         //updates main assets and assemblies selected
         //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
         //returns object with a property 'n' representing number of documents updated
-        const assemblyCount = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
-        const assetCount = await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
+        await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+        await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
 
         //use parent assemblies we found earlier to get their serials to find children
         let parentSerials = [];
@@ -76,15 +85,49 @@ router.patch("/", async (req, res) => {
             parentSerials.push(assembly.serial);
         });
 
-        //update all child assets of the assemblies we already updated
-        let childCount = 0;
+        //keep track of children too
+        let foundChildren = [];
+
         if (parentSerials.length) {
-            childCount = await Asset.updateMany({ parentId: { $in: parentSerials } }, field);
+            foundChildren = await Asset.find({ parentId: { $in: parentSerials }, assetType: "Asset" }).select({ serial: 1});
+            await Asset.updateMany({ parentId: { $in: parentSerials } }, field);
         }
 
-        //use counts from Model.updateMany() to send a response
+        //get event type and key beginning -- function declared at bottom of this file
+        const eventInfo = getEventType(fieldName);
+        const counter = await Counter.findOneAndUpdate({name: "events"}, { $inc: {next: 1}}, { useFindAndModify: false}); //get counter and increment for event key
+        
+        //make up array of all serials affected
+        let allAffectedAssets = [];
+        if (foundAssets.length) {
+            foundAssets.map((asset) => {
+                allAffectedAssets.push(asset.serial);
+            })
+        }
+        if (foundChildren.length) {
+            foundChildren.map((child) => {
+                allAffectedAssets.push(child.serial);
+            })
+        }
+
+        allAffectedAssets = [...allAffectedAssets, ...parentSerials];
+
+        //generate new event and save
+        //TODO: make up eventData is some kind of predefined way
+        const event = new Event({
+            eventType: eventInfo[0],
+            eventTime: Date.now(),
+            key: `${eventInfo[1]}${counter.next}`,
+            productIds: allAffectedAssets,
+            eventData: {
+                details: `Changed ${allAffectedAssets.length} product(s) ${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} to ${field[fieldName]}.`
+            }
+        });
+        await event.save();
+
+        //use lengths from found arrays to send a response
         res.status(200).json({
-            message: `Updated ${assetCount ? assetCount.n : 0} regular assets, ${assemblyCount ? assemblyCount.n : 0 } assemblies, and ${childCount ? childCount.n : 0} of their children.`
+            message: `Updated ${foundAssets.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children.`
         })
     } catch (err) {
         console.log(err);
@@ -158,5 +201,15 @@ router.get('/searchFilter', async (req, res, err) => {
             interalCode: 'missing_parameters'
         });
     }
-})
+});
+
+
+//gets the appropriate eventType string and beginning of key string for the event document based on the fied
+//TODO: add more switches for the different types of fields
+function getEventType(field) {
+    switch (field) {
+        case "retired": 
+        return ["Change of Retirement Status", "RET-"]
+    }
+}
 module.exports = router;
