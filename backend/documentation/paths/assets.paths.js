@@ -48,7 +48,7 @@ const assetPaths = {
         },
         patch: {
             tags: ['Assets'],
-            description: "Updates fields in asset(s) (and children if applicable)",
+            description: "Updates fields in asset(s) (and children if applicable) and generate event object",
             operationId: "updateField",
             parameters: [
                 {
