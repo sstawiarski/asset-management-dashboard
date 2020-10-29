@@ -20,7 +20,7 @@ router.get('/', async (req, res, err) => {
                     if (assets[0].confidenceScore > 10) {
                         const result = assets.filter(asset => asset.confidenceScore > 10);
                         res.status(200).json(result);
-                        
+
                     } else {
                         res.status(200).json(assets);
                     }
@@ -33,7 +33,7 @@ router.get('/', async (req, res, err) => {
             }
         }
         else {
-            const assets = await Asset.find({}).sort({'dateCreated': 1});
+            const assets = await Asset.find({}).sort({ 'dateCreated': 1 });
             if (assets) res.status(200).json(assets);
             else res.status(500).json({
                 message: "No assets found in database",
@@ -44,6 +44,54 @@ router.get('/', async (req, res, err) => {
     }
     catch (err) {
         console.log(err.message)
+    }
+})
+
+/* Update assets and assemblies with fields 
+*  Updates children as well
+*  Should support all future bulk edit options
+*/
+router.patch("/", async (req, res) => {
+    try {
+        //list of selected serials from client
+        const list = req.body.assets;
+
+        //object from client representing fields to update
+        //should really only be one
+        const field = req.body.update;
+
+        //get all parent assembly documents so we can get their serial and update children
+        //searches through array we got from client using $in
+        let parentAssemblies = await Asset.find({ serial: { $in: list }, assetType: "Assembly" });
+
+        //updates main assets and assemblies selected
+        //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
+        //returns object with a property 'n' representing number of documents updated
+        const assemblyCount = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+        const assetCount = await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
+
+        //use parent assemblies we found earlier to get their serials to find children
+        let parentSerials = [];
+        parentAssemblies.map((assembly) => {
+            parentSerials.push(assembly.serial);
+        });
+
+        //update all child assets of the assemblies we already updated
+        let childCount = 0;
+        if (parentSerials.length) {
+            childCount = await Asset.updateMany({ parentId: { $in: parentSerials } }, field);
+        }
+
+        //use counts from Model.updateMany() to send a response
+        res.status(200).json({
+            message: `Updated ${assetCount ? assetCount.n : 0} regular assets, ${assemblyCount ? assemblyCount.n : 0 } assemblies, and ${childCount ? childCount.n : 0} of their children.`
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Error updating assets",
+            internal_code: "asset_update_error"
+        })
     }
 })
 
@@ -58,7 +106,7 @@ router.put('/load', async (req, res) => {
             await asset.save();
         })
 
-        res.status(200).json({message: "success"})
+        res.status(200).json({ message: "success" })
     }
     catch (err) {
         res.status(500).json({
