@@ -50,13 +50,13 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'id', numeric: false, disablePadding: true, label: 'ID #' },
-  { id: 'Product', numeric: true, disablePadding: false, label: 'Product' },
-  { id: 'Description', numeric: true, disablePadding: false, label: 'Description' },
-  { id: 'CheckedOut', numeric: true, disablePadding: false, label: 'Checked Out'},
-  { id: 'Location', numeric: true, disablePadding: false, label: 'Location' },
-  { id: 'Owner', numeric: true, disablePadding: false, label: 'Owner' },
-  { id: 'Group Tag', numeric: true, disablePadding: false, label: 'Group Tag'}
+  { id: 'serial', numeric: true, disablePadding: false, label: 'ID #' },
+  { id: 'assetName', numeric: true, disablePadding: false, label: 'Product' },
+  { id: 'assetType', numeric: true, disablePadding: false, label: 'Description' },
+  { id: 'checkedOut', numeric: true, disablePadding: false, label: 'Checked Out'},
+  { id: 'deployedLocation', numeric: true, disablePadding: false, label: 'Location' },
+  { id: 'owner', numeric: true, disablePadding: false, label: 'Owner' },
+  { id: 'groupTag', numeric: true, disablePadding: false, label: 'Group Tag'}
 ];
 
 function EnhancedTableHead(props) {
@@ -251,9 +251,6 @@ export default function EnhancedTable(props) {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -334,10 +331,7 @@ export default function EnhancedTable(props) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
+
     </div>
   );
 }
