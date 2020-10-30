@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
             const sortOrder = req.query.order;
 
             if (events.length) {
-                const result = events.aggregate().sort({ [sortBy]: sortOrder });
+                const result = events.aggregate( $sort : { [sortBy]: sortOrder });
                 res.status(200).json(result);
             } else {
                 res.status(400).json({
