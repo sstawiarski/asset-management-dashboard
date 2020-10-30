@@ -92,6 +92,46 @@ router.put('/load', async (req, res) => {
     }
 })
 
+
+
+
+
+
+
+
+
+
+
+
+router.POST('/create-Assemnbly', async (req, res, err) => {
+    try {
+    	const serial= req.body.Assets
+
+    	// Queryig DB to find the assetTYPE
+    	 const asset = await Asset.findOneAndUpdate({ assetName: req.body.assetName,owner:null },{assetType : "Assembly", owner:"Supply Chain"});
+
+    	 await Asset.updateMany({serial:{$in: serial}},{parentId:asset.serial})
+        }
+    catch (err) {
+        console.log(err)
+    }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.get('/:serial', async (req, res, err) => {
     const serial = req.params.serial;
     try {
@@ -135,4 +175,31 @@ router.get('/searchFilter', async (req, res, err) => {
         });
     }
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;
