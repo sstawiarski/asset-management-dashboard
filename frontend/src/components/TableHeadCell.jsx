@@ -22,7 +22,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 
 const TableHeadCell = (props) => {
-    props.map((arrayItem)=> {
+    const {data} =props;
+    data.map((arrayItem)=> {
         return (
             {id: arrayItem.name, numeric: true, disablePadding: false, label: arrayItem}
         )

@@ -52,8 +52,9 @@ function stableSort(array, comparator) {
 
 //use to auto list headCells
 function CreateHeadCells(props){
+  const {data} =props;
  // const {headKeys} = Object.keys(props);
-  return (TableHeadCell(props));
+  return (TableHeadCell(data));
 }
 const headCells = [
   { id: 'serial', numeric: true, disablePadding: false, label: 'ID #' },
@@ -70,9 +71,16 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-  const data = Object.keys(props);
+
+  // working code for mapping headers from pros
+  const {data} =props;
+  const headers = Object.keys(data);
   const headCells = [
-    CreateHeadCells(data)
+    headers.map((arrayItem) => {
+      return (
+        {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
+      )
+    })
   ]
   
 
