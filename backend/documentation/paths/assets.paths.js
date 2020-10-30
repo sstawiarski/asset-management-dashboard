@@ -27,7 +27,7 @@ const assetPaths = {
                     name: 'order',
                     in: 'query',
                     schema: {
-                        type: 'string'
+                        type: 'int'
                     },
                     required: false
                 }
@@ -158,119 +158,8 @@ const assetPaths = {
                 }
             }
         }
-    },
-
-    sort_by: {
-        get: {
-            tags: ['Assets'],
-            description: "sort the assets by the field provided (date created)",
-            operationID: 'sort_by',
-            paramteters: [
-                {
-                name: 'sort',
-                in: 'path',
-                required: true
-
-                }
-            ],
-            responses: {
-                '200': {
-                    description: 'successfull sorted assets',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Asset'
-                            }
-                        }
-                    }
-                },
-            },
-            '400': {
-                    description: 'Missing parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'sort type is missing',
-                                internalCode: 'missing_parameters'
-                            }
-                        }
-                    }
-                },
-                '500': {
-                    description: 'No matching assets found',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'No assets found',
-                                internalCode: 'no_assets_found'
-                            }
-                        }
-                    }
-                }
-        }
-    },
-
-    order: {
-        get: {
-            tags: ['Assets'],
-            description: 'Order search results in asc or desc order specified by user',
-            operationID: 'order',
-            parameters: [{
-                name: 'order',
-                in: 'path',
-                schema: {
-                    type: 'string'
-                },
-                required: true
-            }],
-            responses: {
-                '200': {
-                    description: 'successfull sorted assets',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Asset'
-                            }
-                        }
-                    }
-                },
-            },
-            '400': {
-                    description: 'Missing parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'sort type is missing',
-                                internalCode: 'missing_parameters'
-                            }
-                        }
-                    }
-                },
-                '500': {
-                    description: 'No matching assets found',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'No assets found',
-                                internalCode: 'no_assets_found'
-                            }
-                        }
-                    }
-                }
-        }
     }
+    
 
 }
 
