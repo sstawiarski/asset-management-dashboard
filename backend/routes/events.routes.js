@@ -11,20 +11,12 @@ router.get('/', async (req, res) => {
         if (req.query.search) {
             const search = req.query.search.replace("-", "");
             const events = await Event.fuzzySearch(search).limit(5).select({ eventData: 0, _id: 0, __v: 0 });
+            const sortBy = req.query.sort_by;
+            const sortOrder = req.query.order;
 
             if (events.length) {
-                if (events[0].key.toUpperCase() === req.query.search) {
-                    const result = [events[0]];
-                    res.status(200).json(result);
-                }
-                else {
-                    if (events[0].confidenceScore > 10) {
-                        const result = events.filter(item => item.confidenceScore > 10);
-                        res.status(200).json(result)
-                    } else {
-                        res.status(200).json(events)
-                    }
-                }
+                const result = events.aggregate().sort({ [sortBy]: sortOrder });
+                res.status(200).json(result);
             } else {
                 res.status(400).json({
                     message: "No events found in database",

@@ -28,7 +28,7 @@ const eventsPath = {
                     name: 'order',
                     in: 'query',
                     schema: {
-                        type: 'string'
+                        type: 'int'
                     },
                     required: false
                 }

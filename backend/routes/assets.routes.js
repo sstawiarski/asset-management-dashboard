@@ -14,11 +14,11 @@ router.get("/", async (req, res, err) => {
       const sortBy = req.query.sort_by;
       const sortOrder = req.query.order;
 
-      const result = assets.aggregate.sort({ [sortBy]: sortOrder });
+      const result = assets.aggregate([ { $sort : {[sortBy]: sortOrder }}]);
       res.status(200).json(result);
 
     } else {
-      const assets = await Asset.find({}).sort({ dateCreated: 1 });
+      const assets = await Asset.find({}).sort([{ dateCreated: 1 }]);
       if (assets) res.status(200).json(assets);
       else
         res.status(500).json({
