@@ -1,25 +1,43 @@
 import React from 'react';
-import { Switch, Route, BrowserRouter } from 'react-router-dom'
+import { makeStyles } from '@material-ui/core/styles';
+import { Switch, Route } from 'react-router-dom';
 import './App.css';
 
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
-import Searchbar from './components/Searchbar';
+import Sidebar from './components/Sidebar';
+import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
-import TestPage from './pages/TestPage';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex'
+  },
+  content: {
+    flexGrow: 12,
+    padding: theme.spacing(5)
+  },
+}))
 
 function App() {
+  const classes = useStyles();
+
   return (
     <div className="App">
-      <BrowserRouter>
-        <Switch>
-          <Route path="/details" component={AssetDetails} />
-          <Route path="/create-assembly" component={CreateAssembly} />
-          <Route path="/all-assets" component = {AllAssets} />
-          <Route path='/table-test' component = {TestPage} />
-        </Switch>
-      </BrowserRouter>
+      <div className={classes.root}>
+        <div style={{ flexGrow: 0.5 }}>
+          <Sidebar />
+        </div>
+
+        <main className={classes.content}>
+            <Switch>
+              <Route path="/" exact component={Dashboard} />
+              <Route path="/details" component={AssetDetails} />
+              <Route path="/assets/create-assembly" component={CreateAssembly} />
+              <Route path="/assets/view-all" component={AllAssets} />
+            </Switch>
+        </main>
+      </div>
     </div>
   );
 }

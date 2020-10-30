@@ -89,9 +89,6 @@ const EnhancedTableHead = (props) => {
 }
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-    },
     paper: {
         marginLeft: "20px",
         marginRight: "15px",

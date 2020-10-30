@@ -7,4 +7,4 @@
 - [ ] This software runs as expected/anticipated
 - [ ] New and modified code has been tested by an appropriate method (Whitebox/Blackbox)
 - [ ] All tests passed
-- [ ] Tests performed have been added to src/test/java
+- [ ] Tests performed have been added to relevant folder
