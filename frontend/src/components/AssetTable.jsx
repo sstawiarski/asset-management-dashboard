@@ -20,6 +20,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import TableHeadCell from './TableHeadCell';
 
 // adapted from https://material-ui.com/components/tables/
 
@@ -49,6 +50,11 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+//use to auto list headCells
+function CreateHeadCells(props){
+ // const {headKeys} = Object.keys(props);
+  return (TableHeadCell(props));
+}
 const headCells = [
   { id: 'serial', numeric: true, disablePadding: false, label: 'ID #' },
   { id: 'assetName', numeric: true, disablePadding: false, label: 'Product' },
@@ -64,6 +70,11 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+  const data = Object.keys(props);
+  const headCells = [
+    CreateHeadCells(data)
+  ]
+  
 
   return (
     <TableHead>
@@ -205,7 +216,12 @@ export default function EnhancedTable(props) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  // const activeKeys = Object.keys(activeFilters);
+
   const {data} =props;
+
+  const { keys }=Object.keys(props);
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
