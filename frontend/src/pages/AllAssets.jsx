@@ -1,24 +1,24 @@
-import React from 'react';
-import Box from '@material-ui/core/Box';
+import React, { useEffect, useState } from 'react';
 
-import AssetList from '../components/AssetList'
+import AssetTable from '../components/AssetTable'
 import Header from '../components/Header'
-import AssetFilter from '../components/AssetFilter'
 
 const AllAssets = () => {
+    const [assets, setAssets] = useState([]);
+
+    useEffect(() => {
+        fetch("http://localhost:4000/assets")
+            .then(response => response.json())
+            .then(json => setAssets(json));
+    }, [])
 
     return (
-        <div>
-        <Header heading="Assets" subheading="View All" />
-        <div>
-            
-            <AssetFilter />
-           
-        </div>
-        <div>    
-            <AssetList />
-        </div>
-    </div>);
+        <div style={{marginLeft: "10px"}}>
+            <Header heading="Assets" subheading="View All" />
+            <div>
+                <AssetTable data={assets} />
+            </div>
+        </div>);
 
 }
 
