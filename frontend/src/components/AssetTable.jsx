@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -223,7 +223,8 @@ export default function EnhancedTable(props) {
   const [activeFilters, setActiveFilters] = React.useState({});
   const activeKeys = Object.keys(activeFilters);
 
-  const { data } = props;
+  //take in the setFilters from the parent page to set when the dialog changes
+  const { data, setFilters } = props;
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -277,36 +278,65 @@ export default function EnhancedTable(props) {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
+  //send filters to the parent page when they change
+  useEffect(() => {
+    const newFilters = Object.keys(activeFilters)
+      .reduce((p, c) => {
+        //convert the Date objects send from the filter dialog into numbers for use in the URL
+        if (c === "dateCreated" || c === "dateUpdated") {
+          p[c] = activeFilters[c].getTime();
+        } else {
+          p[c] = activeFilters[c];
+        }
+        return p;
+      }, {})
+
+    setFilters(newFilters);
+
+  }, [activeFilters]);
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <EnhancedTableToolbar numSelected={selected.length} selected={selected} activeFilters={activeFilters} setActiveFilters={setActiveFilters} />
         <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="flex-start">
-        
-        {
-          activeKeys.length ? activeKeys.map((label, idx) => {
-            const capitalized = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-start">
 
-            const value = typeof activeFilters[label] === "string" ? activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
-              : activeFilters[label] instanceof Date ? activeFilters[label].toLocaleDateString('en-US') : null;
-
-
-              const iter = idx + 1;
-            const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
-
-            return <Chip className={classes.chip} label={`${capitalized}: ${value}`} onDelete={() => { 
-                setActiveFilters(s => {
-                  let newFilters = { ...s };
-                  delete newFilters[label];
-                  return newFilters;
+          {
+            //split labels based on camelCase and convert to proper case
+            activeKeys.length ?
+              activeKeys.map((label, idx) => {
+                const capitalized = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
+                  return str.toUpperCase();
                 })
-            }} color={color} />
-          })
-            : null
-        }
+
+                //complicated parsing of the individual filters into human-readable results for the chip label
+                const value = typeof activeFilters[label] === "string" ?
+                  activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
+                  : activeFilters[label] instanceof Date ?
+                    activeFilters[label].toLocaleDateString('en-US')
+                    : typeof activeFilters[label] === "boolean" ?
+                      activeFilters[label] ? "Yes"
+                        : "No"
+                      : null;
+
+
+                //generate alternating colors for the chips
+                const iter = idx + 1;
+                const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
+
+                return <Chip className={classes.chip} label={`${capitalized}: ${value}`} onDelete={() => {
+                  setActiveFilters(s => {
+                    let newFilters = { ...s };
+                    delete newFilters[label];
+                    return newFilters;
+                  })
+                }} color={color} />
+              })
+              : null
+          }
         </Box>
         <TableContainer>
           <Table

@@ -41,12 +41,13 @@ const useStyles = makeStyles((theme) => ({
 export default function FormDialog({ open, setOpen, setSelected }) {
 
     const [state, setState] = React.useState({
-        status: "all",
+        retired: "all",
         dateCreated: null,
         dateUpdated: null,
         assignmentType: "all",
         assetType: "all",
-        groupTag: ""
+        groupTag: "",
+        checkedOut: "all"
     })
 
     const handleClickOpen = () => {
@@ -60,10 +61,18 @@ export default function FormDialog({ open, setOpen, setSelected }) {
     const handleSubmit = () => {
         const disallowed = ["all", null, ""];
         const onlyActive = Object.keys(state)
-        .reduce((p, c) => {
-            if (!disallowed.includes(state[c])) p[c] = state[c];
-            return p;
-        }, {})
+            .reduce((p, c) => {
+                if (!disallowed.includes(state[c])) {
+                    if (state[c] === "Yes") {
+                        p[c] = true;
+                    } else if (state[c] === "No") {
+                        p[c] = false;
+                    } else {
+                        p[c] = state[c];
+                    }
+                };
+                return p;
+            }, {})
 
         setSelected(onlyActive);
 
@@ -81,12 +90,13 @@ export default function FormDialog({ open, setOpen, setSelected }) {
     const handleReset = () => {
         setState(s => ({
             ...s,
-            status: "all",
+            retired: "all",
             dateCreated: null,
             dateUpdated: null,
             assetType: "all",
             assignmentType: "all",
-            groupTag: ""
+            groupTag: "",
+            checkedOut: "all"
         }))
     }
 
@@ -108,36 +118,46 @@ export default function FormDialog({ open, setOpen, setSelected }) {
             <DialogTitle>{"Filter Assets"}</DialogTitle>
             <Grid container alignContent="space-around" alignItems="center">
                 <div>
-                    <Grid container justify="space-around">
+                    <Grid container justifyContent="space-between">
                         <Grid item xs={3}>
                             <FormControl component="fieldset">
-                                <formLabel compoonent="legend">Status</formLabel>
-                                <RadioGroup aria-label="status" name="status" value={state.status} onChange={handleChange}>
+                                <formLabel component="legend">Status</formLabel>
+                                <RadioGroup aria-label="status" name="retired" value={state.retired} onChange={handleChange}>
                                     <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="active" control={<Radio />} label="Active" />
-                                    <FormControlLabel value="retired" control={<Radio />} label="Retired" />
+                                    <FormControlLabel value="No" control={<Radio />} label="Active" />
+                                    <FormControlLabel value="Yes" control={<Radio />} label="Retired" />
                                 </RadioGroup>
                             </FormControl>
                         </Grid>
 
                         <Grid item xs={3}>
                             <FormControl component="fieldset">
-                                <formLabel compoonent="legend">Assignment</formLabel>
+                                <formLabel component="legend">Assignment</formLabel>
                                 <RadioGroup aria-label="assignment" name="assignmentType" value={state.assignmentType} onChange={handleChange}>
                                     <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="owned" control={<Radio />} label="Owned" />
-                                    <FormControlLabel value="rented" control={<Radio />} label="Rented" />
+                                    <FormControlLabel value="Owned" control={<Radio />} label="Owned" />
+                                    <FormControlLabel value="Rental" control={<Radio />} label="Rented" />
                                 </RadioGroup>
                             </FormControl>
 
                         </Grid>
                         <Grid item xs={3}>
                             <FormControl component="fieldset">
-                                <formLabel compoonent="legend">Type</formLabel>
+                                <formLabel component="legend">Type</formLabel>
                                 <RadioGroup aria-label="types" name="assetType" value={state.assetType} onChange={handleChange}>
                                     <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="asset" control={<Radio />} label="Asset" />
-                                    <FormControlLabel value="assembly" control={<Radio />} label="Assembly" />
+                                    <FormControlLabel value="Asset" control={<Radio />} label="Asset" />
+                                    <FormControlLabel value="Assembly" control={<Radio />} label="Assembly" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={3}>
+                            <FormControl component="fieldset">
+                                <formLabel component="legend">Checked Out</formLabel>
+                                <RadioGroup aria-label="types" name="checkedOut" value={state.checkedOut} onChange={handleChange}>
+                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                    <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+                                    <FormControlLabel value="No" control={<Radio />} label="No" />
                                 </RadioGroup>
                             </FormControl>
                         </Grid>
