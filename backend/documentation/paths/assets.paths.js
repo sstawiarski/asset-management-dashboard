@@ -27,7 +27,7 @@ const assetPaths = {
                     name: 'order',
                     in: 'query',
                     schema: {
-                        type: 'int'
+                        type: 'string'
                     },
                     required: false
                 }

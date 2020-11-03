@@ -1,33 +1,88 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { ngrams } = require('mongoose-fuzzy-searching/helpers');
 const { searchFilter } = require("../documentation/schemas");
 const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
 const sampleAssets = require("../sample_data/sampleAssets.data");
 
 router.get("/", async (req, res, err) => {
-  try {
-    if (req.query.search) {
-      const searchTerm = req.query.search.replace("-", "");
-      const assets = await Asset.fuzzySearch(searchTerm).limit(5);
-      const sortBy = req.query.sort_by;
-      const sortOrder = req.query.order;
 
-      const result = assets.aggregate([ { $sort : {[sortBy]: sortOrder }}]);
+  try {
+
+    let aggregateArray = [];
+
+    if (req.query.search) {
+
+      const searchTerm = req.query.search.replace("-", "");
+      let search =  { 
+        $match: {
+          $text: {
+            $search: nGrams(searchTerm, null, false).join(' ')
+          }
+        }
+      }
+
+      let confidenceScore = {
+        $addFields: {
+          confidenceScore: { $meta: "textScore" }
+        }
+      }
+
+      aggregateArray.push(search);
+      aggregateArray.push(confidenceScore)
+    }
+
+    if  (req.query.sort_by) {
+      //default ascending order
+      const sortOrder = (req.query.order == 'desc' ? -1 : 1);
+      let sort = { $sort: { 'req.query.sort_by' :  sortOrder }};
+      if (req.query.search) {
+        let sort = { $sort: { confidenceScore : -1, 'req.query.sort_by' :  sortOrder }};
+      } 
+      aggregateArray.push(sort);
+
+    }
+
+    let limit = { $limit : 5 };
+    aggregateArray.push(limit);
+
+    const result = await Asset.aggregate(aggregateArray);
+
+
+  if (req.query.search) {
+
+    if (result) {
+
       res.status(200).json(result);
 
     } else {
-      const assets = await Asset.find({}).sort([{ dateCreated: 1 }]);
-      if (assets) res.status(200).json(assets);
-      else
-        res.status(500).json({
+        res.status(204).json({
           message: "No assets found in database",
           interalCode: "no_assets_found",
         });
     }
+
+  } else {
+
+      if (result) {
+
+        res.status(200).json(result);
+      } else {
+        res.status(204).json({
+          message: "No assets found in database",
+          interalCode: "no_assets_found",
+          });
+      }
+
+    }
   } catch (err) {
-    console.log(err.message);
+      console.log(err);
+      res.status(500).json({
+        message: "Error searching for events in database",
+        internal_code: "event_search_error"
+      });
   }
 });
 
@@ -94,5 +149,7 @@ router.get("/searchFilter", async (req, res, err) => {
     });
   }
 });
+
+
 
 module.exports = router;
