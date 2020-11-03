@@ -36,17 +36,19 @@ router.get('/', async (req, res) => {
 
         }
 
-        if  (req.query.sort_by) {
-
+       if  (req.query.sort_by) {
             //default ascending order
+            var sortby = req.query.sort_by.toString().trim();
             const sortOrder = (req.query.order == 'desc' ? -1 : 1);
-            let sort = { $sort: { 'req.query.sort_by' : 'sortOrder' }};
             if (req.query.search) {
-                let sort = { $sort: { confidenceScore : -1, 'req.query.sort_by' : 'sortOrder' }};
-            } 
-            aggregateArray.push(sort);
-
+                let sort = { $sort: { confidenceScore : -1, [req.query.sort_by] :  sortOrder }};
+                aggregateArray.push(sort);
+            } else {
+                let sort = { $sort: { [req.query.sort_by] :  sortOrder }};
+                aggregateArray.push(sort);
+            }
         }
+
   
 
         let limit = { $limit : 5 };

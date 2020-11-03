@@ -33,16 +33,18 @@ router.get("/", async (req, res, err) => {
       aggregateArray.push(search);
       aggregateArray.push(confidenceScore)
     }
-
-    if  (req.query.sort_by) {
+    
+     if  (req.query.sort_by) {
       //default ascending order
+      var sortby = req.query.sort_by.toString().trim();
       const sortOrder = (req.query.order == 'desc' ? -1 : 1);
-      let sort = { $sort: { 'req.query.sort_by' :  sortOrder }};
       if (req.query.search) {
-        let sort = { $sort: { confidenceScore : -1, 'req.query.sort_by' :  sortOrder }};
-      } 
-      aggregateArray.push(sort);
-
+        let sort = { $sort: { confidenceScore : -1, [req.query.sort_by] :  sortOrder }};
+        aggregateArray.push(sort);
+      } else {
+        let sort = { $sort: { [req.query.sort_by] :  sortOrder }};
+        aggregateArray.push(sort);
+      }
     }
 
     let limit = { $limit : 5 };
@@ -50,33 +52,15 @@ router.get("/", async (req, res, err) => {
 
     const result = await Asset.aggregate(aggregateArray);
 
-
-  if (req.query.search) {
-
     if (result) {
-
       res.status(200).json(result);
-
     } else {
-        res.status(204).json({
+      res.status(204).json({
           message: "No assets found in database",
           interalCode: "no_assets_found",
         });
     }
-
-  } else {
-
-      if (result) {
-
-        res.status(200).json(result);
-      } else {
-        res.status(204).json({
-          message: "No assets found in database",
-          interalCode: "no_assets_found",
-          });
-      }
-
-    }
+  
   } catch (err) {
       console.log(err);
       res.status(500).json({

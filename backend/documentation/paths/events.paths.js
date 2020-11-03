@@ -18,7 +18,7 @@ const eventsPath = {
                     name: 'sort_by',
                     in: 'query',
                     schema: {
-                        type: 'string'
+                        $ref: '#/components/schemas/sort_by'
                     },
                     required: false
 
@@ -28,7 +28,7 @@ const eventsPath = {
                     name: 'order',
                     in: 'query',
                     schema: {
-                        type: 'string'
+                        $ref: '#/components/schemas/order'
                     },
                     required: false
                 }
