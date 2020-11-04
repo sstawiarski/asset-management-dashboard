@@ -1,7 +1,8 @@
 const express = require("express");
+const { GridFSBucketReadStream } = require("mongodb");
 const router = express.Router();
 const mongoose = require("mongoose");
-const { ngrams } = require('mongoose-fuzzy-searching/helpers');
+const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const { searchFilter } = require("../documentation/schemas");
 const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
@@ -14,9 +15,8 @@ router.get("/", async (req, res, err) => {
     let aggregateArray = [];
 
     if (req.query.search) {
-
       const searchTerm = req.query.search.replace("-", "");
-      let search =  { 
+      const search = {
         $match: {
           $text: {
             $search: nGrams(searchTerm, null, false).join(' ')
@@ -24,7 +24,7 @@ router.get("/", async (req, res, err) => {
         }
       }
 
-      let confidenceScore = {
+      const confidenceScore = {
         $addFields: {
           confidenceScore: { $meta: "textScore" }
         }
@@ -32,41 +32,72 @@ router.get("/", async (req, res, err) => {
 
       aggregateArray.push(search);
       aggregateArray.push(confidenceScore)
+
+    } else {
+      const match = {
+        $match: {
+
+        }
+      };
+      aggregateArray.push(match);
     }
-    
-     if  (req.query.sort_by) {
+
+    if (req.query.sort_by) {
       //default ascending order
-      var sortby = req.query.sort_by.toString().trim();
-      const sortOrder = (req.query.order == 'desc' ? -1 : 1);
+      const sortOrder = (req.query.order === 'desc' ? -1 : 1);
+
       if (req.query.search) {
-        let sort = { $sort: { confidenceScore : -1, [req.query.sort_by] :  sortOrder }};
+        const sort = { 
+          $sort: { 
+            confidenceScore: -1,
+            [req.query.sort_by]: sortOrder 
+          } 
+        };
         aggregateArray.push(sort);
+
       } else {
-        let sort = { $sort: { [req.query.sort_by] :  sortOrder }};
+        const sort = { 
+          $sort: { 
+            [req.query.sort_by]: sortOrder 
+          } 
+        };
         aggregateArray.push(sort);
       }
     }
 
-    let limit = { $limit : 5 };
+    //limit to 5 results -- modify later based on pagination
+    const limit = { 
+      $limit: 5 
+    };
     aggregateArray.push(limit);
+
+    //remove irrelevant fields from retrieved objects
+    const projection = {
+      $project: {
+        _id: false,
+        __v: false,
+        serial_fuzzy: false
+      }
+    }
+    aggregateArray.push(projection);
 
     const result = await Asset.aggregate(aggregateArray);
 
     if (result) {
       res.status(200).json(result);
     } else {
-      res.status(204).json({
-          message: "No assets found in database",
-          interalCode: "no_assets_found",
-        });
-    }
-  
-  } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        message: "Error searching for events in database",
-        internal_code: "event_search_error"
+      res.status(404).json({
+        message: "No assets found in database",
+        interalCode: "no_assets_found",
       });
+    }
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Error searching for assets in database",
+      internal_code: "asset_search_error"
+    });
   }
 });
 
@@ -98,7 +129,7 @@ router.get("/:serial", async (req, res, err) => {
     if (asset.length) {
       res.status(200).json(asset[0]);
     } else {
-      res.status(500).json({
+      res.status(404).json({
         message: "No assets found for serial",
         internalCode: "no_assets_found",
       });
