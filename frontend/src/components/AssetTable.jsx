@@ -20,7 +20,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import TableHeadCell from './TableHeadCell';
+import { useState } from 'react';
+import { isNull } from 'lodash';
 
 // adapted from https://material-ui.com/components/tables/
 
@@ -50,12 +51,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-//use to auto list headCells
-function CreateHeadCells(props){
-  const {data} =props;
- // const {headKeys} = Object.keys(props);
-  return (TableHeadCell(data));
-}
+
 const headCells = [
   { id: 'serial', numeric: true, disablePadding: false, label: 'ID #' },
   { id: 'assetName', numeric: true, disablePadding: false, label: 'Product' },
@@ -71,18 +67,24 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+  const {headers}= props;
 
   // working code for mapping headers from pros
-  const {data} =props;
-  const headers = Object.keys(data);
-  const headCells = [
-    headers.map((arrayItem) => {
-      return (
-        {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
-      )
-    })
-  ]
+  //const headerData = Object.keys({headers});
+ // const headCells = [
+ //     headerData.map((arrayItem) => {
+  //      return(
+  //      {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
+  //    )})
+  //]
   
+
+  //Functioning code for mapping keys to a table cell
+  //{tableItems.map((arrayItem)=>{
+  //  return(
+  //  <TableCell align="right">{arrayItem}</TableCell>
+  //  )
+  //})}
 
   return (
     <TableHead>
@@ -228,7 +230,16 @@ export default function EnhancedTable(props) {
 
   const {data} =props;
 
-  const { keys }=Object.keys(props);
+  console.log("Data");
+  console.log(data);
+  console.log("Keys of data");
+  if(data[0]){
+    console.log(Object.keys((data[0])));
+  }
+  var tableItems=null;
+  if(data[0]){
+    tableItems =Object.keys(data[0]);
+  }
 
 
   const handleRequestSort = (event, property) => {
@@ -326,6 +337,11 @@ export default function EnhancedTable(props) {
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {data.serial}
                       </TableCell>
+
+
+                      
+
+
 
 
                       <TableCell align="right">{data.assetName}</TableCell>
