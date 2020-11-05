@@ -17,7 +17,7 @@ const AssetList = () => {
     }
     const [assets, setAssets] = useState([]);
     const [status, setStatus] = useState(REQUEST_STATUS.LOADING);
-    const [error, setError] = useState({});
+    //const [error, setError] = useState({});
 
     const success = status === REQUEST_STATUS.SUCCESS;
     const isLoading = status === REQUEST_STATUS.LOADING;
@@ -32,7 +32,6 @@ const AssetList = () => {
             return json;
             } catch (e) {
                 setStatus(REQUEST_STATUS.ERROR);
-                setError(e);
             }
         };
 

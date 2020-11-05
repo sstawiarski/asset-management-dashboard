@@ -16,12 +16,9 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import { useState } from 'react';
-import { isNull } from 'lodash';
+
 
 // adapted from https://material-ui.com/components/tables/
 
@@ -52,39 +49,40 @@ function stableSort(array, comparator) {
 }
 
 
-const headCells = [
-  { id: 'serial', numeric: true, disablePadding: false, label: 'ID #' },
-  { id: 'assetName', numeric: true, disablePadding: false, label: 'Product' },
-  { id: 'assetType', numeric: true, disablePadding: false, label: 'Description' },
-  { id: 'checkedOut', numeric: true, disablePadding: false, label: 'Checked Out'},
-  { id: 'deployedLocation', numeric: true, disablePadding: false, label: 'Location' },
-  { id: 'owner', numeric: true, disablePadding: false, label: 'Owner' },
-  { id: 'groupTag', numeric: true, disablePadding: false, label: 'Group Tag'}
-];
+
 
 function EnhancedTableHead(props) {
   const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-  const {headers}= props;
+  console.log("props");
+  console.log(props);
 
-  // working code for mapping headers from pros
-  //const headerData = Object.keys({headers});
- // const headCells = [
- //     headerData.map((arrayItem) => {
-  //      return(
-  //      {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
-  //    )})
-  //]
+  var tableHeaders = null;
+  if(props.headers){
+    console.log("table headers");
+    console.log(props.headers);
+    tableHeaders= props.headers;
+  }
+
+  // not so working code for mapping headers from props
+  var headerCells =[];
+  if(tableHeaders){
+  const headerData = tableHeaders;
+  console.log("Header data");
+console.log(headerData);
+
+   headerCells = 
+      headerData.map((arrayItem) => {
+        return(
+        {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
+      )})
   
+  console.log(headerCells);
+}
 
-  //Functioning code for mapping keys to a table cell
-  //{tableItems.map((arrayItem)=>{
-  //  return(
-  //  <TableCell align="right">{arrayItem}</TableCell>
-  //  )
-  //})}
+
 
   return (
     <TableHead>
@@ -97,7 +95,7 @@ function EnhancedTableHead(props) {
             inputProps={{ 'aria-label': 'select all assets' }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {headerCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
@@ -118,6 +116,7 @@ function EnhancedTableHead(props) {
             </TableSortLabel>
           </TableCell>
         ))}
+
       </TableRow>
     </TableHead>
   );
@@ -131,6 +130,7 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
+  headers: PropTypes.any,
 };
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -153,9 +153,10 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }));
 
-const EnhancedTableToolbar = (props) => {
+const EnhancedTableToolbar = (props, data) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
+  const { headers } = data;
 
   return (
     <Toolbar
@@ -192,6 +193,7 @@ const EnhancedTableToolbar = (props) => {
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  tableHeaders: PropTypes.any,
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -224,18 +226,12 @@ export default function EnhancedTable(props) {
   const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+//  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   // const activeKeys = Object.keys(activeFilters);
 
   const {data} =props;
-
-  console.log("Data");
-  console.log(data);
-  console.log("Keys of data");
-  if(data[0]){
-    console.log(Object.keys((data[0])));
-  }
+  
   var tableItems=null;
   if(data[0]){
     tableItems =Object.keys(data[0]);
@@ -294,12 +290,12 @@ export default function EnhancedTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} headers ={tableItems} />
         <TableContainer>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+          //  size={dense ? 'small' : 'medium'}
             aria-label="enhanced table"
           >
             <EnhancedTableHead
@@ -310,6 +306,7 @@ export default function EnhancedTable(props) {
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={data.length}
+              headers={tableItems}
             />
             <TableBody>
               {stableSort(data, getComparator(order, orderBy))
@@ -334,27 +331,24 @@ export default function EnhancedTable(props) {
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {data.serial}
-                      </TableCell>
 
+                      
+                      {tableItems.map((arrayItem)=>{
+                        return(
+                          <TableCell align="right">{data[arrayItem]}</TableCell>
+                         )
+                      })}
 
                       
 
 
 
 
-                      <TableCell align="right">{data.assetName}</TableCell>
-                      <TableCell align="right">{data.assetType}</TableCell>
-                      <TableCell align="right">{data.checkedOut}</TableCell>
-                      <TableCell align="right">{data.deployedLocation}</TableCell>
-                      <TableCell align="right">{data.owner}</TableCell>
-                      <TableCell align="right">{data.groupTag}</TableCell>
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -374,4 +368,15 @@ export default function EnhancedTable(props) {
 
     </div>
   );
+
+  //saved old table cells just incase
+  //<TableCell component="th" id={labelId} scope="row" padding="none">
+  //{data.serial}
+  //</TableCell>
+  //<TableCell align="right">{data.assetName}</TableCell>
+  //<TableCell align="right">{data.assetType}</TableCell>
+  //<TableCell align="right">{data.checkedOut}</TableCell>
+  //<TableCell align="right">{data.deployedLocation}</TableCell>
+  //<TableCell align="right">{data.owner}</TableCell>
+  //<TableCell align="right">{data.groupTag}</TableCell>
 }
