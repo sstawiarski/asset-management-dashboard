@@ -66,6 +66,64 @@ const assetPaths = {
                     }
                 }
             }
+        },
+        patch: {
+            tags: ['Assets'],
+            description: "Updates fields in asset(s) (and children if applicable) and generate event object",
+            operationId: "updateField",
+            parameters: [
+                {
+                    name: 'assets',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/serialList'
+                    },
+                    required: true,
+                    description: "Array of asset serials (must always be array even if only 1 serial)"
+                },
+                {
+                    name: 'field',
+                    in: 'body',
+                    schema: {
+                        type: 'object',
+                        properties: {
+                            insertFieldNameHere: {
+                                example: "[insert new value here]"
+                            }
+                        }
+                    },
+                    description: "Object containing the MongoDB field name as a property and the new value as its value",
+                    required: true
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Successfully updated assets',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: "string",
+                                        example: "Updated 2 regular assets, 2 assemblies, and 3 of their children."
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error updating assets',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     'load': {
