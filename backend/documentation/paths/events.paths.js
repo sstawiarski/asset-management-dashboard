@@ -12,8 +12,29 @@ const eventsPath = {
                         $ref: '#/components/schemas/key'
                     },
                     required: false
+                },
+
+                {
+                    name: 'sort_by',
+                    in: 'query',
+                    schema: {
+                        $ref: '#/components/schemas/sort_by'
+                    },
+                    required: false
+
+                },
+
+                {
+                    name: 'order',
+                    in: 'query',
+                    schema: {
+                        $ref: '#/components/schemas/order'
+                    },
+                    required: false
                 }
+
             ],
+
             responses: {
                 '200': {
                     description: 'Event(s) were found in the database',
@@ -146,6 +167,6 @@ const eventsPath = {
             }
         }
     }
-};
+}
 
 module.exports = eventsPath;

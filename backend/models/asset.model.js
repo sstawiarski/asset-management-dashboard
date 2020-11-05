@@ -30,6 +30,8 @@ Asset.plugin(mongoose_fuzzy_searching, {
     ]
 })
 
+
+
 const Assets = mongoose.model('asset', Asset);
 
 module.exports = Assets;
