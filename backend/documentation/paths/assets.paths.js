@@ -2,7 +2,7 @@ const assetPaths = {
     'root': {
         get: {
             tags: ['Assets'],
-            description: 'Get a document containing all assets in the database',
+            description: 'Get an array of assets from the database based on the filters provided',
             operationId: 'getAllAssets',
             parameters: [
                 {
@@ -10,12 +10,33 @@ const assetPaths = {
                     in: 'query',
                     schema: {
                         $ref: '#/components/schemas/searchSerial'
-                    }
+                    },
+                    required: false
+                },
+
+                {
+                    name: 'sort_by',
+                    in: 'query',
+                    schema: {
+                        $ref: '#/components/schemas/sort_by'
+                    },
+                    required: false
+
+                },
+
+                {
+                    name: 'order',
+                    in: 'query',
+                    schema: {
+                        ref: '#/components/schemas/order'
+                    },
+                    required: false
                 }
+
             ],
             responses: {
                 '200': {
-                    description: 'All assets were found in the database',
+                    description: 'Assets were found in the database',
                     content: {
                         'application/json': {
                             schema: {
@@ -24,18 +45,18 @@ const assetPaths = {
                         }
                     }
                 },
-                '201': {
-                    description: 'Assets were found in the database matching the fuzzy search string',
+                '404': {
+                    description: 'No assets founds in the database',
                     content: {
                         'application/json': {
                             schema: {
-                                $ref: '#/components/schemas/Assets'
+                                $ref: '#/components/schemas/Error'
                             }
                         }
                     }
                 },
-                '400': {
-                    description: 'No assets founds',
+                '500': {
+                    description: 'Unknown error',
                     content: {
                         'application/json': {
                             schema: {
@@ -85,7 +106,7 @@ const assetPaths = {
     findBySerial: {
         get: {
             tags: ['Assets'],
-            description: 'Find an array of up to 5 assets based on the serial provided',
+            description: 'Find a single asset based on the serial provided',
             operationId: 'findBySerial',
             parameters: [
                 {
@@ -122,7 +143,7 @@ const assetPaths = {
                         }
                     }
                 },
-                '500': {
+                '404': {
                     description: 'No matching assets found',
                     content: {
                         'application/json': {
@@ -139,6 +160,8 @@ const assetPaths = {
             }
         }
     }
+    
+
 }
 
 module.exports = assetPaths;
