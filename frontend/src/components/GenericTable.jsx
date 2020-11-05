@@ -21,6 +21,11 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 
 
 // adapted from https://material-ui.com/components/tables/
+/***
+ * Takes in two props:
+ * a MongoDB query
+ * an ordered array of columns that will show up in the table (based on mongoose model)
+ */
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -58,6 +63,12 @@ function EnhancedTableHead(props) {
   };
   console.log("props");
   console.log(props);
+  
+  var selectedFields; 
+
+  if(props.selectedFields){
+    selectedFields=props.selectedFields;
+  }
 
   var tableHeaders = null;
   if(props.headers){
@@ -68,18 +79,32 @@ function EnhancedTableHead(props) {
 
   // not so working code for mapping headers from props
   var headerCells =[];
-  if(tableHeaders){
+  if(tableHeaders && selectedFields){
   const headerData = tableHeaders;
   console.log("Header data");
 console.log(headerData);
 
+
+
    headerCells = 
       headerData.map((arrayItem) => {
+        if(selectedFields && selectedFields.includes(arrayItem)){
         return(
         {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
-      )})
-  
+      )}});
+    headerCells = headerCells.filter(function(x){
+      return x !== undefined;
+    })
+  console.log("Header Array")
   console.log(headerCells);
+
+  headerCells = selectedFields.map((arrayItem) => {
+    return(
+      {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
+  )});
+
+  console.log(headerCells);
+
 }
 
 
@@ -98,7 +123,7 @@ console.log(headerData);
         {headerCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={headCell.numeric ? 'left' : 'right'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -131,6 +156,7 @@ EnhancedTableHead.propTypes = {
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
   headers: PropTypes.any,
+  selectedFields: PropTypes.any,
 };
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -220,6 +246,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+EnhancedTable.propTypes = {
+  data: PropTypes.any,
+  selectedFields: PropTypes.any,
+};
+
 export default function EnhancedTable(props) {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
@@ -230,8 +261,13 @@ export default function EnhancedTable(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   // const activeKeys = Object.keys(activeFilters);
 
-  const {data} =props;
-  
+  const data = props.data;
+  var selectedFields = null;
+
+  if(props.selectedFields){
+    selectedFields=props.selectedFields;
+  }
+
   var tableItems=null;
   if(data[0]){
     tableItems =Object.keys(data[0]);
@@ -307,6 +343,7 @@ export default function EnhancedTable(props) {
               onRequestSort={handleRequestSort}
               rowCount={data.length}
               headers={tableItems}
+              selectedFields = {selectedFields}
             />
             <TableBody>
               {stableSort(data, getComparator(order, orderBy))
@@ -333,11 +370,12 @@ export default function EnhancedTable(props) {
                       </TableCell>
 
                       
-                      {tableItems.map((arrayItem)=>{
+                      {selectedFields.map((arrayItem)=>{
+                        if(selectedFields && selectedFields.includes(arrayItem)){
                         return(
-                          <TableCell align="right">{data[arrayItem]}</TableCell>
+                          <TableCell align="left">{data[arrayItem]}</TableCell>
                          )
-                      })}
+                      }})}
 
                       
 

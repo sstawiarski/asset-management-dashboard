@@ -2,7 +2,7 @@ import React , {useState,useEffect} from 'react';
 
 
 import Header from '../components/Header'
-import AssetTable from '../components/AssetTable'
+import GenericTable from '../components/GenericTable'
 
 const AllAssets = () => {
 
@@ -30,7 +30,7 @@ const AllAssets = () => {
         <div>
         <Header heading="Assets" subheading="View All" />
         <div>    
-            <AssetTable data = {assets}/>
+            <GenericTable data = {assets} selectedFields = {["serial","assetName","assetType","owner","checkedOut","groupTag"]} />
         </div>
     </div>);
 
