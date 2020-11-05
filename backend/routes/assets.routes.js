@@ -1,138 +1,170 @@
-const express = require('express');
+const express = require("express");
+const { GridFSBucketReadStream } = require("mongodb");
 const router = express.Router();
-const mongoose = require('mongoose');
-const { searchFilter } = require('../documentation/schemas');
-const { count } = require('../models/asset.model');
+const mongoose = require("mongoose");
+const { nGrams } = require('mongoose-fuzzy-searching/helpers');
+const { searchFilter } = require("../documentation/schemas");
 const connection = mongoose.connection;
-const Asset = require('../models/asset.model');
-const sampleAssets = require('../sample_data/sampleAssets.data')
-const options = {
-    page: 1,
-    limit: 2,
-    collation: {
-      locale: 'en'
-    }
-};
+const Asset = require("../models/asset.model");
+const sampleAssets = require("../sample_data/sampleAssets.data");
 
-router.get('/', async (req, res, err) => {
-    try {
-        if (req.query.search) {
-            const searchTerm = req.query.search.replace("-", "");
-            let assets = [];
-            if (req.query.viewAll) {
-                const limit = parseInt(req.query.limit, 10);
-                const page = parseInt(req.query.page, 10);
-                assets = await Asset.fuzzySearch(searchTerm).limit(limit).skip(limit * page).exec();
-            } else {
-                assets = await Asset.fuzzySearch(searchTerm).limit(5);
-            }
-            if (assets.length) {
-                if (assets[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
-                    const result = [assets[0]]
-                    res.status(200).json(result)
-                }
-                else {
-                    if (assets[0].confidenceScore > 10) {
-                        const result = assets.filter(asset => asset.confidenceScore > 10);
-                        res.status(200).json(result);
-                        
-                    } else {
-                        if (req.query.viewAll) {
-                            const count = await Asset.fuzzySearch(searchTerm).countDocuments();
-                            let result = {
-                                assets: assets,
-                                count: count
-                            }
-                            res.status(200).json(result);
-                        } else {
-                            res.status(200).json(assets);
-                        }
-                    }
-                }
-            } else {
-                res.status(500).json({
-                    message: 'No assets found for serial',
-                    internalCode: 'no_assets_found'
-                })
-            }
+router.get("/", async (req, res, err) => {
+
+  try {
+
+    let aggregateArray = [];
+
+    if (req.query.search) {
+      const searchTerm = req.query.search.replace("-", "");
+      const search = {
+        $match: {
+          $text: {
+            $search: nGrams(searchTerm, null, false).join(' ')
+          }
         }
-        else {
-            const assets = await Asset.find({}).sort({'dateCreated': 1});
-            if (assets) res.status(200).json(assets);
-            else res.status(500).json({
-                message: "No assets found in database",
-                interalCode: "no_assets_found"
-            })
+      }
+
+      const confidenceScore = {
+        $addFields: {
+          confidenceScore: { $meta: "textScore" }
         }
+      }
 
-    }
-    catch (err) {
-        console.log(err)
-    }
-})
+      aggregateArray.push(search);
+      aggregateArray.push(confidenceScore)
 
-router.put('/load', async (req, res) => {
-    try {
-        sampleAssets.forEach(async (item) => {
-            console.log(item)
-            const asset = new Asset({
-                ...item,
-                dateCreated: Date.now()
-            });
-            await asset.save();
-        })
+    } else {
+      const match = {
+        $match: {
 
-        res.status(200).json({message: "success"})
-    }
-    catch (err) {
-        res.status(500).json({
-            message: "Error loading sample data into database",
-            internal_code: "database_load_error"
-        })
-    }
-})
-
-router.get('/:serial', async (req, res, err) => {
-    const serial = req.params.serial;
-    try {
-        const asset = await Asset.find({ serial: serial });
-
-        if (asset.length) {
-            res.status(200).json(asset[0]);
-        } else {
-            res.status(500).json({
-                message: 'No assets found for serial',
-                internalCode: 'no_assets_found'
-            })
         }
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
-            message: 'serial is missing',
-            interalCode: 'missing_parameters'
-        });
+      };
+      aggregateArray.push(match);
     }
-})
 
-router.get('/searchFilter', async (req, res, err) => {
-    const filter = req.params.search;
-    try {
-        const asset = await Asset.find({ searchFilter: searchFilter });
+    if (req.query.sort_by) {
+      //default ascending order
+      const sortOrder = (req.query.order === 'desc' ? -1 : 1);
 
-        if (asset.length) {
-            res.status(200).json(asset[0]);
-        } else {
-            res.status(500).json({
-                message: 'No assets found for serial',
-                internalCode: 'no_assets_found'
-            })
-        }
-    } catch (err) {
-        console.log(err)
-        res.status(400).json({
-            message: 'serial is missing',
-            interalCode: 'missing_parameters'
-        });
+      if (req.query.search) {
+        const sort = { 
+          $sort: { 
+            confidenceScore: -1,
+            [req.query.sort_by]: sortOrder 
+          } 
+        };
+        aggregateArray.push(sort);
+
+      } else {
+        const sort = { 
+          $sort: { 
+            [req.query.sort_by]: sortOrder 
+          } 
+        };
+        aggregateArray.push(sort);
+      }
     }
-})
+
+    //limit to 5 results -- modify later based on pagination
+    const limit = { 
+      $limit: 5 
+    };
+    aggregateArray.push(limit);
+
+    //remove irrelevant fields from retrieved objects
+    const projection = {
+      $project: {
+        _id: false,
+        __v: false,
+        serial_fuzzy: false
+      }
+    }
+    aggregateArray.push(projection);
+
+    const result = await Asset.aggregate(aggregateArray);
+
+    if (result) {
+      res.status(200).json(result);
+    } else {
+      res.status(404).json({
+        message: "No assets found in database",
+        interalCode: "no_assets_found",
+      });
+    }
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Error searching for assets in database",
+      internal_code: "asset_search_error"
+    });
+  }
+});
+
+router.put("/load", async (req, res) => {
+  try {
+    sampleAssets.forEach(async (item) => {
+      console.log(item);
+      const asset = new Asset({
+        ...item,
+        dateCreated: Date.now(),
+      });
+      await asset.save();
+    });
+
+    res.status(200).json({ message: "success" });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error loading sample data into database",
+      internal_code: "database_load_error",
+    });
+  }
+});
+
+router.get("/:serial", async (req, res, err) => {
+  const serial = req.params.serial;
+  try {
+    const asset = await Asset.find({ serial: serial });
+
+    if (asset.length) {
+      res.status(200).json(asset[0]);
+    } else {
+      res.status(404).json({
+        message: "No assets found for serial",
+        internalCode: "no_assets_found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      message: "serial is missing",
+      interalCode: "missing_parameters",
+    });
+  }
+});
+
+router.get("/searchFilter", async (req, res, err) => {
+  const filter = req.params.search;
+  try {
+    const asset = await Asset.find({ searchFilter: searchFilter });
+
+    if (asset.length) {
+      res.status(200).json(asset[0]);
+    } else {
+      res.status(500).json({
+        message: "No assets found for serial",
+        internalCode: "no_assets_found",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      message: "serial is missing",
+      interalCode: "missing_parameters",
+    });
+  }
+});
+
+
+
 module.exports = router;
