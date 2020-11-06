@@ -3,22 +3,26 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header'
 import GenericTable from '../components/GenericTable'
 
-import SampleDialog from '../components/SampleDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
+import AssetFilter from '../components/AssetFilter'
+import RetireAssetDialog from '../components/RetireAssetDialog';
+
 import FilterListIcon from '@material-ui/icons/FilterList';
+import EditIcon from '@material-ui/icons/Edit';
 
 //array of dialogs, icons, and descriptors for the table
 const menuItems = [{
-    action: "Delete",
-    dialog: SampleDialog,
-    icon: DeleteIcon
+    action: "Edit",
+    dialog: RetireAssetDialog,
+    icon: EditIcon,
+    props: ["selected"]
 }];
 
 //the singular main action object for when no items are selected in the table
 const mainAction = {
-    action: "Filtering...",
-    dialog: SampleDialog,
-    icon: FilterListIcon
+    action: "Filter",
+    dialog: AssetFilter,
+    icon: FilterListIcon,
+    props: ["setActiveFilters"]
 };
 
 //the object fields to get for the table we need, in this case assets

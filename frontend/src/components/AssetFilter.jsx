@@ -15,9 +15,6 @@ import {
 } from '@material-ui/pickers';
 
 
-import Header from './Header'
-
-
 const useStyles = makeStyles((theme) => ({
 
     form: {
@@ -38,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-export default function FormDialog({ open, setOpen, setSelected }) {
+export default function FormDialog({ open, setOpen, setActiveFilters }) {
 
     const [state, setState] = React.useState({
         retired: "all",
@@ -74,7 +71,10 @@ export default function FormDialog({ open, setOpen, setSelected }) {
                 return p;
             }, {})
 
-        setSelected(onlyActive);
+        setActiveFilters(s => ({
+            ...s,
+            ...onlyActive
+        }));
 
         setOpen(false);
     }
@@ -108,10 +108,7 @@ export default function FormDialog({ open, setOpen, setSelected }) {
     }
 
 
-    const classes = (useStyles);
-
-
-
+    const classes = useStyles();
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

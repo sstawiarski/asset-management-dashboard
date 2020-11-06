@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RetireAssetDialog = ({ open, setOpen, assets }) => {
+const RetireAssetDialog = ({ open, setOpen, selected }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -54,7 +54,7 @@ const RetireAssetDialog = ({ open, setOpen, assets }) => {
 
         //setup data object to send based on API docs and required parameters
         const data = {
-            assets: assets,
+            assets: selected,
             update: {
                 retired: status === "Active" ? false : true
             }
@@ -93,7 +93,7 @@ const RetireAssetDialog = ({ open, setOpen, assets }) => {
             
             <DialogContent>
                 <DialogContentText>
-                    Changing the activity status of {assets.length} product{assets.length > 1 ? "s" : "" }
+                    Changing the activity status of {selected.length} product{selected.length > 1 ? "s" : "" }
                 </DialogContentText>
                 
                 <div className={classes.item}>

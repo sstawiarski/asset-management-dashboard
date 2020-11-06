@@ -67,6 +67,8 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Chip from '@material-ui/core/Chip';
+import Box from '@material-ui/core/Box';
 
 const types = {
   asset: "/assets/",
@@ -179,14 +181,34 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 /**
  * Runs the toolbar which displays selected count and changes menubar based on whether any rows are selected
+ * Props:
+ *      activeFilters 
+ *      setActiveFilters
+ *    
+ *      Taken in from main table component in order to update them from the filter dialog
+ *
  */
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, title, menuItems, mainAction } = props;
+
+  const {
+    numSelected,
+    title,
+    menuItems,
+    mainAction,
+    activeFilters,
+    setActiveFilters,
+    selected
+  } = props;
+
   const [state, setState] = useState({});
 
   const MainActionIcon = mainAction.icon;
   const MainActionDialog = mainAction.dialog;
+  const mainActionProperties = mainAction.props ? mainAction.props.reduce((p, c) => {
+    p[c] = props[c];
+    return p;
+  }, {}) : {};
 
   return (
     <Toolbar
@@ -233,6 +255,11 @@ const EnhancedTableToolbar = (props) => {
       {/* Dialogs here, only render when their action is set to true in the state object */}
       {menuItems.map(menuItem => {
         const TheDialog = menuItem.dialog;
+        const properties = menuItem.props ? menuItem.props.reduce((p, c) => {
+          p[c] = props[c];
+          return p;
+        }, {}) : {};
+
         return <TheDialog
           open={state[menuItem.action]}
           setOpen={(isOpen) => {
@@ -241,8 +268,10 @@ const EnhancedTableToolbar = (props) => {
               [menuItem.action]: isOpen
             }))
           }}
+          {...properties}
         />
       })}
+
 
       <MainActionDialog open={state[mainAction.action]}
         setOpen={(isOpen) => {
@@ -250,7 +279,8 @@ const EnhancedTableToolbar = (props) => {
             ...s,
             [mainAction.action]: isOpen
           }))
-        }} />
+        }}
+        {...mainActionProperties} />
 
     </Toolbar>
   );
@@ -284,6 +314,9 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  chip: {
+    margin: "4px"
+  }
 }));
 
 EnhancedTable.propTypes = {
@@ -323,7 +356,7 @@ export default function EnhancedTable(props) {
   const order = filters.order ? filters.order : 'asc';
   const orderBy = filters.sort_by ? filters.sort_by : 'serial';
 
-  //for use later when actual dialogs are ready
+  //for generating Chips from filters from a dialog
   const [activeFilters, setActiveFilters] = React.useState({});
   const activeKeys = Object.keys(activeFilters);
 
@@ -435,14 +468,60 @@ export default function EnhancedTable(props) {
           numSelected={selected.length}
           title={title}
           menuItems={menuItems}
-          mainAction={mainAction} />
+          mainAction={mainAction}
+          setActiveFilters={setActiveFilters}
+          selected={selected} />
+
+        {/* Chip generation based on applied filters */}
+        <div>
+          {
+            //split labels based on camelCase and convert to proper case
+            activeKeys.length ?
+              activeKeys.map((label, idx) => {
+                const capitalized = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
+                  return str.toUpperCase();
+                })
+
+                //complicated parsing of the individual filters into human-readable results for the chip label
+                const value = typeof activeFilters[label] === "string" ?
+                  activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
+                  : activeFilters[label] instanceof Date ?
+                    activeFilters[label].toLocaleDateString('en-US')
+                    : typeof activeFilters[label] === "boolean" ?
+                      activeFilters[label] ? "Yes"
+                        : "No"
+                      : null;
+
+
+                //generate alternating colors for the chips
+                const iter = idx + 1;
+                const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
+
+                return <Chip
+                  key={idx}
+                  className={classes.chip}
+                  label={`${capitalized}: ${value}`}
+                  onDelete={(event) => {
+                    event.stopPropagation();
+                    setActiveFilters(s => {
+                      let newFilters = { ...s };
+                      delete newFilters[label];
+                      return newFilters;
+                    })
+                  }}
+                  color={color} />
+
+              })
+              : null
+          }
+        </div>
 
         <TableContainer>
           <Table
             className={classes.table}
-            aria-labelledby="Table"
+            aria-labelledby={`${variant} table`}
             size={'medium'}
-            aria-label="generic table"
+            aria-label={`${variant} table`}
           >
             <EnhancedTableHead
               classes={classes}
