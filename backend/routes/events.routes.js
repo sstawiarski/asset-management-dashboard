@@ -84,7 +84,7 @@ router.get('/:serial', async (req, res) => {
             productIds: {
                 $in: serial
             }
-        });
+        }).sort({eventTime: -1});
         res.status(200).json(events);
     }
     catch (err) {
