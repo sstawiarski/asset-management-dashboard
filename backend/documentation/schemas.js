@@ -13,6 +13,14 @@ const schemas = {
         example: 'ELP9001',
         description: 'Serial without dashes for use with search'
     },
+    sort_by: {
+        type: 'string',
+        example: 'dateCreated'
+    },
+    order: {
+        type: 'string',
+        example: 'desc'
+    },
     assetType: {
         type: 'string',
         example: 'Carrier'
@@ -309,7 +317,14 @@ const schemas = {
         items: {
             $ref: '#/components/schemas/Event'
         }
-    }
+    },
+
+    serialList: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/serial'
+        }
+    },
 }
 
 module.exports = schemas;

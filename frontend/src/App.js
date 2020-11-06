@@ -9,7 +9,6 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex'
