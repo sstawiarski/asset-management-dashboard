@@ -1,8 +1,7 @@
-
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const { ngrams } = require('mongoose-fuzzy-searching/helpers');
+const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const connection = mongoose.connection;
 const Event = require('../models/event.model');
 const Shipment = require('../models/shipment.model')

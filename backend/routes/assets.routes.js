@@ -106,6 +106,13 @@ router.get("/", async (req, res, err) => {
         };
         aggregateArray.push(sort);
       }
+    } else {
+      const sort = {
+        $sort: {
+          confidenceScore: -1,
+        }
+      };
+      aggregateArray.push(sort);
     }
 
     //pagination initial setup

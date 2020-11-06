@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 
-import Typography from '@material-ui/core/Typography'
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,6 +16,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 
 import Header from '../components/Header'
+import { Box } from '@material-ui/core';
 
 
 const useStyles = makeStyles({
@@ -38,8 +40,6 @@ const productHeadCells = ["Serial", "Product", "Description", "Checked Out", "Lo
 const eventHeadCells = ["Key", "Date", "Type", "Associated Products"];
 
 const SearchDetails = (props) => {
-    const searchTerm = props.match.params.query;
-
     const classes = useStyles();
 
     const [productRows, setProductRows] = useState([]);
@@ -50,13 +50,21 @@ const SearchDetails = (props) => {
     const [productPage, setProductPage] = useState(0);
     const [eventCount, setEventCount] = useState(0);
     const [productCount, setProductCount] = useState(0);
+    const [redirect, setRedirect] = useState(false);
+    const [searchTerm, setSearchTerm] = useState(props.match.params.query);
 
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets?search=${searchTerm}&viewAll=true&page=${productPage}&limit=${productRowsPerPage}`)
-            .then(res => res.json())
+        fetch(`http://localhost:4000/assets?search=${searchTerm}&page=${productPage}&limit=${productRowsPerPage}`)
+            .then(res => {
+                if (res.status < 300) {
+                    return res.json();
+                } else {
+                    return { count: 0, data: []};
+                } 
+            })
             .then(json => {
-                setProductRows(json.assets);
+                setProductRows(json.data);
                 setProductCount(json.count);
             });
 
@@ -66,7 +74,11 @@ const SearchDetails = (props) => {
                 setEventRows(json);
             });
 
-    }, [props.match.params.query, productRowsPerPage, productPage])
+    }, [props.match.params.query, productRowsPerPage, productPage]);
+
+    useEffect(() => {
+
+    }, [redirect])
 
     const handleEventChangePage = () => {
 
@@ -85,10 +97,36 @@ const SearchDetails = (props) => {
 
     }
 
+    const handleEnter = (event) => {
+        if (event.key === "Enter") {
+            const { value } = event.target;
+            setSearchTerm(value);
+            props.history.push(`/search/${searchTerm}`);
+        }
+    };
+
+    const handleSearchChange = (event) => {
+        const { value } = event.target;
+        setSearchTerm(value);
+    };
+
     return (
         <div className={classes.root}>
             <Header heading="Search" subheading="Search Details" />
+            <TextField 
+            id="current-search" 
+            label="Search" 
+            variant="outlined" 
+            style={{
+                backgroundColor: "white",
+                width: "50%"
+            }}
+            value={searchTerm} 
+            onChange={handleSearchChange} 
+            onKeyDown={handleEnter} />
+            <br />
             <Typography variant="h6" style={{ float: "left", marginLeft: "15px", paddingTop: "20px" }}>Product Results</Typography>
+
             <TableContainer className={classes.table} component={Paper}>
                 <Table size="large">
                     <TableHead>

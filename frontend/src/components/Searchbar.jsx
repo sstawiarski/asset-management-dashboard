@@ -62,8 +62,14 @@ const Searchbar = () => {
     useEffect(() => {
         const searchAssets = async (serial) => {
             const result = await fetch(`http://localhost:4000/assets?search=${serial}`);
-            const json = await result.json();
-            return json;
+            if (result.status < 300) {
+                const json = await result.json();
+                return json.data;
+            }
+            else {
+                return [];
+            }
+            
         };
 
         const searchEvents = async (key) => {
