@@ -26,10 +26,10 @@ const AssetList = () => {
     useEffect(() =>{
         const fetchAssets = async () => {
             try {
-            const result = await fetch(`http://localhost:4000/assets/`);
+            const result = await fetch(`http://localhost:4000/assets`);
             const json = await result.json();
             setStatus(REQUEST_STATUS.SUCCESS);
-            return json;
+            return json.data;
             } catch (e) {
                 setStatus(REQUEST_STATUS.ERROR);
                 setError(e);
