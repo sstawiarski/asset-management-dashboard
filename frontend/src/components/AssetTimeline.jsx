@@ -31,7 +31,7 @@ const AssetTimeline = ({ data }) => {
                         <TimelineContent>
                             <Paper>
                                 <div style={{ padding: "10px" }}>
-                                    <Typography variant="subtitle1"><b>{item.eventDate.toLocaleDateString('en-US', dateOptions)}</b></Typography>
+                                    <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
                                     <Typography variant="body1">{item.key}</Typography>
                                     <Typography variant="body1">{item.eventType}</Typography>
                                     {
