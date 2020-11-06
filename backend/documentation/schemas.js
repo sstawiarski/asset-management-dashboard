@@ -317,7 +317,14 @@ const schemas = {
         items: {
             $ref: '#/components/schemas/Event'
         }
-    }
+    },
+
+    serialList: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/serial'
+        }
+    },
 }
 
 module.exports = schemas;

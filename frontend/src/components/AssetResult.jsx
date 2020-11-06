@@ -60,7 +60,7 @@ const SearchResult = ({ data }) => {
     /* Fetch events for the given data */
     useEffect(() => {
         const fetchEvents = async (id) => {
-            const result = await fetch(`http://localhost:4000/events/${id}`);
+            const result = await fetch(`http://localhost:4000/events/${id}?limit=3`);
             const json = await result.json();
             return json;
         };

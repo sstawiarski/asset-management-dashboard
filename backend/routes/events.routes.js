@@ -126,11 +126,17 @@ router.put('/load', (req, res) => {
 router.get('/:serial', async (req, res) => {
     const serial = req.params.serial.toUpperCase();
     try {
-        const events = await Event.find({
+        let events = await Event.find({
             productIds: {
                 $in: serial
             }
-        });
+        }).sort({ eventTime: -1 });
+
+        if (req.query) {
+            if (req.query.limit) {
+                events = events.slice(0, req.query.limit+1);
+            }
+        } 
         res.status(200).json(events);
     }
     catch (err) {
