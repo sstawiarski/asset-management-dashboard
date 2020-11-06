@@ -54,6 +54,7 @@ const AllAssets = (props) => {
         };
 
         const urlToFetch = generateURL(filters);
+        console.log(urlToFetch)
 
         fetch(urlToFetch)
             .then(response => {
