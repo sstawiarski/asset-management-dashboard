@@ -144,7 +144,7 @@ const Searchbar = () => {
 
             </Popper>
 
-            <FormControl className={classes.searchbar} variant="outlined">
+            <FormControl className={classes.searchbar} variant="outlined" style={{backgroundColor: "white"}}>
                 <InputLabel htmlFor="searchbar">Enter a product serial or event key</InputLabel>
                 <OutlinedInput
                     id="searchbar"
