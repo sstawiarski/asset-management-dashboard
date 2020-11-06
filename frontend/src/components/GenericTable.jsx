@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -19,95 +19,38 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 
+const types = {
+  asset: "/assets/",
+  shipment: "/shipment/"
+};
 
 // adapted from https://material-ui.com/components/tables/
-/***
- * Takes in two props:
- * a MongoDB query
- * an ordered array of columns that will show up in the table (based on mongoose model)
- */
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
-
-
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+
+  const {
+    classes,
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+    selectedFields,
+  } = props;
+
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
-  console.log("props");
-  console.log(props);
-  
-  var selectedFields; 
 
-  if(props.selectedFields){
-    selectedFields=props.selectedFields;
-  }
+  const fields = selectedFields.map(label => {
+    const newHeader = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
+    return newHeader;
+  });
 
-  var tableHeaders = null;
-  if(props.headers){
-    console.log("table headers");
-    console.log(props.headers);
-    tableHeaders= props.headers;
-  }
-
-  // not so working code for mapping headers from props
-  var headerCells =[];
-  if(tableHeaders && selectedFields){
-  const headerData = tableHeaders;
-  console.log("Header data");
-console.log(headerData);
-
-
-
-   headerCells = 
-      headerData.map((arrayItem) => {
-        if(selectedFields && selectedFields.includes(arrayItem)){
-        return(
-        {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
-      )}});
-    headerCells = headerCells.filter(function(x){
-      return x !== undefined;
-    })
-  console.log("Header Array")
-  console.log(headerCells);
-
-  headerCells = selectedFields.map((arrayItem) => {
-    return(
-      {id: arrayItem, numeric: true, disablePadding: false, label: arrayItem}
-  )});
-
-  console.log(headerCells);
-
-}
-
-
+  const headers = fields.map((field, idx) => {
+    return { id: selectedFields[idx], numeric: true, disablePadding: false, label: field };
+  })
 
   return (
     <TableHead>
@@ -120,7 +63,7 @@ console.log(headerData);
             inputProps={{ 'aria-label': 'select all assets' }}
           />
         </TableCell>
-        {headerCells.map((headCell) => (
+        {headers.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'left' : 'right'}
@@ -155,7 +98,6 @@ EnhancedTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
-  headers: PropTypes.any,
   selectedFields: PropTypes.any,
 };
 
@@ -167,22 +109,21 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
 }));
 
-const EnhancedTableToolbar = (props, data) => {
+const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
-  const { headers } = data;
+  const { numSelected, title } = props;
 
   return (
     <Toolbar
@@ -195,10 +136,10 @@ const EnhancedTableToolbar = (props, data) => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          All Assets
-        </Typography>
-      )}
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            {title}
+          </Typography>
+        )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
@@ -207,12 +148,12 @@ const EnhancedTableToolbar = (props, data) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        )}
     </Toolbar>
   );
 };
@@ -227,7 +168,8 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
   },
   paper: {
-    width: '100%',
+    width: '98%',
+    marginLeft: "20px",
     marginBottom: theme.spacing(2),
   },
   table: {
@@ -252,25 +194,36 @@ EnhancedTable.propTypes = {
 };
 
 export default function EnhancedTable(props) {
+  //take in the setFilters from the parent page to set when the dialog changes
+  const { data, filters, setFilters, count, title, history, variant } = props;
+
+  const url = types[variant];
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('id');
+
   const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
-//  const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  // const activeKeys = Object.keys(activeFilters);
 
-  const data = props.data;
-  var selectedFields = null;
+  const rowsPerPage = filters.limit ? filters.limit : 5;
+  const page = filters.page ? filters.page : 0;
+  const order = filters.order ? filters.order : 'asc';
+  const orderBy = filters.sort_by ? filters.sort_by : 'serial';
+  const [activeFilters, setActiveFilters] = React.useState({});
+  const activeKeys = Object.keys(activeFilters);
 
-  if(props.selectedFields){
-    selectedFields=props.selectedFields;
+  let selectedFields = [];
+
+  if (props.selectedFields) {
+    selectedFields = props.selectedFields;
   }
 
-  var tableItems=null;
-  if(data[0]){
-    tableItems =Object.keys(data[0]);
+  let tableItems = [];
+  if (data.length) {
+    tableItems = data.map(asset => {
+      return Object.keys(asset).reduce((newObject, fieldName) => {
+        if (selectedFields.includes(fieldName)) newObject[fieldName] = asset[fieldName];
+
+        return newObject;
+      }, {});
+    });
   }
 
 
@@ -310,29 +263,68 @@ export default function EnhancedTable(props) {
   };
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setFilters(s => ({
+      ...s,
+      page: newPage
+    }))
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    setFilters(s => ({
+      ...s,
+      limit: parseInt(event.target.value, 10),
+      page: 0
+    }));
   };
 
+  const setOrderBy = (ordering) => {
+    setFilters(s => ({
+      ...s,
+      sort_by: ordering
+    }))
+  };
+
+  const setOrder = (order) => {
+    setFilters(s => ({
+      ...s,
+      order: order
+    }))
+  }
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+  const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
+
+  //send filters to the parent page when they change
+  useEffect(() => {
+    const newFilters = Object.keys(activeFilters)
+      .reduce((p, c) => {
+        //convert the Date objects send from the filter dialog into numbers for use in the URL
+        if (c === "dateCreated" || c === "dateUpdated") {
+          p[c] = activeFilters[c].getTime();
+        } else {
+          p[c] = activeFilters[c];
+        }
+        return p;
+      }, {})
+
+    setFilters(s => ({
+      ...s,
+      ...newFilters
+    }));
+
+  }, [activeFilters]);
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} headers ={tableItems} />
+        <EnhancedTableToolbar numSelected={selected.length} title={title} />
         <TableContainer>
           <Table
             className={classes.table}
-            aria-labelledby="tableTitle"
-          //  size={dense ? 'small' : 'medium'}
-            aria-label="enhanced table"
+            aria-labelledby="Table"
+            size={'medium'}
+            aria-label="generic table"
           >
             <EnhancedTableHead
               classes={classes}
@@ -341,53 +333,45 @@ export default function EnhancedTable(props) {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={data.length}
-              headers={tableItems}
-              selectedFields = {selectedFields}
+              rowCount={count}
+              selectedFields={selectedFields}
             />
             <TableBody>
-              {stableSort(data, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((data, index) => {
-                  const isItemSelected = isSelected(data.serial);
+              {data.map((item, index) => {
+                  const isItemSelected = isSelected(item[selectedFields[0]]);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, data.serial)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        history.push(`${url}${item[selectedFields[0]]}`)
+                      }}
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={data.serial}
+                      key={item[selectedFields[0]]}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox">
+                      <TableCell padding="checkbox" onClick={(event) => {
+                        event.stopPropagation();
+                        handleClick(event, item[selectedFields[0]]);
+                      }}>
                         <Checkbox
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
-
-                      
-                      {selectedFields.map((arrayItem)=>{
-                        if(selectedFields && selectedFields.includes(arrayItem)){
-                        return(
-                          <TableCell align="left">{data[arrayItem]}</TableCell>
-                         )
-                      }})}
-
-                      
-
-
-
-
+                      {selectedFields.map((arrayItem) => {
+                        return (<TableCell align="left">{item[arrayItem]}</TableCell>)
+                      })}
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={6} />
+                  <TableCell colSpan={selectedFields.length+1} />
                 </TableRow>
               )}
             </TableBody>
@@ -396,7 +380,7 @@ export default function EnhancedTable(props) {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={data.length}
+          count={count}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
@@ -406,15 +390,4 @@ export default function EnhancedTable(props) {
 
     </div>
   );
-
-  //saved old table cells just incase
-  //<TableCell component="th" id={labelId} scope="row" padding="none">
-  //{data.serial}
-  //</TableCell>
-  //<TableCell align="right">{data.assetName}</TableCell>
-  //<TableCell align="right">{data.assetType}</TableCell>
-  //<TableCell align="right">{data.checkedOut}</TableCell>
-  //<TableCell align="right">{data.deployedLocation}</TableCell>
-  //<TableCell align="right">{data.owner}</TableCell>
-  //<TableCell align="right">{data.groupTag}</TableCell>
 }
