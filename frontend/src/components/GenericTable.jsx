@@ -1,4 +1,55 @@
-import React, { useEffect } from 'react';
+/**
+ * A generic and reusable table for lists of either assets or shipments
+ * 
+ * Accepted props:
+ * 
+ * data (required)            Array     
+ *    The array of objects to display in the table.
+ * 
+ * filters (required)         Object
+ *    State object from the parent component representing active filters for the API call
+ * 
+ * setFilters (required)      Function
+ *    Function from the parent component that allows the table to communicate the new filters
+ * 
+ * count (required)           Number
+ *    The length of the array of ALL objects returned from the API call, see "count" array in API results
+ * 
+ * title (optional)           String
+ *    The main title to display over the table
+ * 
+ * history (required)         React Router Helper
+ *    Must be passed in from a parent *page*, may need prop-drilling to get to the table
+ *    Used to redirect when someone clicks on a row in the table
+ * 
+ * variant (required)         String, either "asset" or "shipment"
+ *    Determines which URL to link to when someone clicks on a table item
+ * 
+ * menuItems (required)       Array of Objects
+ *    The menu items which will appear when one or more rows are selected (e.g. bulk edit actions)
+ *    
+ *    Schema of each object:
+ *        {
+ *              action: String of the hover text of the icon, first letter capitalized,
+ *              icon: The icon for the menu item (import in parent, pass in here without <>)
+ *              dialog: The dialog to display when the icon is clicked (import in parent, pass in here without <>)
+ *        }
+ * 
+ * mainAction (required)      Object
+ *    The menu item to show when no table rows are selected.
+ *    It is the main action to do, usually filtering.
+ * 
+ *    Schema: Same as ech object in the menuItems array
+ * 
+ * selectedFields (required)  Array
+ *    The fields from the objects you expect to receive that you want displayed as columns.
+ *    NOTES:
+ *       1) Fields in this array must be written in the column order you want.
+ *       2) Fields in this array must be written exactly the same as the fields appear in the database.
+ * 
+ */
+
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -16,8 +67,6 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 
 const types = {
   asset: "/assets/",
@@ -26,6 +75,10 @@ const types = {
 
 // adapted from https://material-ui.com/components/tables/
 
+
+/**
+ * The table headers and sorting arrows, etc
+ */
 function EnhancedTableHead(props) {
 
   const {
@@ -43,11 +96,13 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
 
+  //convert object fieldnames into properly capitalized strings
   const fields = selectedFields.map(label => {
     const newHeader = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) { return str.toUpperCase(); })
     return newHeader;
   });
 
+  //create the actual material ui header objects the table expects
   const headers = fields.map((field, idx) => {
     return { id: selectedFields[idx], numeric: true, disablePadding: false, label: field };
   })
@@ -121,9 +176,17 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }));
 
+
+/**
+ * Runs the toolbar which displays selected count and changes menubar based on whether any rows are selected
+ */
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, title } = props;
+  const { numSelected, title, menuItems, mainAction } = props;
+  const [state, setState] = useState({});
+
+  const MainActionIcon = mainAction.icon;
+  const MainActionDialog = mainAction.dialog;
 
   return (
     <Toolbar
@@ -141,19 +204,54 @@ const EnhancedTableToolbar = (props) => {
           </Typography>
         )}
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon />
+      {/* Render the menubar if anything is selected or just the main action button */}
+      {numSelected > 0 ? menuItems.map(menuItem => {
+        const ItemIcon = menuItem.icon;
+        return <Tooltip title={menuItem.action}>
+          <IconButton aria-label={menuItem.action.toLowerCase()}>
+            <ItemIcon onClick={() => {
+              setState(s => ({
+                ...s,
+                [menuItem.action]: true
+              }))
+            }} />
           </IconButton>
         </Tooltip>
-      ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="filter list">
-              <FilterListIcon />
+      }) : (
+          <Tooltip title={mainAction.action}>
+            <IconButton aria-label={mainAction.action.toLowerCase()}>
+              <MainActionIcon onClick={() => {
+                setState(s => ({
+                  ...s,
+                  [mainAction.action]: true
+                }))
+              }} />
             </IconButton>
           </Tooltip>
         )}
+
+      {/* Dialogs here, only render when their action is set to true in the state object */}
+      {menuItems.map(menuItem => {
+        const TheDialog = menuItem.dialog;
+        return <TheDialog
+          open={state[menuItem.action]}
+          setOpen={(isOpen) => {
+            setState(s => ({
+              ...s,
+              [menuItem.action]: isOpen
+            }))
+          }}
+        />
+      })}
+
+      <MainActionDialog open={state[mainAction.action]}
+        setOpen={(isOpen) => {
+          setState(s => ({
+            ...s,
+            [mainAction.action]: isOpen
+          }))
+        }} />
+
     </Toolbar>
   );
 };
@@ -193,12 +291,30 @@ EnhancedTable.propTypes = {
   selectedFields: PropTypes.any,
 };
 
+/**
+ * The main table, takes in all the original props and sends them down into their respective components like the header.
+ * 
+ * Updates the parent filter object when, for example, page or limit is changed to generate the new results.
+ * 
+ */
 export default function EnhancedTable(props) {
-  //take in the setFilters from the parent page to set when the dialog changes
-  const { data, filters, setFilters, count, title, history, variant } = props;
-
-  const url = types[variant];
   const classes = useStyles();
+
+  const {
+    data,
+    filters,
+    setFilters,
+    count,
+    title,
+    history,
+    variant,
+    menuItems,
+    mainAction,
+    selectedFields
+  } = props;
+
+  //generate appropriate url for clicking on a table row
+  const url = types[variant];
 
   const [selected, setSelected] = React.useState([]);
 
@@ -206,14 +322,10 @@ export default function EnhancedTable(props) {
   const page = filters.page ? filters.page : 0;
   const order = filters.order ? filters.order : 'asc';
   const orderBy = filters.sort_by ? filters.sort_by : 'serial';
+
+  //for use later when actual dialogs are ready
   const [activeFilters, setActiveFilters] = React.useState({});
   const activeKeys = Object.keys(activeFilters);
-
-  let selectedFields = [];
-
-  if (props.selectedFields) {
-    selectedFields = props.selectedFields;
-  }
 
   let tableItems = [];
   if (data.length) {
@@ -226,12 +338,26 @@ export default function EnhancedTable(props) {
     });
   }
 
-
+  //changes sorting selections
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+
+  const setOrderBy = (ordering) => {
+    setFilters(s => ({
+      ...s,
+      sort_by: ordering
+    }))
+  };
+
+  const setOrder = (order) => {
+    setFilters(s => ({
+      ...s,
+      order: order
+    }))
+  }
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -242,6 +368,7 @@ export default function EnhancedTable(props) {
     setSelected([]);
   };
 
+  //checkbox click handler
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
@@ -258,7 +385,6 @@ export default function EnhancedTable(props) {
         selected.slice(selectedIndex + 1),
       );
     }
-
     setSelected(newSelected);
   };
 
@@ -277,25 +403,11 @@ export default function EnhancedTable(props) {
     }));
   };
 
-  const setOrderBy = (ordering) => {
-    setFilters(s => ({
-      ...s,
-      sort_by: ordering
-    }))
-  };
-
-  const setOrder = (order) => {
-    setFilters(s => ({
-      ...s,
-      order: order
-    }))
-  }
-
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
 
-  //send filters to the parent page when they change
+  //send dialog based filters to the parent page when they change
   useEffect(() => {
     const newFilters = Object.keys(activeFilters)
       .reduce((p, c) => {
@@ -318,7 +430,13 @@ export default function EnhancedTable(props) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} />
+
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          title={title}
+          menuItems={menuItems}
+          mainAction={mainAction} />
+
         <TableContainer>
           <Table
             className={classes.table}
@@ -337,7 +455,8 @@ export default function EnhancedTable(props) {
               selectedFields={selectedFields}
             />
             <TableBody>
-              {data.map((item, index) => {
+              {
+                data.map((item, index) => {
                   const isItemSelected = isSelected(item[selectedFields[0]]);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -354,24 +473,31 @@ export default function EnhancedTable(props) {
                       key={item[selectedFields[0]]}
                       selected={isItemSelected}
                     >
-                      <TableCell padding="checkbox" onClick={(event) => {
-                        event.stopPropagation();
-                        handleClick(event, item[selectedFields[0]]);
-                      }}>
+                      <TableCell
+                        padding="checkbox"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleClick(event, item[selectedFields[0]]);
+                        }}>
+
                         <Checkbox
                           checked={isItemSelected}
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
+
                       </TableCell>
-                      {selectedFields.map((arrayItem) => {
-                        return (<TableCell align="left">{item[arrayItem]}</TableCell>)
-                      })}
+
+                      {
+                        selectedFields.map((arrayItem) => {
+                          return (<TableCell align="left">{item[arrayItem]}</TableCell>)
+                        })
+                      }
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={selectedFields.length+1} />
+                  <TableCell colSpan={selectedFields.length + 1} />
                 </TableRow>
               )}
             </TableBody>
