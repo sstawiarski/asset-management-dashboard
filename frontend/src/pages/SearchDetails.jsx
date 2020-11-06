@@ -60,12 +60,12 @@ const SearchDetails = (props) => {
                 if (res.status < 300) {
                     return res.json();
                 } else {
-                    return { count: 0, data: []};
+                    return { count: [{count: 0}], data: []};
                 } 
             })
             .then(json => {
                 setProductRows(json.data);
-                setProductCount(json.count);
+                setProductCount(json.count[0].count);
             });
 
         fetch(`http://localhost:4000/events?search=${searchTerm}`)
