@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Header from '../components/Header'
 import GenericTable from '../components/GenericTable'
 
-import AssetFilter from '../components/AssetFilter'
-import RetireAssetDialog from '../components/RetireAssetDialog';
+import AssetFilter from '../components/Dialogs/AssetFilter'
+import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
 
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
@@ -54,6 +54,7 @@ const AllAssets = (props) => {
         };
 
         const urlToFetch = generateURL(filters);
+        console.log(urlToFetch)
 
         fetch(urlToFetch)
             .then(response => {

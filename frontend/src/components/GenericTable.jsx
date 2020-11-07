@@ -350,6 +350,7 @@ export default function EnhancedTable(props) {
   const url = types[variant];
 
   const [selected, setSelected] = React.useState([]);
+  let origFilters = filters;
 
   const rowsPerPage = filters.limit ? filters.limit : 5;
   const page = filters.page ? filters.page : 0;
@@ -445,7 +446,7 @@ export default function EnhancedTable(props) {
     const newFilters = Object.keys(activeFilters)
       .reduce((p, c) => {
         //convert the Date objects send from the filter dialog into numbers for use in the URL
-        if (c === "dateCreated" || c === "dateUpdated") {
+        if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime") {
           p[c] = activeFilters[c].getTime();
         } else {
           p[c] = activeFilters[c];
@@ -453,10 +454,10 @@ export default function EnhancedTable(props) {
         return p;
       }, {})
 
-    setFilters(s => ({
-      ...s,
+    setFilters({
+      ...origFilters,
       ...newFilters
-    }));
+    });
 
   }, [activeFilters]);
 
@@ -501,11 +502,11 @@ export default function EnhancedTable(props) {
                   key={idx}
                   className={classes.chip}
                   label={`${capitalized}: ${value}`}
-                  onDelete={(event) => {
-                    event.stopPropagation();
+                  onDelete={() => {
                     setActiveFilters(s => {
                       let newFilters = { ...s };
                       delete newFilters[label];
+                      delete origFilters[label];
                       return newFilters;
                     })
                   }}
@@ -568,6 +569,9 @@ export default function EnhancedTable(props) {
 
                       {
                         selectedFields.map((arrayItem) => {
+                          if (arrayItem.includes("Time") || arrayItem.includes("date")) {
+                            return (<TableCell align="left">{new Date(item[arrayItem]).toLocaleDateString('en-US')}</TableCell>)
+                          }
                           return (<TableCell align="left">{item[arrayItem]}</TableCell>)
                         })
                       }
