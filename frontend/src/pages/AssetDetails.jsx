@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Paper from '@material-ui/core/Paper';
@@ -30,81 +30,43 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const sampleAsset = {
-    assetName: "Gap Sub",
-    assetType: "Asset",
-    deployedLocation: "Rig ABC",
-    owner: "Evolution-USA",
-    parentId: "G800-1119",
-    createdOn: new Date(2015, 11, 17),
-    lastUpdated: null,
-    serial: "G800-1111",
-    checkedOut: true,
-    groupTag: "",
-    assignmentType: "Rental",
-    assignee: "Nabors Drilling",
-    contractNumber: "202012345",
-    retired: false,
-};
-const sampleEvents = [
-    {
-        productIds: [
-            "G800-1111",
-            "C800-1011"
-        ],
-        key: "SHIP-1010",
-        eventType: "Outgoing Shipment",
-        eventDate: new Date(2020, 10, 9),
-        eventData: {
-            status: "Staging",
-            shipmentType: "Outgoing",
-            shipFrom: {
-                "origin": "Evolution Calgary",
-            },
-            shipTo: {
-                destination: "Nabors Rig 1212",
-            },
-            specialInstructions: "",
-            contractId: "123456",
-            manifest: [
-                {
-                    serial: "G800-1111",
-                    type: "Asset",
-                    quantity: 1,
-                    notes: ""
-                },
-                {
-                    serial: "C800-1011",
-                    type: "Asset",
-                    quantity: 1,
-                    notes: ""
-                }
-            ]
-        }
-    },
-    {
-        productIds: [
-            "G800-1111",
-        ],
-        key: "OWN-909",
-        eventDate: new Date(2019, 7, 15),
-        eventType: "Change of Ownership",
-        eventData: {
-            authorizer: "John Smith",
-            newOwner: "Evolution-Canada",
-            oldOwner: "Supply Chain USA"
-        }
-    }
-]
-
 const dateOptions = {
     month: "long",
     day: "numeric",
     year: "numeric"
 }
 
-const AssetDetails = () => {
+const AssetDetails = (props) => {
+    const { serial } = props.match.params;
     const classes = useStyles();
+    const [asset, setAsset] = useState({});
+    const [events, setEvents] = useState([]);
+
+    useEffect(() => {
+        fetch(`http://localhost:4000/assets/${serial}`)
+        .then(response => {
+            if (response.status < 300) {
+                return response.json();
+            } else {
+                return {};
+            }
+        })
+        .then(json => {
+            setAsset(json);
+        });
+
+        fetch(`http://localhost:4000/events/${serial}`)
+        .then(response => {
+            if (response.status < 300) {
+                return response.json();
+            } else {
+                return [];
+            }
+        })
+        .then(json => {
+            setEvents(json);
+        });
+    }, [serial]);
 
 
     return (
@@ -120,45 +82,45 @@ const AssetDetails = () => {
                                 <Grid container>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Name</Typography>
-                                        <Typography variant="body1">{sampleAsset.assetName}</Typography>
+                                        <Typography variant="body1">{asset.assetName}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Serial Number</Typography>
-                                        <Typography variant="body1">{sampleAsset.serial}</Typography>
+                                        <Typography variant="body1">{asset.serial}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Status</Typography>
-                                        <Typography variant="body1">{sampleAsset.retired ? "Retired" : "Active"}</Typography>
+                                        <Typography variant="body1">{asset.retired ? "Retired" : "Active"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Checked Out</Typography>
-                                        <Typography variant="body1">{sampleAsset.checkedOut ? "Yes" : "No"}</Typography>
+                                        <Typography variant="body1">{asset.checkedOut ? "Yes" : "No"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Assignee</Typography>
-                                        <Typography variant="body1">{sampleAsset.assignee}</Typography>
+                                        <Typography variant="body1">{asset.assignee}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Created On</Typography>
-                                        <Typography variant="body1">{sampleAsset.createdOn.toLocaleDateString('en-US', dateOptions)}</Typography>
+                                        <Typography variant="body1">{asset.dateCreated ? new Date(asset.dateCreated).toLocaleDateString('en-US', dateOptions) : null}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Type</Typography>
-                                        <Typography variant="body1">{sampleAsset.assetType}</Typography>
+                                        <Typography variant="body1">{asset.assetType}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Location</Typography>
-                                        <Typography variant="body1">{sampleAsset.deployedLocation}</Typography>
+                                        <Typography variant="body1">{asset.deployedLocation}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Owner</Typography>
-                                        <Typography variant="body1">{sampleAsset.owner}</Typography>
+                                        <Typography variant="body1">{asset.owner}</Typography>
                                     </Grid>
                                     {
-                                        sampleAsset.lastUpdated ?
+                                        asset.dateUpdated ?
                                             <Grid item xs={3} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Last Updated</Typography>
-                                                <Typography variant="body1">{sampleAsset.lastUpdated}</Typography>
+                                                <Typography variant="body1">{asset.dateUpdated ? new Date(asset.dateUpdated).toLocaleDateString('en-US', dateOptions) : null}</Typography>
                                             </Grid>
                                             : null
                                     }
@@ -166,15 +128,15 @@ const AssetDetails = () => {
 
                                 <Grid container>
                                     {
-                                        sampleAsset.assetType === "Assembly" ?
+                                        asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={6} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Asset Components</Typography>
                                             </Grid>
                                             : null
                                     }
-                                    <Grid item xs={12} sm={sampleAsset.assetType !== "Assembly" ? 8 : 6} className={sampleAsset.assetType !== "Assembly" ? classes.center : classes.item}>
+                                    <Grid item xs={12} sm={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Asset Timeline</Typography>
-                                        <AssetTimeline data={sampleEvents} />
+                                        <AssetTimeline data={events} />
                                     </Grid>
                                 </Grid>
                             </Paper>

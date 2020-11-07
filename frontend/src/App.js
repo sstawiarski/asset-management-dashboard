@@ -8,7 +8,6 @@ import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
-import TestPage from './pages/TestPage'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,10 +32,9 @@ function App() {
         <main className={classes.content}>
             <Switch>
               <Route path="/" exact component={Dashboard} />
-              <Route path="/details" component={AssetDetails} />
-              <Route path="/assets/create-assembly" component={CreateAssembly} />
-              <Route path="/assets/view-all" component={AllAssets} />
-              <Route path="/test" component={TestPage} />
+              <Route exact path="/assets/create-assembly" component={CreateAssembly} />
+              <Route exact path="/assets/view-all" component={AllAssets} />
+              <Route path="/assets/:serial" component={AssetDetails} />
             </Switch>
         </main>
       </div>

@@ -106,19 +106,33 @@ router.get("/", async (req, res, err) => {
         };
         aggregateArray.push(sort);
       }
+    } else {
+      if (req.query.search) {
+        const sort = {
+            $sort: {
+                confidenceScore: -1,
+            }
+        };
+        aggregateArray.push(sort);
+    } else {
+        const sort = {
+            $sort: {
+                serial: 1
+            }
+        };
+        aggregateArray.push(sort);
+    }
     }
 
     //pagination initial setup
     const skip = {
       $skip: (req.query.page && req.query.limit) ? (parseInt(req.query.page) * parseInt(req.query.limit)) : 0
     }
-    //aggregateArray.push(skip);
 
     //limit to 5 results -- modify later based on pagination
     const limit = {
       $limit: req.query.limit ? parseInt(req.query.limit) : 5
     };
-    //aggregateArray.push(limit);
 
     const group = {
       $facet: {
@@ -142,19 +156,26 @@ router.get("/", async (req, res, err) => {
     const result = await Asset.aggregate(aggregateArray);
 
     //filter results to determine better or even exact matches
+    //currently returns asset object, not object with count and data properties
     if (req.query.search) {
 
       if (result.length) {
 
         if (result[0].data[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
           const exactMatch = [result[0].data[0]];
-          res.status(200).json(exactMatch);
+          res.status(200).json({
+            count: [{count: 1}],
+            data: [exactMatch]
+          });
 
         } else {
 
           if (result[0].data[0].confidenceScore > 10) {
             const closeMatches = result[0].data.filter(asset => asset.confidenceScore > 10);
-            res.status(200).json(closeMatches);
+            res.status(200).json({
+              count: [{count: closeMatches.length}],
+              data: [...closeMatches]
+            });
 
           } else {
             res.status(200).json(result[0]);
@@ -320,5 +341,12 @@ router.get("/:serial", async (req, res, err) => {
     });
   }
 });
+
+function getEventType(field) {
+  switch (field) {
+      case "retired": 
+      return ["Change of Retirement Status", "RET-"]
+  }
+}
 
 module.exports = router;
