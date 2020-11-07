@@ -12,11 +12,14 @@ import SearchDetails from './pages/SearchDetails';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex'
+    display: 'flex',
+    flexDirection: 'column'
   },
   content: {
     flexGrow: 12,
-    padding: theme.spacing(5)
+    paddingLeft: theme.spacing(12),
+    paddingTop: theme.spacing(4),
+    paddingRight: theme.spacing(4)
   },
 }))
 

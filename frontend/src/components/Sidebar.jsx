@@ -8,6 +8,7 @@ import { withStyles } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import Grid from "@material-ui/core/Grid";
+import Typography from '@material-ui/core/Typography';
 
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
@@ -107,7 +108,14 @@ const styles = (theme) => ({
     display: "inherit"
   },
   icon: {
-    paddingRight: 10
+    paddingRight: 10,
+  },
+  name: {
+    color: "white",
+    textShadow: "1px 1px 4px #0f0f0f"
+  },
+  grid: {
+
   }
 });
 
@@ -177,49 +185,46 @@ class Sidebar extends React.Component {
 
               {this.state.open === true ? (
                 <div>
-
-                  
-                    <Grid
-                      item
-                      container
-                      direction="row"
-                      alignItems="center"
-                      justify="flex-end"
-                    >
-                      <Grid item>
-                        <AccountCircleIcon
-                          className={classes.IconButton}
-                        />
-                      </Grid>
-                      <Grid item>
-                        {this.state.open === true ? <h5>John Smith</h5> : null}
-                      </Grid>
-                      <Grid item className={classes.open}>
-                        {this.state.open === true ? (
-                          <SettingsIcon
-                            className={classes.SettingsIcon}
-                            style={{ fontSize: 14 }}
-                          />
-                        ) : null}
-                      </Grid>
-                    </Grid>
-                  
-                </div>
-              ) : null}
-                <Grid item container direction="row" alignItems="center">
-                  <Grid item>
-                    {this.state.open === false ? (
+                  <Grid
+                    item
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify="flex-end"
+                  >
+                    <Grid item>
                       <AccountCircleIcon
                         className={classes.IconButton}
                       />
-                    ) : null}
+                    </Grid>
+                    <Grid item>
+                      {this.state.open === true ? <Typography variant="h6" className={classes.name}>John Smith</Typography> : null}
+                    </Grid>
+                    <Grid item className={classes.open}>
+                      {this.state.open === true ? (
+                        <SettingsIcon
+                          className={classes.SettingsIcon}
+                          style={{ fontSize: 14 }}
+                        />
+                      ) : null}
+                    </Grid>
                   </Grid>
+
+                </div>
+              ) : null}
+              <Grid item container direction="row" alignItems="center">
+                <Grid item>
+                  {this.state.open === false ? (
+                    <AccountCircleIcon
+                      className={classes.IconButton}
+                    />
+                  ) : null}
                 </Grid>
+              </Grid>
 
             </Grid>
 
             <Grid
-              className={classes.Grid}
               container
               direction="column"
               justify="flex-start"
@@ -240,7 +245,7 @@ class Sidebar extends React.Component {
                     />
                   </Grid>
                   <Grid item className={classes.open}>
-                    {this.state.open === true ? <h6>Home</h6> : null}
+                    {this.state.open === true ? <Typography variant="body1">Home</Typography> : null}
                   </Grid>
                 </Grid>
               </Link>
@@ -252,13 +257,12 @@ class Sidebar extends React.Component {
                   direction="row"
                   alignItems="center"
                   justify="flex-start"
-                  className={classes.open}
                 >
                   <Grid item>
                     <LocalShippingIcon className={classes.IconButton} />
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>Shipping</h6> : null}
+                    {this.state.open === true ? <Typography variant="body1">Shipping</Typography> : null}
                   </Grid>
                   <Grid item>
                     {this.state.open === true ? (
@@ -269,6 +273,7 @@ class Sidebar extends React.Component {
               </Link>
 
               <Link to="/shipments/view-all" className={classes.link}>
+              <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
                   container
@@ -283,12 +288,14 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>View All</h6> : null}
+                    {this.state.open === true ? <Typography variant="body2">View All</Typography> : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
 
               <Link to="/shipments/track" className={classes.link}>
+              <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
                   container
@@ -303,11 +310,13 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>Track</h6> : null}
+                    {this.state.open === true ? <Typography variant="body2">Track</Typography> : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
               <Link to="/shipments/create" className={classes.link}>
+              <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
                   container
@@ -322,12 +331,14 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>Add New</h6> : null}
+                    {this.state.open === true ? <Typography variant="body2">Add New</Typography> : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
 
               <Link to="/assets/view-all" className={classes.link}>
+              <div style={{ marginTop: "-15px" }}>
                 <Grid
                   item
                   container
@@ -339,7 +350,7 @@ class Sidebar extends React.Component {
                     <DomainIcon className={classes.IconButton} />
                   </Grid>
                   <Grid item className={classes.open}>
-                    {this.state.open === true ? <h6>Assets</h6> : null}
+                    {this.state.open === true ? <Typography variant="body1">Assets</Typography> : null}
                   </Grid>
                   <Grid item>
                     {this.state.open === true ? (
@@ -347,29 +358,35 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
 
               <Link to="/assets/view-all" className={classes.link}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {this.state.open === true ? (
-                      <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
+                <div style={{ marginBottom: "10px" }}>
+
+
+                  <Grid
+                    item
+                    container
+                    direction="row"
+                    alignItems="center"
+                    justify="flex-start"
+                    className={classes.onClick}
+                  >
+                    <Grid item>
+                      {this.state.open === true ? (
+                        <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
+                      ) : null}
+                    </Grid>
+                    <Grid item>
+                      {this.state.open === true ? <Typography variant="body2"> View All </Typography> : null}
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    {this.state.open === true ? <h6> View All </h6> : null}
-                  </Grid>
-                </Grid>
+                </div>
               </Link>
 
               <Link to="/assets/create-assembly" className={classes.link}>
+              <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
                   container
@@ -377,6 +394,7 @@ class Sidebar extends React.Component {
                   alignItems="center"
                   justify="flex-start"
                   className={classes.onClick}
+
                 >
                   <Grid item>
                     {this.state.open === true ? (
@@ -384,12 +402,14 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>Assembly</h6> : null}
+                    {this.state.open === true ? <Typography variant="body2">Assembly Creator</Typography> : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
 
               <Link to="/assets/assignments" className={classes.link}>
+              <div style={{ marginBottom: "20px" }}>
                 <Grid
                   item
                   container
@@ -404,9 +424,10 @@ class Sidebar extends React.Component {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <h6>Assignments</h6> : null}
+                    {this.state.open === true ? <Typography variant="body2">Assignments</Typography> : null}
                   </Grid>
                 </Grid>
+                </div>
               </Link>
             </Grid>
 
@@ -416,7 +437,6 @@ class Sidebar extends React.Component {
               direction="column"
               justify="flex-end"
               alignItems="center"
-              className={classes.Grid}
             >
               <Grid
                 container
@@ -427,20 +447,20 @@ class Sidebar extends React.Component {
                 <Grid item>
                   {this.state.open === true ? (
                     <Link to="/sign-out" className={classes.link}>
-                    <h6 className={classes.ExitToAppIcon}>Sign Out</h6>
+                      <Typography variant="body1" className={classes.ExitToAppIcon}>Sign Out</Typography>
                     </Link>
                   ) : null}
                 </Grid>
                 <Grid item>
                   <Link to="/sign-out" className={classes.link}>
-                  <ExitToAppIcon className={classes.ExitToAppIcon} />
+                    <ExitToAppIcon className={classes.ExitToAppIcon} />
                   </Link>
                 </Grid>
               </Grid>
             </Grid>
           </div>
         </Drawer>
-        </div>
+      </div>
     );
   }
 }
