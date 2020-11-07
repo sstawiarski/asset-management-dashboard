@@ -10,7 +10,7 @@ import debounce from 'lodash/debounce'
 import { makeStyles } from '@material-ui/core/styles';
 
 import FormControl from '@material-ui/core/FormControl'
-import { Fade, InputAdornment, InputLabel, OutlinedInput, Paper, Typography, Popper } from '@material-ui/core';
+import { Fade, InputAdornment, InputLabel, OutlinedInput, Paper, Typography, Popper, Divider } from '@material-ui/core';
 import Search from '@material-ui/icons/Search'
 
 import AssetResult from './AssetResult'
@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme) => ({
         color: "#15ADFF",
         display: 'inline-block'
     },
+    divider: {
+        marginTop: "5px",
+        marginBottom: "10px"
+    }
 }));
 
 const Searchbar = () => {
@@ -61,7 +65,7 @@ const Searchbar = () => {
     /* Fuzzy search assets using API call */
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const result = await fetch(`http://localhost:4000/assets?search=${serial}`);
+            const result = await fetch(`http://localhost:4000/assets?search=${serial}&limit=3`);
             if (result.status < 300) {
                 const json = await result.json();
                 return json.data;
@@ -69,11 +73,11 @@ const Searchbar = () => {
             else {
                 return [];
             }
-            
+
         };
 
         const searchEvents = async (key) => {
-            const result = await fetch(`http://localhost:4000/events?search=${key}`);
+            const result = await fetch(`http://localhost:4000/events?search=${key}&limit=3`);
             const json = await result.json();
             return json;
         };
@@ -124,15 +128,13 @@ const Searchbar = () => {
                                 <Typography className={classes.viewAllButton} variant="button" id="details-button">View All</Typography>
                             </Link>
                             <Typography variant="body1" align="left"><b>Products</b></Typography>
-                            <br />
                             {
                                 state.assetResult.length ?
-                                    state.assetResult.map(item => (<AssetResult data={item} key={item.serial} />))
+                                    state.assetResult.map((item, idx) => (<AssetResult data={item} key={item.serial} divider={idx === (state.assetResult.length - 1) ? false : true} />))
                                     : <Typography variant="body1" align="center">No products found</Typography>
                             }
-                            <hr />
+                            <Divider className={classes.divider} />
                             <Typography variant="body1" align="left"><b>Events</b></Typography>
-                            <br />
                             {
                                 state.eventResult.length ?
                                     state.eventResult.map(item => (<EventResult data={item} key={item.key} />))
@@ -144,7 +146,7 @@ const Searchbar = () => {
 
             </Popper>
 
-            <FormControl className={classes.searchbar} variant="outlined" style={{backgroundColor: "white"}}>
+            <FormControl className={classes.searchbar} variant="outlined" style={{ backgroundColor: "white" }}>
                 <InputLabel htmlFor="searchbar">Enter a product serial or event key</InputLabel>
                 <OutlinedInput
                     id="searchbar"
