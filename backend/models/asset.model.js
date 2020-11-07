@@ -17,6 +17,7 @@ const Asset = new Schema({
     assignee: { type: String, required: false, unique: false },
     contractNumber: { type: String, required: false, unique: false },
     checkedOut: { type: mongoose.Schema.Types.Boolean, required: true, unique: false },
+    retired: { type: mongoose.Schema.Types.Boolean, required: false, unique: false },
     confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false }
 });
 
@@ -28,6 +29,8 @@ Asset.plugin(mongoose_fuzzy_searching, {
         }
     ]
 })
+
+
 
 const Assets = mongoose.model('asset', Asset);
 
