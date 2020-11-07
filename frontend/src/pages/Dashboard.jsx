@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import DomainIcon from "@material-ui/icons/Domain";
 
-import Searchbar from '../components/Searchbar';
+import Searchbar from '../components/Searchbar/Searchbar';
 import Header from '../components/Header';
 import { Link } from 'react-router-dom';
 

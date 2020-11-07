@@ -78,8 +78,12 @@ const Searchbar = () => {
 
         const searchEvents = async (key) => {
             const result = await fetch(`http://localhost:4000/events?search=${key}&limit=3`);
-            const json = await result.json();
-            return json;
+            if (result.status < 300) {
+                const json = await result.json();
+                return json.data;
+            } else {
+                return [];
+            }
         };
 
         if (state.searchTerm) {

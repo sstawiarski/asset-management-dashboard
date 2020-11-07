@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 
-import AssetFilter from '../components/AssetFilter';
-import EventFilter from '../components/EventFilter';
+import AssetFilter from '../components/Dialogs/AssetFilter';
+import EventFilter from '../components/Dialogs/EventFilter';
 import Header from '../components/Header';
 import GenericTable from '../components/GenericTable';
 
