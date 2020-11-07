@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
+const Counter = require("../models/counter.model");
+const Event = require("../models/event.model");
 const sampleAssets = require("../sample_data/sampleAssets.data");
 
 router.get("/", async (req, res, err) => {
@@ -159,7 +161,7 @@ router.get("/", async (req, res, err) => {
     //currently returns asset object, not object with count and data properties
     if (req.query.search) {
 
-      if (result.length) {
+      if (result[0].data.length) {
 
         if (result[0].data[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
           const exactMatch = [result[0].data[0]];
@@ -192,7 +194,7 @@ router.get("/", async (req, res, err) => {
       //return all results found if not a search
     } else {
 
-      if (result.length) {
+      if (result[0].data.length) {
         res.status(200).json(result[0]);
 
       } else {
