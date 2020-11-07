@@ -98,7 +98,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Assignee</Typography>
-                                        <Typography variant="body1">{asset.assignee}</Typography>
+                                        <Typography variant="body1">{asset.assignee ?  asset.assignee : "N/A"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Created On</Typography>
@@ -110,7 +110,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Location</Typography>
-                                        <Typography variant="body1">{asset.deployedLocation}</Typography>
+                                        <Typography variant="body1">{asset.deployedLocation ? asset.deployedLocation : "N/A"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Owner</Typography>
@@ -120,13 +120,13 @@ const AssetDetails = (props) => {
                                         asset.dateUpdated ?
                                             <Grid item xs={3} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Last Updated</Typography>
-                                                <Typography variant="body1">{asset.dateUpdated ? new Date(asset.dateUpdated).toLocaleDateString('en-US', dateOptions) : null}</Typography>
+                                                <Typography variant="body1">{asset.dateUpdated ? new Date(asset.dateUpdated).toLocaleDateString('en-US', dateOptions) : "Never"}</Typography>
                                             </Grid>
                                             : null
                                     }
                                 </Grid>
 
-                                <Grid container>
+                                <Grid container className={classes.item}>
                                     {
                                         asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={6} className={classes.item}>
