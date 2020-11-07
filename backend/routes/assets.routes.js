@@ -92,43 +92,32 @@ router.put('/load', async (req, res) => {
     }
 })
 
-
-
-
-
-
-
-
-
-
-
-
-router.POST('/create-Assemnbly', async (req, res, err) => {
+router.POST('/create-Assembly', async (req, res, err) => {
     try {
-    	const serial= req.body.Assets
-        const override= req.body.override
+    	const serial = req.body.Assets
+        const override = req.body.override
 
               
 
     	// Queryig DB to find the assetTYPE
-    	 const asset = await Asset.findOneAndUpdate({ assetName: req.body.assetName,owner:null },{assetType : "Assembly", owner:"Supply Chain"});
+    	 const asset = await Asset.findOneAndUpdate({ assetName: req.body.assetName, owner : null },{ assetType : "Assembly", owner : "Supply Chain" });
 
     	 if (override){
-                await Asset.updateMany({serial:{$in: serial}},{parentId:asset.serial})
+                await Asset.updateMany({ serial : { $in : serial }}, { parentId : asset.serial })
               res.status(200).json({message:"Successfully updated"})
              
              
          }
         else{
             
-            const findSerial = await Asset.find ({serial:{$in: serial},parentId:null})
+            const findSerial = await Asset.find ({ serial :{ $in : serial }, parentId : null })
             if(findSerial.length===serial.length){
-                await Asset.updateMany ({serial:{$in: serial}},{parentId:asset.serial})
-                res.status(200).json({message:"Successfully updated"})
+                await Asset.updateMany ({ serial : { $in: serial }},{ parentId:asset.serial })
+                res.status(200).json({ message : "Successfully updated" })
             }
             else{
-                await Asset.updateMany ({serial:{$in: serial},parentId:null},{parentId:asset.serial})
-                res.status(250).json({message:"failed to update some assets"})
+                await Asset.updateMany ({ serial: { $in : serial }, parentId : null}, { parentId : asset.serial })
+                res.status(250).json({ message:"failed to update some assets" })
             }
         }
        
@@ -139,19 +128,6 @@ router.POST('/create-Assemnbly', async (req, res, err) => {
         console.log(err)
     }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
