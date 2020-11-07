@@ -1,101 +1,96 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles'
 
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import Toolbar from '@material-ui/core/Toolbar';
-import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 
-import Header from '../components/Header'
-import { Box } from '@material-ui/core';
+import AssetFilter from '../components/AssetFilter';
+import EventFilter from '../components/EventFilter';
+import Header from '../components/Header';
+import GenericTable from '../components/GenericTable';
 
+import FilterListIcon from '@material-ui/icons/FilterList';
 
-const useStyles = makeStyles({
-    root: {
-        marginLeft: "20px"
-    },
-    table: {
-        overflow: "hidden",
-        marginLeft: "15px",
-    }
-});
-
-const dateOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric"
+const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
+const eventFields = ["key", "eventTime", "eventType"];
+const assetMainAction = {
+    action: "Filter",
+    dialog: AssetFilter,
+    icon: FilterListIcon,
+    props: ["setActiveFilters"]
 };
 
-const productHeadCells = ["Serial", "Product", "Description", "Checked Out", "Location", "Owner", "Group Tag"];
-
-const eventHeadCells = ["Key", "Date", "Type", "Associated Products"];
+const eventMainAction = {
+    action: "Filter",
+    dialog: EventFilter,
+    icon: FilterListIcon,
+    props: ["setActiveFilters"]
+};
 
 const SearchDetails = (props) => {
-    const classes = useStyles();
 
-    const [productRows, setProductRows] = useState([]);
-    const [eventRows, setEventRows] = useState([]);
-    const [eventRowsPerPage, setEventRowsPerPage] = useState(5);
-    const [productRowsPerPage, setProductRowsPerPage] = useState(5);
-    const [eventPage, setEventPage] = useState(0);
-    const [productPage, setProductPage] = useState(0);
+    const [assets, setAssets] = useState([]);
+    const [assetFilters, setAssetFilters] = useState({
+        limit: 5
+    });
+    const [assetCount, setAssetCount] = useState(0);
+
+    const [events, setEvents] = useState([]);
+    const [eventFilters, setEventFilters] = useState({
+        limit: 5
+    });
     const [eventCount, setEventCount] = useState(0);
-    const [productCount, setProductCount] = useState(0);
-    const [redirect, setRedirect] = useState(false);
+
     const [searchTerm, setSearchTerm] = useState(props.match.params.query);
 
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets?search=${searchTerm}&page=${productPage}&limit=${productRowsPerPage}`)
-            .then(res => {
-                if (res.status < 300) {
-                    return res.json();
+        //generate the fetch url based on active filters and their keys
+        const generateURL = (type, filters) => {
+            let url = `http://localhost:4000/${type}?search=${searchTerm}`;
+            const keys = Object.keys(filters);
+            keys.map((key, idx) => {
+                let value = filters[key];
+                if (key === "eventType") {
+                    value = encodeURI(value);
+                }
+                url = `${url}&${key}=${value}`;
+            });
+
+            return url;
+        };
+
+        const assetUrl = generateURL("assets", assetFilters);
+        const eventUrl = generateURL("events", eventFilters);
+        console.log(eventUrl);
+
+        fetch(assetUrl)
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
                 } else {
-                    return { count: [{count: 0}], data: []};
-                } 
+                    return { data: [], count: [{ count: 0 }] };
+                }
             })
             .then(json => {
-                setProductRows(json.data);
-                setProductCount(json.count[0].count);
+                setAssets(json.data);
+                setAssetCount(json.count[0].count);
             });
 
-        fetch(`http://localhost:4000/events?search=${searchTerm}`)
-            .then(res => res.json())
+        fetch(eventUrl)
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return { data: [], count: [{ count: 0 }] };
+                }
+            })
             .then(json => {
-                setEventRows(json);
+                setEvents(json.data);
+                setEventCount(json.count[0].count);
             });
 
-    }, [props.match.params.query, productRowsPerPage, productPage]);
+    }, [props.match.params.query, assetFilters, eventFilters]);
 
-    useEffect(() => {
-
-    }, [redirect])
-
-    const handleEventChangePage = () => {
-
-    }
-
-    const handleProductChangePage = (event, newPage) => {
-        setProductPage(newPage);
-    }
-
-    const handleProductChangeRowsPerPage = (event) => {
-        setProductRowsPerPage(parseInt(event.target.value, 10));
-        setProductPage(0);
-    }
-
-    const handleEventChangeRowsPerPage = () => {
-
-    }
 
     const handleEnter = (event) => {
         if (event.key === "Enter") {
@@ -111,95 +106,52 @@ const SearchDetails = (props) => {
     };
 
     return (
-        <div className={classes.root}>
+        <div>
             <Header heading="Search" subheading="Search Details" />
-            <TextField 
-            id="current-search" 
-            label="Search" 
-            variant="outlined" 
-            style={{
-                backgroundColor: "white",
-                width: "50%"
-            }}
-            value={searchTerm} 
-            onChange={handleSearchChange} 
-            onKeyDown={handleEnter} />
-            <br />
-            <Typography variant="h6" style={{ float: "left", marginLeft: "15px", paddingTop: "20px" }}>Product Results</Typography>
+            <Box m={3}>
+                <TextField
+                    id="current-search"
+                    label="Search"
+                    variant="outlined"
+                    style={{
+                        backgroundColor: "white",
+                        width: "50%",
+                        paddingBotton: "20px"
+                    }}
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    onKeyDown={handleEnter} />
+            </Box>
 
-            <TableContainer className={classes.table} component={Paper}>
-                <Table size="large">
-                    <TableHead>
-                        <TableRow>
-                            {productHeadCells.map((headCell) => (
-                                <TableCell key={headCell} align="left">{headCell}</TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {productRows.length ? productRows.map(product => (
-                            <TableRow hover key={product.serial} component={Link} to={`/details/${product.serial}`} style={{ textDecoration: "none" }}>
-                                <TableCell align="left">{product.serial}</TableCell>
-                                <TableCell align="left">{product.assetType}</TableCell>
-                                <TableCell align="left">{product.assetName}</TableCell>
-                                <TableCell align="left">{product.checkedOut ? "Yes" : "No"}</TableCell>
-                                <TableCell align="left">{product.deployedLocation}</TableCell>
-                                <TableCell align="left">{product.owner}</TableCell>
-                                <TableCell align="left">{product.groupTag}</TableCell>
-                            </TableRow>
-                        )) : null}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            { productRows.length ?
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={productRows.length}
-                    rowsPerPage={productRowsPerPage}
-                    page={productPage}
-                    onChangePage={handleProductChangePage}
-                    onChangeRowsPerPage={handleProductChangeRowsPerPage}
-                />
-                : null}
+            <div>
+                <GenericTable
+                    data={assets}
+                    title="Asset Results"
+                    selectedFields={assetFields}
+                    filters={assetFilters}
+                    setFilters={setAssetFilters}
+                    count={assetCount}
+                    history={props.history}
+                    variant="asset"
+                    menuItems={[]}
+                    mainAction={assetMainAction} />
+            </div>
 
-            <Typography variant="h6" style={{ float: "left", marginLeft: "15px", paddingTop: "20px" }}>Event Results</Typography>
-            <TableContainer className={classes.table} component={Paper}>
-                <Table size="large">
-                    <TableHead>
-                        <TableRow>
-                            {eventHeadCells.map((headCell) => (
-                                <TableCell key={headCell} align="left">{headCell}</TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {eventRows.length ? eventRows.map(event => (
-                            <TableRow hover key={event.key} component={Link} to={`/shipments/${event.key}`} style={{ textDecoration: "none" }}>
-                                <TableCell align="left">{event.key}</TableCell>
-                                <TableCell align="left">{new Date(event.eventTime).toLocaleDateString('en-US', dateOptions)}</TableCell>
-                                <TableCell align="left">{event.eventType}</TableCell>
-                                <TableCell align="left">{event.productIds.length}</TableCell>
-                            </TableRow>
-                        )) : null}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            {
-                eventRows.length ?
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={eventRows.length}
-                        rowsPerPage={eventRowsPerPage}
-                        page={eventPage}
-                        onChangePage={handleEventChangePage}
-                        onChangeRowsPerPage={handleEventChangeRowsPerPage}
-                    />
-                    : null
-            }
-
+            <div>
+                <GenericTable
+                    data={events}
+                    title="Event Results"
+                    selectedFields={eventFields}
+                    filters={eventFilters}
+                    setFilters={setEventFilters}
+                    count={eventCount}
+                    history={props.history}
+                    variant="event"
+                    menuItems={[]}
+                    mainAction={eventMainAction} />
+            </div>
         </div>
+
     )
 };
 

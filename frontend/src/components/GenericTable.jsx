@@ -446,7 +446,7 @@ export default function EnhancedTable(props) {
     const newFilters = Object.keys(activeFilters)
       .reduce((p, c) => {
         //convert the Date objects send from the filter dialog into numbers for use in the URL
-        if (c === "dateCreated" || c === "dateUpdated") {
+        if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime") {
           p[c] = activeFilters[c].getTime();
         } else {
           p[c] = activeFilters[c];
@@ -569,6 +569,9 @@ export default function EnhancedTable(props) {
 
                       {
                         selectedFields.map((arrayItem) => {
+                          if (arrayItem.includes("Time") || arrayItem.includes("date")) {
+                            return (<TableCell align="left">{new Date(item[arrayItem]).toLocaleDateString('en-US')}</TableCell>)
+                          }
                           return (<TableCell align="left">{item[arrayItem]}</TableCell>)
                         })
                       }
