@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const SearchResult = ({ data }) => {
+const AssetResult = ({ data, divider }) => {
     const classes = useStyles();
 
     const [showEvents, toggleEvents] = useState(false);
@@ -60,7 +60,7 @@ const SearchResult = ({ data }) => {
     /* Fetch events for the given data */
     useEffect(() => {
         const fetchEvents = async (id) => {
-            const result = await fetch(`http://localhost:4000/events/${id}`);
+            const result = await fetch(`http://localhost:4000/events/${id}?limit=3`);
             const json = await result.json();
             return json;
         };
@@ -163,10 +163,10 @@ const SearchResult = ({ data }) => {
                 }
 
                 <div ref={container} className={classes.eventItem} />
-                <Divider />
+                {divider ? <Divider /> : null}
             </div>
         </div>
     );
 };
 
-export default SearchResult;
+export default AssetResult;
