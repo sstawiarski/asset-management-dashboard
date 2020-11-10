@@ -24,6 +24,8 @@ import ReusableTable from '../components/ReusableTable'
 import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 
+import { compareSchema, getSchema } from '../utils/assembly.utils';
+
 const useStyles = makeStyles((theme) => ({
     root: {
 
@@ -84,16 +86,16 @@ const headCells = [
 //TODO: Replace in functional component with fetches to API
 const rows = [
     {
-        "serial": "ELP-8000",
+        "serial": "G800-1111",
         "product": "Asset",
-        "description": "Electronics Probe",
+        "description": "Gap Sub",
         "owner": "Supply Chain USA",
         "groupTag": "Heyyy"
     },
     {
         "serial": "CLP-8000",
         "product": "Asset",
-        "description": "Electronics Thingie",
+        "description": "Electronics Probe",
         "owner": "Supply Chain USA",
         "groupTag": "Heyyy"
     }
@@ -104,6 +106,7 @@ const CreateAssembly = () => {
 
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
+    const [schema, setSchema] = useState(null);
 
     const [state, setState] = useState({
         assemblyType: "",
@@ -119,13 +122,18 @@ const CreateAssembly = () => {
 
     const handleCreate = (event) => {
         event.preventDefault();
+        getSchema(state.assemblyType).then(response => {
+            setSchema(response);
+        });
         setCreatorOpen(false);
         toggleAssembly(true);
+
     }
 
     const handleCancel = () => {
         setCreatorOpen(false);
         toggleAssembly(false);
+        setSchema(null);
         setState(s => {
             Object.keys(s).forEach(key => s[key] = "")
             return (s);
@@ -162,6 +170,16 @@ const CreateAssembly = () => {
             selectedTableRows: newRows
         }))
     }
+
+    const handleAssemblySubmit = () => {
+        compareSchema(schema, state.selected).then(result => {
+            if (!result[0]) {
+                alert("missing items " + JSON.stringify(result[1]));
+            } else {
+                alert("success");
+            }
+        })
+    };
 
     return (
         <div className={classes.root}>
@@ -204,7 +222,7 @@ const CreateAssembly = () => {
                             <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
-                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
+                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} onSubmit={handleAssemblySubmit} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
 
 
                     </Grid>
