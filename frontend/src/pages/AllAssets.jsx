@@ -76,16 +76,6 @@ const AllAssets = (props) => {
 
     }, [filters]);
 
-    /* Declare the main action for the table so it can be accessed and rendered directly by toolbar */
-    const Main = ({ setOpen }) => {
-        return (
-            <Tooltip title={"Filter"}>
-                <IconButton aria-label={"filter"}>
-                    <FilterListIcon onClick={() => setOpen(true)} />
-                </IconButton>
-            </Tooltip>);
-    };
-
     return (
         <div>
             <Header heading="Assets" subheading="View All" />
@@ -108,6 +98,7 @@ const AllAssets = (props) => {
                         selected={selected}>
 
                         {/* Table toolbar icons and menus */}
+                        {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
                                 <IconButton aria-label={"edit"}>
