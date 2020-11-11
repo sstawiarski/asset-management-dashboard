@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeGroupTagDialog = ({ open, setOpen, selected, onResponse }) => {
+const ChangeGroupTagDialog = ({ open, setOpen, selected }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -70,11 +70,9 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onResponse }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    onResponse("success");
                     handleClose();
                 } else {
-                    onResponse("error");
-                    handleClose();
+                    setFailed(true);
                 }
             })
     }
