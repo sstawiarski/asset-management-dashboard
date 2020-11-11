@@ -92,7 +92,7 @@ router.put('/load', async (req, res) => {
     }
 })
 
-router.POST('/create-Assembly', async (req, res, err) => {
+router.post('/create-Assembly', async (req, res, err) => {
     try {
     	const serial = req.body.Assets
         const override = req.body.override

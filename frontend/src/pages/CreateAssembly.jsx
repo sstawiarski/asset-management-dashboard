@@ -3,7 +3,7 @@
  * October 2020
  * License: MIT
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Typography from '@material-ui/core/Typography';
@@ -81,7 +81,6 @@ const headCells = [
     { id: 'group-tag', numeric: false, disablePadding: false, label: 'Group Tag' },
 ];
 
-//TODO: Replace in functional component with fetches to API
 const rows = [
     {
         "serial": "ELP-8000",
@@ -97,21 +96,40 @@ const rows = [
         "owner": "Supply Chain USA",
         "groupTag": "Heyyy"
     }
-]
+];
+
+
 
 const CreateAssembly = () => {
+    const [assets, setAssets] = useState([])
     const classes = useStyles();
-
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
-
     const [state, setState] = useState({
         assemblyType: "",
         groupTag: "",
         owner: "",
         selected: [],
         selectedTableRows: []
-    })
+    });
+
+    //TODO: Replace in functional component with fetches to API
+    useEffect(() => {
+        const fetchAssets = async () => {  
+            try {
+                const result = await fetch(`http://localhost:4000/assets`);
+                const json = await result.json();
+                return json.data;
+            } catch (e) {
+
+              }
+        };
+
+          fetchAssets()
+          .then(result => {
+            setAssets(result);
+          },);        
+    }, [])
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -198,6 +216,7 @@ const CreateAssembly = () => {
                     </Grid>
 
                     <Grid item xs={12} sm={4} lg={3}>
+
 
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Assembly Cart</Typography>
