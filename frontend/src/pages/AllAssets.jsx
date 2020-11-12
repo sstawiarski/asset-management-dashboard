@@ -14,6 +14,8 @@ import TableToolbar from '../components/Tables/TableToolbar';
 import AssetFilter from '../components/Dialogs/AssetFilter'
 import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
 import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
+import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
+import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -134,6 +136,8 @@ const AllAssets = (props) => {
             <AssetFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs({ filter: isOpen })} setActiveFilters={setActiveFilters} />
             <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} />
             <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} />
+            <ChangeAssignmentDialog open={dialogs["Assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
+            <ChangeOwnershipDialog open={dialogs["Owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
         </div>);
 
 }
