@@ -42,6 +42,7 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -52,6 +53,7 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import TableHead from './TableHead';
+import IncompletePopper from '../IncompletePopper';
 
 const types = {
     asset: "/assets/",
@@ -83,12 +85,33 @@ const useStyles = makeStyles((theme) => ({
     },
     chip: {
         margin: "4px"
+    },
+    incomplete: {
+        borderRadius: "16px",
+        backgroundColor: "#fdb6c1",
+        color: "#482626",
+        border: "none",
+        textAlign: "center",
+        display: "inline-block",
+        padding: "0px 6px 0px 6px",
+        marginLeft: "-8px",
+        cursor: "pointer"
+    },
+    noAction: {
+        pointerEvents: "none"
+    },
+    popper: {
+        pointerEvents: 'auto',
+        backgroundColor: "white",
+        boxShadow: "0.5px 1.5px 4px #000000",
+        borderRadius: "3px",
     }
 }));
 
 const NewTable = (props) => {
     const classes = useStyles();
     const history = useHistory();
+
     const {
         data,
         count,
@@ -310,15 +333,31 @@ const NewTable = (props) => {
 
                                             {
                                                 selectedFields.map((arrayItem) => {
+                                                    //translate raw dates and times into nice MM/DD/YYYY format
                                                     if (arrayItem.includes("Time") || arrayItem.includes("date")) {
-                                                        return (<TableCell align="left">{new Date(item[arrayItem]).toLocaleDateString('en-US')}</TableCell>)
+                                                        return (
+                                                            <TableCell align="left">
+                                                                {new Date(item[arrayItem]).toLocaleDateString('en-US')}
+                                                            </TableCell>)
                                                     }
+                                                    //check whether assemblies are incomplete using the 'incomplete' boolean
+                                                    else if (arrayItem === "assetType" && item[arrayItem] === "Assembly" && item["incomplete"]) {
+                                                        return (
+                                                            <TableCell rowSpan={1} align="left">
+                                                                {item[arrayItem]}
+                                                                <br />
+                                                                <IncompletePopper assembly={item} />
+                                                            </TableCell>
+                                                        )
+                                                    }
+
                                                     return (<TableCell align="left">{item[arrayItem]}</TableCell>)
                                                 })
                                             }
                                         </TableRow>
                                     );
                                 })}
+                                
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 53 * emptyRows }}>
                                     <TableCell colSpan={selectedFields.length + 1} />
@@ -337,7 +376,6 @@ const NewTable = (props) => {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper>
-
         </div>
     );
 
