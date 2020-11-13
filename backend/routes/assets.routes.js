@@ -6,6 +6,7 @@ const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
 const Counter = require("../models/counter.model");
 const Event = require("../models/event.model");
+const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 
@@ -313,7 +314,6 @@ router.patch("/", async (req, res) => {
 router.put("/load", async (req, res) => {
   try {
     sampleAssets.forEach(async (item) => {
-      console.log(item);
       const asset = new Asset({
         ...item,
         dateCreated: Date.now(),
@@ -330,10 +330,108 @@ router.put("/load", async (req, res) => {
   }
 });
 
+//load databse with assembly schemas for comparison when creating an assembly
+router.put("/assembly/schema", async (req, res) => {
+  try {
+    const assemblySchemas = [{
+      name: "Carrier",
+      serializationFormat: "G800-",
+      components: [
+        "Landing Sub",
+        "Crossover Sub",
+        "Centralizer",
+        "Gap Sub"]
+    }, {
+      name: "Electronics Probe",
+      serializationFormat: "ELP-",
+      components: [
+        "Pulser",
+        "ECAM",
+        "Gamma",
+        "Directional",
+        "Female Rotatable"
+      ]
+    }, {
+      name: "Battery Probe",
+      serializationFormat: "BAP-",
+      components: [
+        "Transmission Rod",
+        "Gap Joint",
+        "Male Rotatable",
+        "Battery Bulkhead"
+      ]
+    }, {
+      name: "Kit Box",
+      serializationFormat: "EVO-ONE-",
+      components: []
+    }, {
+      name: "Pulser",
+      serializationFormat: "ELP-",
+      components: [
+        "Motor",
+        "Gearbox",
+        "Pressure Feedthrough"
+      ]
+    }];
+
+    for (const item of assemblySchemas) {
+      const assembly = new AssemblySchema({
+        name: item.name,
+        serializationFormat: item.serializationFormat,
+        components: item.components
+      });
+      await assembly.save();
+    }
+
+    res.status(200).json({
+      message: "success"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({
+      message: "Error loading sample data into database",
+      internal_code: "database_load_error",
+    });
+  }
+
+});
+
+router.get("/assembly/schema", async (req, res) => {
+  const type = decodeURI(req.query.type);
+  try {
+    const chosenSchema = await AssemblySchema.findOne({ name: type }).select({
+      _id: 0,
+      __v: 0
+    });
+    if (chosenSchema) {
+      res.status(200).json(chosenSchema);
+    } else {
+      res.status(404).json({
+        message: "Error finding assembly schema",
+        internal_code: "schema_error",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({
+      message: "Error finding assembly schema",
+      internal_code: "schema_error",
+    });
+  }
+})
+
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
+  const { project } = req.query
+  let projection = {};
+  if (project) {
+    projection = {
+      [project]: 1,
+      _id: 0
+    }
+  }
   try {
-    const asset = await Asset.find({ serial: serial });
+    const asset = await Asset.find({ serial: serial }, projection);
 
     if (asset.length) {
       res.status(200).json(asset[0]);
