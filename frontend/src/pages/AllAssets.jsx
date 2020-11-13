@@ -136,8 +136,9 @@ const AllAssets = (props) => {
             <AssetFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs({ filter: isOpen })} setActiveFilters={setActiveFilters} />
             <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} />
             <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} />
-            <ChangeAssignmentDialog open={dialogs["Assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
-            <ChangeOwnershipDialog open={dialogs["Owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
+            <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
+            <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
+            <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} />
         </div>);
 
 }
