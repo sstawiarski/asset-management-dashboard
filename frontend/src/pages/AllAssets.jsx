@@ -125,7 +125,7 @@ const AllAssets = (props) => {
                             </Tooltip>}
 
 
-
+ 
 
                     </TableToolbar>
 

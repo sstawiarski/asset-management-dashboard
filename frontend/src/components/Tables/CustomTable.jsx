@@ -122,7 +122,8 @@ const NewTable = (props) => {
         filters,
         setFilters,
         activeFilters,
-        setActiveFilters
+        setActiveFilters,
+        compare
     } = props;
     const url = types[variant];
     let origFilters = filters;
@@ -161,7 +162,11 @@ const NewTable = (props) => {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = data.map((n) => n.serial);
+            const onlyGood = data.filter((n) => {
+                const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
+                return !isInCart;
+            });
+            const newSelecteds = onlyGood.map(row => row[selectedFields[0]]);
             setSelected(newSelecteds);
             return;
         }
@@ -300,6 +305,7 @@ const NewTable = (props) => {
                             {
                                 data.map((item, index) => {
                                     const isItemSelected = isSelected(item[selectedFields[0]]);
+                                    const isItemCompared = compare ? compare.includes(item[selectedFields[0]]) : false;
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
@@ -314,6 +320,7 @@ const NewTable = (props) => {
                                             tabIndex={-1}
                                             key={item[selectedFields[0]]}
                                             selected={isItemSelected}
+                                            style={{ backgroundColor: isItemCompared ? "#d2d1d1" : "inherit" }}
                                         >
                                             {checkboxes ?
                                                 <TableCell
@@ -325,6 +332,7 @@ const NewTable = (props) => {
 
                                                     <Checkbox
                                                         checked={isItemSelected}
+                                                        disabled={isItemCompared}
                                                         inputProps={{ 'aria-labelledby': labelId }}
                                                     />
 
