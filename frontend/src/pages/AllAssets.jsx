@@ -16,6 +16,7 @@ import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
 import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
 import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
 import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
+import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];

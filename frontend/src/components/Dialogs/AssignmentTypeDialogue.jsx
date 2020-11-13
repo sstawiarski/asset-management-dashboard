@@ -102,8 +102,8 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
                         id="assignment-type-editor" 
                         label="AssignmentType" 
                         variant="outlined"
-                        value={groupTag}
-                        onChange={(event) => setGroupTag(event.target.value)} />
+                        value={type}
+                        onChange={(event) => setType(event.target.value)} />
 
                         {/* Render a failure message if API returns a response code > 300 */}
                         {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
