@@ -355,7 +355,9 @@ router.get("/:serial", async (req, res, err) => {
 function getEventType(field) {
   switch (field) {
     case "retired":
-      return ["Change of Retirement Status", "RET-"]
+      return ["Change of Retirement Status", "RET-"];
+    case "groupTag":
+      return ["Change of Group Tag", "GRP-"];
   }
 }
 
