@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 import SearchDetails from './pages/SearchDetails';
+import TestPage from './pages/TestPage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
