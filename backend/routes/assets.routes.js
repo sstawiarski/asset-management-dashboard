@@ -6,7 +6,7 @@ const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
 const Counter = require("../models/counter.model");
 const Event = require("../models/event.model");
-const AssemblySchema = require('../models/assembly.model');
+const AssemblySchema = require('../models/assemblies.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 

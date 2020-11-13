@@ -104,8 +104,7 @@ const CreateAssembly = () => {
         setCreatorOpen(true);
     }
 
-    const handleCreate = (event) => {
-        event.preventDefault();
+    const handleCreate = () => {
         getSchema(state.assemblyType).then(response => {
             setSchema(response);
         });
@@ -142,7 +141,7 @@ const CreateAssembly = () => {
     };
 
     const handleAssemblySubmit = () => {
-        compareSchema(schema, state.selected).then(result => {
+        compareSchema(schema, cartItems).then(result => {
             if (!result[0]) {
                 alert("missing items " + JSON.stringify(result[1]));
             } else {
@@ -215,6 +214,7 @@ const CreateAssembly = () => {
                                 header={headCells}
                                 rows={cartItems}
                                 handleRemove={handleRemoveFromCart}
+                                onSubmit={handleAssemblySubmit}
                                 className={classes.paper} />
 
                             : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
