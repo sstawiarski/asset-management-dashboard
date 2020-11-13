@@ -40,6 +40,8 @@ function App() {
               <Route exact path="/assets/create-assembly" component={CreateAssembly} />
               <Route exact path="/assets/view-all" component={AllAssets} />
               <Route path="/assets/:serial" component={AssetDetails} />
+              <Route path="/test" component={TestPage} />
+              
             </Switch>
         </main>
       </div>
