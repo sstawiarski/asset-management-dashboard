@@ -115,6 +115,9 @@ const AllAssets = (props) => {
                                     onClose={handleClose}>
                                     <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
                                 </Menu>
                             </>
                             :

@@ -165,7 +165,6 @@ router.get('/', async (req, res) => {
         aggregateArray.push(projection);
 
         const result = await Event.aggregate(aggregateArray);
-        console.log(result)
 
         if (req.query.search) {
 
