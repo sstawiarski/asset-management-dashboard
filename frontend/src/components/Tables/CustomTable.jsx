@@ -39,7 +39,8 @@
  * 
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -55,10 +56,7 @@ import Chip from '@material-ui/core/Chip';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
 
-const types = {
-    asset: "/assets/",
-    shipment: "/shipment/"
-};
+import { URLTypes as types } from '../../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -111,6 +109,8 @@ const useStyles = makeStyles((theme) => ({
 const NewTable = (props) => {
     const classes = useStyles();
     const history = useHistory();
+    const [showClicked, setClicked] = useState(false);
+    const [identifier, setIdentifier] = useState("");
 
     const {
         data,
@@ -133,6 +133,7 @@ const NewTable = (props) => {
     const order = filters.order ? filters.order : 'asc';
     const orderBy = filters.sort_by ? filters.sort_by : 'serial';
     const checkboxes = props.checkboxes || false;
+    const Clickable = props.clickable || null;
 
     //for generating Chips from filters from a dialog
     const activeKeys = Object.keys(activeFilters);
@@ -313,7 +314,13 @@ const NewTable = (props) => {
                                             hover
                                             onClick={(event) => {
                                                 event.stopPropagation();
-                                                history.push(`${url}${item[selectedFields[0]]}`)
+                                                if (Clickable) {
+                                                    setClicked(true);
+                                                    setIdentifier(item[selectedFields[0]]);
+                                                } else {
+                                                    history.push(`${url}${item[selectedFields[0]]}`)
+                                                }
+
                                             }}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
@@ -365,7 +372,7 @@ const NewTable = (props) => {
                                         </TableRow>
                                     );
                                 })}
-                                
+
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 53 * emptyRows }}>
                                     <TableCell colSpan={selectedFields.length + 1} />
@@ -384,9 +391,27 @@ const NewTable = (props) => {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper>
+            {showClicked ? <Clickable isOpen={showClicked} setOpen={setClicked} identifier={identifier} /> : null}
         </div>
     );
 
 };
+
+NewTable.propTypes = {
+    data: PropTypes.array.isRequired,
+    filters: PropTypes.object.isRequired,
+    setFilters: PropTypes.func.isRequired,
+    count: PropTypes.number.isRequired,
+    variant: PropTypes.oneOf(['asset', 'shipment']).isRequired,
+    selected: PropTypes.array.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    activeFilters: PropTypes.object.isRequired,
+    setActiveFilters: PropTypes.func.isRequired,
+    selectedFields: PropTypes.array.isRequired,
+    compare: PropTypes.array,
+    checkboxes: PropTypes.bool,
+    clickable: PropTypes.func
+
+}
 
 export default NewTable;
