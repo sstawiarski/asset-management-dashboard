@@ -101,10 +101,12 @@ const rows = [
 
 
 const CreateAssembly = () => {
-    const [assets, setAssets] = useState([])
+	
+    const [assets, setAssets] = useState([]);
     const classes = useStyles();
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
+    
     const [state, setState] = useState({
         assemblyType: "",
         groupTag: "",
@@ -113,23 +115,30 @@ const CreateAssembly = () => {
         selectedTableRows: []
     });
 
+
     //TODO: Replace in functional component with fetches to API
     useEffect(() => {
         const fetchAssets = async () => {  
-            try {
-                const result = await fetch(`http://localhost:4000/assets`);
-                const json = await result.json();
-                return json.data;
-            } catch (e) {
-
-              }
+            
+	        const result = await fetch(`http://localhost:4000/assets`);
+	        const json = await result.json();
+	        return json;
+           
         };
 
-          fetchAssets()
-          .then(result => {
-            setAssets(result);
-          },);        
+      fetchAssets()
+      .then(result => {
+        setAssets(result);
+      },);        
     }, [])
+    
+    const assetArray = () => {
+    	
+    }
+
+
+
+		
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -200,7 +209,7 @@ const CreateAssembly = () => {
                                 ? <ReusableTable
                                     className={classes.paper}
                                     headCells={headCells}
-                                    rows={rows}
+                                    rows={assets}
                                     rowsPerPage={15}
                                     addHandler={handleAddToCart}
                                     selected={state.selectedTableRows}
