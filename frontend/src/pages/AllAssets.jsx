@@ -96,9 +96,7 @@ const AllAssets = (props) => {
                     variant="asset"
                     checkboxes={true}>
 
-                    <TableToolbar
-                        title="All Assets"
-                        selected={selected}>
+                    <TableToolbar title="All Assets" selected={selected}>
 
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
@@ -126,9 +124,6 @@ const AllAssets = (props) => {
                                     <FilterListIcon onClick={() => setDialogs({ filter: true })} />
                                 </IconButton>
                             </Tooltip>}
-
-
- 
 
                     </TableToolbar>
 
