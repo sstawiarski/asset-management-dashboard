@@ -24,7 +24,7 @@ import AddIcon from '@material-ui/icons/Add';
 import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
-
+import QuickAssetView from '../components/Dialogs/QuickAssetView';
 import { compareSchema, getSchema } from '../utils/assembly.utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -173,7 +173,8 @@ const CreateAssembly = () => {
                                     count={assetCount}
                                     variant="asset"
                                     checkboxes={true}
-                                    compare={cartItems}>
+                                    compare={cartItems}
+                                    clickable={(props) => (<QuickAssetView {...props} />)}>
 
                                     <TableToolbar title="Assembly Creator" selected={selected}>
                                         {selected.length > 0 ?
