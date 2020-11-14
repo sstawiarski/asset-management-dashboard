@@ -82,7 +82,7 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel, setP
                             value={state.assemblyType}
                             labelWidth={110}
                             onChange={handleChange}>
-                                {state.types.length > 0 ? state.types.map(menuItem => <MenuItem value={menuItem}>{menuItem}</MenuItem>) : null}
+                                {state.types.length > 0 ? state.types.map(menuItem => <MenuItem key={menuItem} value={menuItem}>{menuItem}</MenuItem>) : null}
                         </Select>
                     </FormControl>
                     <div className={classes.formControl}>
