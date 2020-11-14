@@ -7,6 +7,11 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
 import AssetTimeline from '../components/AssetTimeline'
+import Manifest from '../components/Manifest';
+import { Button } from '@material-ui/core';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+
+import { dateOptions } from '../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,16 +32,14 @@ const useStyles = makeStyles((theme) => ({
     break: {
         flexGrow: 1,
         fontWeight: "bold"
+    },
+    button: {
+        display: "block"
     }
-}))
-
-const dateOptions = {
-    month: "long",
-    day: "numeric",
-    year: "numeric"
-}
+}));
 
 const AssetDetails = (props) => {
+
     const { serial } = props.match.params;
     const classes = useStyles();
     const [asset, setAsset] = useState({});
@@ -44,38 +47,42 @@ const AssetDetails = (props) => {
 
     useEffect(() => {
         fetch(`http://localhost:4000/assets/${serial}`)
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return {};
-            }
-        })
-        .then(json => {
-            setAsset(json);
-        });
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return {};
+                }
+            })
+            .then(json => {
+                setAsset(json);
+            });
 
         fetch(`http://localhost:4000/events/${serial}`)
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return [];
-            }
-        })
-        .then(json => {
-            setEvents(json);
-        });
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return [];
+                }
+            })
+            .then(json => {
+                setEvents(json);
+            });
     }, [serial]);
-
 
     return (
         <div className={classes.root}>
             <Header heading="Products" />
+
             <Grid container>
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <Grid item>
+                            <Button className={classes.button} onClick={() => props.history.goBack()}>
+                                <ArrowBackIosIcon fontSize="inherit" />
+                                <span style={{ position: "relative", top: "-2px" }}>Back</span>
+                            </Button>
                             <Paper className={classes.paper}>
                                 <Typography className={classes.item} variant="h6">Product Details</Typography>
                                 <Divider />
@@ -98,7 +105,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Assignee</Typography>
-                                        <Typography variant="body1">{asset.assignee ?  asset.assignee : "N/A"}</Typography>
+                                        <Typography variant="body1">{asset.assignee ? asset.assignee : "N/A"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Created On</Typography>
@@ -130,7 +137,8 @@ const AssetDetails = (props) => {
                                     {
                                         asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={6} className={classes.item}>
-                                                <Typography variant="subtitle1" className={classes.break}>Asset Components</Typography>
+                                                <Typography variant="subtitle1" className={classes.break}>Assembly Manifest</Typography>
+                                                <Manifest data={asset} />
                                             </Grid>
                                             : null
                                     }
