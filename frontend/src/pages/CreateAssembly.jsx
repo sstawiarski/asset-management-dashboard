@@ -122,18 +122,26 @@ const CreateAssembly = () => {
             
 	        const result = await fetch(`http://localhost:4000/assets`);
 	        const json = await result.json();
-	        return json;
-           
+	        
+	        return(json); 
         };
 
       fetchAssets()
       .then(result => {
-        setAssets(result);
+      	const array = result.map((element) => ({
+      		serial : element.serial, 
+      		product : element.assetType, 
+      		description : element.assetName, 
+      		owner : element.owner, 
+      		groupTag : element.groupTag
+      	}));
+        setAssets(array);
       },);        
     }, [])
     
     const assetArray = () => {
     	
+
     }
 
 
