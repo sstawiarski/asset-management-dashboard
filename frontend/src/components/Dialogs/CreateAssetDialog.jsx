@@ -22,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         minWidth: 180,
     },
+    selectEmpty: {
+        marginTop: theme.spacing(2)
+    },
     error: {
         color: "red"
     }
@@ -33,6 +36,12 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
     const [failed, setFailed] = useState(null);
+    const [assetType, setAssetType] = useState("");
+    const [serial, setSerial] = useState("");
+    const [owner, setOwner] = useState("");
+    const [assignmentType, setAssignmentType] = useState("");
+    const [groupTag, setGroupTag] = useState("");
+    const [assignee, setAssignee] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -91,6 +100,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="create-asset-dialog-title">
             
+            
             <DialogTitle id="create-asset-dialog-title">Create Asset</DialogTitle>
             
             <DialogContent>
@@ -98,23 +108,108 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                 
                 <div className={classes.item}>
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="asset-serial-label">Asset Serial</InputLabel>
+                        <InputLabel id="asset-type-label">Asset Type</InputLabel>
+                        
+                        <Select
+                            labelId="asset-type-label"
+                            labelWidth={105}
+                            id="asset-type-label"
+                            value={assetType}
+                            onChange={(event) => setAssetType(event.target.value)}
+                        >
 
-                        {/* Controlled select, get value from state and changes state when it changes */}
+                            /* populate menu items here for available types */
+
+                        </Select>
+   
+                    </FormControl>
+                
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="asset-serial-label">Asset Serial</InputLabel>
+                        
                         <Select
                             labelId="asset-serial-label"
                             labelWidth={105}
-                            id="asset-serial-select"
-                            value={status}
-                            onChange={(event) => setStatus(event.target.value)}
+                            id="asset-serial-label"
+                            value={serial}
+                            onChange={(event) => setSerial(event.target.value)}
                         >
 
                             /* populate menu items here for available serials */
 
                         </Select>
+         
+                    </FormControl>
 
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="asset-owner-label">Asset Owner</InputLabel>
+                        
+                        <Select
+                            labelId="asset-owner-label"
+                            labelWidth={105}
+                            id="asset-owner-label"
+                            value={owner}
+                            onChange={(event) => setOwner(event.target.value)}
+                        >
+
+                            /* populate menu items here for available serials */
+
+                        </Select>
+         
+                    </FormControl>
+
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="assignee-label">Assignee</InputLabel>
+                        
+                        <Select
+                            labelId="assignee-label"
+                            labelWidth={105}
+                            id="assignee-label"
+                            value={assignee}
+                            onChange={(event) => setAssignee(event.target.value)}
+                        >
+
+                            /* populate menu items here for available serials */
+
+                        </Select>
+         
+                    </FormControl>
+
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="assignment-type-label">Assignment Type</InputLabel>
+                        
+                        <Select
+                            labelId="assignment-type-label"
+                            labelWidth={105}
+                            id="assignment-type-label"
+                            value={assignmentType}
+                            onChange={(event) => setAssignmentType(event.target.value)}
+
+                        >
+                            <MenuItem value="owned">Owned</MenuItem>
+                            <MenuItem value="rented">Rented</MenuItem>
+
+                            /* populate menu items here for available serials */
+
+                        </Select>
+         
+                    </FormControl>
+
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="group-tag-label">Group Tag</InputLabel>
+                        
+                        <Select
+                            labelId="group-tag-label"
+                            labelWidth={105}
+                            id="group-tag-label"
+                            value={groupTag}
+                            onChange={(event) => setGroupTag(event.target.value)}
+                        >
+
+                            /* populate menu items here for available serials */
+
+                        </Select>
+         
                     </FormControl>
                 </div>
             </DialogContent>
