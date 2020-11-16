@@ -46,7 +46,7 @@ const assetPaths = {
                     }
                 },
                 '404': {
-                    description: 'No assets founds in the database',
+                    description: 'No assets found in the database',
                     content: {
                         'application/json': {
                             schema: {
