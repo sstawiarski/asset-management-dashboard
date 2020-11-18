@@ -82,7 +82,7 @@ const assetPaths = {
                     description: "Array of asset serials (must always be array even if only 1 serial)"
                 },
                 {
-                    name: 'field',
+                    name: 'update',
                     in: 'body',
                     schema: {
                         type: 'object',
