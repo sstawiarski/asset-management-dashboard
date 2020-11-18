@@ -13,11 +13,8 @@ import TestPage from './pages/TestPage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex",
-
-    zIndex: 1,
-    position: "relative",
-    overflow: "hidden",
+    display: 'flex',
+    position: "relative"
   },
   content: {
     flexGrow: 12,
@@ -33,8 +30,7 @@ function App() {
   return (
     <div className="App">
       <div className={classes.root}>
-          <Sidebar />
-
+      <Sidebar />
         <main className={classes.content}>
             <Switch>
               <Route path="/" exact component={Dashboard} />
