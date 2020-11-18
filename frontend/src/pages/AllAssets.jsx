@@ -14,6 +14,9 @@ import TableToolbar from '../components/Tables/TableToolbar';
 import AssetFilter from '../components/Dialogs/AssetFilter'
 import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
 import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
+import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
+import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
+import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -112,6 +115,9 @@ const AllAssets = (props) => {
                                     onClose={handleClose}>
                                     <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
                                 </Menu>
                             </>
                             :
@@ -122,7 +128,7 @@ const AllAssets = (props) => {
                             </Tooltip>}
 
 
-
+ 
 
                     </TableToolbar>
 
@@ -134,6 +140,9 @@ const AllAssets = (props) => {
             <AssetFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs({ filter: isOpen })} setActiveFilters={setActiveFilters} />
             <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} />
             <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} />
+            <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
+            <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
+            <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} />
         </div>);
 
 }
