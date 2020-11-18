@@ -10,7 +10,7 @@ import AssetTimeline from '../components/AssetTimeline'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        marginLeft: "10px"
+        marginLeft: "10px",
     },
     paper: {
         width: "100%",

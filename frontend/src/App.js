@@ -9,11 +9,15 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 import SearchDetails from './pages/SearchDetails';
+import TestPage from './pages/TestPage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column'
+    display: "flex",
+
+    zIndex: 1,
+    position: "relative",
+    overflow: "hidden",
   },
   content: {
     flexGrow: 12,
@@ -29,13 +33,12 @@ function App() {
   return (
     <div className="App">
       <div className={classes.root}>
-        <div style={{ flexGrow: 0.5 }}>
           <Sidebar />
-        </div>
 
         <main className={classes.content}>
             <Switch>
               <Route path="/" exact component={Dashboard} />
+              <Route exact path="/test" component={TestPage} />
               <Route path="/search/:query" component={SearchDetails} />
               <Route exact path="/assets/create-assembly" component={CreateAssembly} />
               <Route exact path="/assets/view-all" component={AllAssets} />
