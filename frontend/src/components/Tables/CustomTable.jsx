@@ -87,26 +87,6 @@ const useStyles = makeStyles((theme) => ({
     chip: {
         margin: "4px"
     },
-    incomplete: {
-        borderRadius: "16px",
-        backgroundColor: "#fdb6c1",
-        color: "#482626",
-        border: "none",
-        textAlign: "center",
-        display: "inline-block",
-        padding: "0px 6px 0px 6px",
-        marginLeft: "-8px",
-        cursor: "pointer"
-    },
-    noAction: {
-        pointerEvents: "none"
-    },
-    popper: {
-        pointerEvents: 'auto',
-        backgroundColor: "white",
-        boxShadow: "0.5px 1.5px 4px #000000",
-        borderRadius: "3px",
-    },
     check: {
         color: "#46c240",
         marginLeft: "8px"

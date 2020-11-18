@@ -37,21 +37,22 @@ const useStyles = makeStyles({
 const IncompletePopper = ({ assembly }) => {
     const classes = useStyles();
     const [anchor, setAnchor] = useState(null);
+    console.log(anchor)
 
     return (
-        <>
+        <div>
             {/* Button on table waiting for clicks to show the popper and closing it on click out */}
-            <ClickAwayListener onClickAway={() => setAnchor(null)}>
-                <div onClick={(event) => {
-                    event.stopPropagation();
-                    setAnchor(event.currentTarget)
-                }}
-                    className={classes.incomplete}>
-                    <Typography variant="body2">Incomplete</Typography>
-                </div>
-            </ClickAwayListener>
 
-            
+            <div onClick={(event) => {
+                event.stopPropagation();
+                setAnchor(event.currentTarget)
+            }}
+                className={classes.incomplete}>
+                <Typography variant="body2">Incomplete</Typography>
+            </div>
+
+
+
             {/* Actual popper, only appears when the "Incomplete" button is clicked */}
             <Popper
                 id="incomplete-assembly"
@@ -62,18 +63,20 @@ const IncompletePopper = ({ assembly }) => {
                 placement="bottom"
                 transition>
                 {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={150}>
-                        <div style={{ margin: "10px" }}>
-                            <Typography variant="subtitle1"><b>Items missing:</b></Typography>
-                            {assembly["missingItems"] ? assembly["missingItems"].map(missing => {
-                                return (<Typography variant="body1" key={missing}>{missing}<br /></Typography>);
-                            })
-                                : null}
-                        </div>
-                    </Fade>
+                    <ClickAwayListener onClickAway={() => setAnchor(null)}>
+                        <Fade {...TransitionProps} timeout={150}>
+                            <div style={{ margin: "10px" }}>
+                                <Typography variant="subtitle1"><b>Items missing:</b></Typography>
+                                {assembly["missingItems"] ? assembly["missingItems"].map(missing => {
+                                    return (<Typography variant="body1" key={missing}>{missing}<br /></Typography>);
+                                })
+                                    : null}
+                            </div>
+                        </Fade>
+                    </ClickAwayListener>
                 )}
             </Popper>
-        </>);
+        </div>);
 
 };
 
