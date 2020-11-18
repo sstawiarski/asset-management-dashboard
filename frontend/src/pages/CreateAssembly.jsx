@@ -81,22 +81,7 @@ const headCells = [
     { id: 'group-tag', numeric: false, disablePadding: false, label: 'Group Tag' },
 ];
 
-const rows = [
-    {
-        "serial": "ELP-8000",
-        "product": "Asset",
-        "description": "Electronics Probe",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    },
-    {
-        "serial": "CLP-8000",
-        "product": "Asset",
-        "description": "Electronics Thingie",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    }
-];
+
 
 
 
@@ -139,12 +124,8 @@ const CreateAssembly = () => {
       },);        
     }, [])
     
-    const assetArray = () => {
-    	
-
-    }
-
-
+ 
+ 
 
 		
 
@@ -166,6 +147,8 @@ const CreateAssembly = () => {
             return (s);
         })
     }
+
+
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -197,6 +180,17 @@ const CreateAssembly = () => {
             selectedTableRows: newRows
         }))
     }
+
+    useEffect(() => {
+    	const handleSubmitAssembly = (event) => {
+	    	const postRequest = {
+	    		method: 'PUT',
+	    		headers:{ 'Content-Type' : 'application/json'},
+	    		body: JSON.stringify(state)
+	    	};
+	    	fetch("http://localhost/create-Assembly", postRequest);
+    }
+    })
 
     return (
         <div className={classes.root}>
