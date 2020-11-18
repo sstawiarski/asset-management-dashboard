@@ -3,7 +3,7 @@ import React from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, RadioGroup, TextField, FormControl, Checkbox, DialogTitle } from '@material-ui/core';
+import { Grid, RadioGroup, TextField, FormControl, Checkbox, DialogTitle, DialogContent } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
@@ -110,112 +110,115 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>{"Filter Assets"}</DialogTitle>
-            <Grid container alignContent="space-around" alignItems="center">
-                <div>
-                    <Grid container justifyContent="space-between">
-                        <Grid item xs={3}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend">Status</formLabel>
-                                <RadioGroup aria-label="status" name="retired" value={state.retired} onChange={handleChange}>
-                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="No" control={<Radio />} label="Active" />
-                                    <FormControlLabel value="Yes" control={<Radio />} label="Retired" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
 
-                        <Grid item xs={3}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend">Assignment</formLabel>
-                                <RadioGroup aria-label="assignment" name="assignmentType" value={state.assignmentType} onChange={handleChange}>
-                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="Owned" control={<Radio />} label="Owned" />
-                                    <FormControlLabel value="Rental" control={<Radio />} label="Rented" />
-                                </RadioGroup>
-                            </FormControl>
-
-                        </Grid>
-                        <Grid item xs={3}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend">Type</formLabel>
-                                <RadioGroup aria-label="types" name="assetType" value={state.assetType} onChange={handleChange}>
-                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="Asset" control={<Radio />} label="Asset" />
-                                    <FormControlLabel value="Assembly" control={<Radio />} label="Assembly" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend">Checked Out</formLabel>
-                                <RadioGroup aria-label="types" name="checkedOut" value={state.checkedOut} onChange={handleChange}>
-                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                    <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-                                    <FormControlLabel value="No" control={<Radio />} label="No" />
-                                </RadioGroup>
-                            </FormControl>
-                        </Grid>
+            <DialogContent>
+                <Grid container justify="space-evenly">
+                    <Grid item xs={3}>
+                        <FormControl component="fieldset">
+                            <span>Status</span>
+                            <RadioGroup aria-label="status" name="retired" value={state.retired} onChange={handleChange}>
+                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                <FormControlLabel value="No" control={<Radio />} label="Active" />
+                                <FormControlLabel value="Yes" control={<Radio />} label="Retired" />
+                            </RadioGroup>
+                        </FormControl>
                     </Grid>
 
-                    <Grid container justify="space-evenly">
-                        <Grid item xs={5}>
-                            Date Created
+                    <Grid item xs={3}>
+                        <FormControl component="fieldset">
+                            <span>Assignment</span>
+                            <RadioGroup aria-label="assignment" name="assignmentType" value={state.assignmentType} onChange={handleChange}>
+                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                <FormControlLabel value="Owned" control={<Radio />} label="Owned" />
+                                <FormControlLabel value="Rental" control={<Radio />} label="Rented" />
+                            </RadioGroup>
+                        </FormControl>
+
+                    </Grid>
+                    <Grid item xs={3}>
+                        <FormControl component="fieldset">
+                            <span>Type</span>
+                            <RadioGroup aria-label="types" name="assetType" value={state.assetType} onChange={handleChange}>
+                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                <FormControlLabel value="Asset" control={<Radio />} label="Asset" />
+                                <FormControlLabel value="Assembly" control={<Radio />} label="Assembly" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <FormControl component="fieldset">
+                            <span>Checked Out</span>
+                            <RadioGroup aria-label="types" name="checkedOut" value={state.checkedOut} onChange={handleChange}>
+                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+                                <FormControlLabel value="No" control={<Radio />} label="No" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+
+                <Grid container justify="space-evenly" style={{marginTop: "20px"}}>
+                    <Grid item xs={5}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <Grid container justify="space-evenly">
-                                    <KeyboardDatePicker
+                            <Grid container justify="space-evenly">
+                                <KeyboardDatePicker
 
-                                        format="MM/dd/yyyy"
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        name="dateCreated"
-                                        value={state.dateCreated}
-                                        onChange={date => handleDateChange("dateCreated", date)}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
-                                    />
-                                </Grid>
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                        <div></div>
-                        <Grid item xs={5}>
-                            Date Updated
+                                    format="MM/dd/yyyy"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    name="dateCreated"
+                                    inputVariant="outlined"
+                                    label="Date Created"
+                                    value={state.dateCreated}
+                                    onChange={date => handleDateChange("dateCreated", date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+
+                    <Grid item xs={5}>
                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <Grid container justify="space-evenly">
-                                    <KeyboardDatePicker
-                                        format="MM/dd/yyyy"
-                                        margin="normal"
-                                        id="date-picker-inline"
-                                        name="dateUpdated"
-                                        value={state.dateUpdated}
-                                        onChange={date => handleDateChange("dateUpdated", date)}
-                                        KeyboardButtonProps={{
-                                            'aria-label': 'change date',
-                                        }}
+                            <Grid container justify="space-evenly">
+                                <KeyboardDatePicker
+                                    format="MM/dd/yyyy"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    name="dateUpdated"
+                                    label="Date Updated"
+                                    value={state.dateUpdated}
+                                    inputVariant="outlined"
+                                    onChange={date => handleDateChange("dateUpdated", date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
 
-                                    />
-                                </Grid>
-                            </MuiPickersUtilsProvider>
-                        </Grid>
+                                />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
+                    </Grid>
+
+                </Grid>
+                <Grid container justify="space-around" style={{marginTop: "20px"}}>
+                    <Grid item xs={6}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="groupTag"
+                            label="Group Tag"
+                            type="text"
+                            fullWidth
+                            variant="outlined"
+                            value={state.groupTag}
+                            onChange={handleChange}
+                        />
 
                     </Grid>
-                    <Grid container justify="space-around">
-                        <Grid item xs={6}>
-                            <TextField
-                                autoFocus
-                                margin="dense"
-                                id="groupTag"
-                                label="Group Tag"
-                                type="text"
-                                fullWidth
-                                value={state.groupTag}
-                                onChange={handleChange}
-                            />
+                </Grid>
 
-                        </Grid>
-                    </Grid>
-                </div>
-            </Grid>
+            </DialogContent>
             <DialogActions>
                 <Button onClick={handleReset} color="primary">
                     Reset
