@@ -27,8 +27,10 @@ import Header from '../components/Header'
 import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
 import AssemblySubmitDialog from '../components/Dialogs/AssemblySubmitDialog';
 import IncompleteAssemblyDialog from '../components/Dialogs/IncompleteAssemblyDialog';
+import QuickAssetView from '../components/Dialogs/QuickAssetView';
 
 import { compareSchema, getSchema } from '../utils/assembly.utils';
+import { useMediaQuery, useTheme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -193,75 +195,75 @@ const CreateAssembly = () => {
     return (
         <div className={classes.root}>
 
-                <Grid container spacing={1}>
-                    <Grid item xs={12}>
-                        <Header heading="Products" subheading="Assembly Creator" />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={8} lg={8}>
-
-                        {
-                            assemblyStarted
-                                ? <CustomTable
-                                    data={rows}
-                                    selectedFields={selectedFields}
-                                    selected={selected}
-                                    setSelected={setSelected}
-                                    filters={filters}
-                                    activeFilters={activeFilters}
-                                    setActiveFilters={setActiveFilters}
-                                    setFilters={setFilters}
-                                    count={assetCount}
-                                    variant="asset"
-                                    checkboxes={true}
-                                    compare={cartItems}
-                                    moreInfo={moreInfo}
-                                    setMoreInfo={setMoreInfo}
-                                    lookup="assetName">
-
-                                    <TableToolbar title="Assembly Creator" selected={selected}>
-                                        {selected.length > 0 ?
-                                            <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"}>
-                                                    <AddIcon onClick={() => handleAddToCart(selected)} />
-                                                </IconButton>
-                                            </Tooltip>
-                                            :
-                                            <Tooltip title={"Filter"}>
-                                                <IconButton aria-label={"filter"}>
-                                                    <FilterListIcon onClick={() => setFilterOpen(true)} />
-                                                </IconButton>
-                                            </Tooltip>}
-                                    </TableToolbar>
-
-                                </CustomTable>
-
-                                : <Paper className={classes.paper}>
-                                    <Box m="auto">
-                                        <Typography variant="body1" className={classes.item}>No Assembly In Progress</Typography>
-                                        <div style={{ flexBasis: "100%", height: 0 }} />
-                                        <Button className={classes.button} onClick={handleStart}>Create New Assembly</Button>
-                                    </Box>
-                                </Paper>
-                        }
-                    </Grid>
-
-                    <Grid item xs={12} sm={12} md={4} lg={4}>
-
-                        {assemblyStarted ?
-
-                            <CartTable
-                                header={headCells}
-                                rows={cartItems}
-                                handleRemove={handleRemoveFromCart}
-                                onSubmit={handleAssemblySubmit}
-                                className={classes.paper}
-                                style={{display: "flex"}} />
-
-                            : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
-
-
-                    </Grid>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <Header heading="Products" subheading="Assembly Creator" />
                 </Grid>
+                <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
+
+                    {
+                        assemblyStarted
+                            ? <CustomTable
+                                data={rows}
+                                selectedFields={selectedFields}
+                                selected={selected}
+                                setSelected={setSelected}
+                                filters={filters}
+                                activeFilters={activeFilters}
+                                setActiveFilters={setActiveFilters}
+                                setFilters={setFilters}
+                                count={assetCount}
+                                variant="asset"
+                                checkboxes={true}
+                                compare={cartItems}
+                                moreInfo={moreInfo}
+                                setMoreInfo={setMoreInfo}
+                                lookup="assetName"
+                                clickable={QuickAssetView}>
+
+                                <TableToolbar title="Assembly Creator" selected={selected}>
+                                    {selected.length > 0 ?
+                                        <Tooltip title={"Add"}>
+                                            <IconButton aria-label={"add"}>
+                                                <AddIcon onClick={() => handleAddToCart(selected)} />
+                                            </IconButton>
+                                        </Tooltip>
+                                        :
+                                        <Tooltip title={"Filter"}>
+                                            <IconButton aria-label={"filter"}>
+                                                <FilterListIcon onClick={() => setFilterOpen(true)} />
+                                            </IconButton>
+                                        </Tooltip>}
+                                </TableToolbar>
+
+                            </CustomTable>
+
+                            : <Paper className={classes.paper}>
+                                <Box m="auto">
+                                    <Typography variant="body1" className={classes.item}>No Assembly In Progress</Typography>
+                                    <div style={{ flexBasis: "100%", height: 0 }} />
+                                    <Button className={classes.button} onClick={handleStart}>Create New Assembly</Button>
+                                </Box>
+                            </Paper>
+                    }
+                </Grid>
+
+                <Grid item xs={12} sm={12} md={4} lg={4}>
+
+                    {assemblyStarted ?
+
+                        <CartTable
+                            header={headCells}
+                            rows={cartItems}
+                            handleRemove={handleRemoveFromCart}
+                            onSubmit={handleAssemblySubmit}
+                            />
+
+                        : null}
+
+
+                </Grid>
+            </Grid>
 
             <CreateNewAssemblyDialog creatorOpen={creatorOpen} handleCreate={handleCreate} handleCancel={handleCancel} setParentState={setState} />
             <AssetFilter open={filterOpen} setOpen={(isOpen) => setFilterOpen(isOpen)} setActiveFilters={setActiveFilters} />
@@ -270,12 +272,12 @@ const CreateAssembly = () => {
                 setOpen={setSubmitOpen}
                 isComplete={!override}
                 onSuccess={handleSuccess}
-                onFailure={handleFailure} 
+                onFailure={handleFailure}
                 handleCancel={handleSubmitCancel}
-                submission={submission}/>
+                submission={submission} />
 
-                <IncompleteAssemblyDialog open={incomplete} setOpen={setIncomplete} handleOverride={() => {toggleOverride(true); setIncomplete(false); setSubmitOpen(true)}} missingItems={missingItems} />
-            <Snackbar open={success !== null} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{vertical: "top", horizontal: "center"}} style={{boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px"}}>
+            <IncompleteAssemblyDialog open={incomplete} setOpen={setIncomplete} handleOverride={() => { toggleOverride(true); setIncomplete(false); setSubmitOpen(true) }} missingItems={missingItems} />
+            <Snackbar open={success !== null} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={handleClose} severity={success ? "success" : "error"}>
                     {success ? "Assembly successfully created!" : "Failed to submit assembly..."}
                 </Alert>

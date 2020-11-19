@@ -39,7 +39,8 @@
  * 
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -56,11 +57,7 @@ import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
-
-const types = {
-    asset: "/assets/",
-    shipment: "/shipment/"
-};
+import { URLTypes as types } from '../../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -68,7 +65,8 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         width: '98%',
-        marginBottom: theme.spacing(3),
+        marginLeft: "20px",
+        marginBottom: theme.spacing(2)
     },
     table: {
         minWidth: 750,
@@ -96,6 +94,8 @@ const useStyles = makeStyles((theme) => ({
 const NewTable = (props) => {
     const classes = useStyles();
     const history = useHistory();
+    const [showClicked, setClicked] = useState(false);
+    const [identifier, setIdentifier] = useState("");
 
     const {
         data,
@@ -121,6 +121,7 @@ const NewTable = (props) => {
     const moreInfo = props.moreInfo || null;
     const setMoreInfo = moreInfo ? props.setMoreInfo : null;
     const lookup = moreInfo ? props.lookup : null;
+    const Clickable = props.clickable || null;
 
     //for generating Chips from filters from a dialog
     const activeKeys = Object.keys(activeFilters);
@@ -308,8 +309,13 @@ const NewTable = (props) => {
                                         <TableRow
                                             hover
                                             onClick={(event) => {
-                                                event.stopPropagation();
-                                                history.push(`${url}${item[selectedFields[0]]}`)
+                                                if (Clickable) {
+                                                    setClicked(true);
+                                                    setIdentifier(item[selectedFields[0]]);
+                                                } else {
+                                                    event.stopPropagation();
+                                                    history.push(`${url}${item[selectedFields[0]]}`)
+                                                }
                                             }}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
@@ -387,9 +393,27 @@ const NewTable = (props) => {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper>
+            {showClicked ? <Clickable isOpen={showClicked} setOpen={setClicked} identifier={identifier} /> : null}
         </div>
     );
 
 };
+
+NewTable.propTypes = {
+    data: PropTypes.array.isRequired,
+    filters: PropTypes.object.isRequired,
+    setFilters: PropTypes.func.isRequired,
+    count: PropTypes.number.isRequired,
+    variant: PropTypes.oneOf(['asset', 'shipment']).isRequired,
+    selected: PropTypes.array.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    activeFilters: PropTypes.object.isRequired,
+    setActiveFilters: PropTypes.func.isRequired,
+    selectedFields: PropTypes.array.isRequired,
+    compare: PropTypes.array,
+    checkboxes: PropTypes.bool,
+    clickable: PropTypes.func
+
+}
 
 export default NewTable;

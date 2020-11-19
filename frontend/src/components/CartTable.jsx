@@ -18,8 +18,6 @@ import Button from '@material-ui/core/Button';
 
 const useToolbarStyles = makeStyles((theme) => ({
     root: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1),
     },
     highlight:
         theme.palette.type === 'light'
@@ -38,7 +36,9 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 
 const useStyles = makeStyles({
-    table: {
+    root: {
+        width: '98%',
+        marginLeft: "20px",
     },
     button: {
         color: "#3CB3E6"
@@ -54,7 +54,7 @@ const CartTable = (props) => {
     const newHeader = header.filter(item => item.label === "Serial");
 
     return (
-        <Paper elevation={3}>
+        <Paper elevation={3} className={classes.root}>
             <Toolbar className={toolbarStyles.root}>
                 <Typography className={toolbarStyles.title} variant="h6" id="tableTitle" component="div">
                     Assembly Cart
@@ -62,7 +62,7 @@ const CartTable = (props) => {
             </Toolbar>
 
             <TableContainer>
-                <Table className={classes.table} aria-label="simple table">
+                <Table aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell align="left">#</TableCell>

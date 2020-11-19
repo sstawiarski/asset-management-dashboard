@@ -12,6 +12,11 @@ import { dateOptions } from '../../utils/constants.utils';
 
 const useStyles = makeStyles(theme => ({
     root: {
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
+        paddingBottom: theme.spacing(5)
+    },
+    title: {
         margin: 0,
         padding: theme.spacing(2),
     },
@@ -60,24 +65,24 @@ const QuickAssetView = (props) => {
 
     return (
         <Dialog onClose={onClose} open={isOpen}>
-            <DialogTitle disableTypography className={classes.root}>
+            <DialogTitle disableTypography className={classes.title}>
                 <Typography variant="h6">Quick Look</Typography>
                 <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
                     <CloseIcon />
                 </IconButton>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent className={classes.root}>
 
                 <Grid container>
                     <Grid item xs={3} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Name</Typography>
                         <Typography variant="body1">{asset.assetName}</Typography>
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={4} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Serial Number</Typography>
                         <Typography variant="body1">{asset.serial}</Typography>
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={2} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Status</Typography>
                         <Typography variant="body1">{asset.retired ? "Retired" : "Active"}</Typography>
                     </Grid>
@@ -89,11 +94,11 @@ const QuickAssetView = (props) => {
                         <Typography variant="subtitle1" className={classes.break}>Assignee</Typography>
                         <Typography variant="body1">{asset.assignee ? asset.assignee : "N/A"}</Typography>
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={4} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Created On</Typography>
                         <Typography variant="body1">{asset.dateCreated ? new Date(asset.dateCreated).toLocaleDateString('en-US', dateOptions) : null}</Typography>
                     </Grid>
-                    <Grid item xs={3} className={classes.item}>
+                    <Grid item xs={2} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Type</Typography>
                         <Typography variant="body1">{asset.assetType}</Typography>
                     </Grid>
