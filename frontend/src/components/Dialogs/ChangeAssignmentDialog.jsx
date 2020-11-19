@@ -25,12 +25,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
+const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [assignment, setAssignment] = useState("");
     const [dropdown, setDropdown] = useState([]);
 
@@ -62,7 +60,6 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
 
         sendData(data)
             .then(response => {
-
                 //assume anything less than 300 is a success
                 if (response.status < 300) {
                     return response.json();
@@ -72,9 +69,12 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const assign = assignment;
                     handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignee to ${assign}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update assignee...`);
                 }
             })
     }
@@ -83,8 +83,7 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setAssignment("");
-        setStatus("");
-        setFailed(null);
+
     }
 
     useEffect(() => {
@@ -110,7 +109,6 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-
                     <Autocomplete
                         id="assignment-dropdown"
                         options={dropdown.map(customer => customer.companyName)}
@@ -118,9 +116,6 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
                         onChange={(event, newValue) => setAssignment(newValue)}
                         renderInput={(params) => <TextField {...params} label="Customers" variant="outlined" />}
                     />
-
-                    {/* Render a failure message if API returns a response code > 300 */}
-                    {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
                 </div>
             </DialogContent>
 

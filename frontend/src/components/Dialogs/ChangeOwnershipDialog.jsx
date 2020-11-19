@@ -25,11 +25,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
+const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
     const [failed, setFailed] = useState(null);
     const [owner, setOwner] = useState("");
     const [dropdown, setDropdown] = useState([]);
@@ -72,9 +71,12 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const newOwner = owner;
                     handleClose();
+                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update asset owner...`);
                 }
             })
     }
@@ -83,8 +85,6 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setOwner("");
-        setStatus("");
-        setFailed(null);
     }
 
     useEffect(() => {
@@ -110,7 +110,6 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-
                     <Autocomplete
                         id="owner-dropdown"
                         options={dropdown.map(customer => customer.companyName)}
@@ -118,9 +117,6 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
                         onChange={(event, newValue) => setOwner(newValue)}
                         renderInput={(params) => <TextField {...params} label="Owners" variant="outlined" />}
                     />
-
-                    {/* Render a failure message if API returns a response code > 300 */}
-                    {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
                 </div>
             </DialogContent>
 

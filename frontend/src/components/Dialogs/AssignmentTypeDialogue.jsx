@@ -27,12 +27,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
+const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [type, setType] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
@@ -73,9 +71,12 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const assignType = type;
                     handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update assignment type...`);
                 }
             })
     }
@@ -84,8 +85,6 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setType("");
-        setStatus("");
-        setFailed(null);
     }
 
     return (
@@ -114,9 +113,6 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
                             <MenuItem value={"Rental"}>Rental</MenuItem>
 
                         </Select>
-
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
                     </FormControl>
                 </div>
             </DialogContent>

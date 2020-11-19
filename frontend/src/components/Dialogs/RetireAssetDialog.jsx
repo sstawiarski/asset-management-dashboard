@@ -27,12 +27,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RetireAssetDialog = ({ open, setOpen, selected }) => {
+const RetireAssetDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -73,8 +72,10 @@ const RetireAssetDialog = ({ open, setOpen, selected }) => {
             //check if we got back null and either close dialog on success or setFailed to render error message
             if (json) {
                 handleClose();
+                onSuccess(true, `Successfully retired ${selected.length} asset(s)!`)
             } else {
-                setFailed(true);
+                handleClose();
+                onSuccess(false,`Failed to retire asset(s)...`);
             }
         })
     }
@@ -83,7 +84,6 @@ const RetireAssetDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setStatus("");
-        setFailed(null);
     }
 
     return (
@@ -113,9 +113,6 @@ const RetireAssetDialog = ({ open, setOpen, selected }) => {
                             <MenuItem value={"Retired"}>Retired</MenuItem>
 
                         </Select>
-
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
                     </FormControl>
                 </div>
             </DialogContent>
