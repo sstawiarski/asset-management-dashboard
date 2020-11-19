@@ -53,6 +53,7 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
+import Typography from '@material-ui/core/Typography';
 
 const types = {
     asset: "/assets/",
@@ -127,7 +128,7 @@ const NewTable = (props) => {
     const checkboxes = props.checkboxes || false;
 
     //for generating Chips from filters from a dialog
-    
+
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -281,6 +282,18 @@ const NewTable = (props) => {
                                                                 <IncompletePopper assembly={item} />
                                                             </TableCell>
                                                         )
+                                                    } else if (typeof item[arrayItem] === "boolean") {
+                                                        return (<TableCell align="left">
+                                                            {item[arrayItem] ? "Yes" : "No"}
+                                                            {
+                                                                arrayItem === "checkedOut" ?
+                                                                    <>
+                                                                        <br />
+                                                                        <Typography variant="caption" style={{color: "#838383"}}>{item["assignee"]}</Typography>
+                                                                    </>
+                                                                    : null
+                                                            }
+                                                        </TableCell>);
                                                     }
 
                                                     return (<TableCell align="left">{item[arrayItem]}</TableCell>)
@@ -289,7 +302,7 @@ const NewTable = (props) => {
                                         </TableRow>
                                     );
                                 })}
-                                
+
                             {emptyRows > 0 && (
                                 <TableRow style={{ height: 53 * emptyRows }}>
                                     <TableCell colSpan={selectedFields.length + 1} />
