@@ -94,6 +94,15 @@ const assetPaths = {
                     },
                     description: "Object containing the MongoDB field name as a property and the new value as its value",
                     required: true
+                },
+                {
+                    name: 'override',
+                    in: 'body',
+                    schema: {
+                        type: 'boolean'
+                    },
+                    description: 'Boolean whether or not to force update child assets whose assembly is not getting updated, remove them from the assembly, and mark it incomplete',
+                    required: false
                 }
             ],
             responses: {

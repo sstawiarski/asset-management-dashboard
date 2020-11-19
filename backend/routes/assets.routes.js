@@ -223,14 +223,14 @@ router.get("/", async (req, res, err) => {
   }
 });
 
-/* Update assets and assemblies with fields
-*  Updates children as well
-*  Should support all future bulk edit options
-*/
+/* 
+ *  Update assets and assemblies with fields along with their children
+ *  Allows override option in request body to allow changes to child assets without also updating the parent
+ *  Parent is marked incomplete and child is removed from parent assembly
+ */
 router.patch("/", async (req, res) => {
   try {
-    //list of selected serials from client
-    const list = req.body.assets;
+    const list = req.body.assets; //list of selected serials from client
 
     //object from client representing fields to update
     //should really only be one
@@ -241,20 +241,85 @@ router.patch("/", async (req, res) => {
     //searches through array we got from client using $in
     const parentAssemblies = await Asset.find({ serial: { $in: list }, assetType: "Assembly" }).select({ serial: 1 });
 
+    const serials = parentAssemblies.map(obj => obj.serial); //get only the serials of the parent assemblies for comparison later
+
     //get assets too so we can link to the new event
     let foundAssets = [];
-    foundAssets = await Asset.find({ serial: { $in: list }, assetType: "Asset" }).select({ serial: 1 });
+    foundAssets = await Asset.find({ serial: { $in: list }, assetType: "Asset" }).select({ serial: 1, parentId: 1, assetName: 1 });
 
+    /* 
+     * Determine whether any children are in the edit request that are part of an assembly
+     * But whose parent assembly is not also being updated
+     * Keep track of the names, serials, and parent serials so we can update each if necessary
+     */
+    let missingChildNames = [];
+    let missingParentSerials = [];
+    let missingChildSerials = [];
+    foundAssets.forEach(asset => {
+      if (asset.parentId) {
+        if (!serials.includes(asset.parentId)) {
+          missingChildSerials.push(asset.serial);
+          missingChildNames.push(asset.assetName);
+          missingParentSerials.push(asset.parentId);
+        }
+      }
+    });
 
     //updates main assets and assemblies selected
     //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
-    //returns object with a property 'n' representing number of documents updated
     await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
-    await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
+
+    //check whether any children are edited apart from their parent
+    if (missingParentSerials.length > 0) {
+
+      //remove child and update parent assembly if any are specified
+      if (req.body.override) {
+        await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, {
+          parentId: null,
+          ...field
+        });
+
+        for (const [idx, name] of missingChildNames.entries()) {
+          await Asset.updateOne(
+            {
+              serial: missingParentSerials[idx]
+            },
+            {
+              incomplete: true,
+              $push: {
+                missingItems: name
+              }
+            }
+          );
+
+          const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+          const removal = new Event({
+            eventType: "Removal of Child Asset",
+            eventTime: Date.now(),
+            key: `REM-${count.next}`,
+            productIds: missingParentSerials[idx],
+            eventData: {
+              details: `Removed ${name} from ${missingParentSerials[idx]} and marked incomplete.`
+            }
+          });
+
+          await removal.save();
+        }
+
+        //else only update the children that don't have this problem
+      } else {
+        const newList = list.filter(item => !missingChildSerials.includes(item));
+        await Asset.updateMany({ serial: { $in: newList }, assetType: "Asset" }, field);
+      }
+      //else update all assets
+    } else {
+      await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
+    }
+
 
     //use parent assemblies we found earlier to get their serials to find children
     let parentSerials = [];
-    parentAssemblies.map((assembly) => {
+    parentAssemblies.forEach((assembly) => {
       parentSerials.push(assembly.serial);
     });
 
@@ -273,12 +338,29 @@ router.patch("/", async (req, res) => {
     //make up array of all serials affected
     let allAffectedAssets = [];
     if (foundAssets.length) {
-      foundAssets.map((asset) => {
-        allAffectedAssets.push(asset.serial);
-      })
+
+      //if override, then we can use all the found assets
+      if (req.body.override) {
+        foundAssets.forEach((asset) => {
+          allAffectedAssets.push(asset.serial);
+        })
+
+        //else filter out as needed
+      } else {
+        if (missingChildSerials.length) {
+          const newList = list.filter(item => !missingChildSerials.includes(item));
+          allAffectedAssets = [...allAffectedAssets, ...newList];
+        } else {
+          foundAssets.forEach((asset) => {
+            allAffectedAssets.push(asset.serial);
+          })
+        }
+
+      }
     }
+
     if (foundChildren.length) {
-      foundChildren.map((child) => {
+      foundChildren.forEach((child) => {
         allAffectedAssets.push(child.serial);
       })
     }
@@ -287,21 +369,29 @@ router.patch("/", async (req, res) => {
 
     //generate new event and save
     //TODO: make up eventData is some kind of predefined way
-    const event = new Event({
-      eventType: eventInfo[0],
-      eventTime: Date.now(),
-      key: `${eventInfo[1]}${counter.next}`,
-      productIds: allAffectedAssets,
-      eventData: {
-        details: `Changed ${allAffectedAssets.length} product(s) ${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} to ${field[fieldName]}.`
-      }
-    });
-    await event.save();
+    if (allAffectedAssets.length) {
+      const event = new Event({
+        eventType: eventInfo[0],
+        eventTime: Date.now(),
+        key: `${eventInfo[1]}${counter.next}`,
+        productIds: allAffectedAssets,
+        eventData: {
+          details: `Changed ${allAffectedAssets.length} product(s) ${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} to ${field[fieldName]}.`
+        }
+      });
+      await event.save();
 
-    //use lengths from found arrays to send a response
-    res.status(200).json({
-      message: `Updated ${foundAssets.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children.`
-    })
+      const additionalInfo = (missingChildSerials.length && req.body.override) ? `` : (!req.body.override && missingChildSerials.length) ? `${missingChildSerials.length} of these assets were children of assemblies not in the requested list and were not updated.` : "";
+      //use lengths from found arrays to send a response
+      res.status(200).json({
+        message: `Updated ${req.body.override ? foundAssets.length : foundAssets.length - missingChildSerials.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children. ${additionalInfo}`
+      })
+    } else {
+      res.status(200).json({
+        message: `No changes made.`
+      })
+    }
+
   } catch (err) {
     console.log(err);
     res.status(500).json({
