@@ -113,26 +113,6 @@ const AllAssets = (props) => {
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    {
-                                        console.log("Selected contains:"),
-                                        console.log(selected),
-                                        console.log(data.serial)
-                                    //   if(element.retire!==null){
-                                    //        <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
-                                    //    }
-                                    //    if(element.groupTag!==null){
-                                    //        <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
-                                    //    }
-                                    //    if(element.assignee!==null){
-                                    //        <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
-                                    //    }
-                                    //    if(element.owner!==null){
-                                    //        <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    //    }
-                                    //    if(element.assignmentType!==null){
-                                    //        <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> 
-                                    //    }
-                                    }    
                                     <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>

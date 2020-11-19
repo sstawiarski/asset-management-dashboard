@@ -8,8 +8,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -54,7 +57,7 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
         const data = {
             assets: selected,
             update: {
-               assignmentType : type 
+               assignmentType: type 
             }
         }
 
@@ -96,18 +99,25 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <form>
-                        {/* Controlled input, get value from state and changes state when it changes */}
-                        <TextField 
-                        id="assignment-type-editor" 
-                        label="AssignmentType" 
-                        variant="outlined"
-                        value={type}
-                        onChange={(event) => setType(event.target.value)} />
+                <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="product-status-label">Product Status</InputLabel>
+                        {/* Controlled select, get value from state and changes state when it changes */}
+                        <Select
+                            labelId="assignment-type-label"
+                            labelWidth={105}
+                            id="assignment-type-select"
+                            value={type}
+                            onChange={(event) => setType(event.target.value)}
+                        >
+
+                            <MenuItem value={"Owned"}>Owned</MenuItem>
+                            <MenuItem value={"Rental"}>Rental</MenuItem>
+
+                        </Select>
 
                         {/* Render a failure message if API returns a response code > 300 */}
                         {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
-                    </form>
+                    </FormControl>
                 </div>
             </DialogContent>
 
