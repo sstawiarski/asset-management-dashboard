@@ -39,7 +39,7 @@
  * 
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -51,7 +51,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
 
@@ -82,9 +81,6 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: 20,
         width: 1,
-    },
-    chip: {
-        margin: "4px"
     },
     incomplete: {
         borderRadius: "16px",
@@ -120,12 +116,9 @@ const NewTable = (props) => {
         selected,
         setSelected,
         filters,
-        setFilters,
-        activeFilters,
-        setActiveFilters
+        setFilters
     } = props;
     const url = types[variant];
-    let origFilters = filters;
 
     const rowsPerPage = filters.limit ? filters.limit : 5;
     const page = filters.page ? filters.page : 0;
@@ -134,7 +127,7 @@ const NewTable = (props) => {
     const checkboxes = props.checkboxes || false;
 
     //for generating Chips from filters from a dialog
-    const activeKeys = Object.keys(activeFilters);
+    
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -207,25 +200,6 @@ const NewTable = (props) => {
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
 
-    //send dialog based filters to the parent page when they change
-    useEffect(() => {
-        const newFilters = Object.keys(activeFilters)
-            .reduce((p, c) => {
-                //convert the Date objects send from the filter dialog into numbers for use in the URL
-                if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime") {
-                    p[c] = activeFilters[c].getTime();
-                } else {
-                    p[c] = activeFilters[c];
-                }
-                return p;
-            }, {})
-
-        setFilters({
-            ...origFilters,
-            ...newFilters
-        });
-    }, [activeFilters]);
-
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
@@ -234,49 +208,7 @@ const NewTable = (props) => {
                 {props.children}
 
                 {/* Chip generation based on applied filters */}
-                <div>
-                    {
-                        //split labels based on camelCase and convert to proper case
-                        activeKeys.length ?
-                            activeKeys.map((label, idx) => {
-                                const capitalized = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
-                                    return str.toUpperCase();
-                                })
 
-                                //complicated parsing of the individual filters into human-readable results for the chip label
-                                const value = typeof activeFilters[label] === "string" ?
-                                    activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
-                                    : activeFilters[label] instanceof Date ?
-                                        activeFilters[label].toLocaleDateString('en-US')
-                                        : typeof activeFilters[label] === "boolean" ?
-                                            activeFilters[label] ? "Yes"
-                                                : "No"
-                                            : null;
-
-
-                                //generate alternating colors for the chips
-                                const iter = idx + 1;
-                                const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
-
-                                return <Chip
-                                    key={idx}
-                                    className={classes.chip}
-                                    label={`${capitalized}: ${value}`}
-                                    onDelete={() => {
-                                        setActiveFilters(s => {
-                                            let newFilters = { ...s };
-                                            delete newFilters[label];
-                                            delete origFilters[label];
-                                            return newFilters;
-                                        });
-
-                                    }}
-                                    color={color} />
-
-                            })
-                            : null
-                    }
-                </div>
 
                 <TableContainer>
                     <Table

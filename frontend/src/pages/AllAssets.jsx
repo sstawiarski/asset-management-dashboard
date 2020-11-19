@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
+import ChipBar from '../components/Tables/ChipBar';
 
 import AssetFilter from '../components/Dialogs/AssetFilter'
 import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
@@ -52,7 +53,7 @@ const AllAssets = (props) => {
         const generateURL = (filters) => {
             let url = "http://localhost:4000/assets";
             const keys = Object.keys(filters);
-            keys.map((key, idx) => {
+            keys.forEach((key, idx) => {
                 if (idx === 0) {
                     url = `${url}?${key}=${filters[key]}`;
                 } else {
@@ -89,8 +90,6 @@ const AllAssets = (props) => {
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
-                    activeFilters={activeFilters}
-                    setActiveFilters={setActiveFilters}
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
@@ -125,12 +124,15 @@ const AllAssets = (props) => {
                                 <IconButton aria-label={"filter"}>
                                     <FilterListIcon onClick={() => setDialogs({ filter: true })} />
                                 </IconButton>
-                            </Tooltip>}
-
-
-
-
+                            </Tooltip>
+                        }
                     </TableToolbar>
+
+                    {/* Chips representing all the active filters */}
+                    <ChipBar
+                        activeFilters={activeFilters}
+                        setActiveFilters={setActiveFilters}
+                        setFilters={setFilters} />
 
                 </CustomTable>
 
