@@ -37,7 +37,6 @@ const useStyles = makeStyles({
 const IncompletePopper = ({ assembly }) => {
     const classes = useStyles();
     const [anchor, setAnchor] = useState(null);
-    console.log(anchor)
 
     return (
         <div>

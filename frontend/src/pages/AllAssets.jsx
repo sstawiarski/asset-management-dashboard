@@ -17,6 +17,7 @@ import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
 import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
 import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
 import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
+import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -24,6 +25,7 @@ const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut
 const AllAssets = (props) => {
 
     const [assets, setAssets] = useState([]);
+    const [childAssets, setChildAssets] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
@@ -32,6 +34,8 @@ const AllAssets = (props) => {
     const [assetCount, setAssetCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
+    const [nextDialog, setNext] = useState("");
+    const [override, setOverride] = useState(false);
 
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
@@ -43,8 +47,42 @@ const AllAssets = (props) => {
 
     const handleMenuClick = (event) => {
         setAnchor(null);
-        setDialogs({ [event.target.getAttribute("name")]: true });
+        const children = [];
+        setNext(event.target.getAttribute("name"));
+
+        Promise.all(
+            selected.map(serial =>
+                fetch(`http://localhost:4000/assets/${serial}?project=parentId`)
+                    .then(resp => {
+                        if (resp.status < 300) {
+                            return resp.json()
+                        }
+                        return null;
+                    })
+            )
+        ).then(jsons => {
+            jsons.forEach((item, idx) => {
+                if (item) {
+                    if (!item.parentId) return;
+                    if (!selected.includes(item.parentId)) {
+                        children.push(selected[idx]);
+                    }
+                }
+                return;
+            })
+            setChildAssets(children)
+        });
+        
     }
+
+    useEffect( () => {
+        if (!nextDialog) return;
+        if (childAssets.length > 0) {
+            setDialogs({ assetEditWarning: true });
+        } else {
+            setDialogs({ [nextDialog]: true });
+        }
+    }, [childAssets, nextDialog])
 
     useEffect(() => {
 
@@ -128,7 +166,7 @@ const AllAssets = (props) => {
                             </Tooltip>}
 
 
- 
+
 
                     </TableToolbar>
 
@@ -143,6 +181,19 @@ const AllAssets = (props) => {
             <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
             <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
             <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} />
+            <AssetEditWarning
+                open={dialogs["assetEditWarning"]}
+                setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
+                items={childAssets}
+                handleOverride={() => {
+                    setOverride(true);
+                    setDialogs({ assetEditWarning: false })
+                    setDialogs({ [nextDialog]: true })
+                    setNext("")
+                    setChildAssets([])
+                }}
+            />
+
         </div>);
 
 }
