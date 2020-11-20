@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles'
 
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
@@ -9,8 +10,7 @@ import TimelineDot from '@material-ui/lab/TimelineDot';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-
-import Dropdown from './Dropdown';
+import EventDetailsViewer from './EventDetailsViewer';
 
 const dateOptions = {
     month: "long",
@@ -18,37 +18,55 @@ const dateOptions = {
     year: "numeric"
 }
 
-const AssetTimeline = ({ data }) => {
-    return (
-        <Timeline align="alternate">
-            {data.length ? data.map((item, idx) => {
-                return (
-                    <TimelineItem key={idx}>
-                        <TimelineSeparator>
-                            {idx % 3 === 0 ? <TimelineDot /> : idx % 2 === 0 ? <TimelineDot color="secondary" /> : <TimelineDot color="primary" />}
-                            {idx !== data.length - 1 ? <TimelineConnector /> : null}
-                        </TimelineSeparator>
-                        <TimelineContent>
-                            <Paper>
-                                <div style={{ padding: "10px" }}>
-                                    <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
-                                    <Typography variant="body1">{item.key}</Typography>
-                                    <Typography variant="body1">{item.eventType}</Typography>
-                                    {
-                                        item.eventType.includes('Shipment') ?
-                                            <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }}>View shipment document</Button>
+const useStyles = makeStyles({
+    eventTag: {
+        transition: "all .3s ease",
+        WebkitTransition: "all .3s ease",
+        "&:hover": {
+            backgroundColor: "#EAEAEA",
+            cursor: "pointer",
+            transition: "all .3s ease",
+            WebkitTransition: "all .3s ease"
+        }
+    }
+})
 
-                                            : item.eventData ?
-                                                <Dropdown text="Event Data" data={item.eventData} />
+const AssetTimeline = ({ data }) => {
+    const classes = useStyles();
+
+    const [event, setEvent] = useState(null);
+
+    return (
+        <>
+            <Timeline align="alternate">
+                {data.length ? data.map((item, idx) => {
+                    return (
+                        <TimelineItem key={idx}>
+                            <TimelineSeparator>
+                                {idx % 3 === 0 ? <TimelineDot /> : idx % 2 === 0 ? <TimelineDot color="secondary" /> : <TimelineDot color="primary" />}
+                                {idx !== data.length - 1 ? <TimelineConnector /> : null}
+                            </TimelineSeparator>
+                            <TimelineContent>
+                                <Paper className={classes.eventTag} onClick={() => setEvent(item)}>
+                                    <div style={{ padding: "10px" }}>
+                                        <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
+                                        <Typography variant="body1">{item.key}</Typography>
+                                        <Typography variant="body1">{item.eventType}</Typography>
+                                        {
+                                            item.eventType.includes('Shipment') ?
+                                                <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }}>View shipment document</Button>
+
                                                 : null
-                                    }
-                                </div>
-                            </Paper>
-                        </TimelineContent>
-                    </TimelineItem>
-                );
-            }) : null}
-        </Timeline>
+                                        }
+                                    </div>
+                                </Paper>
+                            </TimelineContent>
+                        </TimelineItem>
+                    );
+                }) : null}
+            </Timeline>
+            <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
+        </>
     );
 };
 

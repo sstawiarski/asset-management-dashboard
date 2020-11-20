@@ -3,7 +3,7 @@ import React from 'react';
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, RadioGroup, TextField, FormControl, Checkbox, DialogTitle, DialogContent } from '@material-ui/core';
+import { Grid, RadioGroup, TextField, FormControl, DialogTitle, DialogContent } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
