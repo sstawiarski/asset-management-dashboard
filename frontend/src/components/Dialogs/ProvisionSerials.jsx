@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
@@ -142,75 +142,18 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                     </FormControl>
 
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="asset-quantity-label">Asset Quantity</InputLabel>
                         
-                        <Select
-                            labelId="asset-quantity-label"
-                            labelWidth={105}
-                            id="asset-quantity-label"
-                            value={owner}
-                            onChange={(event) => setOwner(event.target.value)}
-                        >
-
-                            /* populate menu items here for available serials */
-
-                        </Select>
+                        <TextField
+                                autoFocus
+                                margin="dense"
+                                label="Asset Quantity"
+                                type="text"
+                                fullWidth
+                                
+                            />
          
-                    </FormControl>
-
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="assignee-label">Assignee</InputLabel>
-                        
-                        <Select
-                            labelId="assignee-label"
-                            labelWidth={105}
-                            id="assignee-label"
-                            value={assignee}
-                            onChange={(event) => setAssignee(event.target.value)}
-                        >
-
-                            /* populate menu items here for available serials */
-
-                        </Select>
-         
-                    </FormControl>
-
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="assignment-type-label">Assignment Type</InputLabel>
-                        
-                        <Select
-                            labelId="assignment-type-label"
-                            labelWidth={105}
-                            id="assignment-type-label"
-                            value={assignmentType}
-                            onChange={(event) => setAssignmentType(event.target.value)}
-
-                        >
-                            <MenuItem value="owned">Owned</MenuItem>
-                            <MenuItem value="rented">Rented</MenuItem>
-
-                            /* populate menu items here for available serials */
-
-                        </Select>
-         
-                    </FormControl>
-
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="group-tag-label">Group Tag</InputLabel>
-                        
-                        <Select
-                            labelId="group-tag-label"
-                            labelWidth={105}
-                            id="group-tag-label"
-                            value={groupTag}
-                            onChange={(event) => setGroupTag(event.target.value)}
-                        >
-
-                            /* populate menu items here for available serials */
-
-                        </Select>
-         
-                    </FormControl>
+                    </FormControl>                        
+                     
                 </div>
             </DialogContent>
 

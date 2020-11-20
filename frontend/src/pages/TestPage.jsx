@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
+import ProvisionSerials from '../components/Dialogs/ProvisionSerials';
 
 const TestPage = () => {
 
@@ -11,10 +12,10 @@ const TestPage = () => {
 
     return (
         <div>
-            <Button onClick={() => setCreateOpen(!createOpen)} variant="contained" color="primary">Create Asset</Button>
+            <Button onClick={() => setCreateOpen(!createOpen)} variant="contained" color="primary">Provision Serials</Button>
             
             {/* Take in open and assets from parent component so dialog can know what is selected */}
-            <CreateAssetDialog open={createOpen} setOpen={setCreateOpen} assets={['G800-1119']} />
+            <ProvisionSerials open={createOpen} setOpen={setCreateOpen} assets={['G800-1119']} />
         </div>
     );
 };
