@@ -48,7 +48,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
         const result = await fetch("http://localhost:4000/assets", {
-            method: "POST",
+            method: "GET",
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
