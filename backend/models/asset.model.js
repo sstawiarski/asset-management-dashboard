@@ -18,7 +18,10 @@ const Asset = new Schema({
     contractNumber: { type: String, required: false, unique: false },
     checkedOut: { type: mongoose.Schema.Types.Boolean, required: true, unique: false },
     retired: { type: mongoose.Schema.Types.Boolean, required: false, unique: false },
-    confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false }
+    confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false },
+    incomplete: { type: mongoose.Schema.Types.Boolean, required: false, unique: false },
+    missingItems: { type: mongoose.Schema.Types.Array, required: false, unique: false },
+    provisioned: { type: mongoose.Schema.Types.Boolean, required: false, unique: false }
 });
 
 Asset.plugin(mongoose_fuzzy_searching, {

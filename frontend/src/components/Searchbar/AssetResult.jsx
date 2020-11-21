@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const SearchResult = ({ data }) => {
+const AssetResult = ({ data, divider }) => {
     const classes = useStyles();
 
     const [showEvents, toggleEvents] = useState(false);
@@ -163,10 +163,10 @@ const SearchResult = ({ data }) => {
                 }
 
                 <div ref={container} className={classes.eventItem} />
-                <Divider />
+                {divider ? <Divider /> : null}
             </div>
         </div>
     );
 };
 
-export default SearchResult;
+export default AssetResult;

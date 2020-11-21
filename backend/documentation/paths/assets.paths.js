@@ -82,7 +82,7 @@ const assetPaths = {
                     description: "Array of asset serials (must always be array even if only 1 serial)"
                 },
                 {
-                    name: 'field',
+                    name: 'update',
                     in: 'body',
                     schema: {
                         type: 'object',
@@ -211,6 +211,41 @@ const assetPaths = {
                             example: {
                                 message: 'No assets found for serial',
                                 internalCode: 'no_assets_found'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    'assembly/schema': {
+        put: {
+            tags: ['Assets'],
+            description: 'Load sample assembly schema data into the database',
+            operationId: 'loadAssemblySchemas',
+            parameters: [],
+            responses: {
+                '200': {
+                    description: 'Assembly schemas were successfully loaded into the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '503': {
+                    description: 'Error loading sample data into database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
                             }
                         }
                     }

@@ -1,14 +1,15 @@
 import React from 'react';
 
 import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider';
 
 
 const Header = ({ heading, subheading }) => {
     return (
         <div className="header" style={{display: "flex", flexFlow: "wrap", marginLeft: "10px", marginBottom: "20px"}}>
-            <Typography variant="h3">{heading}</Typography>
-            <hr style={{flexBasis: "100%"}} />
-            {subheading ? <Typography variant="h5">{subheading}</Typography> : null}
+            <Typography variant="h4">{heading}</Typography>
+            <Divider style={{flexBasis: "100%"}} />
+            {subheading ? <Typography variant="h6">{subheading}</Typography> : null}
         </div>
     );
 };
