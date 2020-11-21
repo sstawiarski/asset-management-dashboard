@@ -35,7 +35,6 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
 
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [assetType, setAssetType] = useState("");
     const [serial, setSerial] = useState("");
     const [owner, setOwner] = useState("");
@@ -48,13 +47,14 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
         const result = await fetch("http://localhost:4000/assets", {
-            method: "POST",
+            method: "GET",
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
+        console.log(data);
         return result;
     }
 
@@ -64,12 +64,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
         event.preventDefault();
 
         //setup data object to send based on API docs and required parameters
-        const data = {
-            assets: selected,
-            update: {
-                retired: status === "Active" ? false : true
-            }
-        }
+        
 
         sendData(data)
         .then(response => {
