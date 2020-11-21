@@ -312,6 +312,14 @@ router.patch("/", async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    const asset = {
+      assetName: req.body.assetName,
+      serial: req.body.serial,
+      owner: req.body.owner,
+      assignmentType: req.body.assignmentType,
+      groupTag: req.body.groupTag,
+      assignee: req.body.assignee
+    }
     sampleAssets.forEach(async (item) => {
       console.log(item);
       const asset = new Asset({
@@ -320,7 +328,7 @@ router.post('/', async (req, res) => {
       });
       await asset.save();
     });
-
+    console.log(asset);
     res.status(200).json({ message: "success" });
   } catch (err) {
     res.status(500).json({
