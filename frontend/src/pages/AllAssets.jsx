@@ -10,6 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
+import ChipBar from '../components/Tables/ChipBar';
 
 import AssetFilter from '../components/Dialogs/AssetFilter'
 import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
@@ -18,6 +19,9 @@ import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog
 import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
 import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
 import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
+
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -36,6 +40,7 @@ const AllAssets = (props) => {
     const [anchor, setAnchor] = useState(null);
     const [nextDialog, setNext] = useState("");
     const [override, setOverride] = useState(false);
+    const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
@@ -75,22 +80,31 @@ const AllAssets = (props) => {
         
     }
 
-    useEffect( () => {
+    useEffect(() => {
         if (!nextDialog) return;
         if (childAssets.length > 0) {
             setDialogs({ assetEditWarning: true });
         } else {
             setDialogs({ [nextDialog]: true });
         }
-    }, [childAssets, nextDialog])
+    }, [childAssets, nextDialog]);
+
+    const onSuccess = (succeeded, message) => {
+        if (succeeded) {
+            setSelected([]);
+            setSuccess({ succeeded: succeeded, message: message });
+            setActiveFilters({ ...activeFilters });
+        } else {
+            setSuccess({ succeeded: succeeded, message: message });
+        }
+    };
 
     useEffect(() => {
-
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
             let url = "http://localhost:4000/assets";
             const keys = Object.keys(filters);
-            keys.map((key, idx) => {
+            keys.forEach((key, idx) => {
                 if (idx === 0) {
                     url = `${url}?${key}=${filters[key]}`;
                 } else {
@@ -127,8 +141,6 @@ const AllAssets = (props) => {
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
-                    activeFilters={activeFilters}
-                    setActiveFilters={setActiveFilters}
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
@@ -163,12 +175,15 @@ const AllAssets = (props) => {
                                 <IconButton aria-label={"filter"}>
                                     <FilterListIcon onClick={() => setDialogs({ filter: true })} />
                                 </IconButton>
-                            </Tooltip>}
-
-
-
-
+                            </Tooltip>
+                        }
                     </TableToolbar>
+
+                    {/* Chips representing all the active filters */}
+                    <ChipBar
+                        activeFilters={activeFilters}
+                        setActiveFilters={setActiveFilters}
+                        setFilters={setFilters} />
 
                 </CustomTable>
 
@@ -176,11 +191,11 @@ const AllAssets = (props) => {
 
             {/* Put all the toolbar dialogs here */}
             <AssetFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs({ filter: isOpen })} setActiveFilters={setActiveFilters} />
-            <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} />
-            <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} />
-            <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} />
-            <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} />
-            <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} />
+            <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} onSuccess={onSuccess} />
+            <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} onSuccess={onSuccess} />
+            <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} onSuccess={onSuccess} />
+            <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} onSuccess={onSuccess} />
+            <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} onSuccess={onSuccess} />
             <AssetEditWarning
                 open={dialogs["assetEditWarning"]}
                 setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
@@ -193,6 +208,12 @@ const AllAssets = (props) => {
                     setChildAssets([])
                 }}
             />
+
+            <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
+                <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
+                    {success.message}
+                </Alert>
+            </Snackbar>
 
         </div>);
 

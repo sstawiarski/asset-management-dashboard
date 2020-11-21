@@ -8,8 +8,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -24,12 +27,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
+const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [type, setType] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
@@ -54,7 +55,7 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
         const data = {
             assets: selected,
             update: {
-               assignmentType : type 
+               assignmentType: type 
             }
         }
 
@@ -70,9 +71,12 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const assignType = type;
                     handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update assignment type...`);
                 }
             })
     }
@@ -81,8 +85,6 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setType("");
-        setStatus("");
-        setFailed(null);
     }
 
     return (
@@ -96,18 +98,22 @@ const AssignmentTypeDialog = ({ open, setOpen, selected }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <form>
-                        {/* Controlled input, get value from state and changes state when it changes */}
-                        <TextField 
-                        id="assignment-type-editor" 
-                        label="AssignmentType" 
-                        variant="outlined"
-                        value={type}
-                        onChange={(event) => setType(event.target.value)} />
+                <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="product-status-label">Product Status</InputLabel>
+                        {/* Controlled select, get value from state and changes state when it changes */}
+                        <Select
+                            labelId="assignment-type-label"
+                            labelWidth={105}
+                            id="assignment-type-select"
+                            value={type}
+                            onChange={(event) => setType(event.target.value)}
+                        >
 
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
-                    </form>
+                            <MenuItem value={"Owned"}>Owned</MenuItem>
+                            <MenuItem value={"Rental"}>Rental</MenuItem>
+
+                        </Select>
+                    </FormControl>
                 </div>
             </DialogContent>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -10,6 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -24,13 +25,13 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
+const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
     const [failed, setFailed] = useState(null);
     const [owner, setOwner] = useState("");
+    const [dropdown, setDropdown] = useState([]);
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -54,7 +55,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
         const data = {
             assets: selected,
             update: {
-                owner : owner
+                owner: owner
             }
         }
 
@@ -70,9 +71,12 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const newOwner = owner;
                     handleClose();
+                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update asset owner...`);
                 }
             })
     }
@@ -81,33 +85,38 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setOwner("");
-        setStatus("");
-        setFailed(null);
     }
 
-    return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
+    useEffect(() => {
+        fetch('http://localhost:4000/customers')
+        .then(response => {
+            if (response.status < 300) {
+                return response.json();
+            } else {
+                return [];
+            }
+        })
+        .then(json => setDropdown(json));
+    }, [])
 
-            <DialogTitle id="change-grouptag-dialog-title">Change Owner</DialogTitle>
+    return (
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
+
+            <DialogTitle id="change-assignee-dialog-title">Change Assignee</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing the owner of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing the Owner of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <form>
-                        {/* Controlled input, get value from state and changes state when it changes */}
-                        <TextField 
-                        id="owner-editor" 
-                        label="Owner" 
-                        variant="outlined"
-                        value={owner}
-                        onChange={(event) => setOwner(event.target.value)} />
-
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
-                    </form>
+                    <Autocomplete
+                        id="owner-dropdown"
+                        options={dropdown.map(customer => customer.companyName)}
+                        autoHighlight
+                        onChange={(event, newValue) => setOwner(newValue)}
+                        renderInput={(params) => <TextField {...params} label="Owners" variant="outlined" />}
+                    />
                 </div>
             </DialogContent>
 

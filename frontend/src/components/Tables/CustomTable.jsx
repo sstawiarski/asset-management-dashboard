@@ -24,13 +24,6 @@
  * setSelected (required)       Function
  *    Function to allow table to update selections in the parent page
  * 
- * activeFilters (required)     Object
- *    The active filters, meaning specifically the ones set by the filter dialog and used to make Chips
- *    This is different than filters in that it does not include "page", "limit", "order", etc
- * 
- * setActiveFilters (required)  Function
- *    Function to allow table to update the filters in the parent page
- * 
  * selectedFields (required)  Array
  *    The fields from the objects you expect to receive that you want displayed as columns.
  *    NOTES:
@@ -39,7 +32,7 @@
  * 
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,7 +45,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
+import Typography from '@material-ui/core/Typography';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -66,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         width: '98%',
         marginLeft: "20px",
-        marginBottom: theme.spacing(2)
+        marginBottom: theme.spacing(2),
     },
     table: {
         minWidth: 750,
@@ -106,12 +99,9 @@ const NewTable = (props) => {
         setSelected,
         filters,
         setFilters,
-        activeFilters,
-        setActiveFilters,
         compare
     } = props;
     const url = types[variant];
-    let origFilters = filters;
 
     const rowsPerPage = filters.limit ? filters.limit : 5;
     const page = filters.page ? filters.page : 0;
@@ -122,9 +112,6 @@ const NewTable = (props) => {
     const setMoreInfo = moreInfo ? props.setMoreInfo : null;
     const lookup = moreInfo ? props.lookup : null;
     const Clickable = props.clickable || null;
-
-    //for generating Chips from filters from a dialog
-    const activeKeys = Object.keys(activeFilters);
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -209,76 +196,12 @@ const NewTable = (props) => {
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, count - page * rowsPerPage);
 
-    //send dialog based filters to the parent page when they change
-    useEffect(() => {
-        const newFilters = Object.keys(activeFilters)
-            .reduce((p, c) => {
-                //convert the Date objects send from the filter dialog into numbers for use in the URL
-                if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime") {
-                    p[c] = activeFilters[c].getTime();
-                } else {
-                    p[c] = activeFilters[c];
-                }
-                return p;
-            }, {})
-
-        setFilters({
-            ...origFilters,
-            ...newFilters
-        });
-    }, [activeFilters]);
-
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
 
-                {/* TableToolbar should be child */}
+                {/* TableToolbar and chips should be child */}
                 {props.children}
-
-                {/* Chip generation based on applied filters */}
-                <div>
-                    {
-                        //split labels based on camelCase and convert to proper case
-                        activeKeys.length ?
-                            activeKeys.map((label, idx) => {
-                                const capitalized = label.replace(/([A-Z])/g, ' $1').replace(/^./, function (str) {
-                                    return str.toUpperCase();
-                                })
-
-                                //complicated parsing of the individual filters into human-readable results for the chip label
-                                const value = typeof activeFilters[label] === "string" ?
-                                    activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
-                                    : activeFilters[label] instanceof Date ?
-                                        activeFilters[label].toLocaleDateString('en-US')
-                                        : typeof activeFilters[label] === "boolean" ?
-                                            activeFilters[label] ? "Yes"
-                                                : "No"
-                                            : null;
-
-
-                                //generate alternating colors for the chips
-                                const iter = idx + 1;
-                                const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
-
-                                return <Chip
-                                    key={idx}
-                                    className={classes.chip}
-                                    label={`${capitalized}: ${value}`}
-                                    onDelete={() => {
-                                        setActiveFilters(s => {
-                                            let newFilters = { ...s };
-                                            delete newFilters[label];
-                                            delete origFilters[label];
-                                            return newFilters;
-                                        });
-
-                                    }}
-                                    color={color} />
-
-                            })
-                            : null
-                    }
-                </div>
 
                 <TableContainer>
                     <Table
@@ -366,6 +289,18 @@ const NewTable = (props) => {
                                                                 <IncompletePopper assembly={item} />
                                                             </TableCell>
                                                         )
+                                                    } else if (typeof item[arrayItem] === "boolean") {
+                                                        return (<TableCell align="left">
+                                                            {item[arrayItem] ? "Yes" : "No"}
+                                                            {
+                                                                arrayItem === "checkedOut" ?
+                                                                    <>
+                                                                        <br />
+                                                                        <Typography variant="caption" style={{color: "#838383"}}>{item["assignee"]}</Typography>
+                                                                    </>
+                                                                    : null
+                                                            }
+                                                        </TableCell>);
                                                     }
 
                                                     return (<TableCell align="left">{item[arrayItem]}</TableCell>)
@@ -407,8 +342,6 @@ NewTable.propTypes = {
     variant: PropTypes.oneOf(['asset', 'shipment']).isRequired,
     selected: PropTypes.array.isRequired,
     setSelected: PropTypes.func.isRequired,
-    activeFilters: PropTypes.object.isRequired,
-    setActiveFilters: PropTypes.func.isRequired,
     selectedFields: PropTypes.array.isRequired,
     compare: PropTypes.array,
     checkboxes: PropTypes.bool,

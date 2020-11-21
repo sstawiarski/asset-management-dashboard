@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -10,6 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -24,13 +25,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
+const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [assignment, setAssignment] = useState("");
+    const [dropdown, setDropdown] = useState([]);
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -54,13 +54,12 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
         const data = {
             assets: selected,
             update: {
-                assignee : assignment
+                assignee: assignment
             }
         }
 
         sendData(data)
             .then(response => {
-
                 //assume anything less than 300 is a success
                 if (response.status < 300) {
                     return response.json();
@@ -70,9 +69,12 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
+                    const assign = assignment;
                     handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignee to ${assign}!`)
                 } else {
-                    setFailed(true);
+                    handleClose();
+                    onSuccess(false, `Failed to update assignee...`);
                 }
             })
     }
@@ -81,9 +83,20 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
     const handleClose = () => {
         setOpen(false);
         setAssignment("");
-        setStatus("");
-        setFailed(null);
+
     }
+
+    useEffect(() => {
+        fetch('http://localhost:4000/customers')
+        .then(response => {
+            if (response.status < 300) {
+                return response.json();
+            } else {
+                return [];
+            }
+        })
+        .then(json => setDropdown(json));
+    }, [])
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
@@ -96,18 +109,13 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <form>
-                        {/* Controlled input, get value from state and changes state when it changes */}
-                        <TextField 
-                        id="assignee-editor" 
-                        label="Assignee" 
-                        variant="outlined"
-                        value={assignment}
-                        onChange={(event) => setAssignment(event.target.value)} />
-
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
-                    </form>
+                    <Autocomplete
+                        id="assignment-dropdown"
+                        options={dropdown.map(customer => customer.companyName)}
+                        autoHighlight
+                        onChange={(event, newValue) => setAssignment(newValue)}
+                        renderInput={(params) => <TextField {...params} label="Customers" variant="outlined" />}
+                    />
                 </div>
             </DialogContent>
 

@@ -546,6 +546,12 @@ function getEventType(field) {
       return ["Change of Retirement Status", "RET-"];
     case "groupTag":
       return ["Change of Group Tag", "GRP-"];
+    case "assignee":
+      return ["Reassignment", "REA-"];
+    case "owner":
+      return ["Change of Ownership", "OWN-"];
+    case "assignmentType":
+      return ["Change of Assignment Type", "ASN-"];
   }
 }
 
