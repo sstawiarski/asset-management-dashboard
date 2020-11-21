@@ -6,7 +6,9 @@ const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
 const Counter = require("../models/counter.model");
 const Event = require("../models/event.model");
+const AssemblySchema = require('../models/assemblies.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
+const dateFunctions = require("date-fns");
 
 router.get("/", async (req, res, err) => {
 
@@ -27,10 +29,17 @@ router.get("/", async (req, res, err) => {
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
           if (c === "dateCreated" || c === "dateUpdated") {
-            p[c] = {
-              $gte: new Date(parseInt(query[c])).setHours(0, 0, 0, 0),
-              $lte: new Date(parseInt(query[c])).setHours(23, 59, 59, 999)
-            };
+            const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
+            const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
+            p["$and"] = [{
+              [c]: {
+                $gte: beforeDate
+              }
+            }, {
+              [c]: {
+                $lte: afterDate
+              }
+            }];
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -158,7 +167,6 @@ router.get("/", async (req, res, err) => {
     const result = await Asset.aggregate(aggregateArray);
 
     //filter results to determine better or even exact matches
-    //currently returns asset object, not object with count and data properties
     if (req.query.search) {
 
       if (result[0].data.length) {
@@ -305,7 +313,6 @@ router.patch("/", async (req, res) => {
 router.put("/load", async (req, res) => {
   try {
     sampleAssets.forEach(async (item) => {
-      console.log(item);
       const asset = new Asset({
         ...item,
         dateCreated: Date.now(),
@@ -357,12 +364,110 @@ router.post('/create-Assembly', async (req, res, err) => {
   catch (err) {
     console.log(err)
   }
+});
+
+//load databse with assembly schemas for comparison when creating an assembly
+router.put("/assembly/schema", async (req, res) => {
+  try {
+    const assemblySchemas = [{
+      name: "Carrier",
+      serializationFormat: "G800-",
+      components: [
+        "Landing Sub",
+        "Crossover Sub",
+        "Centralizer",
+        "Gap Sub"]
+    }, {
+      name: "Electronics Probe",
+      serializationFormat: "ELP-",
+      components: [
+        "Pulser",
+        "ECAM",
+        "Gamma",
+        "Directional",
+        "Female Rotatable"
+      ]
+    }, {
+      name: "Battery Probe",
+      serializationFormat: "BAP-",
+      components: [
+        "Transmission Rod",
+        "Gap Joint",
+        "Male Rotatable",
+        "Battery Bulkhead"
+      ]
+    }, {
+      name: "Kit Box",
+      serializationFormat: "EVO-ONE-",
+      components: []
+    }, {
+      name: "Pulser",
+      serializationFormat: "ELP-",
+      components: [
+        "Motor",
+        "Gearbox",
+        "Pressure Feedthrough"
+      ]
+    }];
+
+    for (const item of assemblySchemas) {
+      const assembly = new AssemblySchema({
+        name: item.name,
+        serializationFormat: item.serializationFormat,
+        components: item.components
+      });
+      await assembly.save();
+    }
+
+    res.status(200).json({
+      message: "success"
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({
+      message: "Error loading sample data into database",
+      internal_code: "database_load_error",
+    });
+  }
+
+});
+
+router.get("/assembly/schema", async (req, res) => {
+  const type = decodeURI(req.query.type);
+  try {
+    const chosenSchema = await AssemblySchema.findOne({ name: type }).select({
+      _id: 0,
+      __v: 0
+    });
+    if (chosenSchema) {
+      res.status(200).json(chosenSchema);
+    } else {
+      res.status(404).json({
+        message: "Error finding assembly schema",
+        internal_code: "schema_error",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(503).json({
+      message: "Error finding assembly schema",
+      internal_code: "schema_error",
+    });
+  }
 })
 
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
+  const { project } = req.query
+  let projection = {};
+  if (project) {
+    projection = {
+      [project]: 1,
+      _id: 0
+    }
+  }
   try {
-    const asset = await Asset.find({ serial: serial });
+    const asset = await Asset.find({ serial: serial }, projection);
 
     if (asset.length) {
       res.status(200).json(asset[0]);
@@ -384,7 +489,15 @@ router.get("/:serial", async (req, res, err) => {
 function getEventType(field) {
   switch (field) {
     case "retired":
-      return ["Change of Retirement Status", "RET-"]
+      return ["Change of Retirement Status", "RET-"];
+    case "groupTag":
+      return ["Change of Group Tag", "GRP-"];
+    case "assignee":
+      return ["Reassignment", "REA-"];
+    case "owner":
+      return ["Change of Ownership", "OWN-"];
+    case "assignmentType":
+      return ["Change of Assignment Type", "ASN-"];
   }
 }
 

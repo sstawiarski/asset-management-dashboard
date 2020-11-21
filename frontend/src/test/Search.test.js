@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 
-import Searchbar from '../components/Searchbar';
+import Searchbar from '../components/Searchbar/Searchbar';
 
 
 const setup = () => {

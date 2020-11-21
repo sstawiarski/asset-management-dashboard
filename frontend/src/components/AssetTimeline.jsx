@@ -23,7 +23,7 @@ const AssetTimeline = ({ data }) => {
         <Timeline align="alternate">
             {data.length ? data.map((item, idx) => {
                 return (
-                    <TimelineItem>
+                    <TimelineItem key={idx}>
                         <TimelineSeparator>
                             {idx % 3 === 0 ? <TimelineDot /> : idx % 2 === 0 ? <TimelineDot color="secondary" /> : <TimelineDot color="primary" />}
                             {idx !== data.length - 1 ? <TimelineConnector /> : null}
