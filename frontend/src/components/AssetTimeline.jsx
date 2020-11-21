@@ -10,6 +10,8 @@ import TimelineDot from '@material-ui/lab/TimelineDot';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+
 import EventDetailsViewer from './EventDetailsViewer';
 
 const dateOptions = {
@@ -40,6 +42,7 @@ const AssetTimeline = ({ data }) => {
         <>
             <Timeline align="alternate">
                 {data.length ? data.map((item, idx) => {
+                    const isShipment = item.eventType.includes('Shipment');
                     return (
                         <TimelineItem key={idx}>
                             <TimelineSeparator>
@@ -47,19 +50,23 @@ const AssetTimeline = ({ data }) => {
                                 {idx !== data.length - 1 ? <TimelineConnector /> : null}
                             </TimelineSeparator>
                             <TimelineContent>
-                                <Paper className={classes.eventTag} onClick={() => setEvent(item)}>
-                                    <div style={{ padding: "10px" }}>
-                                        <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
-                                        <Typography variant="body1">{item.key}</Typography>
-                                        <Typography variant="body1">{item.eventType}</Typography>
-                                        {
-                                            item.eventType.includes('Shipment') ?
-                                                <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }}>View shipment document</Button>
+                                <Tooltip disableHoverListener={isShipment} title="View event details" arrow>
+                                    <Paper className={classes.eventTag} onClick={() => {
+                                        if (!isShipment) setEvent(item);
+                                        }}>
+                                        <div style={{ padding: "10px" }}>
+                                            <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
+                                            <Typography variant="body1">{item.key}</Typography>
+                                            <Typography variant="body1">{item.eventType}</Typography>
+                                            {
+                                                isShipment ?
+                                                    <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }}>View shipment document</Button>
 
-                                                : null
-                                        }
-                                    </div>
-                                </Paper>
+                                                    : null
+                                            }
+                                        </div>
+                                    </Paper>
+                                </Tooltip>
                             </TimelineContent>
                         </TimelineItem>
                     );
