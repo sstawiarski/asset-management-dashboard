@@ -1,5 +1,5 @@
 /*
- * Author: Shawn Stawiarski
+ * Author: Shawn Stawiarski, Maija Kingston
  * October 2020
  * License: MIT
  */
@@ -97,6 +97,31 @@ const CreateAssembly = () => {
     const [cartItems, setCartItems] = useState([]);
 
     const [state, setState] = useState({});
+    
+    //get assets from database that don't belong to an assembly
+    useEffect(() => {
+        const fetchAssets = async () => {  
+            //get assets from DB
+	        const result = await fetch(`http://localhost:4000/assets`);
+	        const json = await result.json();
+	        
+	        return(json); 
+        };
+
+      fetchAssets()
+      .then(result => {
+      	const array = result.map((element) => ({
+      		serial : element.serial, 
+      		product : element.assetType, 
+      		description : element.assetName, 
+      		owner : element.owner, 
+      		groupTag : element.groupTag,
+      		parentId : element.parentId
+      	}));
+      	//filter to get assets that aren't in an assembly
+        setAssets(array.filter(asset =>asset.parentId==null));
+      },);        
+    }, [])
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -148,36 +173,23 @@ const CreateAssembly = () => {
         })
     };
 
-
-    const handleSubmitAssembly = async () => {
-
-        try {
-            let result = await fetch("http://localhost/create-Assembly", {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(state)
-            });
-            console.log(result)
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
-    useEffect(() => {
-        fetch('http://localhost:4000/assets?assetType=Asset')
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return {count: [{ count: 0}], data: []}
-            }
-        })
-        .then(json => {
-            setAssets(json.data);
-            setAssetCount(json.count[0].count);
-        })
-
-    }, []);
+    //post request to submit selected assets as a new assembly
+  	const handleSubmitAssembly = async () => {
+    	try {
+	    	let result =  await fetch("http://localhost:4000/assets/create-Assembly", {
+    		method: 'post',
+    		mode: 'no-cors',
+    		headers: { 
+    			'Content-Type' : 'application/json',
+    			'Accept' : 'application/json',
+    		},
+    		body: JSON.stringify(cartItems)
+    	});
+	    	console.log(result)
+	    } catch(e) {
+	    	console.log(e)
+	    }
+    }	
 
     return (
         <div className={classes.root}>
@@ -234,7 +246,6 @@ const CreateAssembly = () => {
 
                     <Grid item xs={12} sm={4} lg={3}>
 
-
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Assembly Cart</Typography>
                         </Box>
@@ -245,11 +256,10 @@ const CreateAssembly = () => {
                                 header={headCells}
                                 rows={cartItems}
                                 handleRemove={handleRemoveFromCart}
-                                onSubmit={handleAssemblySubmit}
+                                onSubmit={handleSubmitAssembly}
                                 className={classes.paper} />
 
                             : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
-
 
                     </Grid>
                 </Grid>
