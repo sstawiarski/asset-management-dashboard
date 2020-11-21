@@ -191,7 +191,7 @@ const CreateAssembly = () => {
                         {
                             assemblyStarted
                                 ? <CustomTable
-                                    data={rows}
+                                    data={assets}
                                     selectedFields={selectedFields}
                                     selected={selected}
                                     setSelected={setSelected}
