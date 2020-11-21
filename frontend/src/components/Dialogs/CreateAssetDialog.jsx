@@ -10,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Typography from '@material-ui/core/Typography';
@@ -150,7 +151,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                     <FormControl variant="outlined" className={classes.formControl}>
                         <InputLabel id="asset-serial-label">Asset Serial</InputLabel>
                         
-                        <Select
+                        <TextField
                             labelId="asset-serial-label"
                             labelWidth={105}
                             id="asset-serial-label"
@@ -160,7 +161,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
 
                             /* populate menu items here for available serials */
 
-                        </Select>
+                        </TextField>
          
                     </FormControl>
 
@@ -221,7 +222,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                     <FormControl variant="outlined" className={classes.formControl}>
                         <InputLabel id="group-tag-label">Group Tag</InputLabel>
                         
-                        <Select
+                        <TextField
                             labelId="group-tag-label"
                             labelWidth={105}
                             id="group-tag-label"
@@ -231,7 +232,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
 
                             /* populate menu items here for available serials */
 
-                        </Select>
+                        </TextField>
          
                     </FormControl>
                 </div>
