@@ -93,6 +93,7 @@ const CreateAssembly = () => {
     const [creatorOpen, setCreatorOpen] = useState(false);
     
     const [state, setState] = useState({
+    	serial: "",
         assemblyType: "",
         groupTag: "",
         owner: "",
@@ -118,9 +119,13 @@ const CreateAssembly = () => {
       		product : element.assetType, 
       		description : element.assetName, 
       		owner : element.owner, 
-      		groupTag : element.groupTag
+      		groupTag : element.groupTag,
+      		parentId : element.parentId
       	}));
-        setAssets(array);
+      	
+      	console.log(array.filter(asset =>asset.parentId==null));
+        setAssets(array.filter(asset =>asset.parentId==null));
+
       },);        
     }, [])
     
@@ -181,14 +186,16 @@ const CreateAssembly = () => {
         }))
     }
 
-    
-    	const handleSubmitAssembly = async () => {
-	    	
+  	const handleSubmitAssembly = async () => {
 	    	try {
-		    	let result =  await fetch("http://localhost/create-Assembly", {
+		    	let result =  await fetch("http://localhost:4000/assets/create-Assembly", {
 	    		method: 'post',
-	    		headers: { 'Content-Type' : 'application/json'},
-	    		body: JSON.stringify(state)
+	    		mode: 'no-cors',
+	    		headers: { 
+	    			'Content-Type' : 'application/json',
+	    			'Accept' : 'application/json',
+	    		},
+	    		body: JSON.stringify(state.selectedTableRows)
 	    	});
 		    	console.log(result)
 		    } catch(e) {
