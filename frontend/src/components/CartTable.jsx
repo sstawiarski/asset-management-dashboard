@@ -51,7 +51,7 @@ const CartTable = (props) => {
                     })}
                 </TableBody>
             </Table> 
-            <Button className={classes.button} disabled={rows.length ? false : true}>Submit Assembly</Button>
+            <Button className={classes.button} disabled={rows.length ? false : true} onClick={props.click}>Submit Assembly</Button>
             {/* TODO: Add dialog for confirming and actually submitting assembly */}
             {/* TODO: Add check to ensure assembly items were not already taken by someone else in the meantime */}
         </TableContainer>

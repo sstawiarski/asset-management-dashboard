@@ -181,16 +181,21 @@ const CreateAssembly = () => {
         }))
     }
 
-    useEffect(() => {
-    	const handleSubmitAssembly = (event) => {
-	    	const postRequest = {
-	    		method: 'PUT',
-	    		headers:{ 'Content-Type' : 'application/json'},
+    
+    	const handleSubmitAssembly = async () => {
+	    	
+	    	try {
+		    	let result =  await fetch("http://localhost/create-Assembly", {
+	    		method: 'post',
+	    		headers: { 'Content-Type' : 'application/json'},
 	    		body: JSON.stringify(state)
-	    	};
-	    	fetch("http://localhost/create-Assembly", postRequest);
-    }
-    })
+	    	});
+		    	console.log(result)
+		    } catch(e) {
+		    	console.log(e)
+		    }
+    	}	
+    
 
     return (
         <div className={classes.root}>
@@ -234,7 +239,7 @@ const CreateAssembly = () => {
                             <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
-                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
+                        {assemblyStarted ? <CartTable click={handleSubmitAssembly} header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
 
 
                     </Grid>
