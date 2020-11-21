@@ -149,13 +149,13 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                     </FormControl>
                 
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="asset-serial-label">Asset Serial</InputLabel>
                         
                         <TextField
-                            labelId="asset-serial-label"
-                            labelWidth={105}
+                            margin="dense"
                             id="asset-serial-label"
-                            value={serial}
+                            label="Asset Serial"
+                            type="text"
+                            fullWidth
                             onChange={(event) => setSerial(event.target.value)}
                         >
 
@@ -220,13 +220,14 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                     </FormControl>
 
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="group-tag-label">Group Tag</InputLabel>
                         
                         <TextField
-                            labelId="group-tag-label"
-                            labelWidth={105}
+                            
+                            margin="dense"
                             id="group-tag-label"
-                            value={groupTag}
+                            label="Group Tag"
+                            type="text"
+                            fullWidth
                             onChange={(event) => setGroupTag(event.target.value)}
                         >
 

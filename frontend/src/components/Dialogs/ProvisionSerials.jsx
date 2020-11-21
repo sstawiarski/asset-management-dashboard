@@ -38,10 +38,8 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
     const [failed, setFailed] = useState(null);
     const [assetType, setAssetType] = useState("");
     const [serial, setSerial] = useState("");
-    const [owner, setOwner] = useState("");
-    const [assignmentType, setAssignmentType] = useState("");
-    const [groupTag, setGroupTag] = useState("");
-    const [assignee, setAssignee] = useState("");
+    const [assetQuantity, setAssetQuantity] = useState("");
+  
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -150,6 +148,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                                     label="Asset Quantity"
                                     type="text"
                                     fullWidth
+                                    onChange={(event) => setAssetQuantity(event.target.value)}
                                 
                             />
          
