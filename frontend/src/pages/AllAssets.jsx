@@ -103,8 +103,6 @@ const AllAssets = (props) => {
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
-                    activeFilters={activeFilters}
-                    setActiveFilters={setActiveFilters}
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
