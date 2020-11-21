@@ -359,6 +359,78 @@ router.post('/create-Assembly', async (req, res, err) => {
   }
 })
 
+
+router.post('/asset-Provision', async (req, res, err) => {
+  try {
+    const serial = req.body.serial
+    const serialBase= req.body.serialBase
+    const body = req.body
+
+    if (serial) {
+    	 for(let i in serial){
+
+    	 	const existingDoc= await Asset.findOne({serial:i})
+    	 	if(existingDoc){
+    	 		continue
+    	 	}
+    	 	const newAssets=new Asset({
+    	 		serial:i,
+    	 		assetName:req.body.assetName,
+    	 		provisioned:true,
+    	 		owner:"Supply Chain USA",
+    	 		assetType:"Asset",
+    	 		dateCreated: Date.now(),
+    	 		checkedOut:false,
+    	 		assignmentType:"Owned"
+    	 	})
+    	 	await newAssets.save()
+    	 }
+	res.status(200).json
+    	({
+      message: "success"
+     ,
+    });
+    }
+    else if (serialBase) {
+    	const num=serialBase.split("-",2)
+    	const beginningSerial= parseInt(num[1])
+    	if (req.body.quantity) {
+    		for (let i =beginningSerial; i<req.body.quantity; i++) {
+    			const newSerial= num[0]+i
+
+    			const existingDoc= await Asset.findOne({serial:newSerial})
+    	 	if(existingDoc){
+    	 		continue
+    	 	}
+    	 	const newAssets=new Asset({
+    	 		serial:newSerial,
+    	 		assetName:req.body.assetName,
+    	 		provisioned:true,
+    	 		owner:"Supply Chain USA" ,
+    	 		assetType:"Asset",
+    	 		dateCreated: Date.now(),
+    	 		checkedOut:false,
+    	 		assignmentType:"Owned"
+
+    	 	})
+    	 	await newAssets.save()
+
+    		}
+    	
+    	}
+    	res.status(200).json
+    	({
+      message: "success"
+     ,
+    });
+
+
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
   try {
@@ -379,6 +451,7 @@ router.get("/:serial", async (req, res, err) => {
       interalCode: "missing_parameters",
     });
   }
+
 });
 
 function getEventType(field) {
