@@ -98,10 +98,10 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="create-asset-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="provision-serial-dialog-title">
             
             
-            <DialogTitle id="create-asset-dialog-title">Create Asset</DialogTitle>
+            <DialogTitle id="provision-serial-dialog-title">Provision Serials</DialogTitle>
             
             <DialogContent>
                 
