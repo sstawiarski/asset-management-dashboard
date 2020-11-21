@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,11 +24,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess }) => {
+const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [failed, setFailed] = useState(null);
     const [owner, setOwner] = useState("");
     const [dropdown, setDropdown] = useState([]);
 
@@ -56,7 +54,8 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess }) => {
             assets: selected,
             update: {
                 owner: owner
-            }
+            },
+            override: override
         }
 
         sendData(data)
@@ -100,9 +99,9 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess }) => {
     }, [])
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
 
-            <DialogTitle id="change-assignee-dialog-title">Change Assignee</DialogTitle>
+            <DialogTitle id="change-owner-dialog-title">Change Owner</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>

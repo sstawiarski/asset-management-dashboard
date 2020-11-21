@@ -14,7 +14,6 @@ import {
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 
-
 const useStyles = makeStyles((theme) => ({
 
     form: {
@@ -32,8 +31,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(1),
     },
 }));
-
-
 
 export default function FormDialog({ open, setOpen, setActiveFilters }) {
 
@@ -157,9 +154,9 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                     </Grid>
                 </Grid>
 
-                <Grid container justify="space-evenly" style={{marginTop: "20px"}}>
+                <Grid container justify="space-evenly" style={{ marginTop: "20px" }}>
                     <Grid item xs={5}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Grid container justify="space-evenly">
                                 <KeyboardDatePicker
 
@@ -180,7 +177,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                     </Grid>
 
                     <Grid item xs={5}>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Grid container justify="space-evenly">
                                 <KeyboardDatePicker
                                     format="MM/dd/yyyy"
@@ -201,12 +198,13 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                     </Grid>
 
                 </Grid>
-                <Grid container justify="space-around" style={{marginTop: "20px"}}>
+                <Grid container justify="space-around" style={{ marginTop: "20px" }}>
                     <Grid item xs={6}>
                         <TextField
                             autoFocus
                             margin="dense"
                             id="groupTag"
+                            name="groupTag"
                             label="Group Tag"
                             type="text"
                             fullWidth

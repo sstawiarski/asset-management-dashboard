@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RetireAssetDialog = ({ open, setOpen, selected, onSuccess }) => {
+const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -56,7 +56,8 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess }) => {
             assets: selected,
             update: {
                 retired: status === "Active" ? false : true
-            }
+            },
+            override: override
         }
 
         sendData(data)

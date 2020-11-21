@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel, setParentState }) => {
+const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel }) => {
     const classes = useStyles();
     const [state, setState] = useState({
         assemblyType: "",
@@ -49,11 +49,7 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel, setP
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setParentState(s => ({
-            ...s,
-            ...state
-        }));
-        handleCreate();
+        handleCreate(state);
     }
 
     useEffect(() => {

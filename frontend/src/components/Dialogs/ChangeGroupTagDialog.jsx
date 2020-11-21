@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -24,12 +23,10 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess }) => {
+const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState(null);
     const [groupTag, setGroupTag] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
@@ -55,7 +52,8 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess }) => {
             assets: selected,
             update: {
                 groupTag: groupTag
-            }
+            },
+            override: override
         }
 
         sendData(data)
@@ -84,8 +82,6 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess }) => {
     const handleClose = () => {
         setOpen(false);
         setGroupTag("");
-        setStatus("");
-        setFailed(null);
     }
 
     return (
@@ -101,15 +97,12 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess }) => {
                 <div className={classes.item}>
                     <form>
                         {/* Controlled input, get value from state and changes state when it changes */}
-                        <TextField 
-                        id="group-tag-editor" 
-                        label="Group Tag" 
-                        variant="outlined"
-                        value={groupTag}
-                        onChange={(event) => setGroupTag(event.target.value)} />
-
-                        {/* Render a failure message if API returns a response code > 300 */}
-                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
+                        <TextField
+                            id="group-tag-editor"
+                            label="Group Tag"
+                            variant="outlined"
+                            value={groupTag}
+                            onChange={(event) => setGroupTag(event.target.value)} />
                     </form>
                 </div>
             </DialogContent>

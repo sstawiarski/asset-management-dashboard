@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess }) => {
+const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -55,7 +54,8 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess }) => {
             assets: selected,
             update: {
                 assignee: assignment
-            }
+            },
+            override: override
         }
 
         sendData(data)
@@ -88,14 +88,14 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess }) => {
 
     useEffect(() => {
         fetch('http://localhost:4000/customers')
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return [];
-            }
-        })
-        .then(json => setDropdown(json));
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return [];
+                }
+            })
+            .then(json => setDropdown(json));
     }, [])
 
     return (

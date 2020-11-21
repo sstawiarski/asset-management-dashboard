@@ -114,35 +114,32 @@ const CreateAssembly = () => {
 
     //get assets from database that don't belong to an assembly
     useEffect(() => {
-        const fetchAssets = async () => {
-            //get assets from DB
-            const result = await fetch(`http://localhost:4000/assets`);
-            const json = await result.json();
-
-            return (json);
-        };
-
-        fetchAssets()
-            .then(result => {
-                const array = result.map((element) => ({
-                    serial: element.serial,
-                    product: element.assetType,
-                    description: element.assetName,
-                    owner: element.owner,
-                    groupTag: element.groupTag,
-                    parentId: element.parentId
-                }));
-                //filter to get assets that aren't in an assembly
-                setAssets(array.filter(asset => asset.parentId == null));
-            });
+        fetch('http://localhost:4000/assets?parentId=null&assetType=Asset')
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+            .then(json => {
+                if (json) {
+                    setAssetCount(json.count[0].count);
+                    setAssets(json.data);
+                }
+            })
     }, [])
 
     const handleStart = () => {
         setCreatorOpen(true);
     }
 
-    const handleCreate = () => {
-        getSchema(state.assemblyType).then(response => {
+    const handleCreate = (childState) => {
+        setState(s => ({
+            ...s,
+            ...childState
+        }));
+        getSchema(childState.assemblyType).then(response => {
             setSchema(response);
         });
         setCreatorOpen(false);
@@ -178,7 +175,7 @@ const CreateAssembly = () => {
         setSelected(newSelected);
     };
 
-    const handleAssemblySubmit = () => {
+    const handleSubmitCheck = () => {
         compareSchema(schema, cartItems).then(result => {
             setSubmission(s => ({
                 ...s,
@@ -187,7 +184,8 @@ const CreateAssembly = () => {
                     arr.push([item, moreInfo[idx]]);
                     return arr;
                 }, []),
-                serial: "G800-11120"
+                serial: "G800-11120",
+                override: false
             }))
             if (!result[0]) {
                 setMissingItems(result[1]);
@@ -198,39 +196,10 @@ const CreateAssembly = () => {
         })
     };
 
-    const handleSuccess = () => {
-        setSuccess(true);
-    };
-
-    const handleFailure = () => {
-        setSuccess(false);
-    };
-
-    const handleClose = () => {
-        setSuccess(null);
-    }
 
     const handleSubmitCancel = () => {
         toggleOverride(false);
         setSubmitOpen(false);
-    }
-
-    //post request to submit selected assets as a new assembly
-    const handleSubmitAssembly = async () => {
-        try {
-            let result = await fetch("http://localhost:4000/assets/create-Assembly", {
-                method: 'post',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify(cartItems)
-            });
-            console.log(result)
-        } catch (e) {
-            console.log(e)
-        }
     }
 
     return (
@@ -300,7 +269,7 @@ const CreateAssembly = () => {
                             header={headCells}
                             rows={cartItems}
                             handleRemove={handleRemoveFromCart}
-                            onSubmit={handleSubmitAssembly}
+                            onSubmit={handleSubmitCheck}
                         />
 
                         : null}
@@ -309,20 +278,41 @@ const CreateAssembly = () => {
                 </Grid>
             </Grid>
 
-            <CreateNewAssemblyDialog creatorOpen={creatorOpen} handleCreate={handleCreate} handleCancel={handleCancel} setParentState={setState} />
-            <AssetFilter open={filterOpen} setOpen={(isOpen) => setFilterOpen(isOpen)} setActiveFilters={setActiveFilters} />
+            <CreateNewAssemblyDialog
+                creatorOpen={creatorOpen}
+                handleCreate={handleCreate}
+                handleCancel={handleCancel} />
+
+            <AssetFilter
+                open={filterOpen}
+                setOpen={(isOpen) => setFilterOpen(isOpen)}
+                setActiveFilters={setActiveFilters} />
+
             <AssemblySubmitDialog
                 open={submitOpen}
                 setOpen={setSubmitOpen}
                 isComplete={!override}
-                onSuccess={handleSuccess}
-                onFailure={handleFailure}
+                onSubmit={handleSubmitAssembly}
+                onSuccess={() => setSuccess(true)}
+                onFailure={() => setSuccess(false)}
                 handleCancel={handleSubmitCancel}
                 submission={submission} />
 
-            <IncompleteAssemblyDialog open={incomplete} setOpen={setIncomplete} handleOverride={() => { toggleOverride(true); setIncomplete(false); setSubmitOpen(true) }} missingItems={missingItems} />
-            <Snackbar open={success !== null} autoHideDuration={5000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
-                <Alert onClose={handleClose} severity={success ? "success" : "error"}>
+            <IncompleteAssemblyDialog
+                open={incomplete}
+                setOpen={setIncomplete}
+                handleOverride={() => {
+                    toggleOverride(true);
+                    setSubmission(s => ({...s, override: true}))
+                    setIncomplete(false);
+                    setSubmitOpen(true);
+                }
+                }
+                missingItems={missingItems} />
+
+
+            <Snackbar open={success !== null} autoHideDuration={5000} onClose={() => setSuccess(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
+                <Alert onClose={() => setSuccess(null)} severity={success ? "success" : "error"}>
                     {success ? "Assembly successfully created!" : "Failed to submit assembly..."}
                 </Alert>
             </Snackbar>

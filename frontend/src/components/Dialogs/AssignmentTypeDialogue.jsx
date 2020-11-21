@@ -9,7 +9,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess }) => {
+const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -55,8 +54,9 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess }) => {
         const data = {
             assets: selected,
             update: {
-               assignmentType: type 
-            }
+                assignmentType: type
+            },
+            override: override
         }
 
         sendData(data)
@@ -98,8 +98,8 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess }) => {
                 </DialogContentText>
 
                 <div className={classes.item}>
-                <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="product-status-label">Product Status</InputLabel>
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="product-status-label">Assignment Type</InputLabel>
                         {/* Controlled select, get value from state and changes state when it changes */}
                         <Select
                             labelId="assignment-type-label"

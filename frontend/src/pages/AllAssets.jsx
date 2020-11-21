@@ -77,7 +77,7 @@ const AllAssets = (props) => {
             })
             setChildAssets(children)
         });
-        
+
     }
 
     useEffect(() => {
@@ -190,12 +190,47 @@ const AllAssets = (props) => {
             </div>
 
             {/* Put all the toolbar dialogs here */}
-            <AssetFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs({ filter: isOpen })} setActiveFilters={setActiveFilters} />
-            <RetireAssetDialog open={dialogs["retire"]} setOpen={(isOpen) => setDialogs({ retire: isOpen })} selected={selected} onSuccess={onSuccess} />
-            <ChangeGroupTagDialog open={dialogs["groupTag"]} setOpen={(isOpen) => setDialogs({ groupTag: isOpen })} selected={selected} onSuccess={onSuccess} />
-            <ChangeAssignmentDialog open={dialogs["assignee"]} setOpen={(isOpen) => setDialogs({ assignee: isOpen })} selected={selected} onSuccess={onSuccess} />
-            <ChangeOwnershipDialog open={dialogs["owner"]} setOpen={(isOpen) => setDialogs({ owner: isOpen })} selected={selected} onSuccess={onSuccess} />
-            <ChangeAssignmentTypeDialog open={dialogs["assignmentType"]} setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })} selected={selected} onSuccess={onSuccess} />
+            <AssetFilter
+                open={dialogs["filter"]}
+                setOpen={(isOpen) => setDialogs({ filter: isOpen })}
+                setActiveFilters={setActiveFilters}
+                override={override} />
+
+            <RetireAssetDialog
+                open={dialogs["retire"]}
+                setOpen={(isOpen) => setDialogs({ retire: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeGroupTagDialog
+                open={dialogs["groupTag"]}
+                setOpen={(isOpen) => setDialogs({ groupTag: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+            <ChangeAssignmentDialog
+                open={dialogs["assignee"]}
+                setOpen={(isOpen) => setDialogs({ assignee: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeOwnershipDialog
+                open={dialogs["owner"]}
+                setOpen={(isOpen) => setDialogs({ owner: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeAssignmentTypeDialog
+                open={dialogs["assignmentType"]}
+                setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            {/* Warning when asset is edited separately from its assembly */}
             <AssetEditWarning
                 open={dialogs["assetEditWarning"]}
                 setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
@@ -209,6 +244,7 @@ const AllAssets = (props) => {
                 }}
             />
 
+            {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
                     {success.message}

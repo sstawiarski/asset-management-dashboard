@@ -9,22 +9,28 @@ import Alert from '@material-ui/lab/Alert';
 
 import SimpleList from '../Tables/SimpleList';
 
-const AssemblySubmitDialog = ({ open, setOpen, onSuccess, onFailure, isComplete, submission, handleCancel }) => {
-
-    let success = false;
+const AssemblySubmitDialog = ({ open, setOpen, onSuccess, onFailure, isComplete, submission, handleCancel, onSubmit }) => {
 
     const handleSubmit = () => {
-        setOpen(false);
-        if (success) {
-            onSuccess();
-        } else {
-            onFailure();
+        try {
+            let result = await fetch("http://localhost:4000/assets/create-Assembly", {
+                method: 'post',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(cartItems)
+            });
+            console.log(result)
+        } catch (e) {
+            console.log(e)
         }
     }
 
     return (
         <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title">
-            
+
             <DialogTitle>Submit Assembly</DialogTitle>
 
             <DialogContent>
@@ -43,11 +49,11 @@ const AssemblySubmitDialog = ({ open, setOpen, onSuccess, onFailure, isComplete,
                         <Typography variant="subtitle1">{submission.serial}</Typography>
                     </Grid>
 
-                    <Grid item xs={12} style={{marginTop: "20px"}}>
+                    <Grid item xs={12} style={{ marginTop: "20px" }}>
                         <Typography variant="subtitle1"><b>Manifest:</b></Typography>
                     </Grid>
 
-                    <Grid item xs={8} style={{marginTop: "20px"}}>
+                    <Grid item xs={8} style={{ marginTop: "20px" }}>
                         <SimpleList data={submission.assets} label="assembly-manifest" headers={["Serial", "Name"]} />
                     </Grid>
                 </Grid>
