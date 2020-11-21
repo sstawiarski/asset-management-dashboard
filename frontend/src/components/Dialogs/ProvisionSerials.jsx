@@ -142,7 +142,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                     <FormControl variant="outlined" className={classes.formControl}>
                         
                         <TextField
-                                    autoFocus
+                                    
                                     margin="dense"
                                     id="asset-quantity"
                                     label="Asset Quantity"
