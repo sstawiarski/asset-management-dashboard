@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -42,6 +42,23 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     const [assignmentType, setAssignmentType] = useState("");
     const [groupTag, setGroupTag] = useState("");
     const [assignee, setAssignee] = useState("");
+    const [asset, getAsset] = useState({});
+
+    useEffect(() => {
+        fetch(`http://localhost:4000/assets/`)
+        .then(response => {
+            if (response.status < 300) {
+                return response.json();
+            } else {
+                return {};
+            }
+        })
+        .then(json => {
+            getAsset(json);
+        });
+
+        
+    });
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -58,7 +75,10 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
         return result;
     }
 
-    
+    const ConsoleLog = ({ children }) => {
+        console.log(children);
+        return false;
+      };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -94,12 +114,16 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
         setOpen(false);
         setStatus("");
         setFailed(null);
+       
     }
+
+    console.log(asset);
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="create-asset-dialog-title">
             
-            
+            <ConsoleLog> asset </ConsoleLog>
+          
             <DialogTitle id="create-asset-dialog-title">Create Asset</DialogTitle>
             
             <DialogContent>
