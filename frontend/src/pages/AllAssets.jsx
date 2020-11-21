@@ -103,14 +103,14 @@ const AllAssets = (props) => {
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
+                    activeFilters={activeFilters}
+                    setActiveFilters={setActiveFilters}
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
                     checkboxes={true}>
 
-                    <TableToolbar
-                        title="All Assets"
-                        selected={selected}>
+                    <TableToolbar title="All Assets" selected={selected}>
 
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}

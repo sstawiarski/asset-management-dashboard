@@ -11,6 +11,7 @@ const eventRoutes = require('./routes/events.routes')
 const employeeRoutes = require('./routes/employees.routes')
 const customerRoutes = require('./routes/customers.routes')
 const locationRoutes = require('./routes/locations.routes')
+const assemblyRoutes = require('./routes/assemblies.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
@@ -61,3 +62,4 @@ app.use('/events', eventRoutes);
 app.use('/employees', employeeRoutes);
 app.use('/customers', customerRoutes);
 app.use('/locations', locationRoutes);
+app.use('/assemblies', assemblyRoutes);

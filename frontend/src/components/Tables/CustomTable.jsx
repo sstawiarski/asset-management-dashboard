@@ -39,7 +39,8 @@
  * 
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -53,12 +54,8 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
-import Typography from '@material-ui/core/Typography';
 
-const types = {
-    asset: "/assets/",
-    shipment: "/shipment/"
-};
+import { URLTypes as types } from '../../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -82,32 +79,14 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         top: 20,
         width: 1,
-    },
-    incomplete: {
-        borderRadius: "16px",
-        backgroundColor: "#fdb6c1",
-        color: "#482626",
-        border: "none",
-        textAlign: "center",
-        display: "inline-block",
-        padding: "0px 6px 0px 6px",
-        marginLeft: "-8px",
-        cursor: "pointer"
-    },
-    noAction: {
-        pointerEvents: "none"
-    },
-    popper: {
-        pointerEvents: 'auto',
-        backgroundColor: "white",
-        boxShadow: "0.5px 1.5px 4px #000000",
-        borderRadius: "3px",
     }
 }));
 
 const NewTable = (props) => {
     const classes = useStyles();
     const history = useHistory();
+    const [showClicked, setClicked] = useState(false);
+    const [identifier, setIdentifier] = useState("");
 
     const {
         data,
@@ -155,7 +134,11 @@ const NewTable = (props) => {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelecteds = data.map((n) => n.serial);
+            const onlyGood = data.filter((n) => {
+                const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
+                return !isInCart;
+            });
+            const newSelecteds = onlyGood.map(row => row[selectedFields[0]]);
             setSelected(newSelecteds);
             return;
         }
@@ -210,7 +193,6 @@ const NewTable = (props) => {
 
                 {/* Chip generation based on applied filters */}
 
-
                 <TableContainer>
                     <Table
                         className={classes.table}
@@ -240,7 +222,13 @@ const NewTable = (props) => {
                                             hover
                                             onClick={(event) => {
                                                 event.stopPropagation();
-                                                history.push(`${url}${item[selectedFields[0]]}`)
+                                                if (Clickable) {
+                                                    setClicked(true);
+                                                    setIdentifier(item[selectedFields[0]]);
+                                                } else {
+                                                    history.push(`${url}${item[selectedFields[0]]}`)
+                                                }
+
                                             }}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
@@ -321,9 +309,27 @@ const NewTable = (props) => {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper>
+            {showClicked ? <Clickable isOpen={showClicked} setOpen={setClicked} identifier={identifier} /> : null}
         </div>
     );
 
 };
+
+NewTable.propTypes = {
+    data: PropTypes.array.isRequired,
+    filters: PropTypes.object.isRequired,
+    setFilters: PropTypes.func.isRequired,
+    count: PropTypes.number.isRequired,
+    variant: PropTypes.oneOf(['asset', 'shipment']).isRequired,
+    selected: PropTypes.array.isRequired,
+    setSelected: PropTypes.func.isRequired,
+    activeFilters: PropTypes.object.isRequired,
+    setActiveFilters: PropTypes.func.isRequired,
+    selectedFields: PropTypes.array.isRequired,
+    compare: PropTypes.array,
+    checkboxes: PropTypes.bool,
+    clickable: PropTypes.func
+
+}
 
 export default NewTable;

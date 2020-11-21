@@ -1,9 +1,9 @@
 /*
- * Author: Shawn Stawiarski
+ * Author: Shawn Stawiarski, Maija Kingston
  * October 2020
  * License: MIT
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Typography from '@material-ui/core/Typography';
@@ -11,18 +11,21 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import DialogContent from '@material-ui/core/DialogContent';
-import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import ReusableTable from '../components/ReusableTable'
+import CustomTable from '../components/Tables/CustomTable'
+import TableToolbar from '../components/Tables/TableToolbar';
+
+import AssetFilter from '../components/Dialogs/AssetFilter'
+import FilterListIcon from '@material-ui/icons/FilterList';
+import AddIcon from '@material-ui/icons/Add';
+
 import CartTable from '../components/CartTable';
 import Header from '../components/Header'
+import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
+import QuickAssetView from '../components/Dialogs/QuickAssetView';
+import { compareSchema, getSchema } from '../utils/assembly.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -72,53 +75,62 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-//table headings and sample data
-const headCells = [
-    { id: 'serial', numeric: false, disablePadding: false, label: 'Serial' },
-    { id: 'product', numeric: false, disablePadding: false, label: 'Product' },
-    { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
-    { id: 'owner', numeric: false, disablePadding: false, label: 'Owner' },
-    { id: 'group-tag', numeric: false, disablePadding: false, label: 'Group Tag' },
-];
-
-//TODO: Replace in functional component with fetches to API
-const rows = [
-    {
-        "serial": "ELP-8000",
-        "product": "Asset",
-        "description": "Electronics Probe",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    },
-    {
-        "serial": "CLP-8000",
-        "product": "Asset",
-        "description": "Electronics Thingie",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    }
-]
+const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
+const headCells = [{ label: "Serial" }];
 
 const CreateAssembly = () => {
-    const classes = useStyles();
 
+    const [assets, setAssets] = useState([]);
+    const classes = useStyles();
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
+    const [schema, setSchema] = useState(null);
+    const [filterOpen, setFilterOpen] = useState(false);
 
-    const [state, setState] = useState({
-        assemblyType: "",
-        groupTag: "",
-        owner: "",
-        selected: [],
-        selectedTableRows: []
-    })
+    const [assetCount, setAssetCount] = useState(0);
+    const [filters, setFilters] = useState({
+        limit: 5
+    });
+    const [activeFilters, setActiveFilters] = useState({});
+
+    const [selected, setSelected] = useState([]);
+    const [cartItems, setCartItems] = useState([]);
+
+    const [state, setState] = useState({});
+    
+    //get assets from database that don't belong to an assembly
+    useEffect(() => {
+        const fetchAssets = async () => {  
+            //get assets from DB
+	        const result = await fetch(`http://localhost:4000/assets`);
+	        const json = await result.json();
+	        
+	        return(json); 
+        };
+
+      fetchAssets()
+      .then(result => {
+      	const array = result.map((element) => ({
+      		serial : element.serial, 
+      		product : element.assetType, 
+      		description : element.assetName, 
+      		owner : element.owner, 
+      		groupTag : element.groupTag,
+      		parentId : element.parentId
+      	}));
+      	//filter to get assets that aren't in an assembly
+        setAssets(array.filter(asset =>asset.parentId==null));
+      },);        
+    }, [])
 
     const handleStart = () => {
         setCreatorOpen(true);
     }
 
-    const handleCreate = (event) => {
-        event.preventDefault();
+    const handleCreate = () => {
+        getSchema(state.assemblyType).then(response => {
+            setSchema(response);
+        });
         setCreatorOpen(false);
         toggleAssembly(true);
     }
@@ -126,67 +138,102 @@ const CreateAssembly = () => {
     const handleCancel = () => {
         setCreatorOpen(false);
         toggleAssembly(false);
+        setSchema(null);
         setState(s => {
-            Object.keys(s).forEach(key => s[key] = "")
+            Object.keys(s).forEach(key => {
+                if (s[key] instanceof Array) {
+                    s[key] = [];
+                } else {
+                    s[key] = "";
+                }
+            })
             return (s);
         })
     }
 
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setState(s => ({
-            ...s,
-            [name]: value
-        }))
-    }
-
     const handleAddToCart = (items) => {
-        setState(s => ({
-            ...s,
-            selected: items
-        }))
+        setCartItems(orig => ([...orig, ...items]));
+        setSelected([]);
     }
 
     const handleRemoveFromCart = (serial) => {
-        setState(s => ({
-            ...s,
-            selected: s.selected.filter(item => item !== serial),
-            selectedTableRows: s.selectedTableRows.filter(item => item !== serial)
-        }))
-    }
+        const newCart = cartItems.filter(item => item !== serial);
+        setCartItems(newCart);
+        const newSelected = selected.filter(asset => newCart.includes(asset));
+        setSelected(newSelected);
+    };
 
-    const setSelectedTableRows = (newRows) => {
-        setState(s => ({
-            ...s,
-            selectedTableRows: newRows
-        }))
-    }
+    const handleAssemblySubmit = () => {
+        compareSchema(schema, cartItems).then(result => {
+            if (!result[0]) {
+                alert("missing items " + JSON.stringify(result[1]));
+            } else {
+                alert("success");
+            }
+        })
+    };
+
+    //post request to submit selected assets as a new assembly
+  	const handleSubmitAssembly = async () => {
+    	try {
+	    	let result =  await fetch("http://localhost:4000/assets/create-Assembly", {
+    		method: 'post',
+    		mode: 'no-cors',
+    		headers: { 
+    			'Content-Type' : 'application/json',
+    			'Accept' : 'application/json',
+    		},
+    		body: JSON.stringify(cartItems)
+    	});
+	    	console.log(result)
+	    } catch(e) {
+	    	console.log(e)
+	    }
+    }	
 
     return (
         <div className={classes.root}>
-
             <div className="picker-window">
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Header heading="Products" subheading="Assembly Creator" />
                     </Grid>
                     <Grid item xs={12} sm={8} lg={9}>
-                        <Box display="flex" flexDirection="column" alignItems="flex-start">
-                            <Typography variant="h6" className={classes.title}>Product Selection</Typography>
-                            <Button style={{ marginLeft: "15px", visibility: assemblyStarted ? "visible" : "hidden" }}>Filter</Button>
-                        </Box>
 
                         {
                             assemblyStarted
-                                ? <ReusableTable
-                                    className={classes.paper}
-                                    headCells={headCells}
-                                    rows={rows}
-                                    rowsPerPage={15}
-                                    addHandler={handleAddToCart}
-                                    selected={state.selectedTableRows}
-                                    setSelected={setSelectedTableRows} />
+                                ? <CustomTable
+                                    data={assets}
+                                    selectedFields={selectedFields}
+                                    selected={selected}
+                                    setSelected={setSelected}
+                                    filters={filters}
+                                    activeFilters={activeFilters}
+                                    setActiveFilters={setActiveFilters}
+                                    setFilters={setFilters}
+                                    count={assetCount}
+                                    variant="asset"
+                                    checkboxes={true}
+                                    compare={cartItems}
+                                    clickable={(props) => (<QuickAssetView {...props} />)}>
+
+                                    <TableToolbar title="Assembly Creator" selected={selected}>
+                                        {selected.length > 0 ?
+                                            <Tooltip title={"Add"}>
+                                                <IconButton aria-label={"add"}>
+                                                    <AddIcon onClick={() => handleAddToCart(selected)} />
+                                                </IconButton>
+                                            </Tooltip>
+                                            :
+                                            <Tooltip title={"Filter"}>
+                                                <IconButton aria-label={"filter"}>
+                                                    <FilterListIcon onClick={() => setFilterOpen(true)} />
+                                                </IconButton>
+                                            </Tooltip>}
+                                    </TableToolbar>
+
+                                </CustomTable>
+
                                 : <Paper className={classes.paper}>
                                     <Box m="auto">
                                         <Typography variant="body1" className={classes.item}>No Assembly In Progress</Typography>
@@ -201,69 +248,25 @@ const CreateAssembly = () => {
 
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Assembly Cart</Typography>
-                            <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
-                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
+                        {assemblyStarted ?
 
+                            <CartTable
+                                header={headCells}
+                                rows={cartItems}
+                                handleRemove={handleRemoveFromCart}
+                                onSubmit={handleSubmitAssembly}
+                                className={classes.paper} />
+
+                            : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
 
                     </Grid>
                 </Grid>
             </div>
 
-            {/* Dialog code, included in same file for access to state */}
-            {/* TODO: Replace dropdown options with actual options */}
-            <Dialog onClose={handleCancel} onSubmit={handleCreate} open={creatorOpen}>
-                <DialogTitle>Create new assembly</DialogTitle>
-
-                <DialogContent style={{ paddingLeft: "64px", paddingRight: "64px", overflow: "hidden" }}>
-                    <form className={classes.form}>
-                        <FormControl required className={classes.formControl}>
-                            <InputLabel id="type-label" variant="outlined">Assembly Type</InputLabel>
-                            <Select
-                                labelId="type-label"
-                                id="type"
-                                variant="outlined"
-                                name="assemblyType"
-                                value={state.assemblyType}
-                                labelWidth={110}
-                                onChange={handleChange}>
-                                <MenuItem value="Carrier">Carrier</MenuItem>
-                                <MenuItem value="Gap Sub">Gap Sub</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <div className={classes.formControl}>
-                            <TextField
-                                label="Group Tag"
-                                id="tag"
-                                variant="outlined"
-                                name="groupTag"
-                                value={state.groupTag}
-                                onChange={handleChange}>
-                            </TextField>
-                        </div>
-                        <FormControl required className={classes.formControl}>
-                            <InputLabel id="owner-label" variant="outlined">Owner</InputLabel>
-                            <Select
-                                labelId="owner-label"
-                                id="owner"
-                                variant="outlined"
-                                name="owner"
-                                value={state.owner}
-                                labelWidth={48}
-                                onChange={handleChange}>
-                                <MenuItem value="Carrier">Evolution-USA</MenuItem>
-                                <MenuItem value="Gap Sub">Supply Chain USA</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <div style={{ textAlign: 'right', padding: 8, margin: '12px -12px -6px -12px' }}>
-                            <Button className={classes.button} onClick={handleCancel}>Cancel</Button>
-                            <Button className={classes.button} type="submit">Create</Button>
-                        </div>
-                    </form>
-                </DialogContent>
-            </Dialog>
+            <CreateNewAssemblyDialog creatorOpen={creatorOpen} handleCreate={handleCreate} handleCancel={handleCancel} setParentState={setState} />
+            <AssetFilter open={filterOpen} setOpen={(isOpen) => setFilterOpen(isOpen)} setActiveFilters={setActiveFilters} />
         </div>
     );
 }
