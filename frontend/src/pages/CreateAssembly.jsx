@@ -1,5 +1,5 @@
 /*
- * Author: Shawn Stawiarski
+ * Author: Shawn Stawiarski, Maija Kingston
  * October 2020
  * License: MIT
  */
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-//table headings and sample data
+//table headings 
 const headCells = [
     { id: 'serial', numeric: false, disablePadding: false, label: 'Serial' },
     { id: 'product', numeric: false, disablePadding: false, label: 'Product' },
@@ -80,10 +80,6 @@ const headCells = [
     { id: 'owner', numeric: false, disablePadding: false, label: 'Owner' },
     { id: 'group-tag', numeric: false, disablePadding: false, label: 'Group Tag' },
 ];
-
-
-
-
 
 const CreateAssembly = () => {
 	
@@ -101,11 +97,10 @@ const CreateAssembly = () => {
         selectedTableRows: []
     });
 
-
-    //TODO: Replace in functional component with fetches to API
+    //get assets from database that don't belong to an assembly
     useEffect(() => {
         const fetchAssets = async () => {  
-            
+            //get assets from DB
 	        const result = await fetch(`http://localhost:4000/assets`);
 	        const json = await result.json();
 	        
@@ -122,17 +117,10 @@ const CreateAssembly = () => {
       		groupTag : element.groupTag,
       		parentId : element.parentId
       	}));
-      	
-      	console.log(array.filter(asset =>asset.parentId==null));
+      	//filter to get assets that aren't in an assembly
         setAssets(array.filter(asset =>asset.parentId==null));
-
       },);        
     }, [])
-    
- 
- 
-
-		
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -152,8 +140,6 @@ const CreateAssembly = () => {
             return (s);
         })
     }
-
-
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -186,23 +172,23 @@ const CreateAssembly = () => {
         }))
     }
 
+    //post request to submit selected assets as a new assembly
   	const handleSubmitAssembly = async () => {
-	    	try {
-		    	let result =  await fetch("http://localhost:4000/assets/create-Assembly", {
-	    		method: 'post',
-	    		mode: 'no-cors',
-	    		headers: { 
-	    			'Content-Type' : 'application/json',
-	    			'Accept' : 'application/json',
-	    		},
-	    		body: JSON.stringify(state.selectedTableRows)
-	    	});
-		    	console.log(result)
-		    } catch(e) {
-		    	console.log(e)
-		    }
-    	}	
-    
+    	try {
+	    	let result =  await fetch("http://localhost:4000/assets/create-Assembly", {
+    		method: 'post',
+    		mode: 'no-cors',
+    		headers: { 
+    			'Content-Type' : 'application/json',
+    			'Accept' : 'application/json',
+    		},
+    		body: JSON.stringify(state.selectedTableRows)
+    	});
+	    	console.log(result)
+	    } catch(e) {
+	    	console.log(e)
+	    }
+    }	
 
     return (
         <div className={classes.root}>
@@ -240,14 +226,12 @@ const CreateAssembly = () => {
 
                     <Grid item xs={12} sm={4} lg={3}>
 
-
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Assembly Cart</Typography>
                             <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
                         {assemblyStarted ? <CartTable click={handleSubmitAssembly} header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
-
 
                     </Grid>
                 </Grid>

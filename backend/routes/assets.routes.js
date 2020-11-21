@@ -95,9 +95,7 @@ router.put('/load', async (req, res) => {
 router.post('/create-Assembly', async (req, res, err) => {
     try {
     	const serial = req.body.Assets
-        const override = req.body.override
-
-              
+        const override = req.body.override      
 
     	// Queryig DB to find the assetTYPE
     	 const asset = await Asset.findOneAndUpdate({ assetName: req.body.assetName, owner : null },{ assetType : "Assembly", owner : "Supply Chain" });
@@ -105,10 +103,8 @@ router.post('/create-Assembly', async (req, res, err) => {
     	 if (override){
                 await Asset.updateMany({ serial : { $in : serial }}, { parentId : asset.serial })
               res.status(200).json({message:"Successfully updated"})
-             
-             
-         }
-        else{
+                        
+         } else {
             
             const findSerial = await Asset.find ({ serial :{ $in : serial }, parentId : null })
             if(findSerial.length===serial.length){
@@ -120,11 +116,8 @@ router.post('/create-Assembly', async (req, res, err) => {
                 res.status(250).json({ message:"failed to update some assets" })
             }
         }
-       
         
- 
-        }
-    catch (err) {
+    } catch (err) {
         console.log(err)
     }
 })
