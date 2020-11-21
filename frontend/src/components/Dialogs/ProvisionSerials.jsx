@@ -65,7 +65,6 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
         const data = {
             assets: selected,
             update: {
-                retired: status === "Active" ? false : true
             }
         }
 
