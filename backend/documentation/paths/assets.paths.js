@@ -124,7 +124,7 @@ const assetPaths = {
                     }
                 }
             }
-        }
+        },
         post: {
             tags: ['Assets'],
             description: 'Load sample asset data from file into database',
