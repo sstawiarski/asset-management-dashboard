@@ -1,9 +1,9 @@
 /*
- * Author: Shawn Stawiarski
+ * Author: Shawn Stawiarski, Maija Kingston
  * October 2020
  * License: MIT
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Typography from '@material-ui/core/Typography';
@@ -24,13 +24,13 @@ import AddIcon from '@material-ui/icons/Add';
 
 import CartTable from '../components/CartTable';
 import Header from '../components/Header'
+import ChipBar from '../components/Tables/ChipBar';
 import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
 import AssemblySubmitDialog from '../components/Dialogs/AssemblySubmitDialog';
 import IncompleteAssemblyDialog from '../components/Dialogs/IncompleteAssemblyDialog';
 import QuickAssetView from '../components/Dialogs/QuickAssetView';
 
 import { compareSchema, getSchema } from '../utils/assembly.utils';
-import { useMediaQuery, useTheme } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -80,21 +80,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-//TODO: Replace in functional component with fetches to API
-const rows = [{ "assetName": "Centralizer", "assetType": "Asset", "deployedLocation": "Rig ABC", "owner": "Evolution-USA", "parentId": "G800-1119", "serial": "C800-1011", "checkedOut": true, "groupTag": "", "assignmentType": "Owned", "assignee": "Nabors Drilling", "contractNumber": "202015", "dateCreated": "2020-10-15T18:27:00.002Z", "retired": true }, { "assetName": "Gap Sub", "assetType": "Asset", "deployedLocation": "Rig ABC", "owner": "Evolution-USA", "parentId": "G800-1119", "lastUpdated": null, "serial": "G800-1111", "checkedOut": true, "groupTag": "", "assignmentType": "Rental", "assignee": "Nabors Drilling", "contractNumber": "202012345", "dateCreated": "2020-10-15T18:27:00.001Z", "retired": false }, { "assetType": "Asset", "assetName": "Crossover Sub", "deployedLocation": "", "owner": "Evolution-USA", "parentId": "G800-1119", "serial": "X800-920", "checkedOut": false, "groupTag": "", "assignmentType": "Owned", "assignee": "", "contractNumber": "", "dateCreated": "2020-10-15T18:27:00.003Z", "retired": false }];
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const headCells = [{ label: "Serial" }];
 
 const CreateAssembly = () => {
-    const classes = useStyles();
 
+    const [assets, setAssets] = useState([]);
+    const classes = useStyles();
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const [submitOpen, setSubmitOpen] = useState(false);
     const [schema, setSchema] = useState(null);
 
-    const [assets, setAssets] = useState([]);
     const [assetCount, setAssetCount] = useState(0);
     const [filters, setFilters] = useState({
         limit: 5
@@ -114,12 +112,37 @@ const CreateAssembly = () => {
 
     const [moreInfo, setMoreInfo] = useState([]);
 
+    //get assets from database that don't belong to an assembly
+    useEffect(() => {
+        const fetchAssets = async () => {
+            //get assets from DB
+            const result = await fetch(`http://localhost:4000/assets`);
+            const json = await result.json();
+
+            return (json);
+        };
+
+        fetchAssets()
+            .then(result => {
+                const array = result.map((element) => ({
+                    serial: element.serial,
+                    product: element.assetType,
+                    description: element.assetName,
+                    owner: element.owner,
+                    groupTag: element.groupTag,
+                    parentId: element.parentId
+                }));
+                //filter to get assets that aren't in an assembly
+                setAssets(array.filter(asset => asset.parentId == null));
+            });
+    }, [])
+
     const handleStart = () => {
         setCreatorOpen(true);
     }
 
-    const handleCreate = (assemblyType) => {
-        getSchema(assemblyType).then(response => {
+    const handleCreate = () => {
+        getSchema(state.assemblyType).then(response => {
             setSchema(response);
         });
         setCreatorOpen(false);
@@ -192,6 +215,24 @@ const CreateAssembly = () => {
         setSubmitOpen(false);
     }
 
+    //post request to submit selected assets as a new assembly
+    const handleSubmitAssembly = async () => {
+        try {
+            let result = await fetch("http://localhost:4000/assets/create-Assembly", {
+                method: 'post',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(cartItems)
+            });
+            console.log(result)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     return (
         <div className={classes.root}>
 
@@ -204,13 +245,11 @@ const CreateAssembly = () => {
                     {
                         assemblyStarted
                             ? <CustomTable
-                                data={rows}
+                                data={assets}
                                 selectedFields={selectedFields}
                                 selected={selected}
                                 setSelected={setSelected}
                                 filters={filters}
-                                activeFilters={activeFilters}
-                                setActiveFilters={setActiveFilters}
                                 setFilters={setFilters}
                                 count={assetCount}
                                 variant="asset"
@@ -236,6 +275,11 @@ const CreateAssembly = () => {
                                         </Tooltip>}
                                 </TableToolbar>
 
+                                <ChipBar
+                                    activeFilters={activeFilters}
+                                    setActiveFilters={setActiveFilters}
+                                    setFilters={setFilters} />
+
                             </CustomTable>
 
                             : <Paper className={classes.paper}>
@@ -256,8 +300,8 @@ const CreateAssembly = () => {
                             header={headCells}
                             rows={cartItems}
                             handleRemove={handleRemoveFromCart}
-                            onSubmit={handleAssemblySubmit}
-                            />
+                            onSubmit={handleSubmitAssembly}
+                        />
 
                         : null}
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -31,7 +31,6 @@ const useToolbarStyles = makeStyles((theme) => ({
  * 
  * Props:
  *      title (String)                          The table title to display 
- *      mainAction (Function / Component)       The icon/button to display as the main action when no items are selected
  *      selected (Array)                        The array of selected table rows
  *      children                                The components in between TableToolbar in the parent page, used for rendering additional toolbar icons/menus
  */
@@ -70,8 +69,9 @@ const EnhancedTableToolbar = (props) => {
 };
 
 EnhancedTableToolbar.propTypes = {
-    numSelected: PropTypes.number.isRequired,
-    tableHeaders: PropTypes.any,
+    title: PropTypes.string,
+    selected: PropTypes.array.isRequired,
+    children: PropTypes.any
 };
 
 export default EnhancedTableToolbar;

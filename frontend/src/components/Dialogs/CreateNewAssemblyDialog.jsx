@@ -53,7 +53,7 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel, setP
             ...s,
             ...state
         }));
-        handleCreate(state.assemblyType);
+        handleCreate();
     }
 
     useEffect(() => {

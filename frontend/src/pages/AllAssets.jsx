@@ -214,7 +214,6 @@ const AllAssets = (props) => {
                     {success.message}
                 </Alert>
             </Snackbar>
-
         </div>);
 
 }
