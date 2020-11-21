@@ -1,50 +1,27 @@
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles'
 
-import { Button, Snackbar } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
-import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
+import Button from '@material-ui/core/Button';
 
-import Header from '../components/Header';
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-const useStyles = makeStyles({
-
-})
-
-const selected = ["G800-1111"];
+import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
+import ProvisionSerials from '../components/Dialogs/ProvisionSerials';
 
 const TestPage = () => {
-    const classes = useStyles();
 
-    const [groupTagOpen, setGroupTagOpen] = useState(false);
-    const [groupTagResponse, setGroupTagResponse] = useState("")
+   /* Control open/close of retire dialog */
+    const [createOpen1, setCreateOpen1] = useState(false);
+    const [createOpen2, setCreateOpen2] = useState(false);
 
     return (
         <div>
-            <Header heading="Test Page" />
-            <Button onClick={() => setGroupTagOpen(true)} variant="contained" color="primary">Open Group Tag Dialog</Button>
+            <Button onClick={() => setCreateOpen1(!createOpen1)} variant="contained" color="primary">Provision Serials</Button>
 
-
-            {/* Actual dialog and response bar */}
-            <ChangeGroupTagDialog open={groupTagOpen} setOpen={setGroupTagOpen} selected={selected} onResponse={setGroupTagResponse} />
-            <Snackbar
-                open={groupTagResponse !== ""}
-                autoHideDuration={5000}
-                onClose={() => setGroupTagResponse("")}>
-                <Alert
-                    onClose={() => setGroupTagResponse("")}
-                    severity={groupTagResponse}
-                >
-                    {groupTagResponse === "success" ? "Successfully updated group tag" : "Failed to update group tag!"}
-                </Alert>
-            </Snackbar>
-
+            <Button onClick={() => setCreateOpen2(!createOpen2)} variant="contained" color="primary">Create Asset</Button>
+            
+            {/* Take in open and assets from parent component so dialog can know what is selected */}
+            <ProvisionSerials open={createOpen1} setOpen={setCreateOpen1} assets={['G800-1119']} />
+            <CreateAssetDialog open={createOpen2} setOpen={setCreateOpen2} assets={['G800-1119']} />
         </div>
     );
-
-}
+};
 
 export default TestPage;

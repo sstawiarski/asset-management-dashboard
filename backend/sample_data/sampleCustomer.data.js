@@ -34,7 +34,31 @@ const sampleCustomer = [
         "city": "Broken Arrow",
         "state": "OK",
         "zip": 79958
-    }
+    },
+    {
+
+        "customerId": 32453245,
+        "firstName": "",
+        "lastName": "",
+        "companyName": "Evolution-USA",
+        "addressLine1": "123 Main St",
+        "addressLine2": "",
+        "city": "Houston",
+        "state": "TX",
+        "zip": 79958
+    },
+    {
+
+        "customerId": 23567,
+        "firstName": "",
+        "lastName": "",
+        "companyName": "Supply Chain USA",
+        "addressLine1": "123 Other Ave",
+        "addressLine2": "",
+        "city": "Chicago",
+        "state": "IL",
+        "zip": 60657
+    },
 ];
 
 module.exports = sampleCustomer;

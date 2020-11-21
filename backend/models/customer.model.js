@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 
 const Customer = new Schema({
     customerId: { type: Number, required: true, unique: true },
@@ -11,6 +12,18 @@ const Customer = new Schema({
     city: { type: String, required: true, unique: false },
     state: { type: String, required: true, unique: false },
     zip: { type: String, required: true, unique: false },
+    confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false }
+});
+
+Customer.plugin(mongoose_fuzzy_searching, {
+    fields: [
+        {
+            name: 'companyName',
+            escapeSpecialCharacters: true
+        },
+        'firstName',
+        'lastName'
+    ]
 });
 
 const Customers = mongoose.model('customer', Customer);
