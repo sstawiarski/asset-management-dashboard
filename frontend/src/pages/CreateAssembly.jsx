@@ -3,7 +3,7 @@
  * October 2020
  * License: MIT
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Typography from '@material-ui/core/Typography';
@@ -81,37 +81,53 @@ const headCells = [
     { id: 'group-tag', numeric: false, disablePadding: false, label: 'Group Tag' },
 ];
 
-//TODO: Replace in functional component with fetches to API
-const rows = [
-    {
-        "serial": "ELP-8000",
-        "product": "Asset",
-        "description": "Electronics Probe",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    },
-    {
-        "serial": "CLP-8000",
-        "product": "Asset",
-        "description": "Electronics Thingie",
-        "owner": "Supply Chain USA",
-        "groupTag": "Heyyy"
-    }
-]
+
+
+
 
 const CreateAssembly = () => {
+	
+    const [assets, setAssets] = useState([]);
     const classes = useStyles();
-
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
-
+    
     const [state, setState] = useState({
         assemblyType: "",
         groupTag: "",
         owner: "",
         selected: [],
         selectedTableRows: []
-    })
+    });
+
+
+    //TODO: Replace in functional component with fetches to API
+    useEffect(() => {
+        const fetchAssets = async () => {  
+            
+	        const result = await fetch(`http://localhost:4000/assets`);
+	        const json = await result.json();
+	        
+	        return(json); 
+        };
+
+      fetchAssets()
+      .then(result => {
+      	const array = result.map((element) => ({
+      		serial : element.serial, 
+      		product : element.assetType, 
+      		description : element.assetName, 
+      		owner : element.owner, 
+      		groupTag : element.groupTag
+      	}));
+        setAssets(array);
+      },);        
+    }, [])
+    
+ 
+ 
+
+		
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -131,6 +147,8 @@ const CreateAssembly = () => {
             return (s);
         })
     }
+
+
 
     const handleChange = (event) => {
         const name = event.target.name;
@@ -163,6 +181,22 @@ const CreateAssembly = () => {
         }))
     }
 
+    
+    	const handleSubmitAssembly = async () => {
+	    	
+	    	try {
+		    	let result =  await fetch("http://localhost/create-Assembly", {
+	    		method: 'post',
+	    		headers: { 'Content-Type' : 'application/json'},
+	    		body: JSON.stringify(state)
+	    	});
+		    	console.log(result)
+		    } catch(e) {
+		    	console.log(e)
+		    }
+    	}	
+    
+
     return (
         <div className={classes.root}>
 
@@ -182,7 +216,7 @@ const CreateAssembly = () => {
                                 ? <ReusableTable
                                     className={classes.paper}
                                     headCells={headCells}
-                                    rows={rows}
+                                    rows={assets}
                                     rowsPerPage={15}
                                     addHandler={handleAddToCart}
                                     selected={state.selectedTableRows}
@@ -199,12 +233,13 @@ const CreateAssembly = () => {
 
                     <Grid item xs={12} sm={4} lg={3}>
 
+
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography variant="h6" className={classes.title}>Assembly Cart</Typography>
                             <Button style={{ marginLeft: "15px", visibility: "hidden" }}>Collapse Cart</Button>
                         </Box>
 
-                        {assemblyStarted ? <CartTable header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
+                        {assemblyStarted ? <CartTable click={handleSubmitAssembly} header={headCells} rows={state.selected} handleRemove={handleRemoveFromCart} className={classes.paper} /> : <Paper className={`${classes.paper} ${assemblyStarted ? "" : classes.cartInactive}`} elevation={3} />}
 
 
                     </Grid>
