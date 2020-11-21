@@ -37,7 +37,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
     const [failed, setFailed] = useState("");
-    const [assetType, setAssetType] = useState("");
+    const [assetName, setAssetName] = useState("");
     const [serial, setSerial] = useState("");
     const [owner, setOwner] = useState("");
     const [assignmentType, setAssignmentType] = useState("");
@@ -45,60 +45,47 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     const [assignee, setAssignee] = useState("");
     const [asset, getAsset] = useState({});
 
-    useEffect(() => {
-        fetch(`http://localhost:4000/assets/`)
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return {};
-            }
-        })
-        .then(json => {
-            getAsset(json);
-        });
-
-        
-    });
+    
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
 
-        //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
+        //uses POST endpoint and sends the arguments in the body of the HTTP request
+        const result = await fetch("http://localhost:4000/assets/", {
             method: "POST",
-            mode: 'cors',
+            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/json'
-            },
+              },
             body: JSON.stringify(data)
         });
         return result;
     }
 
-    const ConsoleLog = ({ children }) => {
-        console.log(children);
-        return false;
-      };
+  
 
     const handleSubmit = (event) => {
         event.preventDefault();
 
         //setup data object to send based on API docs and required parameters
         const data = {
-            assets: selected,
+            assetName: assetName,
+            serial: serial,
+            owner: owner,
+            assignmentType: assignmentType,
+            groupTag: groupTag,
+            assignee: assignee
             
         }
 
-
         sendData(data)
-        .then(response => {
+        // .then(response => {
 
-            //assume anything less than 300 is a success
-            if (response.status < 300) {
-                return response.json();
-            } else return null;
-        })
+        //     //assume anything less than 300 is a success
+        //     if (response.status < 300) {
+        //         return response.json();
+        //     } else return null;
+        // })
         .then(json => {
 
             //check if we got back null and either close dialog on success or setFailed to render error message
@@ -108,6 +95,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                 setFailed(true);
             }
         })
+        console.log(data);
     }
 
     //reset dialog to default state on close
@@ -118,12 +106,12 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
        
     }
 
-    console.log(asset);
+   
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="create-asset-dialog-title">
             
-            <ConsoleLog> asset </ConsoleLog>
+            
           
             <DialogTitle id="create-asset-dialog-title">Create Asset</DialogTitle>
             
@@ -132,16 +120,19 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                 
                 <div className={classes.item}>
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="asset-type-label">Asset Type</InputLabel>
+                        <InputLabel id="asset-type-label">Asset Name</InputLabel>
                         
                         <Select
                             labelId="asset-type-label"
                             labelWidth={105}
                             id="asset-type-label"
-                            value={assetType}
-                            onChange={(event) => setAssetType(event.target.value)}
+                            value={assetName}
+                            onChange={(event) => setAssetName(event.target.value)}
                         >
-
+                            <MenuItem value="centralizer">Centralizer</MenuItem>
+                            <MenuItem value="gap sub">Gap Sub</MenuItem>
+                            <MenuItem value="crossover sub">Crossover Sub</MenuItem>
+                            <MenuItem value="carrier">Carrier</MenuItem>
                             /* populate menu items here for available types */
 
                         </Select>
@@ -175,7 +166,8 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             value={owner}
                             onChange={(event) => setOwner(event.target.value)}
                         >
-
+                            <MenuItem value="evolution usa">Evolution-USA</MenuItem>
+                            <MenuItem value="evolution canada">Evolution-Calgary</MenuItem>
                             /* populate menu items here for available serials */
 
                         </Select>
@@ -192,7 +184,8 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             value={assignee}
                             onChange={(event) => setAssignee(event.target.value)}
                         >
-
+                            <MenuItem value="nabors">Nabors</MenuItem>
+                            <MenuItem value="bhge">BHGE</MenuItem>
                             /* populate menu items here for available serials */
 
                         </Select>

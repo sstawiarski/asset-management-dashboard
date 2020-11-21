@@ -310,6 +310,26 @@ router.patch("/", async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    sampleAssets.forEach(async (item) => {
+      console.log(item);
+      const asset = new Asset({
+        ...item,
+        dateCreated: Date.now(),
+      });
+      await asset.save();
+    });
+
+    res.status(200).json({ message: "success" });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error loading sample data into database",
+      internal_code: "database_load_error",
+    });
+  }
+});
+
 router.put("/load", async (req, res) => {
   try {
     sampleAssets.forEach(async (item) => {
