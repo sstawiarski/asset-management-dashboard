@@ -51,7 +51,7 @@ const CreateAssetDialog = ({ open, setOpen, handleCreate, selected }) => {
     const sendData = async (data) => {
 
         //uses POST endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
+        const result = await fetch("http://localhost:4000/assets/create-Asset", {
             method: "POST",
             mode: 'no-cors',
             headers: {
@@ -78,7 +78,7 @@ const CreateAssetDialog = ({ open, setOpen, handleCreate, selected }) => {
             
         }
 
-        handleCreate(data)
+        sendData(data)
         // .then(response => {
 
         //     //assume anything less than 300 is a success

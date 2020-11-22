@@ -318,7 +318,9 @@ router.post('/create-Asset', async (req, res) => {
       owner: req.body.owner,
       assignmentType: req.body.assignmentType,
       groupTag: req.body.groupTag,
-      assignee: req.body.assignee
+      assignee: req.body.assignee,
+      checkedOut: false,
+      assetType: "Asset"
     }
     
       console.log(asset);
