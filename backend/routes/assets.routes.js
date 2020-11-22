@@ -9,6 +9,7 @@ const Event = require("../models/event.model");
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 
+
 router.get("/", async (req, res, err) => {
 
   try {
@@ -323,12 +324,12 @@ router.post('/create-Asset', async (req, res) => {
       assetType: "Asset"
     }
     
-      console.log(asset);
+      //console.log(asset);
       const newAsset = new Asset({
         ...asset,
         dateCreated: Date.now(),
       });
-      await newAsset.save();
+      newAsset.save();
     
     console.log(newAsset);
     res.status(200).json({ message: "success" });
