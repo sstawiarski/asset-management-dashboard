@@ -16,6 +16,7 @@ import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'; //reassignment
 import AssignmentIcon from '@material-ui/icons/Assignment'; //assignment type
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed'; //group tag
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'; //incoming AND outgoing shipments
+import CancelIcon from '@material-ui/icons/Cancel'; //removal of child assets
 import Tooltip from '@material-ui/core/Tooltip';
 
 import EventDetailsViewer from './EventDetailsViewer';
@@ -75,6 +76,8 @@ const getIcon = (eventType) => {
             return (<AssignmentReturnIcon style={classes.flipped} />)
         case "Outgoing Shipment":
             return (<AssignmentReturnIcon style={classes.icon} />);
+        case "REM":
+            return (<CancelIcon style={classes.icon} />);
         default:
             return null;
     }
@@ -86,30 +89,30 @@ const AssetTimeline = ({ data }) => {
 
     return (
         <>
-        <Timeline align="alternate">
-            {data.length ? data.map((item, idx) => {
-                const isShipment = item.eventType.includes('Shipment');
-                const ChosenIcon = isShipment ? getIcon(item.eventType) : getIcon(item.key);
-                
-                return (
-                    <TimelineItem key={idx}>
-                        <TimelineSeparator>
-                            {idx % 3 === 0 ? 
-                            
-                            <TimelineDot>{ChosenIcon}</TimelineDot> 
-                            
-                            : idx % 2 === 0 ? 
-                            <TimelineDot color="secondary">{ChosenIcon}</TimelineDot> 
-                            
-                            : <TimelineDot color="primary">{ChosenIcon}</TimelineDot>}
+            <Timeline align="alternate">
+                {data.length ? data.map((item, idx) => {
+                    const isShipment = item.eventType.includes('Shipment');
+                    const ChosenIcon = isShipment ? getIcon(item.eventType) : getIcon(item.key);
 
-                            {idx !== data.length - 1 ? <TimelineConnector /> : null}
-                        </TimelineSeparator>
-                        <TimelineContent>
-                        <Tooltip disableHoverListener={isShipment} title="View event details" arrow>
+                    return (
+                        <TimelineItem key={idx}>
+                            <TimelineSeparator>
+                                {idx % 3 === 0 ?
+
+                                    <TimelineDot>{ChosenIcon}</TimelineDot>
+
+                                    : idx % 2 === 0 ?
+                                        <TimelineDot color="secondary">{ChosenIcon}</TimelineDot>
+
+                                        : <TimelineDot color="primary">{ChosenIcon}</TimelineDot>}
+
+                                {idx !== data.length - 1 ? <TimelineConnector /> : null}
+                            </TimelineSeparator>
+                            <TimelineContent>
+                                <Tooltip disableHoverListener={isShipment} title="View event details" arrow>
                                     <Paper className={classes.eventTag} onClick={() => {
                                         if (!isShipment) setEvent(item);
-                                        }}>
+                                    }}>
                                         <div style={{ padding: "10px" }}>
                                             <Typography variant="subtitle1"><b>{new Date(item.eventTime).toLocaleDateString('en-US', dateOptions)}</b></Typography>
                                             <Typography variant="body1">{item.key}</Typography>
@@ -123,13 +126,13 @@ const AssetTimeline = ({ data }) => {
                                         </div>
                                     </Paper>
                                 </Tooltip>
-                        </TimelineContent>
-                    </TimelineItem>
-                );
-            }) : null}
-        </Timeline>
-    <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
-    </>
+                            </TimelineContent>
+                        </TimelineItem>
+                    );
+                }) : null}
+            </Timeline>
+            <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
+        </>
     );
 };
 
