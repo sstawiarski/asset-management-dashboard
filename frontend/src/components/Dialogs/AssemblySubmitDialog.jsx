@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles'
-import { Grid, DialogTitle, DialogContent, Typography, Box } from '@material-ui/core';
+import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -9,20 +8,43 @@ import Alert from '@material-ui/lab/Alert';
 
 import SimpleList from '../Tables/SimpleList';
 
-const AssemblySubmitDialog = ({ open, setOpen, onSuccess, onFailure, isComplete, submission, handleCancel, onSubmit }) => {
+const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submission, handleCancel }) => {
 
     const handleSubmit = () => {
         try {
-            let result = await fetch("http://localhost:4000/assets/create-Assembly", {
-                method: 'post',
-                mode: 'no-cors',
+            const actualItems = submission.assets.map(entry => entry[0]);
+            const submit = {
+                assets: actualItems,
+                type: submission.type,
+                missingItems: submission.missingItems,
+                owner: submission.owner,
+                groupTag: submission.groupTag,
+                override: submission.override
+            }
+            fetch("http://localhost:4000/assets/create-Assembly", {
+                method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify(cartItems)
-            });
-            console.log(result)
+                body: JSON.stringify(submit)
+            }).then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+                .then(json => {
+                    if (json) {
+                        onSuccess();
+                    } else {
+                        onFailure();
+                    }
+                    handleCancel();
+                })
+
         } catch (e) {
             console.log(e)
         }
@@ -54,7 +76,7 @@ const AssemblySubmitDialog = ({ open, setOpen, onSuccess, onFailure, isComplete,
                     </Grid>
 
                     <Grid item xs={8} style={{ marginTop: "20px" }}>
-                        <SimpleList data={submission.assets} label="assembly-manifest" headers={["Serial", "Name"]} />
+                        {submission.assets ? <SimpleList data={submission.assets} label="assembly-manifest" headers={["Serial", "Name"]} /> : null }
                     </Grid>
                 </Grid>
             </DialogContent>

@@ -84,9 +84,9 @@ const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut
 const headCells = [{ label: "Serial" }];
 
 const CreateAssembly = () => {
+    const classes = useStyles();
 
     const [assets, setAssets] = useState([]);
-    const classes = useStyles();
     const [assemblyStarted, toggleAssembly] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
@@ -114,21 +114,23 @@ const CreateAssembly = () => {
 
     //get assets from database that don't belong to an assembly
     useEffect(() => {
-        fetch('http://localhost:4000/assets?parentId=null&assetType=Asset')
-            .then(response => {
-                if (response.status < 300) {
-                    return response.json();
-                } else {
-                    return null;
-                }
-            })
-            .then(json => {
-                if (json) {
-                    setAssetCount(json.count[0].count);
-                    setAssets(json.data);
-                }
-            })
-    }, [])
+        if (assemblyStarted) {
+            fetch('http://localhost:4000/assets?parentId=null&assetType=Asset&provisioned=false')
+                .then(response => {
+                    if (response.status < 300) {
+                        return response.json();
+                    } else {
+                        return null;
+                    }
+                })
+                .then(json => {
+                    if (json) {
+                        setAssetCount(json.count[0].count);
+                        setAssets(json.data);
+                    }
+                })
+        }
+    }, [assemblyStarted])
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -184,11 +186,14 @@ const CreateAssembly = () => {
                     arr.push([item, moreInfo[idx]]);
                     return arr;
                 }, []),
-                serial: "G800-11120",
-                override: false
+                override: false,
+                owner: state.owner,
+                groupTag: state.groupTag,
+                serial: "G800-11120" //TODO: hardcode serial for now
             }))
             if (!result[0]) {
                 setMissingItems(result[1]);
+                setSubmission(s => ({ ...s, missingItems: result[1] }))
                 setIncomplete(true);
             } else {
                 setSubmitOpen(true);
@@ -199,7 +204,19 @@ const CreateAssembly = () => {
 
     const handleSubmitCancel = () => {
         toggleOverride(false);
+        setCreatorOpen(false);
+        toggleAssembly(false);
+        setSchema(null);
         setSubmitOpen(false);
+        setAssets([]);
+        setAssetCount(0);
+        setIncomplete(false);
+        setMissingItems([]);
+        setMoreInfo([]);
+        setSelected([]);
+        setSubmission({});
+        setCartItems([]);
+        setState({});
     }
 
     return (
@@ -290,9 +307,7 @@ const CreateAssembly = () => {
 
             <AssemblySubmitDialog
                 open={submitOpen}
-                setOpen={setSubmitOpen}
                 isComplete={!override}
-                onSubmit={handleSubmitAssembly}
                 onSuccess={() => setSuccess(true)}
                 onFailure={() => setSuccess(false)}
                 handleCancel={handleSubmitCancel}
@@ -303,7 +318,10 @@ const CreateAssembly = () => {
                 setOpen={setIncomplete}
                 handleOverride={() => {
                     toggleOverride(true);
-                    setSubmission(s => ({...s, override: true}))
+                    setSubmission(s => ({
+                        ...s,
+                        override: true
+                    }))
                     setIncomplete(false);
                     setSubmitOpen(true);
                 }

@@ -455,7 +455,7 @@ router.post('/create-Assembly', async (req, res, err) => {
     const override = req.body.override
 
     // Queryig DB to find the assetTYPE
-    const asset = await Asset.findOneAndUpdate({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: "Supply Chain USA" });
+    const asset = await Asset.findOne({ assetName: req.body.type, provisioned: true });
     if (!asset) {
       res.status(404).json({
         message: "No available assembly serials."
@@ -464,25 +464,43 @@ router.post('/create-Assembly', async (req, res, err) => {
     }
 
     if (override) {
-      await Asset.updateMany({ serial: { $in: serials } }, { parentId: asset.serial })
+      await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: req.body.missingItems, groupTag: req.body.groupTag, provisioned: false })
+      await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
       res.status(200).json({ message: "Successfully updated" })
     }
     else {
-
       const findSerial = await Asset.find({ serial: { $in: assets }, parentId: null })
-      if (findSerial.length === serial.length) {
+      if (findSerial.length === assets.length) {
+        await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: [], groupTag: req.body.groupTag, provisioned: false })
         await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
         res.status(200).json({ message: "Successfully updated" })
       }
       else {
-        await Asset.updateMany({ serial: { $in: assets }, parentId: null }, { parentId: asset.serial })
-        res.status(250).json({ message: "failed to update some assets" })
+        if (findSerial) {
+          const objs = findSerial.map(obj => obj.serial);
+          const missingSers = assets.filter(ser => !objs.includes(ser));
+          res.status(403).json({
+            message: "Some assets were added to other assemblies prior to this submission.",
+            internalCode: "assets_already_used",
+            used: missingSers
+          })
+        } else {
+          res.status(500).json({ 
+            message: "Error finding assets",
+            interalCode: "cannot_find_assets" 
+          })
+        }
+        
       }
     }
 
   }
   catch (err) {
     console.log(err)
+    res.status(500).json({ 
+      message: "Error creating assembly",
+      interalCode: "assembly_creation_error" 
+    })
   }
 });
 
