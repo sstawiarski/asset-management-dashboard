@@ -325,6 +325,77 @@ const schemas = {
             $ref: '#/components/schemas/serial'
         }
     },
+
+    companyName: {
+        type: 'string',
+        description: 'Name of a company'
+    },
+
+    customerId: {
+        type: 'number',
+        description: 'Unique customer identification number'
+    },
+
+    firstName: {
+        type: 'string',
+        description: 'Customer first name'
+    },
+
+    lastName: {
+        type: 'string',
+        description: 'Customer last name'
+    },
+
+    addressLine1: {
+        type: 'string',
+        description: 'First line of an address in plaintext'
+    },
+
+    addressLine2: {
+        type: 'string',
+        description: 'Second line of an address in plaintext; for postal codes, suite numbers, etc'
+    },
+
+    Customer: {
+        type: 'object',
+        description: 'Document of a single customer',
+        properties: {
+            customerId: {
+                $ref: '#/components/schemas/customerId'
+            },
+            firstName: {
+                $ref: '#/components/schemas/firstName'
+            },
+            lastName: {
+                $ref: '#/components/schemas/lastName'
+            },
+            companyName: {
+                $ref: '#/components/schemas/companyName'
+            },
+            addressLine1: {
+                $ref: '#/components/schemas/addressLine1'
+            },
+            addressLine2: {
+                $ref: '#/components/schemas/addressLine2'
+            },
+            city: {
+                $ref: '#/components/schemas/city'
+            },
+            state: {
+                $ref: '#/components/schemas/state'
+            },
+            zip: {
+                $ref: '#/components/schemas/zip'
+            }
+        }
+    },
+
+    Customers: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/Customer'
+        }
+    }
 }
 
 module.exports = schemas;

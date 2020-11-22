@@ -13,6 +13,7 @@ const sampleAssets = [
         "assignee": "Nabors Drilling",
         "contractNumber": "202012345",
         "retired": false,
+        "provisioned": false
     },
     {
         "assetName": "Centralizer",
@@ -27,6 +28,7 @@ const sampleAssets = [
         "assignee": "Nabors Drilling",
         "contractNumber": "202015",
         "retired": false,
+        "provisioned": false
     },
     {
         "assetType": "Asset",
@@ -41,6 +43,7 @@ const sampleAssets = [
         "assignee": "",
         "contractNumber": "",
         "retired": true,
+        "provisioned": false
     },
     {
         "assetType": "Assembly",
@@ -55,6 +58,7 @@ const sampleAssets = [
         "assignee": "",
         "contractNumber": "",
         "retired": true,
+        "provisioned": false
     }
 ];
 

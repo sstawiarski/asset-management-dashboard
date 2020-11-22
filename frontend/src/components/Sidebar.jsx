@@ -29,19 +29,12 @@ const drawerWidth = 220;
 
 const styles = (theme) => ({
   root: {
-    flexGrow: 1,
-    height: "100%",
-    zIndex: 1,
-    overflow: "hidden",
-    position: "absolute",
-    display: "flex",
-    width: drawerWidth,
-    flexShrink: 0,
+    minHeight: "100vh",
+    boxShadow: "1px 0px 3px rgba(0,0,0,0.5)",
   },
 
   Sidebar: {
-    height: "100%",
-    overflow: "hidden",
+    minHeight: "100vh",
   },
 
   IconButton: {
@@ -54,7 +47,7 @@ const styles = (theme) => ({
   },
 
   AccountCircleIcon: {
-    background: "#60ACBD",
+    background: "#60ACBD"
   },
 
   open: {
@@ -91,7 +84,7 @@ const styles = (theme) => ({
   drawerPaperClose: {
     overflowX: "hidden",
     background: "#60ACBD",
-    boxShadow: "1px 0px 3px rgba(0,0,0,0.5)",
+    height: "100%",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -114,9 +107,7 @@ const styles = (theme) => ({
     color: "white",
     textShadow: "1px 1px 4px #0f0f0f"
   },
-  grid: {
 
-  }
 });
 
 class Sidebar extends React.Component {
@@ -160,6 +151,7 @@ class Sidebar extends React.Component {
               justify="space-between"
               alignItems="flex-start"
               spacing={1}
+              
             >
               <Grid item>
                 {this.state.open === true ? (

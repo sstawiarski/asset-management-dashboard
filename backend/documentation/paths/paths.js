@@ -9,8 +9,7 @@ const paths = {
     '/assets/load': assetsPaths.load,
     '/assets/:serial': assetsPaths.findBySerial,
     '/assets/:searchFilter': assetsPaths.findByFilter,
-    '/assets/:sort_by': assetsPaths.sort_by,
-    '/assets/:order': assetsPaths.order,
+    '/assets/assembly/schema': assetsPaths["assembly/schema"],
     
     '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,
@@ -18,6 +17,7 @@ const paths = {
     'events/:sort_by': eventsPaths.sort_by,
     '/events/:order': eventsPaths.order,
 
+    '/customers': customerPaths.root,
     '/customers/load': customerPaths.load,
 
     '/employees/load': employeePaths.load,

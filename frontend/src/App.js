@@ -9,15 +9,16 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 import SearchDetails from './pages/SearchDetails';
+import TestPage from './pages/TestPage';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    position: "relative"
   },
   content: {
     flexGrow: 12,
-    paddingLeft: theme.spacing(12),
+    paddingLeft: theme.spacing(1),
     paddingTop: theme.spacing(4),
     paddingRight: theme.spacing(4)
   },
@@ -29,17 +30,17 @@ function App() {
   return (
     <div className="App">
       <div className={classes.root}>
-        <div style={{ flexGrow: 0.5 }}>
-          <Sidebar />
-        </div>
-
+      <Sidebar />
         <main className={classes.content}>
             <Switch>
               <Route path="/" exact component={Dashboard} />
+              <Route exact path="/test" component={TestPage} />
               <Route path="/search/:query" component={SearchDetails} />
               <Route exact path="/assets/create-assembly" component={CreateAssembly} />
               <Route exact path="/assets/view-all" component={AllAssets} />
               <Route path="/assets/:serial" component={AssetDetails} />
+              <Route path="/test" component={TestPage} />
+              
             </Switch>
         </main>
       </div>
