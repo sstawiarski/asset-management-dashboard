@@ -52,7 +52,6 @@ router.get('/', async (req, res) => {
                     return p;
                 }, {});
 
-                console.log(filters);
 
             if (req.query.search) {
 
@@ -65,8 +64,6 @@ router.get('/', async (req, res) => {
                         ...filters
                     }
                 }
-
-                console.log(search);
 
                 const confidenceScore = {
                     $addFields: {
