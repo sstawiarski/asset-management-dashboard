@@ -7,12 +7,9 @@ import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -115,7 +112,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             onChange={(event) => setAssetType(event.target.value)}
                         >
 
-                            /* populate menu items here for available types */
+                            {/* populate menu items here for available types */}
 
                         </Select>
    
@@ -132,7 +129,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             onChange={(event) => setSerial(event.target.value)}
                         >
 
-                            /* populate menu items here for available serials */
+                            {/* populate menu items here for available serials */}
 
                         </Select>
          

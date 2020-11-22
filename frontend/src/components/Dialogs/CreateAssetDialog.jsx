@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -7,13 +7,11 @@ import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -133,7 +131,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             <MenuItem value="gap sub">Gap Sub</MenuItem>
                             <MenuItem value="crossover sub">Crossover Sub</MenuItem>
                             <MenuItem value="carrier">Carrier</MenuItem>
-                            /* populate menu items here for available types */
+                            {/* populate menu items here for available types */}
 
                         </Select>
    
@@ -150,7 +148,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             onChange={(event) => setSerial(event.target.value)}
                         >
 
-                            /* populate menu items here for available serials */
+                            {/* populate menu items here for available serials */}
 
                         </TextField>
          
@@ -168,7 +166,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                         >
                             <MenuItem value="evolution usa">Evolution-USA</MenuItem>
                             <MenuItem value="evolution canada">Evolution-Calgary</MenuItem>
-                            /* populate menu items here for available serials */
+                            {/* populate menu items here for available owners */}
 
                         </Select>
          
@@ -186,7 +184,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                         >
                             <MenuItem value="nabors">Nabors</MenuItem>
                             <MenuItem value="bhge">BHGE</MenuItem>
-                            /* populate menu items here for available serials */
+                            {/* populate menu items here for available customers */}
 
                         </Select>
          
@@ -206,8 +204,6 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             <MenuItem value="owned">Owned</MenuItem>
                             <MenuItem value="rented">Rented</MenuItem>
 
-                            /* populate menu items here for available serials */
-
                         </Select>
          
                     </FormControl>
@@ -223,8 +219,6 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             fullWidth
                             onChange={(event) => setGroupTag(event.target.value)}
                         >
-
-                            /* populate menu items here for available serials */
 
                         </TextField>
          

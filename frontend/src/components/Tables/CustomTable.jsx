@@ -276,21 +276,21 @@ const NewTable = (props) => {
                                                     //translate raw dates and times into nice MM/DD/YYYY format
                                                     if (arrayItem.includes("Time") || arrayItem.includes("date")) {
                                                         return (
-                                                            <TableCell align="left">
+                                                            <TableCell key={arrayItem} align="left">
                                                                 {new Date(item[arrayItem]).toLocaleDateString('en-US')}
                                                             </TableCell>)
                                                     }
                                                     //check whether assemblies are incomplete using the 'incomplete' boolean
                                                     else if (arrayItem === "assetType" && item[arrayItem] === "Assembly" && item["incomplete"]) {
                                                         return (
-                                                            <TableCell rowSpan={1} align="left">
+                                                            <TableCell key={arrayItem} rowSpan={1} align="left">
                                                                 {item[arrayItem]}
                                                                 <br />
                                                                 <IncompletePopper assembly={item} />
                                                             </TableCell>
                                                         )
                                                     } else if (typeof item[arrayItem] === "boolean") {
-                                                        return (<TableCell align="left">
+                                                        return (<TableCell key={arrayItem} align="left">
                                                             {item[arrayItem] ? "Yes" : "No"}
                                                             {
                                                                 arrayItem === "checkedOut" ?
@@ -303,7 +303,7 @@ const NewTable = (props) => {
                                                         </TableCell>);
                                                     }
 
-                                                    return (<TableCell align="left">{item[arrayItem]}</TableCell>)
+                                                    return (<TableCell key={arrayItem} align="left">{item[arrayItem]}</TableCell>)
                                                 })
                                             }
                                         </TableRow>

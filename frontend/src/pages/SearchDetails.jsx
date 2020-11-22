@@ -11,6 +11,7 @@ import EventFilter from '../components/Dialogs/EventFilter';
 import Header from '../components/Header';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
+import ChipBar from '../components/Tables/ChipBar';
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];
@@ -38,7 +39,7 @@ const SearchDetails = () => {
         const generateURL = (type, filters) => {
             let url = `http://localhost:4000/${type}?search=${query}`;
             const keys = Object.keys(filters);
-            keys.map((key, idx) => {
+            keys.forEach((key) => {
                 let value = filters[key];
                 if (key === "eventType") {
                     value = encodeURI(value);
@@ -92,26 +93,6 @@ const SearchDetails = () => {
         setSearchTerm(value);
     };
 
-    /* Pre-design main action button so we can access this page's state when we send it in to the toolbar as a prop
-     * Could be passed in as a child*/
-    const AssetMain = ({ setOpen }) => {
-        return (
-            <Tooltip title={"Filter"}>
-                <IconButton aria-label={"filter"}>
-                    <FilterListIcon onClick={() => setOpen(true)} />
-                </IconButton>
-            </Tooltip>);
-    };
-
-    const EventMain = ({ setOpen }) => {
-        return (
-            <Tooltip title={"Filter"}>
-                <IconButton aria-label={"filter"}>
-                    <FilterListIcon onClick={() => setOpen(true)} />
-                </IconButton>
-            </Tooltip>);
-    };
-
     return (
         <div>
             <Header heading="Search" subheading="Search Details" />
@@ -136,11 +117,10 @@ const SearchDetails = () => {
                     selectedFields={assetFields}
                     filters={assetFilters}
                     setFilters={setAssetFilters}
-                    activeFilters={activeAssetFilters}
-                    setActiveFilters={setActiveAssetFilters}
                     count={assetCount}
                     variant="asset"
-                    selected={[]}>
+                    selected={[]}
+                    checkboxes={false}>
 
                     <TableToolbar
                         title="Asset Results"
@@ -153,6 +133,8 @@ const SearchDetails = () => {
                         </Tooltip>
 
                     </TableToolbar>
+
+                    <ChipBar activeFilters={activeAssetFilters} setActiveFilters={setActiveAssetFilters} setFilters={setAssetFilters} />
 
                 </CustomTable>
             </div>
@@ -169,6 +151,7 @@ const SearchDetails = () => {
                     count={eventCount}
                     variant="event"
                     selected={[]}
+                    checkboxes={false}
                 >
                     <TableToolbar
                         title="Event Results"
@@ -181,6 +164,10 @@ const SearchDetails = () => {
                         </Tooltip>
 
                     </TableToolbar>
+
+                    <ChipBar activeFilters={activeEventFilters} setActiveFilters={setActiveEventFilters} setFilters={setEventFilters} />
+
+
 
                 </CustomTable>
 

@@ -2,7 +2,6 @@ import React from 'react';
 
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
-import { makeStyles } from '@material-ui/core/styles'
 import { Grid, RadioGroup, TextField, FormControl, DialogTitle, DialogContent } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
@@ -13,24 +12,6 @@ import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
-
-const useStyles = makeStyles((theme) => ({
-
-    form: {
-        display: 'flex',
-        flexDirection: 'row',
-        margin: 'auto',
-        width: 'fit-content',
-    },
-
-    formControl: {
-        marginTop: theme.spacing(1),
-        minWidth: 400,
-    },
-    formControlLabel: {
-        marginTop: theme.spacing(1),
-    },
-}));
 
 export default function FormDialog({ open, setOpen, setActiveFilters }) {
 
@@ -43,10 +24,6 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
         groupTag: "",
         checkedOut: "all"
     })
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);
@@ -100,9 +77,6 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
             [name]: newDate
         }))
     }
-
-
-    const classes = useStyles();
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
