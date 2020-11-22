@@ -9,7 +9,8 @@ const eventTypes = [
     'Change of Group Tag',
     'Change of Retirement Status',
     'Change of Assignment Type',
-    'Reassignment'
+    'Reassignment',
+    'Removal of Child Asset'
 ]
 
 const Event = new Schema({

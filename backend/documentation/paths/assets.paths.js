@@ -46,7 +46,7 @@ const assetPaths = {
                     }
                 },
                 '404': {
-                    description: 'No assets founds in the database',
+                    description: 'No assets found in the database',
                     content: {
                         'application/json': {
                             schema: {
@@ -82,7 +82,7 @@ const assetPaths = {
                     description: "Array of asset serials (must always be array even if only 1 serial)"
                 },
                 {
-                    name: 'field',
+                    name: 'update',
                     in: 'body',
                     schema: {
                         type: 'object',
@@ -94,6 +94,15 @@ const assetPaths = {
                     },
                     description: "Object containing the MongoDB field name as a property and the new value as its value",
                     required: true
+                },
+                {
+                    name: 'override',
+                    in: 'body',
+                    schema: {
+                        type: 'boolean'
+                    },
+                    description: 'Boolean whether or not to force update child assets whose assembly is not getting updated, remove them from the assembly, and mark it incomplete',
+                    required: false
                 }
             ],
             responses: {
@@ -124,9 +133,47 @@ const assetPaths = {
                     }
                 }
             }
+        },
+        
+    },
+    'create-Asset': {
+        post: {
+            tags: ['Assets'],
+            description: 'Load sample asset data from file into database',
+            operationId: 'create-asset',
+            parameters: [],
+            responses: {
+                '200': {
+                    description: 'Assets were successfully loaded into the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error loading sample data into database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
+        
         }
     },
     'load': {
+        
         put: {
             tags: ['Assets'],
             description: 'Load sample asset data from file into database',
@@ -211,6 +258,41 @@ const assetPaths = {
                             example: {
                                 message: 'No assets found for serial',
                                 internalCode: 'no_assets_found'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    'assembly/schema': {
+        put: {
+            tags: ['Assets'],
+            description: 'Load sample assembly schema data into the database',
+            operationId: 'loadAssemblySchemas',
+            parameters: [],
+            responses: {
+                '200': {
+                    description: 'Assembly schemas were successfully loaded into the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '503': {
+                    description: 'Error loading sample data into database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
                             }
                         }
                     }

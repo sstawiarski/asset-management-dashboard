@@ -1,54 +1,45 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
-
+import Tooltip from '@material-ui/core/Tooltip';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import IconButton from '@material-ui/core/IconButton';
 import AssetFilter from '../components/Dialogs/AssetFilter';
 import EventFilter from '../components/Dialogs/EventFilter';
 import Header from '../components/Header';
-import GenericTable from '../components/GenericTable';
-
-import FilterListIcon from '@material-ui/icons/FilterList';
+import CustomTable from '../components/Tables/CustomTable'
+import TableToolbar from '../components/Tables/TableToolbar';
+import ChipBar from '../components/Tables/ChipBar';
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];
-const assetMainAction = {
-    action: "Filter",
-    dialog: AssetFilter,
-    icon: FilterListIcon,
-    props: ["setActiveFilters"]
-};
 
-const eventMainAction = {
-    action: "Filter",
-    dialog: EventFilter,
-    icon: FilterListIcon,
-    props: ["setActiveFilters"]
-};
-
-const SearchDetails = (props) => {
+const SearchDetails = () => {
+    const history = useHistory();
+    const { query } = useParams();
 
     const [assets, setAssets] = useState([]);
-    const [assetFilters, setAssetFilters] = useState({
-        limit: 5
-    });
+    const [assetFilters, setAssetFilters] = useState({ limit: 5 });
+    const [activeAssetFilters, setActiveAssetFilters] = useState({});
     const [assetCount, setAssetCount] = useState(0);
 
     const [events, setEvents] = useState([]);
-    const [eventFilters, setEventFilters] = useState({
-        limit: 5
-    });
+    const [eventFilters, setEventFilters] = useState({ limit: 5 });
+    const [activeEventFilters, setActiveEventFilters] = useState({});
     const [eventCount, setEventCount] = useState(0);
 
-    const [searchTerm, setSearchTerm] = useState(props.match.params.query);
+    const [searchTerm, setSearchTerm] = useState(query);
+    const [dialogs, setDialogs] = useState({});
 
 
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (type, filters) => {
-            let url = `http://localhost:4000/${type}?search=${searchTerm}`;
+            let url = `http://localhost:4000/${type}?search=${query}`;
             const keys = Object.keys(filters);
-            keys.map((key, idx) => {
+            keys.forEach((key) => {
                 let value = filters[key];
                 if (key === "eventType") {
                     value = encodeURI(value);
@@ -61,7 +52,6 @@ const SearchDetails = (props) => {
 
         const assetUrl = generateURL("assets", assetFilters);
         const eventUrl = generateURL("events", eventFilters);
-        console.log(eventUrl);
 
         fetch(assetUrl)
             .then(response => {
@@ -89,14 +79,12 @@ const SearchDetails = (props) => {
                 setEventCount(json.count[0].count);
             });
 
-    }, [props.match.params.query, assetFilters, eventFilters]);
+    }, [query, assetFilters, eventFilters]);
 
 
     const handleEnter = (event) => {
         if (event.key === "Enter") {
-            const { value } = event.target;
-            setSearchTerm(value);
-            props.history.push(`/search/${searchTerm}`);
+            history.push(`/search/${searchTerm}`);
         }
     };
 
@@ -124,32 +112,70 @@ const SearchDetails = (props) => {
             </Box>
 
             <div>
-                <GenericTable
+                <CustomTable
                     data={assets}
-                    title="Asset Results"
                     selectedFields={assetFields}
                     filters={assetFilters}
                     setFilters={setAssetFilters}
                     count={assetCount}
-                    history={props.history}
                     variant="asset"
-                    menuItems={[]}
-                    mainAction={assetMainAction} />
+                    selected={[]}
+                    checkboxes={false}>
+
+                    <TableToolbar
+                        title="Asset Results"
+                        selected={[]}>
+
+                        <Tooltip title={"Filter"}>
+                            <IconButton aria-label={"filter-assets"}>
+                                <FilterListIcon onClick={() => setDialogs({ assetFilter: true })} />
+                            </IconButton>
+                        </Tooltip>
+
+                    </TableToolbar>
+
+                    <ChipBar activeFilters={activeAssetFilters} setActiveFilters={setActiveAssetFilters} setFilters={setAssetFilters} />
+
+                </CustomTable>
             </div>
 
             <div>
-                <GenericTable
+
+                <CustomTable
                     data={events}
-                    title="Event Results"
                     selectedFields={eventFields}
                     filters={eventFilters}
                     setFilters={setEventFilters}
+                    activeFilters={activeEventFilters}
+                    setActiveFilters={setActiveEventFilters}
                     count={eventCount}
-                    history={props.history}
                     variant="event"
-                    menuItems={[]}
-                    mainAction={eventMainAction} />
+                    selected={[]}
+                    checkboxes={false}
+                >
+                    <TableToolbar
+                        title="Event Results"
+                        selected={[]}>
+
+                        <Tooltip title={"Filter"}>
+                            <IconButton aria-label={"filter-events"}>
+                                <FilterListIcon onClick={() => setDialogs({ eventFilter: true })} />
+                            </IconButton>
+                        </Tooltip>
+
+                    </TableToolbar>
+
+                    <ChipBar activeFilters={activeEventFilters} setActiveFilters={setActiveEventFilters} setFilters={setEventFilters} />
+
+
+
+                </CustomTable>
+
             </div>
+
+
+            <AssetFilter open={dialogs["assetFilter"]} setOpen={(isOpen) => setDialogs({ assetFilter: isOpen })} setActiveFilters={setActiveAssetFilters} />
+            <EventFilter open={dialogs["eventFilter"]} setOpen={(isOpen) => setDialogs({ eventFilter: isOpen })} setActiveFilters={setActiveEventFilters} />
         </div>
 
     )
