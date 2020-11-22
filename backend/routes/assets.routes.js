@@ -310,7 +310,7 @@ router.patch("/", async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/create-Asset', async (req, res) => {
   try {
     const asset = {
       assetName: req.body.assetName,
@@ -320,15 +320,15 @@ router.post('/', async (req, res) => {
       groupTag: req.body.groupTag,
       assignee: req.body.assignee
     }
-    sampleAssets.forEach(async (item) => {
-      console.log(item);
-      const asset = new Asset({
-        ...item,
+    
+      console.log(asset);
+      const newAsset = new Asset({
+        ...asset,
         dateCreated: Date.now(),
       });
-      await asset.save();
-    });
-    console.log(asset);
+      await newAsset.save();
+    
+    console.log(newAsset);
     res.status(200).json({ message: "success" });
   } catch (err) {
     res.status(500).json({

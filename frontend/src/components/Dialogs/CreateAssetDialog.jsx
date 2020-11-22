@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CreateAssetDialog = ({ open, setOpen, selected }) => {
+const CreateAssetDialog = ({ open, setOpen, handleCreate, selected }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -78,7 +78,7 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
             
         }
 
-        sendData(data)
+        handleCreate(data)
         // .then(response => {
 
         //     //assume anything less than 300 is a success

@@ -128,7 +128,7 @@ const assetPaths = {
         post: {
             tags: ['Assets'],
             description: 'Load sample asset data from file into database',
-            operationId: 'loadAssets',
+            operationId: 'create-asset',
             parameters: [],
             responses: {
                 '200': {
