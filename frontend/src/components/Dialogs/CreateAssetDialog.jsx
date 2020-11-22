@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const CreateAssetDialog = ({ open, setOpen, selected }) => {
+const CreateAssetDialog = ({ open, setOpen, handleCreate, selected }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
@@ -42,23 +42,19 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
     const [groupTag, setGroupTag] = useState("");
     const [assignee, setAssignee] = useState("");
     const [asset, getAsset] = useState({});
-
+    const data = {
+        assetName: assetName,
+        serial: serial,
+        owner: owner,
+        assignmentType: assignmentType,
+        groupTag: groupTag,
+        assignee: assignee
+        
+    }
     
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
-    const sendData = async (data) => {
-
-        //uses POST endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
-            method: "POST",
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify(data)
-        });
-        return result;
-    }
+    
 
   
 
@@ -66,24 +62,16 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
         event.preventDefault();
 
         //setup data object to send based on API docs and required parameters
-        const data = {
-            assetName: assetName,
-            serial: serial,
-            owner: owner,
-            assignmentType: assignmentType,
-            groupTag: groupTag,
-            assignee: assignee
-            
-        }
+        
 
         sendData(data)
-        // .then(response => {
+        .then(response => {
 
-        //     //assume anything less than 300 is a success
-        //     if (response.status < 300) {
-        //         return response.json();
-        //     } else return null;
-        // })
+            //assume anything less than 300 is a success
+            if (response.status < 300) {
+                return response.json();
+            } else return null;
+        })
         .then(json => {
 
             //check if we got back null and either close dialog on success or setFailed to render error message
@@ -93,7 +81,21 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                 setFailed(true);
             }
         })
-        console.log(data);
+        //console.log(data);
+    }
+
+    const sendData = async (data) => {
+
+        //uses POST endpoint and sends the arguments in the body of the HTTP request
+        const result = await fetch("http://localhost:4000/assets/create-Asset", {
+            method: "POST",
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+              },
+            body: JSON.stringify(data)
+        });
+        return result;
     }
 
     //reset dialog to default state on close
@@ -127,11 +129,11 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             value={assetName}
                             onChange={(event) => setAssetName(event.target.value)}
                         >
-                            <MenuItem value="centralizer">Centralizer</MenuItem>
-                            <MenuItem value="gap sub">Gap Sub</MenuItem>
-                            <MenuItem value="crossover sub">Crossover Sub</MenuItem>
-                            <MenuItem value="carrier">Carrier</MenuItem>
-                            {/* populate menu items here for available types */}
+                            <MenuItem value="Centralizer">Centralizer</MenuItem>
+                            <MenuItem value="Gap Sub">Gap Sub</MenuItem>
+                            <MenuItem value="Crossover Sub">Crossover Sub</MenuItem>
+                            <MenuItem value="Carrier">Carrier</MenuItem>
+                            /* populate menu items here for available types */
 
                         </Select>
    
@@ -164,9 +166,9 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             value={owner}
                             onChange={(event) => setOwner(event.target.value)}
                         >
-                            <MenuItem value="evolution usa">Evolution-USA</MenuItem>
-                            <MenuItem value="evolution canada">Evolution-Calgary</MenuItem>
-                            {/* populate menu items here for available owners */}
+                            <MenuItem value="Evolution-USA">Evolution-USA</MenuItem>
+                            <MenuItem value="Evolution-Calgary">Evolution-Calgary</MenuItem>
+                            /* populate menu items here for available serials */
 
                         </Select>
          
@@ -182,9 +184,9 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             value={assignee}
                             onChange={(event) => setAssignee(event.target.value)}
                         >
-                            <MenuItem value="nabors">Nabors</MenuItem>
-                            <MenuItem value="bhge">BHGE</MenuItem>
-                            {/* populate menu items here for available customers */}
+                            <MenuItem value="Nabors">Nabors</MenuItem>
+                            <MenuItem value="BHGE">BHGE</MenuItem>
+                            /* populate menu items here for available serials */
 
                         </Select>
          
@@ -201,8 +203,8 @@ const CreateAssetDialog = ({ open, setOpen, selected }) => {
                             onChange={(event) => setAssignmentType(event.target.value)}
 
                         >
-                            <MenuItem value="owned">Owned</MenuItem>
-                            <MenuItem value="rented">Rented</MenuItem>
+                            <MenuItem value="Owned">Owned</MenuItem>
+                            <MenuItem value="Rental">Rental</MenuItem>
 
                         </Select>
          

@@ -10,6 +10,7 @@ const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 
+
 router.get("/", async (req, res, err) => {
 
   try {
@@ -402,7 +403,7 @@ router.patch("/", async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/create-Asset', async (req, res) => {
   try {
     const asset = {
       assetName: req.body.assetName,
@@ -410,17 +411,19 @@ router.post('/', async (req, res) => {
       owner: req.body.owner,
       assignmentType: req.body.assignmentType,
       groupTag: req.body.groupTag,
-      assignee: req.body.assignee
+      assignee: req.body.assignee,
+      checkedOut: false,
+      assetType: "Asset"
     }
-    sampleAssets.forEach(async (item) => {
-      console.log(item);
-      const asset = new Asset({
-        ...item,
+    
+      //console.log(asset);
+      const newAsset = new Asset({
+        ...asset,
         dateCreated: Date.now(),
       });
-      await asset.save();
-    });
-    console.log(asset);
+      newAsset.save();
+    
+    console.log(newAsset);
     res.status(200).json({ message: "success" });
   } catch (err) {
     res.status(500).json({
