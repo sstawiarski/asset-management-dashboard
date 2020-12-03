@@ -142,19 +142,15 @@ const CreateAssetDialog = ({ open, setOpen, handleCreate, selected }) => {
                     </FormControl>
                 
                     <FormControl variant="outlined" className={classes.formControl}>
-                        
-                        <TextField
-                            margin="dense"
-                            id="asset-serial-label"
-                            label="Asset Serial"
-                            type="text"
-                            fullWidth
-                            onChange={(event) => setSerial(event.target.value)}
-                        >
-
-                            /* populate menu items here for available serials */
-
-                        </TextField>
+                        <InputLabel id="asset-serial-label">Asset Serial</InputLabel>
+                            <Select
+                                labelId="asset-serial-label"
+                                labelWidth={105}
+                                id="asset-serial-label"
+                                value={serial}
+                                onChange={(event) => setSerial(event.target.value)}
+                            >
+                            </Select>
          
                     </FormControl>
 
