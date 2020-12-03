@@ -311,6 +311,30 @@ router.patch("/", async (req, res) => {
   }
 });
 
+router.post('/provision', async (req, res) => {
+  try {
+
+    // stuff here 
+
+  } catch(err) {
+
+    // more stuff also here
+
+  }
+});
+
+router.get('/provision', async (req, res) => {
+  try {
+
+    // get stuff here
+
+  } catch(err){
+
+    // get errors here
+
+  }
+});
+
 router.post('/create-Asset', async (req, res) => {
   try {
     const asset = {
