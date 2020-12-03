@@ -49,9 +49,9 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
 
-        //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
-            method: "GET",
+        //uses POST endpoint and sends the arguments in the body of the HTTP request
+        const result = await fetch("http://localhost:4000/assets/provision", {
+            method: "POST",
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
