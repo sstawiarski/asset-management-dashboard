@@ -39,6 +39,11 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
     const [assetType, setAssetType] = useState("");
     const [serial, setSerial] = useState("");
     const [assetQuantity, setAssetQuantity] = useState("");
+    const data = {
+        assetType: assetType,
+        serial: serial,
+        assetQuantity: assetQuantity
+    }
   
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
@@ -114,6 +119,10 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             value={assetType}
                             onChange={(event) => setAssetType(event.target.value)}
                         >
+                            <MenuItem value="Centralizer">Centralizer</MenuItem>
+                            <MenuItem value="Gap Sub">Gap Sub</MenuItem>
+                            <MenuItem value="Crossover Sub">Crossover Sub</MenuItem>
+                            <MenuItem value="Carrier">Carrier</MenuItem>
 
                             /* populate menu items here for available types */
 
@@ -132,6 +141,9 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             onChange={(event) => setSerial(event.target.value)}
                         >
 
+                            <MenuItem value="Sequential">Sequential</MenuItem>
+                            <MenuItem value="Back fill">Back Fill</MenuItem>
+                          
                             /* populate menu items here for available serials */
 
                         </Select>
