@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
@@ -14,10 +14,11 @@ import TestPage from './pages/TestPage';
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    position: "relative"
+    flexDirection: "row",
   },
   content: {
     flexGrow: 12,
+    marginBottom: "20px",
     paddingLeft: theme.spacing(1),
     paddingTop: theme.spacing(4),
     paddingRight: theme.spacing(4)
@@ -26,11 +27,18 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  const [background, setBackground] = useState("#60ACBD");
 
   return (
     <div className="App">
       <div className={classes.root}>
-      <Sidebar />
+      <div style={{
+            background: background,
+            lineHeight: "0px",
+            boxShadow: "1px 0px 3px rgba(0,0,0,0.5)"
+      }}>
+      <Sidebar onOpen={setBackground}/>
+      </div>
         <main className={classes.content}>
             <Switch>
               <Route path="/" exact component={Dashboard} />
