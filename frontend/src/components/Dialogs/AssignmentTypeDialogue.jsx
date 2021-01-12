@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -26,11 +26,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
+    const [type, setType] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -54,63 +54,63 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
         const data = {
             assets: selected,
             update: {
-                retired: status === "Active" ? false : true
+                assignmentType: type
             },
             override: override
         }
 
         sendData(data)
-        .then(response => {
+            .then(response => {
 
-            //assume anything less than 300 is a success
-            if (response.status < 300) {
-                return response.json();
-            } else return null;
-        })
-        .then(json => {
+                //assume anything less than 300 is a success
+                if (response.status < 300) {
+                    return response.json();
+                } else return null;
+            })
+            .then(json => {
 
-            //check if we got back null and either close dialog on success or setFailed to render error message
-            if (json) {
-                handleClose();
-                onSuccess(true, `Successfully retired ${selected.length} asset(s)!`)
-            } else {
-                handleClose();
-                onSuccess(false,`Failed to retire asset(s)...`);
-            }
-        })
+                //check if we got back null and send response to parent page for snackbar rendering
+                if (json) {
+                    const assignType = type;
+                    handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}!`)
+                } else {
+                    handleClose();
+                    onSuccess(false, `Failed to update assignment type...`);
+                }
+            })
     }
 
     //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setStatus("");
+        setType("");
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-status-dialog-title">
-            
-            <DialogTitle id="change-status-dialog-title">Change Product Status</DialogTitle>
-            
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignment-type-dialog-title">
+
+            <DialogTitle id="change-assignment-type-dialog-title">Change Assignment Type</DialogTitle>
+
             <DialogContent>
                 <DialogContentText>
-                    Changing the activity status of {selected.length} product{selected.length > 1 ? "s" : "" }
+                    Changing the assignment type of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
-                
+
                 <div className={classes.item}>
                     <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="product-status-label">Product Status</InputLabel>
-
+                        <InputLabel id="product-status-label">Assignment Type</InputLabel>
                         {/* Controlled select, get value from state and changes state when it changes */}
                         <Select
-                            labelId="product-status-label"
+                            labelId="assignment-type-label"
                             labelWidth={105}
-                            id="product-status-select"
-                            value={status}
-                            onChange={(event) => setStatus(event.target.value)}
+                            id="assignment-type-select"
+                            value={type}
+                            onChange={(event) => setType(event.target.value)}
                         >
 
-                            <MenuItem value={"Active"}>Active</MenuItem>
-                            <MenuItem value={"Retired"}>Retired</MenuItem>
+                            <MenuItem value={"Owned"}>Owned</MenuItem>
+                            <MenuItem value={"Rental"}>Rental</MenuItem>
 
                         </Select>
                     </FormControl>
@@ -130,4 +130,4 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
     );
 };
 
-export default RetireAssetDialog;
+export default AssignmentTypeDialog;

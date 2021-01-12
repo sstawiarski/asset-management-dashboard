@@ -7,7 +7,7 @@ import ProvisionSerials from '../components/Dialogs/ProvisionSerials';
 
 const TestPage = () => {
 
-    {/* Control open/close of retire dialog */}
+   /* Control open/close of retire dialog */
     const [createOpen1, setCreateOpen1] = useState(false);
     const [createOpen2, setCreateOpen2] = useState(false);
 

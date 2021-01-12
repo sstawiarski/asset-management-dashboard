@@ -12,6 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -26,11 +27,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const RetireAssetDialog = ({ open, setOpen, selected }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
+    const [failed, setFailed] = useState(null);
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -55,8 +57,7 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
             assets: selected,
             update: {
                 retired: status === "Active" ? false : true
-            },
-            override: override
+            }
         }
 
         sendData(data)
@@ -72,10 +73,8 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
             //check if we got back null and either close dialog on success or setFailed to render error message
             if (json) {
                 handleClose();
-                onSuccess(true, `Successfully retired ${selected.length} asset(s)!`)
             } else {
-                handleClose();
-                onSuccess(false,`Failed to retire asset(s)...`);
+                setFailed(true);
             }
         })
     }
@@ -84,6 +83,7 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
     const handleClose = () => {
         setOpen(false);
         setStatus("");
+        setFailed(null);
     }
 
     return (
@@ -113,6 +113,9 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
                             <MenuItem value={"Retired"}>Retired</MenuItem>
 
                         </Select>
+
+                        {/* Render a failure message if API returns a response code > 300 */}
+                        {failed ? <Typography variant="subtitle1" className={classes.error}>Error submitting change</Typography> : null}
                     </FormControl>
                 </div>
             </DialogContent>

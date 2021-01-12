@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -51,7 +52,6 @@ router.get('/', async (req, res) => {
                     return p;
                 }, {});
 
-                console.log(filters);
 
             if (req.query.search) {
 
@@ -64,8 +64,6 @@ router.get('/', async (req, res) => {
                         ...filters
                     }
                 }
-
-                console.log(search);
 
                 const confidenceScore = {
                     $addFields: {
@@ -165,7 +163,6 @@ router.get('/', async (req, res) => {
         aggregateArray.push(projection);
 
         const result = await Event.aggregate(aggregateArray);
-        console.log(result)
 
         if (req.query.search) {
 

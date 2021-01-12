@@ -7,12 +7,9 @@ import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -124,7 +121,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             <MenuItem value="Crossover Sub">Crossover Sub</MenuItem>
                             <MenuItem value="Carrier">Carrier</MenuItem>
 
-                            /* populate menu items here for available types */
+                            {/* populate menu items here for available types */}
 
                         </Select>
    
@@ -143,8 +140,7 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
 
                             <MenuItem value="Sequential">Sequential</MenuItem>
                             <MenuItem value="Back fill">Back Fill</MenuItem>
-                          
-                            /* populate menu items here for available serials */
+                        
 
                         </Select>
          
