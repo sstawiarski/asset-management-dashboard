@@ -44,6 +44,8 @@ const AssetDetails = (props) => {
     const classes = useStyles();
     const [asset, setAsset] = useState({});
     const [events, setEvents] = useState([]);
+    const [page, setPage] = useState(0);
+    const [empty, setEmpty] = useState(false);
 
     useEffect(() => {
         fetch(`http://localhost:4000/assets/${serial}`)
@@ -58,7 +60,7 @@ const AssetDetails = (props) => {
                 setAsset(json);
             });
 
-        fetch(`http://localhost:4000/events/${serial}`)
+        fetch(`http://localhost:4000/events/${serial}?limit=5&skip=${page}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
@@ -67,9 +69,10 @@ const AssetDetails = (props) => {
                 }
             })
             .then(json => {
-                setEvents(json);
+                if (json.length === 0) setEmpty(true);
+                setEvents([...events, ...json]);
             });
-    }, [serial]);
+    }, [page, serial]);
 
     return (
         <div className={classes.root}>
@@ -136,15 +139,15 @@ const AssetDetails = (props) => {
                                 <Grid container className={classes.item}>
                                     {
                                         asset.assetType === "Assembly" ?
-                                            <Grid item xs={12} sm={6} className={classes.item}>
+                                            <Grid item xs={12} sm={12} md={6} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Assembly Manifest</Typography>
                                                 <Manifest data={asset} />
                                             </Grid>
                                             : null
                                     }
-                                    <Grid item xs={12} sm={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
+                                    <Grid item xs={12} sm={12} md={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Asset Timeline</Typography>
-                                        <AssetTimeline data={events} />
+                                        <AssetTimeline data={events} onMore={() => setPage(page+1)} empty={empty} />
                                     </Grid>
                                 </Grid>
                             </Paper>

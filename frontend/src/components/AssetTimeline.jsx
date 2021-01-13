@@ -10,6 +10,7 @@ import TimelineDot from '@material-ui/lab/TimelineDot';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import BlockIcon from '@material-ui/icons/Block'; //retirement
 import ReceiptIcon from '@material-ui/icons/Receipt'; //change owner
 import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'; //reassignment
@@ -45,6 +46,16 @@ const useStyles = makeStyles({
             transition: "all .3s ease",
             WebkitTransition: "all .3s ease"
         }
+    },
+    moreEventsButton: {
+        marginLeft: "50%", 
+        marginRight: "50%", 
+        fontSize: "32px", 
+        width: "40px",
+        marginTop: "20px",
+        backgroundColor: "#DDDDDD",
+        color: "#AAAAAA",
+        borderRadius: "3px"
     }
 });
 
@@ -83,7 +94,7 @@ const getIcon = (eventType) => {
     }
 };
 
-const AssetTimeline = ({ data }) => {
+const AssetTimeline = ({ data, onMore, empty }) => {
     const classes = useStyles();
     const [event, setEvent] = useState(null);
 
@@ -131,6 +142,11 @@ const AssetTimeline = ({ data }) => {
                     );
                 }) : null}
             </Timeline>
+            {!empty ? 
+                <Tooltip title="View More" placement="bottom">
+                <MoreHorizIcon className={classes.moreEventsButton} onClick={onMore} />
+                </Tooltip>
+                : <Typography variant="subtitle2">No remaining events</Typography>}
             <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
         </>
     );
