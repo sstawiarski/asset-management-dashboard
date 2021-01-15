@@ -3,7 +3,7 @@ const eventsPaths = require('./events.paths')
 const customerPaths = require('./customers.paths')
 const employeePaths = require('./employees.paths')
 const locationPaths = require('./locations.paths')
-
+const authPaths = require('./auth.paths');
 const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
@@ -25,6 +25,7 @@ const paths = {
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,
 
+    '/auth/login': authPaths.login
 }
 
 module.exports = paths;
