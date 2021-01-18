@@ -116,6 +116,10 @@ const assetPaths = {
                                     message: {
                                         type: "string",
                                         example: "Updated 2 regular assets, 2 assemblies, and 3 of their children."
+                                    },
+                                    key: {
+                                        type: "string",
+                                        example: "GRP-8971"
                                     }
                                 }
                             }
