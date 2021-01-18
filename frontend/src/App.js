@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
-
+import logo from "./logo.svg";
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
@@ -37,9 +37,12 @@ function App() {
             lineHeight: "0px",
             boxShadow: "1px 0px 3px rgba(0,0,0,0.5)"
       }}>
+
       <Sidebar onOpen={setBackground}/>
+
       </div>
         <main className={classes.content}>
+          <img src={logo} className="App-logo" alt="logo" />
             <Switch>
               <Route path="/" exact component={Dashboard} />
               <Route exact path="/test" component={TestPage} />
@@ -50,6 +53,7 @@ function App() {
               <Route path="/test" component={TestPage} />
               
             </Switch>
+
         </main>
       </div>
     </div>
