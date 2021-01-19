@@ -72,7 +72,7 @@ const styles = (theme) => ({
     color: "#EA5F61",
   },
   drawerPaper: {
-    background: "#FAFAFA",
+    background: "primary",
     overflowX: "hidden",
     position: "relative",
     width: drawerWidth,

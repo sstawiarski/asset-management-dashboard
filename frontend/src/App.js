@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import { Switch, Route } from 'react-router-dom';
 import './App.css';
@@ -25,11 +27,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      
+      main: '#71AABB',
+    },
+    secondary: {
+      
+      main: '#48656b',
+    },
+  },
+});
+
 function App() {
   const classes = useStyles();
   const [background, setBackground] = useState("#60ACBD");
 
   return (
+    <ThemeProvider theme={theme}>
     <div className="App">
       <div className={classes.root}>
       <div style={{
@@ -57,6 +73,7 @@ function App() {
         </main>
       </div>
     </div>
+    </ThemeProvider>
   );
 }
 
