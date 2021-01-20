@@ -56,12 +56,15 @@ const EnhancedTableToolbar = (props) => {
                     {numSelected} selected
                 </Typography>
             ) : (
+                <>
+                {children.props.children[0]}
                     <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
                         {title}
                     </Typography>
+                    </>
                 )}
 
-            {children}
+            {numSelected > 0 ? children : children.props.children.slice(1)}
 
 
         </Toolbar>

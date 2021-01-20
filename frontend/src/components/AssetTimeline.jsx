@@ -17,6 +17,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment'; //assignment type
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed'; //group tag
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'; //incoming AND outgoing shipments
 import CancelIcon from '@material-ui/icons/Cancel'; //removal of child assets
+import AddIcon from '@material-ui/icons/Add'; //creation
 import Tooltip from '@material-ui/core/Tooltip';
 
 import EventDetailsViewer from './EventDetailsViewer';
@@ -78,6 +79,8 @@ const getIcon = (eventType) => {
             return (<AssignmentReturnIcon style={classes.icon} />);
         case "REM":
             return (<CancelIcon style={classes.icon} />);
+        case "CRE":
+            return (<AddIcon style={classes.icon} />);
         default:
             return null;
     }
