@@ -67,6 +67,136 @@ const assetPaths = {
                 }
             }
         },
+        post: {
+            tags: ['Assets'],
+            description: 'Provision serial and create new asset with provided defaults',
+            operationId: 'createAsset',
+            parameters: [
+                {
+                    name: 'list',
+                    in: 'body',
+                    schema: {
+                        type: 'array',
+                        items: {
+                            $ref: '#/components/schemas/serial'
+                        }
+                    },
+                    required: false
+                },
+
+                {
+                    name: 'serialBase',
+                    in: 'body',
+                    schema: {
+                        type: 'string',
+                        example: 'G800-',
+                        description: 'The base serial for the asset type to be created'
+                    },
+                    required: false
+
+                },
+
+                {
+                    name: 'owner',
+                    in: 'body',
+                    schema: {
+                        type: 'string',
+                        example: 'Supply Chain-USA',
+                        description: 'The initial default owner for the created assets'
+                    },
+                    required: true
+                },
+
+                {
+                    name: 'type',
+                    in: 'body',
+                    schema: {
+                        type: 'string',
+                        example: 'range',
+                        description: "The method by which to provision, either 'range' or 'list'"
+                    },
+                    required: true
+                },
+
+                {
+                    name: 'assetName',
+                    in: 'body',
+                    schema: {
+                        type: 'string',
+                        example: 'Gap Sub',
+                        description: 'The plaintext name of the asset type to be created'
+                    },
+                    required: true
+                },
+
+                {
+                    name: 'beginRange',
+                    in: 'body',
+                    schema: {
+                        type: 'number',
+                        example: '12312',
+                        description: 'The serial number to begin provisioning at when using the range method'
+                    },
+                    required: false
+                },
+
+                {
+                    name: 'endRange',
+                    in: 'body',
+                    schema: {
+                        type: 'number',
+                        example: '234234',
+                        description: 'The serial number to end provisioning at when using the range method (inclusive)'
+                    },
+                    required: false
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Assets were successfully loaded into the database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    },
+                                    invalid: {
+                                        type: 'array',
+                                        items: {
+                                            type: 'string',
+                                            description: 'The serials that could not be provisioned'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '403': {
+                    description: 'Required parameters missing',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Internal server error',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
+
+        },
         patch: {
             tags: ['Assets'],
             description: "Updates fields in asset(s) (and children if applicable) and generate event object",
@@ -134,46 +264,10 @@ const assetPaths = {
                 }
             }
         },
-        
-    },
-    'create-Asset': {
-        post: {
-            tags: ['Assets'],
-            description: 'Load sample asset data from file into database',
-            operationId: 'create-asset',
-            parameters: [],
-            responses: {
-                '200': {
-                    description: 'Assets were successfully loaded into the database',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                type: 'object',
-                                properties: {
-                                    message: {
-                                        type: 'string'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                '500': {
-                    description: 'Error loading sample data into database',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            }
-                        }
-                    }
-                }
-            }
-        
-        }
+
     },
     'load': {
-        
+
         put: {
             tags: ['Assets'],
             description: 'Load sample asset data from file into database',
@@ -357,7 +451,7 @@ const assetPaths = {
             }
         }
     }
-    
+
 
 }
 
