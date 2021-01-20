@@ -52,6 +52,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
 import { URLTypes as types } from '../../utils/constants.utils';
 
+//currently testing
+import SearchBar from "material-ui-search-bar";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -210,6 +213,19 @@ const NewTable = (props) => {
                         size={'medium'}
                         aria-label={`${variant} table`}
                     >
+
+
+
+                        
+                        <SearchBar
+                        value={this.state.value}
+                        onChange={(newValue) => this.setState({ value: newValue })}
+                        onRequestSearch={() => doSomethingWith(this.state.value)}
+                        />
+
+
+
+
                         <TableHead
                             classes={classes}
                             numSelected={selected.length}
