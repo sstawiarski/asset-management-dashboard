@@ -46,7 +46,6 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
             }, {})
 
         setActiveFilters(s => (onlyActive));
-
         setOpen(false);
     }
 

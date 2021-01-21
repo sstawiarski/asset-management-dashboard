@@ -296,7 +296,7 @@ const NewTable = (props) => {
                                                                 arrayItem === "checkedOut" ?
                                                                     <>
                                                                         <br />
-                                                                        <Typography variant="caption" style={{color: "#838383"}}>{item["assignee"]}</Typography>
+                                                                        <Typography variant="caption" style={{ color: "#838383" }}>{item["assignee"]}</Typography>
                                                                     </>
                                                                     : null
                                                             }
