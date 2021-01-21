@@ -98,39 +98,70 @@ const CreateAssembly = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-
     const [selected, setSelected] = useState([]);
     const [cartItems, setCartItems] = useState([]);
-
     const [state, setState] = useState({});
     const [success, setSuccess] = useState(null);
     const [incomplete, setIncomplete] = useState(false);
     const [override, toggleOverride] = useState(false);
     const [missingItems, setMissingItems] = useState([]);
-
     const [submission, setSubmission] = useState({});
-
     const [moreInfo, setMoreInfo] = useState([]);
+    const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
 
     //get assets from database that don't belong to an assembly
     useEffect(() => {
         if (assemblyStarted) {
-            fetch('http://localhost:4000/assets?parentId=null&assetType=Asset&provisioned=false')
-                .then(response => {
-                    if (response.status < 300) {
-                        return response.json();
-                    } else {
-                        return null;
-                    }
-                })
-                .then(json => {
-                    if (json) {
-                        setAssetCount(json.count[0].count);
-                        setAssets(json.data);
-                    }
-                })
+            if (schema) {
+                const assemblyType = encodeURI(schema.name);
+                setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+            }
         }
-    }, [assemblyStarted])
+    }, [assemblyStarted, schema]);
+
+    useEffect(() => {
+        setURL(() => {
+            let originalURL = `http://localhost:4000/assets?parentId=null&assetType=Asset`;
+            if (schema) {
+                const assemblyType = encodeURI(schema.name);
+                originalURL += `&inAssembly=${assemblyType}`;
+            }
+
+            Object.keys(filters).forEach(key => {
+                originalURL += `&${key}=${filters[key]}`;
+            })
+
+            return originalURL;
+        });
+    }, [schema, filters]);
+
+    useEffect(() => {
+        fetch(url)
+            .then(response => {
+                if (response.status < 300) {
+                    if (response.interalCode === "no_assets_found") {
+                        return {
+                            count: [{ count: 0 }],
+                            data: []
+                        }
+                    } else {
+                        return response.json();
+                    }
+                } else {
+                    return null;
+                }
+            })
+            .then(json => {
+                if (json) {
+                    setAssetCount(json.count[0].count);
+                    setAssets(json.data);
+                }
+            });
+    }, [url]);
+
+    useEffect(() => {
+        setFilters(s => ({ ...s, page: 0 }));
+    }, [activeFilters])
 
     const handleStart = () => {
         setCreatorOpen(true);
@@ -143,9 +174,9 @@ const CreateAssembly = () => {
         }));
         getSchema(childState.assemblyType).then(response => {
             setSchema(response);
+            setCreatorOpen(false);
+            toggleAssembly(true);
         });
-        setCreatorOpen(false);
-        toggleAssembly(true);
 
     }
 

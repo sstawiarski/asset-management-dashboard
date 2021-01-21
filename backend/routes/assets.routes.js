@@ -23,9 +23,9 @@ router.get("/", async (req, res, err) => {
 
       //remove page, limit, search, and sorting params since they do not go in the $match
       const disallowed = ["page", "limit", "search", "sort_by", "order"];
-      const filters = Object.keys(query)
-        .reduce((p, c) => {
-
+      const filters = await Object.keys(query)
+        .reduce(async (pc, c) => {
+          const p = await pc;
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
@@ -41,6 +41,12 @@ router.get("/", async (req, res, err) => {
                 $lte: afterDate
               }
             }];
+          } else if (c === "inAssembly") {
+            const assemblyType = decodeURI(query[c]);
+            const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
+            if (Object.keys(assemblySchema).length > 0) {
+              p["assetName"] = { $in: assemblySchema.components };
+            }
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -52,8 +58,9 @@ router.get("/", async (req, res, err) => {
             } else {
               p[c] = query[c];
             }
-          };
-          return p;
+          }
+
+          return pc;
         }, {});
 
       if (req.query.search) {
@@ -415,14 +422,14 @@ router.post('/create-Asset', async (req, res) => {
       checkedOut: false,
       assetType: "Asset"
     }
-    
-      //console.log(asset);
-      const newAsset = new Asset({
-        ...asset,
-        dateCreated: Date.now(),
-      });
-      newAsset.save();
-    
+
+    //console.log(asset);
+    const newAsset = new Asset({
+      ...asset,
+      dateCreated: Date.now(),
+    });
+    newAsset.save();
+
     console.log(newAsset);
     res.status(200).json({ message: "success" });
   } catch (err) {
@@ -488,21 +495,21 @@ router.post('/create-Assembly', async (req, res, err) => {
             used: missingSers
           })
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: "Error finding assets",
-            interalCode: "cannot_find_assets" 
+            interalCode: "cannot_find_assets"
           })
         }
-        
+
       }
     }
 
   }
   catch (err) {
     console.log(err)
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error creating assembly",
-      interalCode: "assembly_creation_error" 
+      interalCode: "assembly_creation_error"
     })
   }
 });

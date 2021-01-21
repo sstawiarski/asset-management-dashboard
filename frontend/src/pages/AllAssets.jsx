@@ -131,6 +131,11 @@ const AllAssets = (props) => {
 
     }, [filters]);
 
+
+    useEffect(() => {
+        setFilters(s => ({ ...s, page: 0 }));
+    }, [activeFilters])
+
     return (
         <div>
             <Header heading="Assets" subheading="View All" />
