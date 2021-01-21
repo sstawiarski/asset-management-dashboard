@@ -3,13 +3,13 @@
 }
 
 .App-logo {
-  height: 10vmin;
-  pointer-events: none;
-  float: right;
-  padding-left: 20px;
-  
-
-
+  pointer-events: auto;
+  cursor: pointer;
+  margin: 20px 45px 20px 20px;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 5vh;
 }
 
 

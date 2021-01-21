@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { makeStyles } from '@material-ui/core/styles';
@@ -30,11 +31,9 @@ const useStyles = makeStyles((theme) => ({
 const theme = createMuiTheme({
   palette: {
     primary: {
-      
       main: '#71AABB',
     },
     secondary: {
-      
       main: '#48656b',
     },
   },
@@ -42,23 +41,24 @@ const theme = createMuiTheme({
 
 function App() {
   const classes = useStyles();
+  const history = useHistory();
   const [background, setBackground] = useState("#60ACBD");
 
   return (
     <ThemeProvider theme={theme}>
-    <div className="App">
-      <div className={classes.root}>
-      <div style={{
+      <div className="App">
+        <div className={classes.root}>
+          <div style={{
             background: background,
             lineHeight: "0px",
             boxShadow: "1px 0px 3px rgba(0,0,0,0.5)"
-      }}>
+          }}>
 
-      <Sidebar onOpen={setBackground}/>
+            <Sidebar onOpen={setBackground} />
 
-      </div>
-        <main className={classes.content}>
-          <img src={logo} className="App-logo" alt="logo" />
+          </div>
+          <main className={classes.content}>
+            <img src={logo} className="App-logo" title="Go to Dashboard" alt="logo" onClick={() => history.push('/')} />
             <Switch>
               <Route path="/" exact component={Dashboard} />
               <Route exact path="/test" component={TestPage} />
@@ -67,12 +67,12 @@ function App() {
               <Route exact path="/assets/view-all" component={AllAssets} />
               <Route path="/assets/:serial" component={AssetDetails} />
               <Route path="/test" component={TestPage} />
-              
+
             </Switch>
 
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
     </ThemeProvider>
   );
 }
