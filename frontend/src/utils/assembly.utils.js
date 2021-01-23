@@ -2,9 +2,9 @@
  * Returns the schema of an assembly based on the assembly type name
  * @param type string representing assembly type
  */
-export const getSchema = async (type) => {
+export const getSchema = async (type, isAssembly) => {
     const name = encodeURI(type);
-    const response = await fetch(`http://localhost:4000/assets/assembly/schema?type=${name}`)
+    const response = await fetch(`http://localhost:4000/assets/assembly/schema?type=${name}&assembly=${isAssembly}`)
     if (response.status < 300) {
         const json = await response.json();
         return json;

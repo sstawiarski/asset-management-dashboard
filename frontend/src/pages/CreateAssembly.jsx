@@ -139,16 +139,18 @@ const CreateAssembly = () => {
         fetch(url)
             .then(response => {
                 if (response.status < 300) {
-                    if (response.interalCode === "no_assets_found") {
+                    return response.json();
+                } else {
+                    if (response.status >= 300) {
+
                         return {
                             count: [{ count: 0 }],
                             data: []
                         }
                     } else {
-                        return response.json();
+                        return null;
                     }
-                } else {
-                    return null;
+
                 }
             })
             .then(json => {
@@ -172,8 +174,9 @@ const CreateAssembly = () => {
             ...s,
             ...childState
         }));
-        getSchema(childState.assemblyType).then(response => {
+        getSchema(childState.assemblyType, true).then(response => {
             setSchema(response);
+            console.log("State: " + JSON.stringify(childState))
             setCreatorOpen(false);
             toggleAssembly(true);
         });
@@ -220,7 +223,7 @@ const CreateAssembly = () => {
                 override: false,
                 owner: state.owner,
                 groupTag: state.groupTag,
-                serial: "G800-11120" //TODO: hardcode serial for now
+                serializationFormat: schema["serializationFormat"]
             }))
             if (!result[0]) {
                 setMissingItems(result[1]);

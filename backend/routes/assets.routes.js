@@ -205,7 +205,7 @@ router.get("/", async (req, res, err) => {
       } else {
         res.status(404).json({
           message: "No assets found in database",
-          interalCode: "no_assets_found",
+          internalCode: "no_assets_found",
         });
       }
 
@@ -218,7 +218,7 @@ router.get("/", async (req, res, err) => {
       } else {
         res.status(404).json({
           message: "No assets found in database",
-          interalCode: "no_assets_found",
+          internalCode: "no_assets_found",
         });
       }
     }
@@ -227,7 +227,7 @@ router.get("/", async (req, res, err) => {
     console.log(err);
     res.status(500).json({
       message: "Error searching for assets in database",
-      internal_code: "asset_search_error"
+      internalCode: "asset_search_error"
     });
   }
 });
@@ -581,19 +581,47 @@ router.put("/assembly/schema", async (req, res) => {
 });
 
 router.get("/assembly/schema", async (req, res) => {
+  let query = {};
+
   const type = decodeURI(req.query.type);
+  const assembly = req.query.assembly;
+  const isAll = req.query.all === "true" ? true : req.query.all === "false" ? false : null;
+  if (type && !isAll) {
+    query.name = type;
+  }
+
+
+  if (assembly === "true" && isAll) {
+    query.components = { $exists: true };
+  } else {
+    if (isAll === false) {
+      query.components = { $exists: false };
+    }
+  }
+
   try {
-    const chosenSchema = await AssemblySchema.findOne({ name: type }).select({
-      _id: 0,
-      __v: 0
-    });
-    if (chosenSchema) {
-      res.status(200).json(chosenSchema);
+    let schema = null;
+    console.log(query)
+    if (isAll) {
+      schema = await AssemblySchema.find(query).select({
+        _id: 0,
+        __v: 0,
+        components: 0
+      });
+    } else {
+      schema = await AssemblySchema.findOne(query).select({
+        _id: 0,
+        __v: 0
+      });
+    }
+    if ((isAll && schema.length > 0) || (schema instanceof Object && Object.keys(schema).length > 0)) {
+      res.status(200).json(schema);
     } else {
       res.status(404).json({
         message: "Error finding assembly schema",
         internal_code: "schema_error",
       });
+      console.log(schema)
     }
   } catch (err) {
     console.log(err);
