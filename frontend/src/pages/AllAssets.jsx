@@ -45,21 +45,9 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter'){
+        if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
         }
-    }
-
-    const handleExpansion = (props) => {
-        while(props.width<50){
-            props.width+=1;
-        }
-    }
-
-    //working code for filtering, need to figure out how to link to the table values.
-    const [filter, setFilter] =useState ("");
-        const handleSearchChange = (e) => {
-        setFilter(e.target.value);
     }
 
     const handleClick = (event) => {
@@ -148,7 +136,6 @@ const AllAssets = (props) => {
                 setAssets(json.data);
                 setAssetCount(json.count[0].count);
             });
-
     }, [filters]);
 
     return (
@@ -172,19 +159,20 @@ const AllAssets = (props) => {
 
                         <Container className='searchBar' align='right'>
                             <div >
-                                <TextField id="searchBox"  
-                                
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon/>
-                                        </InputAdornment>
-                                    )
-                                }}
-                                onKeyDown={handleKeyDown}
+                                <TextField id="searchBox"
+                                    variant="outlined"
+                                    size="small"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                    onKeyDown={handleKeyDown}
                                 />
                             </div>
-                            </Container>
+                        </Container>
 
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
