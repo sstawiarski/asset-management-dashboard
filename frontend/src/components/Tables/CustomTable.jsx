@@ -52,8 +52,6 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
 import { URLTypes as types } from '../../utils/constants.utils';
 
-//currently testing
-//import SearchBar from '@material-ui/core/SearchBar';
 
 const useStyles = makeStyles((theme) => ({
     root: {

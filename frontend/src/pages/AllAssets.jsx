@@ -22,6 +22,8 @@ import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
+import SearchIcon from '@material-ui/icons/Search'
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -41,6 +43,24 @@ const AllAssets = (props) => {
     const [nextDialog, setNext] = useState("");
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter'){
+            setFilters(s => ({ ...s, search: e.target.value }))
+        }
+    }
+
+    const handleExpansion = (props) => {
+        while(props.width<50){
+            props.width+=1;
+        }
+    }
+
+    //working code for filtering, need to figure out how to link to the table values.
+    const [filter, setFilter] =useState ("");
+        const handleSearchChange = (e) => {
+        setFilter(e.target.value);
+    }
 
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
@@ -149,6 +169,22 @@ const AllAssets = (props) => {
                     <TableToolbar
                         title="All Assets"
                         selected={selected}>
+
+                        <Container className='searchBar' align='right'>
+                            <div >
+                                <TextField id="searchBox"  
+                                
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon/>
+                                        </InputAdornment>
+                                    )
+                                }}
+                                onKeyDown={handleKeyDown}
+                                />
+                            </div>
+                            </Container>
 
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
