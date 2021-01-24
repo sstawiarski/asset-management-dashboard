@@ -5,7 +5,6 @@ const connection = mongoose.connection;
 const Employee = require('../models/employee.model');
 const encrypt = require('../auth.utils').encrypt;
 const decrypt = require('../auth.utils').decrypt;
-const passport= require('passport');
 
 /* 
  * Simple POST endpoint for user authentication
@@ -49,9 +48,5 @@ router.post('/login', async (req, res) => {
         }
     }
 });
-router.post('/auth/login',passport.authenticate('local'),{failureFlash:true,failureRedirect: 'window.location.href = '/''} (req,res)=> {
-
-
-})
 
 module.exports = router;
