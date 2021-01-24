@@ -25,7 +25,6 @@ import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { Link } from "react-router-dom";
-import { UserContext } from '../utils/auth/UserContext';
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
 let drawerWidth = 220;
@@ -113,13 +112,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Sidebar = (props) => {
-  const [userInfo, setUserInfo] = useContext(UserContext);
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [local, setLocal] = useLocalStorage('user', {});
   const history = useHistory();
 
-  const fullName = userInfo.firstName + " " + userInfo.lastName;
+  const fullName = local.firstName + " " + local.lastName;
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -141,7 +139,7 @@ const Sidebar = (props) => {
           ),
         }}
         style={{
-          width: userInfo.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 72 : drawerWidth : open ? 220 : 72
+          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 72 : drawerWidth : open ? 220 : 72
         }}
         open={open}
       >
