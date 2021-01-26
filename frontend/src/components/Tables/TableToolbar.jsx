@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { useState } from 'react';
 
 const useToolbarStyles = makeStyles((theme) => ({
     root: {
@@ -40,10 +39,6 @@ const useToolbarStyles = makeStyles((theme) => ({
  */
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-
-
-
-
 
     const {
         title,
