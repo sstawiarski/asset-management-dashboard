@@ -29,12 +29,12 @@ const drawerWidth = 220;
 
 const styles = (theme) => ({
   root: {
-    minHeight: "100vh",
-    boxShadow: "1px 0px 3px rgba(0,0,0,0.5)",
+
   },
 
   Sidebar: {
     minHeight: "100vh",
+    border: "none"
   },
 
   IconButton: {
@@ -71,10 +71,10 @@ const styles = (theme) => ({
     marginLeft: 10,
     color: "#EA5F61",
   },
-
   drawerPaper: {
+    background: "primary",
+    overflowX: "hidden",
     position: "relative",
-    background: "#FAFAFA",
     width: drawerWidth,
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
@@ -83,8 +83,8 @@ const styles = (theme) => ({
   },
   drawerPaperClose: {
     overflowX: "hidden",
+    position: "relative",
     background: "#60ACBD",
-    height: "100%",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -121,10 +121,12 @@ class Sidebar extends React.Component {
 
   handleDrawerOpen = () => {
     this.setState({ open: true });
+    this.props.onOpen("#FAFAFA");
   };
 
   handleDrawerClose = () => {
     this.setState({ open: false });
+    this.props.onOpen("#60ACBD");
   };
 
   render() {
@@ -150,8 +152,7 @@ class Sidebar extends React.Component {
               direction="column"
               justify="space-between"
               alignItems="flex-start"
-              spacing={1}
-              
+              spacing={1}   
             >
               <Grid item>
                 {this.state.open === true ? (

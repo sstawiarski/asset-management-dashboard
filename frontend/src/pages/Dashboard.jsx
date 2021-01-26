@@ -13,26 +13,38 @@ import { Link } from 'react-router-dom';
 const useStyles = makeStyles({
     moduleHeader: {
         marginTop: "40px",
-        marginLeft: "100px",
         flexGrow: "1",
-        alignSelf: "flex-start"
+        alignSelf: "center"
+    },
+    moduleName: {
+        
+        color:"#2E474E",
+        flexGrow: "1",
+        
     },
     moduleIcon: {
         fontSize: "100px",
         padding: "20px",
         marginLeft: "40px",
         marginRight: "40px",
-        backgroundColor: "#E8E8E8",
+        backgroundColor: "#71AABB",
+        color: "white",
         borderRadius: "3px",
-        border: "1px solid #C5C5C5",
+        //border: "1px solid #2E474E",
         boxShadow: "2px 2px 3px #888888"
+
+    },
+    Modules: {
+      display: "flex",
+      justifyContent: "center",
+      marginTop: "20px"
     },
     moduleContainer: {
-        display: "flex",
-        flexDirection: "column"
+       
+
     },
     link: {
-        color: "inherit",
+        
         textDecoration: "none",
         cursor: "pointer"
     }
@@ -47,12 +59,15 @@ const Dashboard = () => {
             <Searchbar />
             <div className={classes.moduleContainer}>
                 <Typography variant="h5" className={classes.moduleHeader}>Modules</Typography>
-                <div>
+                <div className={classes.Modules}>
                     <Link to="/shipments/view-all" className={classes.link}>
                         <LocalShippingIcon className={classes.moduleIcon} />
+                        <Typography variant="h5" className={classes.moduleName}>Shipping</Typography>
+
                     </Link>
                     <Link to="/assets/view-all" className={classes.link}>
                         <DomainIcon className={classes.moduleIcon} />
+                        <Typography variant="h5" className={classes.moduleName}>Assets</Typography>
                     </Link>
                 </div>
             </div>

@@ -10,6 +10,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -36,14 +37,19 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
     const [assetType, setAssetType] = useState("");
     const [serial, setSerial] = useState("");
     const [assetQuantity, setAssetQuantity] = useState("");
+    const data = {
+        assetType: assetType,
+        serial: serial,
+        assetQuantity: assetQuantity
+    }
   
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
 
-        //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
-            method: "GET",
+        //uses POST endpoint and sends the arguments in the body of the HTTP request
+        const result = await fetch("http://localhost:4000/assets/provision", {
+            method: "POST",
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json'
@@ -111,6 +117,10 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             value={assetType}
                             onChange={(event) => setAssetType(event.target.value)}
                         >
+                            <MenuItem value="Centralizer">Centralizer</MenuItem>
+                            <MenuItem value="Gap Sub">Gap Sub</MenuItem>
+                            <MenuItem value="Crossover Sub">Crossover Sub</MenuItem>
+                            <MenuItem value="Carrier">Carrier</MenuItem>
 
                             {/* populate menu items here for available types */}
 
@@ -129,7 +139,9 @@ const ProvisionSerials = ({ open, setOpen, selected }) => {
                             onChange={(event) => setSerial(event.target.value)}
                         >
 
-                            {/* populate menu items here for available serials */}
+                            <MenuItem value="Sequential">Sequential</MenuItem>
+                            <MenuItem value="Back fill">Back Fill</MenuItem>
+                        
 
                         </Select>
          
