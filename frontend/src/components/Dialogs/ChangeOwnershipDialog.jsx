@@ -72,7 +72,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
                 if (json) {
                     const newOwner = owner;
                     handleClose();
-                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}!`)
+                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
                     onSuccess(false, `Failed to update asset owner...`);

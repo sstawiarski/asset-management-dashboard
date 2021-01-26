@@ -89,6 +89,7 @@ const NewTable = (props) => {
     const history = useHistory();
     const [showClicked, setClicked] = useState(false);
     const [identifier, setIdentifier] = useState("");
+    const [pageSelected, setPageSelected] = useState(0);
 
     const {
         data,
@@ -142,11 +143,18 @@ const NewTable = (props) => {
                 const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
                 return !isInCart;
             });
-            const newSelecteds = onlyGood.map(row => row[selectedFields[0]]);
+            const test = onlyGood.map(row => row[selectedFields[0]]);
+            const test2 = selected.concat(test);
+            const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
             setSelected(newSelecteds);
             return;
         }
-        setSelected([]);
+        setSelected(s => {
+            const data2 = data.map(item => item.serial);
+            return s.filter(item => {
+                return !data2.includes(item);
+            })
+        });
     };
 
     //checkbox click handler
@@ -181,7 +189,8 @@ const NewTable = (props) => {
         setFilters(s => ({
             ...s,
             page: newPage
-        }))
+        }));
+        setPageSelected(selected.length);
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -190,6 +199,8 @@ const NewTable = (props) => {
             limit: parseInt(event.target.value, 10),
             page: 0
         }));
+        setSelected([]);
+        setPageSelected(0);
     };
 
     const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -217,9 +228,10 @@ const NewTable = (props) => {
                             orderBy={orderBy}
                             onSelectAllClick={handleSelectAllClick}
                             onRequestSort={handleRequestSort}
-                            rowCount={count}
+                            rowCount={rowsPerPage - emptyRows}
                             selectedFields={selectedFields}
                             checkboxes={checkboxes}
+                            pageSelected={pageSelected}
                         />
                         <TableBody>
                             {

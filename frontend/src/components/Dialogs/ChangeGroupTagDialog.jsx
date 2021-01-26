@@ -70,7 +70,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
                 if (json) {
                     const tag = groupTag;
                     handleClose();
-                    onSuccess(true, `Successfully changed ${selected.length} asset(s) group tag to ${tag}!`)
+                    onSuccess(true, `Successfully changed ${selected.length} asset(s) group tag to ${tag}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
                     onSuccess(false, `Failed to change group tag...`)

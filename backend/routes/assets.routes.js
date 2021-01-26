@@ -484,7 +484,8 @@ router.patch("/", async (req, res) => {
       const additionalInfo = (missingChildSerials.length && req.body.override) ? `` : (!req.body.override && missingChildSerials.length) ? `${missingChildSerials.length} of these assets were children of assemblies not in the requested list and were not updated.` : "";
       //use lengths from found arrays to send a response
       res.status(200).json({
-        message: `Updated ${req.body.override ? foundAssets.length : foundAssets.length - missingChildSerials.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children. ${additionalInfo}`
+        message: `Updated ${req.body.override ? foundAssets.length : foundAssets.length - missingChildSerials.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children. ${additionalInfo}`,
+        key: `${eventInfo[1]}${counter.next}`
       })
     } else {
       res.status(200).json({
