@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { useState } from 'react';
 
 const useToolbarStyles = makeStyles((theme) => ({
     root: {
@@ -23,6 +24,9 @@ const useToolbarStyles = makeStyles((theme) => ({
     title: {
         flex: '1 1 100%',
     },
+    searchBar: {
+        display: 'inline',
+    },
 }));
 
 
@@ -36,6 +40,10 @@ const useToolbarStyles = makeStyles((theme) => ({
  */
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
+
+
+
+
 
     const {
         title,
@@ -51,14 +59,15 @@ const EnhancedTableToolbar = (props) => {
                 [classes.highlight]: numSelected > 0,
             })}
         >
+            
             {numSelected > 0 ? (
-                <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
+                <Typography className={classes.title} color="inherit" variant="subtitle1" component="div" align='right'>
                     {numSelected} selected
                 </Typography>
             ) : (
                 <>
                 {children.props.children[0]}
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
                         {title}
                     </Typography>
                     </>

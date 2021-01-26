@@ -52,6 +52,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
 import { URLTypes as types } from '../../utils/constants.utils';
 
+
 const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
@@ -221,6 +222,12 @@ const NewTable = (props) => {
                         size={'medium'}
                         aria-label={`${variant} table`}
                     >
+                        
+                        
+
+
+                        
+                
                         <TableHead
                             classes={classes}
                             numSelected={selected.length}
