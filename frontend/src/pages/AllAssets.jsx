@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
@@ -19,6 +20,8 @@ import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog
 import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
 import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
 import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
+import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
+import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -37,6 +40,7 @@ const AllAssets = (props) => {
     });
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
+    const [invalidSerial, setInvalid] = useState([]);
     const [assetCount, setAssetCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
@@ -107,6 +111,20 @@ const AllAssets = (props) => {
         }
     };
 
+    //for use with creation of assets
+    const onSemiSuccess = (invalidSerials) => {
+        if (invalidSerials.length > 0) {
+            setInvalid(invalidSerials);
+            
+        }
+    }
+
+    useEffect(() => {
+        if (invalidSerial.length > 0) {
+            setDialogs({ invalid: true });
+        }
+    }, [invalidSerial])
+
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
@@ -137,6 +155,11 @@ const AllAssets = (props) => {
                 setAssetCount(json.count[0].count);
             });
     }, [filters]);
+
+
+    useEffect(() => {
+        setFilters(s => ({ ...s, page: 0 }));
+    }, [activeFilters])
 
     return (
         <div>
@@ -195,11 +218,18 @@ const AllAssets = (props) => {
                                 </Menu>
                             </>
                             :
-                            <Tooltip title={"Filter"}>
-                                <IconButton aria-label={"filter"}>
-                                    <FilterListIcon onClick={() => setDialogs({ filter: true })} />
-                                </IconButton>
-                            </Tooltip>
+                            <>
+                                <Tooltip title={"Create"}>
+                                    <IconButton aria-label={"create"}>
+                                        <AddIcon onClick={() => setDialogs({ create: true })} />
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={"Filter"}>
+                                    <IconButton aria-label={"filter"}>
+                                        <FilterListIcon onClick={() => setDialogs({ filter: true })} />
+                                    </IconButton>
+                                </Tooltip>
+                            </>
                         }
                     </TableToolbar>
 
@@ -253,6 +283,17 @@ const AllAssets = (props) => {
                 selected={selected}
                 onSuccess={onSuccess}
                 override={override} />
+
+            <CreateAssetDialog
+                open={dialogs["create"]}
+                setOpen={(isOpen) => setDialogs({ create: isOpen })}
+                onSuccess={onSuccess}
+                onSemiSuccess={onSemiSuccess} />
+
+                <InvalidSerialsDialog
+                open={dialogs["invalid"]}
+                setOpen={(isOpen) => setDialogs({ invalid: isOpen })}
+                items={invalidSerial} />
 
             {/* Warning when asset is edited separately from its assembly */}
             <AssetEditWarning

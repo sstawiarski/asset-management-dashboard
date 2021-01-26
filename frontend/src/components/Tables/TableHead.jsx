@@ -21,7 +21,8 @@ const EnhancedTableHead = (props) => {
         rowCount,
         onRequestSort,
         selectedFields,
-        checkboxes
+        checkboxes,
+        pageSelected
     } = props;
 
     const createSortHandler = (property) => (event) => {
@@ -45,8 +46,8 @@ const EnhancedTableHead = (props) => {
                 {checkboxes ?
                     <TableCell padding="checkbox">
                         <Checkbox
-                            indeterminate={numSelected > 0 && numSelected < rowCount}
-                            checked={rowCount > 0 && numSelected === rowCount}
+                            indeterminate={numSelected > 0 && (numSelected >= pageSelected && numSelected < pageSelected+rowCount)}
+                            checked={rowCount > 0 && numSelected === pageSelected+rowCount}
                             onChange={onSelectAllClick}
                             inputProps={{ 'aria-label': 'select all assets' }}
                         />

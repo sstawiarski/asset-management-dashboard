@@ -66,7 +66,7 @@ const CartTable = (props) => {
                     <TableHead>
                         <TableRow>
                             <TableCell align="left">#</TableCell>
-                            {newHeader.map((item) => (<TableCell align="left">{item.label}</TableCell>))}
+                            {newHeader.map((item, idx) => (<TableCell key={idx} align="left">{item.label}</TableCell>))}
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
