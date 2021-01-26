@@ -22,6 +22,6 @@ router.put('/load', async (req, res) => {
             internal_code: "database_load_error"
         })
     }
-})
+});
 
 module.exports = router;
