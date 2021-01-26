@@ -64,7 +64,7 @@ const EnhancedTableToolbar = (props) => {
                     </>
                 )}
 
-            {numSelected > 0 ? children : children.props.children.slice(1)}
+            { numSelected > 0 ? children : children.props.children.length > 1 ? children.props.children.slice(1) : children.props.children }
 
 
         </Toolbar>
