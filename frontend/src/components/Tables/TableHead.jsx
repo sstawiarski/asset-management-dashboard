@@ -6,6 +6,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
+
 /**
  * The table headers and sorting arrows, etc
  */
@@ -20,7 +21,8 @@ const EnhancedTableHead = (props) => {
         rowCount,
         onRequestSort,
         selectedFields,
-        checkboxes
+        checkboxes,
+        pageSelected
     } = props;
 
     const createSortHandler = (property) => (event) => {
@@ -44,8 +46,8 @@ const EnhancedTableHead = (props) => {
                 {checkboxes ?
                     <TableCell padding="checkbox">
                         <Checkbox
-                            indeterminate={numSelected > 0 && numSelected < rowCount}
-                            checked={rowCount > 0 && numSelected === rowCount}
+                            indeterminate={numSelected > 0 && (numSelected >= pageSelected && numSelected < pageSelected+rowCount)}
+                            checked={rowCount > 0 && numSelected === pageSelected+rowCount}
                             onChange={onSelectAllClick}
                             inputProps={{ 'aria-label': 'select all assets' }}
                         />

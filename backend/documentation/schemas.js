@@ -395,6 +395,33 @@ const schemas = {
         items: {
             $ref: '#/components/schemas/Customer'
         }
+    },
+
+    userInfo: {
+        type: 'object',
+        description: 'User information',
+        properties: {
+            firstName: {
+                type: 'string',
+                description: 'User first name on file'
+            },
+            lastName: {
+                type: 'string',
+                description: 'User last name on file'
+            },
+            uniqueId: {
+                type: 'object',
+                description: 'Encrypted, uniquely identifying user information',
+                properties: {
+                    iv: {
+                        type: 'string'
+                    },
+                    content: {
+                        type: 'string'
+                    }
+                }
+            }
+        }
     }
 }
 

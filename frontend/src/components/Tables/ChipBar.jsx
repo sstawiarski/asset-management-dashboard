@@ -17,8 +17,6 @@ const ChipBar = (props) => {
         setFilters
     } = props;
 
-    let origFilters = activeFilters;
-
     const activeKeys = Object.keys(activeFilters);
     const prevOrig = useRef(activeFilters);
 
@@ -36,12 +34,12 @@ const ChipBar = (props) => {
                     return p;
                 }, {})
 
-            setFilters({
-                ...origFilters,
+            setFilters(s => ({
+                ...s,
                 ...newFilters
-            });
+            }));
         }
-    }, [activeFilters, origFilters, setFilters]);
+    }, [activeFilters, setFilters]);
 
     return (
         <div>
@@ -76,7 +74,10 @@ const ChipBar = (props) => {
                                 setActiveFilters(s => {
                                     let newFilters = { ...s };
                                     delete newFilters[label];
-                                    delete origFilters[label];
+                                    setFilters(f => {
+                                        delete f[label];
+                                        return f;
+                                    });
                                     return newFilters;
                                 });
 

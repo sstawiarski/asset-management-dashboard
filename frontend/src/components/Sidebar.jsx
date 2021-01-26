@@ -1,10 +1,11 @@
 // author: Maija Kingston
 // https://github.com/mui-org/material-ui/blob/master/docs/src/pages/components/drawers/MiniDrawer.js
 
-import React from "react";
+import React, { useState, useContext } from "react";
 import PropTypes from "prop-types";
 import * as classNames from "classnames";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import { useHistory } from 'react-router-dom';
 import Drawer from "@material-ui/core/Drawer";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import Grid from "@material-ui/core/Grid";
@@ -24,17 +25,18 @@ import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SettingsIcon from "@material-ui/icons/Settings";
 import { Link } from "react-router-dom";
+import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
-const drawerWidth = 220;
+let drawerWidth = 220;
 
-const styles = (theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    minHeight: "100vh",
-    boxShadow: "1px 0px 3px rgba(0,0,0,0.5)",
+
   },
 
   Sidebar: {
     minHeight: "100vh",
+    border: "none"
   },
 
   IconButton: {
@@ -71,11 +73,10 @@ const styles = (theme) => ({
     marginLeft: 10,
     color: "#EA5F61",
   },
-
   drawerPaper: {
-    position: "relative",
     background: "#FAFAFA",
-    width: drawerWidth,
+    overflowX: "hidden",
+    position: "relative",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -83,8 +84,8 @@ const styles = (theme) => ({
   },
   drawerPaperClose: {
     overflowX: "hidden",
+    position: "relative",
     background: "#60ACBD",
-    height: "100%",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -108,163 +109,164 @@ const styles = (theme) => ({
     textShadow: "1px 1px 4px #0f0f0f"
   },
 
-});
+}));
 
-class Sidebar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { open: false };
-  }
-  state = {
-    open: false,
+const Sidebar = (props) => {
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [local, setLocal] = useLocalStorage('user', {});
+  const history = useHistory();
+
+  const fullName = local.firstName + " " + local.lastName;
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
   };
 
-  handleDrawerOpen = () => {
-    this.setState({ open: true });
+  const handleDrawerClose = () => {
+    setOpen(false);
   };
 
-  handleDrawerClose = () => {
-    this.setState({ open: false });
-  };
+  return (
+    <div className={classes.root}>
+      <Drawer
+        variant="permanent"
+        className={classes.Drawer}
+        classes={{
+          paper: classNames(
+            classes.drawerPaper,
+            !open && classes.drawerPaperClose
+          ),
+        }}
+        style={{
+          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 72 : drawerWidth : open ? 220 : 72
+        }}
+        open={open}
+      >
+        <div className={classes.Sidebar}>
+          <Grid
+            className={classes.AccountCircleIcon}
+            container
+            direction="column"
+            justify="space-between"
+            alignItems="flex-start"
+            spacing={1}
 
-  render() {
-    const { classes } = this.props;
 
-    return (
-      <div className={classes.root}>
-        <Drawer
-          variant="permanent"
-          className={classes.Drawer}
-          classes={{
-            paper: classNames(
-              classes.drawerPaper,
-              !this.state.open && classes.drawerPaperClose
-            ),
-          }}
-          open={this.state.open}
-        >
-          <div className={classes.Sidebar}>
-            <Grid
-              className={classes.AccountCircleIcon}
-              container
-              direction="column"
-              justify="space-between"
-              alignItems="flex-start"
-              spacing={1}
-              
-            >
-              <Grid item>
-                {this.state.open === true ? (
-                  <ChevronLeftIcon
+          >
+            <Grid item>
+              {open === true ? (
+                <ChevronLeftIcon
+                  className={classes.IconButton}
+                  onClick={
+                    open === false
+                      ? handleDrawerOpen
+                      : handleDrawerClose
+                  }
+                />
+              ) : (
+                  <MenuIcon
                     className={classes.IconButton}
                     onClick={
-                      this.state.open === false
-                        ? this.handleDrawerOpen
-                        : this.handleDrawerClose
+                      open === true
+                        ? handleDrawerClose
+                        : handleDrawerOpen
                     }
                   />
-                ) : (
-                    <MenuIcon
-                      className={classes.IconButton}
-                      onClick={
-                        this.state.open === true
-                          ? this.handleDrawerClose
-                          : this.handleDrawerOpen
-                      }
-                    />
-                  )}
-              </Grid>
+                )}
+            </Grid>
 
-              {this.state.open === true ? (
-                <div>
-                  <Grid
-                    item
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justify="flex-end"
-                  >
-                    <Grid item>
-                      <AccountCircleIcon
-                        className={classes.IconButton}
-                      />
-                    </Grid>
-                    <Grid item>
-                      {this.state.open === true ? <Typography variant="h6" className={classes.name}>John Smith</Typography> : null}
-                    </Grid>
-                    <Grid item className={classes.open}>
-                      {this.state.open === true ? (
-                        <SettingsIcon
-                          className={classes.SettingsIcon}
-                          style={{ fontSize: 14 }}
-                        />
-                      ) : null}
-                    </Grid>
-                  </Grid>
+            {open === true ? (
+              <div>
+                <Grid
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="flex-start"
 
-                </div>
-              ) : null}
-              <Grid item container direction="row" alignItems="center">
-                <Grid item>
-                  {this.state.open === false ? (
+                >
+                  <Grid item>
                     <AccountCircleIcon
                       className={classes.IconButton}
                     />
-                  ) : null}
-                </Grid>
-              </Grid>
-
-            </Grid>
-
-            <Grid
-              container
-              direction="column"
-              justify="flex-start"
-              alignItems="flex-start"
-              spacing={1}
-            >
-              <Link to="/" className={classes.link}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                >
+                  </Grid>
                   <Grid item>
-                    <HomeIcon
-                      className={classes.IconButton}
-                    />
+                    {open === true ? <Typography variant="h6" className={classes.name}>{fullName}</Typography> : null}
                   </Grid>
                   <Grid item className={classes.open}>
-                    {this.state.open === true ? <Typography variant="body1">Home</Typography> : null}
-                  </Grid>
-                </Grid>
-              </Link>
-
-              <Link to="/shipments/view-all" className={classes.link}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                >
-                  <Grid item>
-                    <LocalShippingIcon className={classes.IconButton} />
-                  </Grid>
-                  <Grid item>
-                    {this.state.open === true ? <Typography variant="body1">Shipping</Typography> : null}
-                  </Grid>
-                  <Grid item>
-                    {this.state.open === true ? (
-                      <KeyboardArrowDownIcon style={{ fontSize: 10 }} />
+                    {open === true ? (
+                      <SettingsIcon
+                        className={classes.SettingsIcon}
+                        style={{ fontSize: 16 }}
+                      />
                     ) : null}
                   </Grid>
                 </Grid>
-              </Link>
 
-              <Link to="/shipments/view-all" className={classes.link}>
+              </div>
+            ) : null}
+            <Grid item container direction="row" alignItems="center">
+              <Grid item>
+                {open === false ? (
+                  <AccountCircleIcon
+                    className={classes.IconButton}
+                  />
+                ) : null}
+              </Grid>
+            </Grid>
+
+          </Grid>
+
+          <Grid
+            container
+            direction="column"
+            justify="flex-start"
+            alignItems="flex-start"
+            spacing={1}
+          >
+            <Link to="/" className={classes.link}>
+              <Grid
+                item
+                container
+                direction="row"
+                alignItems="center"
+                justify="flex-start"
+              >
+                <Grid item>
+                  <HomeIcon
+                    className={classes.IconButton}
+                  />
+                </Grid>
+                <Grid item className={classes.open}>
+                  {open === true ? <Typography variant="body1">Home</Typography> : null}
+                </Grid>
+              </Grid>
+            </Link>
+
+            <Link to="/shipments/view-all" className={classes.link}>
+              <Grid
+                item
+                container
+                direction="row"
+                alignItems="center"
+                justify="flex-start"
+              >
+                <Grid item>
+                  <LocalShippingIcon className={classes.IconButton} />
+                </Grid>
+                <Grid item>
+                  {open === true ? <Typography variant="body1">Shipping</Typography> : null}
+                </Grid>
+                <Grid item>
+                  {open === true ? (
+                    <KeyboardArrowDownIcon style={{ fontSize: 10 }} />
+                  ) : null}
+                </Grid>
+              </Grid>
+            </Link>
+
+            <Link to="/shipments/view-all" className={classes.link}>
               <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
@@ -275,18 +277,18 @@ class Sidebar extends React.Component {
                   className={classes.onClick}
                 >
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <Typography variant="body2">View All</Typography> : null}
+                    {open === true ? <Typography variant="body2">View All</Typography> : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
+              </div>
+            </Link>
 
-              <Link to="/shipments/track" className={classes.link}>
+            <Link to="/shipments/track" className={classes.link}>
               <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
@@ -297,17 +299,17 @@ class Sidebar extends React.Component {
                   className={classes.onClick}
                 >
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <GpsFixedIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <Typography variant="body2">Track</Typography> : null}
+                    {open === true ? <Typography variant="body2">Track</Typography> : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
-              <Link to="/shipments/create" className={classes.link}>
+              </div>
+            </Link>
+            <Link to="/shipments/create" className={classes.link}>
               <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
@@ -318,18 +320,18 @@ class Sidebar extends React.Component {
                   className={classes.onClick}
                 >
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <AddCircleOutlineIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <Typography variant="body2">Add New</Typography> : null}
+                    {open === true ? <Typography variant="body2">Add New</Typography> : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
+              </div>
+            </Link>
 
-              <Link to="/assets/view-all" className={classes.link}>
+            <Link to="/assets/view-all" className={classes.link}>
               <div style={{ marginTop: "-15px" }}>
                 <Grid
                   item
@@ -342,42 +344,42 @@ class Sidebar extends React.Component {
                     <DomainIcon className={classes.IconButton} />
                   </Grid>
                   <Grid item className={classes.open}>
-                    {this.state.open === true ? <Typography variant="body1">Assets</Typography> : null}
+                    {open === true ? <Typography variant="body1">Assets</Typography> : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <KeyboardArrowDownIcon style={{ fontSize: 10 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
+              </div>
+            </Link>
 
-              <Link to="/assets/view-all" className={classes.link}>
-                <div style={{ marginBottom: "10px" }}>
+            <Link to="/assets/view-all" className={classes.link}>
+              <div style={{ marginBottom: "10px" }}>
 
 
-                  <Grid
-                    item
-                    container
-                    direction="row"
-                    alignItems="center"
-                    justify="flex-start"
-                    className={classes.onClick}
-                  >
-                    <Grid item>
-                      {this.state.open === true ? (
-                        <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
-                      ) : null}
-                    </Grid>
-                    <Grid item>
-                      {this.state.open === true ? <Typography variant="body2"> View All </Typography> : null}
-                    </Grid>
+                <Grid
+                  item
+                  container
+                  direction="row"
+                  alignItems="center"
+                  justify="flex-start"
+                  className={classes.onClick}
+                >
+                  <Grid item>
+                    {open === true ? (
+                      <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
+                    ) : null}
                   </Grid>
-                </div>
-              </Link>
+                  <Grid item>
+                    {open === true ? <Typography variant="body2"> View All </Typography> : null}
+                  </Grid>
+                </Grid>
+              </div>
+            </Link>
 
-              <Link to="/assets/create-assembly" className={classes.link}>
+            <Link to="/assets/create-assembly" className={classes.link}>
               <div style={{ marginBottom: "10px" }}>
                 <Grid
                   item
@@ -389,18 +391,18 @@ class Sidebar extends React.Component {
 
                 >
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <DynamicFeedIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <Typography variant="body2">Assembly Creator</Typography> : null}
+                    {open === true ? <Typography variant="body2">Assembly Creator</Typography> : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
+              </div>
+            </Link>
 
-              <Link to="/assets/assignments" className={classes.link}>
+            <Link to="/assets/assignments" className={classes.link}>
               <div style={{ marginBottom: "20px" }}>
                 <Grid
                   item
@@ -411,55 +413,64 @@ class Sidebar extends React.Component {
                   className={classes.onClick}
                 >
                   <Grid item>
-                    {this.state.open === true ? (
+                    {open === true ? (
                       <AssignmentIndIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {this.state.open === true ? <Typography variant="body2">Assignments</Typography> : null}
+                    {open === true ? <Typography variant="body2">Assignments</Typography> : null}
                   </Grid>
                 </Grid>
-                </div>
-              </Link>
-            </Grid>
+              </div>
+            </Link>
+          </Grid>
 
 
+          <Grid
+            container
+            direction="column"
+            justify="flex-end"
+            alignItems="center"
+          >
             <Grid
               container
-              direction="column"
-              justify="flex-end"
+              direction="row"
+              justify="flex-start"
               alignItems="center"
             >
-              <Grid
-                container
-                direction="row"
-                justify="flex-start"
-                alignItems="center"
-              >
-                <Grid item>
-                  {this.state.open === true ? (
-                    <Link to="/sign-out" className={classes.link}>
-                      <Typography variant="body1" className={classes.ExitToAppIcon}>Sign Out</Typography>
-                    </Link>
-                  ) : null}
-                </Grid>
-                <Grid item>
-                  <Link to="/sign-out" className={classes.link}>
-                    <ExitToAppIcon className={classes.ExitToAppIcon} />
+              <Grid item>
+                {open === true ? (
+                  <Link to={{
+                    pathname: '/login', state: { onSignOut: true, name: local }
+                  }}
+                    onClick={() => {
+                      setLocal(null);
+                    }}
+                    className={classes.link}>
+                    <Typography variant="body1" className={classes.ExitToAppIcon}>Sign Out</Typography>
                   </Link>
-                </Grid>
+                ) : null}
+              </Grid>
+              <Grid item>
+                <Link to={{
+                  pathname: '/login', state: { onSignOut: true, name: local }
+                }}
+                  onClick={() => {
+                    setLocal(null);
+                  }}
+                  className={classes.link}>
+                  <ExitToAppIcon className={classes.ExitToAppIcon} />
+                </Link>
               </Grid>
             </Grid>
-          </div>
-        </Drawer>
-      </div>
-    );
-  }
+          </Grid>
+        </div>
+      </Drawer>
+    </div>
+  );
 }
 
 Sidebar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(Sidebar);
+export default Sidebar;

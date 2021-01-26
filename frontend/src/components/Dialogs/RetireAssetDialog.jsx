@@ -72,7 +72,7 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
             //check if we got back null and either close dialog on success or setFailed to render error message
             if (json) {
                 handleClose();
-                onSuccess(true, `Successfully retired ${selected.length} asset(s)!`)
+                onSuccess(true, `Successfully retired ${selected.length} asset(s)! Event Key: ${json.key}`)
             } else {
                 handleClose();
                 onSuccess(false,`Failed to retire asset(s)...`);
