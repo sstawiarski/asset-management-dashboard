@@ -253,8 +253,8 @@ router.get('/:serial', async (req, res) => {
         }).sort({ eventTime: -1 });
 
         if (req.query) {
-            if (req.query.limit) {
-                events = events.slice(0, req.query.limit + 1);
+            if (req.query.limit && (req.query.skip >= 0)) {
+                events = events.slice(req.query.skip*req.query.limit, req.query.skip*req.query.limit + req.query.limit);
             }
         }
         res.status(200).json(events);
