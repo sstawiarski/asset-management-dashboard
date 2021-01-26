@@ -71,7 +71,7 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess, override }
                 if (json) {
                     const assign = assignment;
                     handleClose();
-                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignee to ${assign}!`)
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignee to ${assign}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
                     onSuccess(false, `Failed to update assignee...`);

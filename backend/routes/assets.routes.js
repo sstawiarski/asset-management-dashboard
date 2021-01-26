@@ -225,6 +225,104 @@ router.get("/", async (req, res, err) => {
   }
 });
 
+/**
+ * Provisions serial numbers and adds default values based on supplied information in request body
+ */
+router.post('/', async (req, res, err) => {
+  try {
+
+    const { serialBase, list, beginRange, endRange, owner, type, assetName } = req.body;
+    const invalid = [];
+
+    if (type === "list") {
+      const created = [];
+      for (let serial of list) {
+        const existingDoc = await Asset.find({ serial: serial });
+        if (existingDoc.length) {
+          invalid.push(serial);
+          continue;
+        } else {
+          const newAsset = new Asset({
+            serial: serial,
+            assetName: assetName,
+            owner: owner,
+            assetType: "Asset",
+            checkedOut: false,
+            dateCreated: Date.now(),
+            assignmentType: "Owned"
+          });
+
+          await newAsset.save();
+          created.push(serial);
+        }
+      }
+
+      const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+      const creation = new Event({
+        eventType: "Creation",
+        eventTime: Date.now(),
+        key: `CRE-${count.next}`,
+        productIds: created,
+        eventData: {
+          details: `Asset(s) created in system.`
+        }
+      });
+
+      await creation.save();
+
+      res.status(200).json({
+        message: "Successfully created assets",
+        invalid: invalid
+      })
+
+    } else if (type === "range") {
+      const beginningSerial = parseInt(beginRange);
+      const endingSerial = parseInt(endRange);
+      const createdSerials = [];
+      for (let i = beginningSerial; i <= endingSerial; i++) {
+        const newSerial = serialBase + "" + i;
+        const existing = await Asset.find({ serial: newSerial });
+        if (existing.length) {
+          invalid.push(newSerial);
+        } else {
+          const newAsset = new Asset({
+            serial: newSerial,
+            assetName: assetName,
+            owner: owner,
+            assetType: "Asset",
+            checkedOut: false,
+            dateCreated: Date.now(),
+            assignmentType: "Owned"
+          });
+
+          await newAsset.save();
+          createdSerials.push(newSerial)
+        }
+      }
+      const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+      const creation = new Event({
+        eventType: "Creation",
+        eventTime: Date.now(),
+        key: `CRE-${count.next}`,
+        productIds: createdSerials,
+        eventData: {
+          details: `Asset(s) created in system.`
+        }
+      });
+      await creation.save();
+      res.status(200).json({
+        message: "Successfully created assets",
+        invalid: invalid
+      })
+    } else {
+      res.status(403).json({ message: "Type selection missing", internalCode: "type_selection_missing" });
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Internal server error", internalCode: "internal_server_error" });
+  }
+});
+
 /* 
  *  Update assets and assemblies with fields along with their children
  *  Allows override option in request body to allow changes to child assets without also updating the parent
@@ -386,7 +484,8 @@ router.patch("/", async (req, res) => {
       const additionalInfo = (missingChildSerials.length && req.body.override) ? `` : (!req.body.override && missingChildSerials.length) ? `${missingChildSerials.length} of these assets were children of assemblies not in the requested list and were not updated.` : "";
       //use lengths from found arrays to send a response
       res.status(200).json({
-        message: `Updated ${req.body.override ? foundAssets.length : foundAssets.length - missingChildSerials.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children. ${additionalInfo}`
+        message: `Updated ${req.body.override ? foundAssets.length : foundAssets.length - missingChildSerials.length} regular assets, ${parentSerials.length} assemblies, and ${foundChildren.length} of their children. ${additionalInfo}`,
+        key: `${eventInfo[1]}${counter.next}`
       })
     } else {
       res.status(200).json({
@@ -403,35 +502,14 @@ router.patch("/", async (req, res) => {
   }
 });
 
-router.post('/create-Asset', async (req, res) => {
+router.get('/schemas', async (req, res) => {
   try {
-    const asset = {
-      assetName: req.body.assetName,
-      serial: req.body.serial,
-      owner: req.body.owner,
-      assignmentType: req.body.assignmentType,
-      groupTag: req.body.groupTag,
-      assignee: req.body.assignee,
-      checkedOut: false,
-      assetType: "Asset"
-    }
-    
-      //console.log(asset);
-      const newAsset = new Asset({
-        ...asset,
-        dateCreated: Date.now(),
-      });
-      newAsset.save();
-    
-    console.log(newAsset);
-    res.status(200).json({ message: "success" });
+    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
+    res.status(200).json(results);
   } catch (err) {
-    res.status(500).json({
-      message: "Error loading sample data into database",
-      internal_code: "database_load_error",
-    });
+    console.log(err);
   }
-});
+})
 
 router.put("/load", async (req, res) => {
   try {
@@ -488,21 +566,21 @@ router.post('/create-Assembly', async (req, res, err) => {
             used: missingSers
           })
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: "Error finding assets",
-            interalCode: "cannot_find_assets" 
+            interalCode: "cannot_find_assets"
           })
         }
-        
+
       }
     }
 
   }
   catch (err) {
     console.log(err)
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error creating assembly",
-      interalCode: "assembly_creation_error" 
+      interalCode: "assembly_creation_error"
     })
   }
 });
@@ -597,75 +675,6 @@ router.get("/assembly/schema", async (req, res) => {
   }
 })
 
-
-router.post('/asset-Provision', async (req, res, err) => {
-  try {
-    const serial = req.body.serial
-    const serialBase = req.body.serialBase
-    const body = req.body
-
-    if (serial) {
-      for (let i in serial) {
-
-        const existingDoc = await Asset.findOne({ serial: i })
-        if (existingDoc) {
-          continue
-        }
-        const newAssets = new Asset({
-          serial: i,
-          assetName: req.body.assetName,
-          provisioned: true,
-          owner: "Supply Chain USA",
-          assetType: "Asset",
-          dateCreated: Date.now(),
-          checkedOut: false,
-          assignmentType: "Owned"
-        })
-        await newAssets.save()
-      }
-      res.status(200).json
-        ({
-          message: "success"
-          ,
-        });
-    }
-    else if (serialBase) {
-      const num = serialBase.split("-", 2)
-      const beginningSerial = parseInt(num[1])
-      if (req.body.quantity) {
-        for (let i = beginningSerial; i < req.body.quantity; i++) {
-          const newSerial = num[0] + i
-
-          const existingDoc = await Asset.findOne({ serial: newSerial })
-          if (existingDoc) {
-            continue
-          }
-          const newAssets = new Asset({
-            serial: newSerial,
-            assetName: req.body.assetName,
-            provisioned: true,
-            owner: "Supply Chain USA",
-            assetType: "Asset",
-            dateCreated: Date.now(),
-            checkedOut: false,
-            assignmentType: "Owned"
-
-          })
-          await newAssets.save()
-
-        }
-        res.status(200).json({ message: "success" });
-      }
-      res.status(400).json({ message: "success", interalCode: "missing_quantity_param" });
-    }
-
-
-  }
-  catch (err) {
-    console.log(err)
-  }
-});
-
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
   const { project } = req.query
@@ -709,6 +718,8 @@ function getEventType(field) {
       return ["Change of Ownership", "OWN-"];
     case "assignmentType":
       return ["Change of Assignment Type", "ASN-"];
+    case "creation":
+      return ["Creation", "CRE-"];
   }
 }
 

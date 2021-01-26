@@ -73,7 +73,7 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
                 if (json) {
                     const assignType = type;
                     handleClose();
-                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}!`)
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
                     onSuccess(false, `Failed to update assignment type...`);

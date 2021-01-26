@@ -31,12 +31,12 @@ let drawerWidth = 220;
 
 const useStyles = makeStyles(theme => ({
   root: {
-    minHeight: "100vh",
-    boxShadow: "1px 0px 3px rgba(0,0,0,0.5)",
+
   },
 
   Sidebar: {
     minHeight: "100vh",
+    border: "none"
   },
 
   IconButton: {
@@ -73,10 +73,10 @@ const useStyles = makeStyles(theme => ({
     marginLeft: 10,
     color: "#EA5F61",
   },
-
   drawerPaper: {
-    position: "relative",
     background: "#FAFAFA",
+    overflowX: "hidden",
+    position: "relative",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
@@ -84,8 +84,8 @@ const useStyles = makeStyles(theme => ({
   },
   drawerPaperClose: {
     overflowX: "hidden",
+    position: "relative",
     background: "#60ACBD",
-    height: "100%",
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
