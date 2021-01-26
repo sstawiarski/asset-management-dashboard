@@ -115,7 +115,7 @@ const AllAssets = (props) => {
     const onSemiSuccess = (invalidSerials) => {
         if (invalidSerials.length > 0) {
             setInvalid(invalidSerials);
-            
+
         }
     }
 
@@ -180,22 +180,6 @@ const AllAssets = (props) => {
                         title="All Assets"
                         selected={selected}>
 
-                        <Container className='searchBar' align='right'>
-                            <div >
-                                <TextField id="searchBox"
-                                    variant="outlined"
-                                    size="small"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        )
-                                    }}
-                                    onKeyDown={handleKeyDown}
-                                />
-                            </div>
-                        </Container>
 
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
@@ -224,6 +208,22 @@ const AllAssets = (props) => {
                                         <AddIcon onClick={() => setDialogs({ create: true })} />
                                     </IconButton>
                                 </Tooltip>
+                                <Container className='searchBar' align='right'>
+                                    <div >
+                                        <TextField id="searchBox"
+                                            variant="outlined"
+                                            size="small"
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <SearchIcon />
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                            onKeyDown={handleKeyDown}
+                                        />
+                                    </div>
+                                </Container>
                                 <Tooltip title={"Filter"}>
                                     <IconButton aria-label={"filter"}>
                                         <FilterListIcon onClick={() => setDialogs({ filter: true })} />
@@ -290,7 +290,7 @@ const AllAssets = (props) => {
                 onSuccess={onSuccess}
                 onSemiSuccess={onSemiSuccess} />
 
-                <InvalidSerialsDialog
+            <InvalidSerialsDialog
                 open={dialogs["invalid"]}
                 setOpen={(isOpen) => setDialogs({ invalid: isOpen })}
                 items={invalidSerial} />
