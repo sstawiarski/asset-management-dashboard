@@ -13,6 +13,7 @@ const customerRoutes = require('./routes/customers.routes')
 const locationRoutes = require('./routes/locations.routes')
 const assemblyRoutes = require('./routes/assemblies.routes')
 const authRoutes = require('./routes/auth.routes')
+const manifestRoutes = require('./routes/manifest.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
@@ -62,3 +63,4 @@ app.use('/customers', customerRoutes);
 app.use('/locations', locationRoutes);
 app.use('/assemblies', assemblyRoutes);
 app.use('/auth', authRoutes);
+app.use('/manifest', manifestRoutes);

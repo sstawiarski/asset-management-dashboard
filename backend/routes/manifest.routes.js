@@ -6,7 +6,7 @@ const Manifest = require('../models/manifest.model');
 
 router.get('/', async (req, res) => {
     try {
-        const manifest = await Manifest.find({}).select();
+        const manifest = await Manifest.find();
         res.status(200).json(manifest)
     }
     catch (err) {
