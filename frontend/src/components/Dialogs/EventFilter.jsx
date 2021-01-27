@@ -107,40 +107,44 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
             <Grid container alignContent="space-between">
                 <div className={classes.items}>
 
-                        <Grid item xs={12}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend" className={classes.formControlLabel}>Event Type</formLabel>
-                                <Select className={classes.select} name="eventType" variant="outlined" value={state.eventType} onChange={handleChange}>
-                                    <MenuItem value={"all"}>All</MenuItem>
-                                    <MenuItem value={"Reassignment"}>Reassignment</MenuItem>
-                                    <MenuItem value={"Change of Ownership"}>Change of Ownership</MenuItem>
-                                    <MenuItem value={"Change of Retirement Status"}>Change of Retirement Status</MenuItem>
-                                    <MenuItem value={"Outgoing Shipment"}>Outgoing Shipment</MenuItem>
-                                    <MenuItem value={"Incoming Shipment"}>Incoming Shipment</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
+                            <formLabel component="legend" className={classes.formControlLabel}>Event Type</formLabel>
+                            <Select className={classes.select} name="eventType" variant="outlined" value={state.eventType} onChange={handleChange}>
+                                <MenuItem value={"all"}>All</MenuItem>
+                                <MenuItem value={"Change of Ownership"}>Change of Ownership</MenuItem>
+                                <MenuItem value={"Change of Retirement Status"}>Change of Retirement Status</MenuItem>
+                                <MenuItem value={"Change of Group Tag"}>Change of Group Tag</MenuItem>
+                                <MenuItem value={"Change of Assignment Type"}>Change of Assignment Type</MenuItem>
+                                <MenuItem value={"Reassignment"}>Reassignment</MenuItem>
+                                <MenuItem value={"Removal of Child Asset"}>Removal of Child Asset</MenuItem>
+                                <MenuItem value={"Outgoing Shipment"}>Outgoing Shipment</MenuItem>
+                                <MenuItem value={"Incoming Shipment"}>Incoming Shipment</MenuItem>
+                                <MenuItem value={"Creation"}>Creation</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
 
-                        <Grid item xs={12}>
-                            <FormControl component="fieldset">
-                                <formLabel component="legend" className={classes.formControlLabel}>Event Date</formLabel>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                    <Grid container justify="space-evenly">
-                                        <KeyboardDatePicker
-                                            inputVariant="outlined"
-                                            format="MM/dd/yyyy"
-                                            margin="normal"
-                                            id="date-picker-inline"
-                                            name="eventTime"
-                                            value={state.eventTime}
-                                            onChange={date => handleDateChange("eventTime", date)}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date',
-                                            }}
-                                        />
-                                    </Grid>
-                                </MuiPickersUtilsProvider>
-                            </FormControl>
+                    <Grid item xs={12}>
+                        <FormControl component="fieldset">
+                            <formLabel component="legend" className={classes.formControlLabel}>Event Date</formLabel>
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                <Grid container justify="space-evenly">
+                                    <KeyboardDatePicker
+                                        inputVariant="outlined"
+                                        format="MM/dd/yyyy"
+                                        margin="normal"
+                                        id="date-picker-inline"
+                                        name="eventTime"
+                                        value={state.eventTime}
+                                        onChange={date => handleDateChange("eventTime", date)}
+                                        KeyboardButtonProps={{
+                                            'aria-label': 'change date',
+                                        }}
+                                    />
+                                </Grid>
+                            </MuiPickersUtilsProvider>
+                        </FormControl>
 
                     </Grid>
                 </div>

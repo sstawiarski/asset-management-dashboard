@@ -16,6 +16,9 @@ const tags = [
     },
     {
         name: 'Employees'
+    },
+    {
+        name: 'Authentication'
     }
 ]
 

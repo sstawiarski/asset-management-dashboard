@@ -23,9 +23,9 @@ router.get("/", async (req, res, err) => {
 
       //remove page, limit, search, and sorting params since they do not go in the $match
       const disallowed = ["page", "limit", "search", "sort_by", "order"];
-      const filters = Object.keys(query)
-        .reduce((p, c) => {
-
+      const filters = await Object.keys(query)
+        .reduce(async (pc, c) => {
+          const p = await pc;
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
@@ -41,6 +41,12 @@ router.get("/", async (req, res, err) => {
                 $lte: afterDate
               }
             }];
+          } else if (c === "inAssembly") {
+            const assemblyType = decodeURI(query[c]);
+            const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
+            if (Object.keys(assemblySchema).length > 0) {
+              p["assetName"] = { $in: assemblySchema.components };
+            }
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -52,8 +58,9 @@ router.get("/", async (req, res, err) => {
             } else {
               p[c] = query[c];
             }
-          };
-          return p;
+          }
+
+          return pc;
         }, {});
 
       if (req.query.search) {
@@ -198,7 +205,7 @@ router.get("/", async (req, res, err) => {
       } else {
         res.status(404).json({
           message: "No assets found in database",
-          interalCode: "no_assets_found",
+          internalCode: "no_assets_found",
         });
       }
 
@@ -211,7 +218,7 @@ router.get("/", async (req, res, err) => {
       } else {
         res.status(404).json({
           message: "No assets found in database",
-          interalCode: "no_assets_found",
+          internalCode: "no_assets_found",
         });
       }
     }
@@ -220,8 +227,106 @@ router.get("/", async (req, res, err) => {
     console.log(err);
     res.status(500).json({
       message: "Error searching for assets in database",
-      internal_code: "asset_search_error"
+      internalCode: "asset_search_error"
     });
+  }
+});
+
+/**
+ * Provisions serial numbers and adds default values based on supplied information in request body
+ */
+router.post('/', async (req, res, err) => {
+  try {
+
+    const { serialBase, list, beginRange, endRange, owner, type, assetName } = req.body;
+    const invalid = [];
+
+    if (type === "list") {
+      const created = [];
+      for (let serial of list) {
+        const existingDoc = await Asset.find({ serial: serial });
+        if (existingDoc.length) {
+          invalid.push(serial);
+          continue;
+        } else {
+          const newAsset = new Asset({
+            serial: serial,
+            assetName: assetName,
+            owner: owner,
+            assetType: "Asset",
+            checkedOut: false,
+            dateCreated: Date.now(),
+            assignmentType: "Owned"
+          });
+
+          await newAsset.save();
+          created.push(serial);
+        }
+      }
+
+      const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+      const creation = new Event({
+        eventType: "Creation",
+        eventTime: Date.now(),
+        key: `CRE-${count.next}`,
+        productIds: created,
+        eventData: {
+          details: `Asset(s) created in system.`
+        }
+      });
+
+      await creation.save();
+
+      res.status(200).json({
+        message: "Successfully created assets",
+        invalid: invalid
+      })
+
+    } else if (type === "range") {
+      const beginningSerial = parseInt(beginRange);
+      const endingSerial = parseInt(endRange);
+      const createdSerials = [];
+      for (let i = beginningSerial; i <= endingSerial; i++) {
+        const newSerial = serialBase + "" + i;
+        const existing = await Asset.find({ serial: newSerial });
+        if (existing.length) {
+          invalid.push(newSerial);
+        } else {
+          const newAsset = new Asset({
+            serial: newSerial,
+            assetName: assetName,
+            owner: owner,
+            assetType: "Asset",
+            checkedOut: false,
+            dateCreated: Date.now(),
+            assignmentType: "Owned"
+          });
+
+          await newAsset.save();
+          createdSerials.push(newSerial)
+        }
+      }
+      const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+      const creation = new Event({
+        eventType: "Creation",
+        eventTime: Date.now(),
+        key: `CRE-${count.next}`,
+        productIds: createdSerials,
+        eventData: {
+          details: `Asset(s) created in system.`
+        }
+      });
+      await creation.save();
+      res.status(200).json({
+        message: "Successfully created assets",
+        invalid: invalid
+      })
+    } else {
+      res.status(403).json({ message: "Type selection missing", internalCode: "type_selection_missing" });
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Internal server error", internalCode: "internal_server_error" });
   }
 });
 
@@ -404,35 +509,14 @@ router.patch("/", async (req, res) => {
   }
 });
 
-router.post('/create-Asset', async (req, res) => {
+router.get('/schemas', async (req, res) => {
   try {
-    const asset = {
-      assetName: req.body.assetName,
-      serial: req.body.serial,
-      owner: req.body.owner,
-      assignmentType: req.body.assignmentType,
-      groupTag: req.body.groupTag,
-      assignee: req.body.assignee,
-      checkedOut: false,
-      assetType: "Asset"
-    }
-    
-      //console.log(asset);
-      const newAsset = new Asset({
-        ...asset,
-        dateCreated: Date.now(),
-      });
-      newAsset.save();
-    
-    console.log(newAsset);
-    res.status(200).json({ message: "success" });
+    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
+    res.status(200).json(results);
   } catch (err) {
-    res.status(500).json({
-      message: "Error loading sample data into database",
-      internal_code: "database_load_error",
-    });
+    console.log(err);
   }
-});
+})
 
 router.put("/load", async (req, res) => {
   try {
@@ -489,21 +573,21 @@ router.post('/create-Assembly', async (req, res, err) => {
             used: missingSers
           })
         } else {
-          res.status(500).json({ 
+          res.status(500).json({
             message: "Error finding assets",
-            interalCode: "cannot_find_assets" 
+            interalCode: "cannot_find_assets"
           })
         }
-        
+
       }
     }
 
   }
   catch (err) {
     console.log(err)
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Error creating assembly",
-      interalCode: "assembly_creation_error" 
+      interalCode: "assembly_creation_error"
     })
   }
 });
@@ -575,19 +659,47 @@ router.put("/assembly/schema", async (req, res) => {
 });
 
 router.get("/assembly/schema", async (req, res) => {
+  let query = {};
+
   const type = decodeURI(req.query.type);
+  const assembly = req.query.assembly;
+  const isAll = req.query.all === "true" ? true : req.query.all === "false" ? false : null;
+  if (type && !isAll) {
+    query.name = type;
+  }
+
+
+  if (assembly === "true" && isAll) {
+    query.components = { $exists: true };
+  } else {
+    if (isAll === false) {
+      query.components = { $exists: false };
+    }
+  }
+
   try {
-    const chosenSchema = await AssemblySchema.findOne({ name: type }).select({
-      _id: 0,
-      __v: 0
-    });
-    if (chosenSchema) {
-      res.status(200).json(chosenSchema);
+    let schema = null;
+    console.log(query)
+    if (isAll) {
+      schema = await AssemblySchema.find(query).select({
+        _id: 0,
+        __v: 0,
+        components: 0
+      });
+    } else {
+      schema = await AssemblySchema.findOne(query).select({
+        _id: 0,
+        __v: 0
+      });
+    }
+    if ((isAll && schema.length > 0) || (schema instanceof Object && Object.keys(schema).length > 0)) {
+      res.status(200).json(schema);
     } else {
       res.status(404).json({
         message: "Error finding assembly schema",
         internal_code: "schema_error",
       });
+      console.log(schema)
     }
   } catch (err) {
     console.log(err);
@@ -597,75 +709,6 @@ router.get("/assembly/schema", async (req, res) => {
     });
   }
 })
-
-
-router.post('/asset-Provision', async (req, res, err) => {
-  try {
-    const serial = req.body.serial
-    const serialBase = req.body.serialBase
-    const body = req.body
-
-    if (serial) {
-      for (let i in serial) {
-
-        const existingDoc = await Asset.findOne({ serial: i })
-        if (existingDoc) {
-          continue
-        }
-        const newAssets = new Asset({
-          serial: i,
-          assetName: req.body.assetName,
-          provisioned: true,
-          owner: "Supply Chain USA",
-          assetType: "Asset",
-          dateCreated: Date.now(),
-          checkedOut: false,
-          assignmentType: "Owned"
-        })
-        await newAssets.save()
-      }
-      res.status(200).json
-        ({
-          message: "success"
-          ,
-        });
-    }
-    else if (serialBase) {
-      const num = serialBase.split("-", 2)
-      const beginningSerial = parseInt(num[1])
-      if (req.body.quantity) {
-        for (let i = beginningSerial; i < req.body.quantity; i++) {
-          const newSerial = num[0] + i
-
-          const existingDoc = await Asset.findOne({ serial: newSerial })
-          if (existingDoc) {
-            continue
-          }
-          const newAssets = new Asset({
-            serial: newSerial,
-            assetName: req.body.assetName,
-            provisioned: true,
-            owner: "Supply Chain USA",
-            assetType: "Asset",
-            dateCreated: Date.now(),
-            checkedOut: false,
-            assignmentType: "Owned"
-
-          })
-          await newAssets.save()
-
-        }
-        res.status(200).json({ message: "success" });
-      }
-      res.status(400).json({ message: "success", interalCode: "missing_quantity_param" });
-    }
-
-
-  }
-  catch (err) {
-    console.log(err)
-  }
-});
 
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
@@ -710,6 +753,8 @@ function getEventType(field) {
       return ["Change of Ownership", "OWN-"];
     case "assignmentType":
       return ["Change of Assignment Type", "ASN-"];
+    case "creation":
+      return ["Creation", "CRE-"];
   }
 }
 
