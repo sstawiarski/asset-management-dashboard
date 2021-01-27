@@ -19,6 +19,21 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.post('/create-Manifest', async (req, res, err) => {
+    try{
+        const manifest = req.body.manifest;
+        await Manifest.updateMany(manifest);
+        res.status(200).json({ message: "success" })
+
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Error loading sample data into database",
+            internal_code: "database_load_error"
+        })
+    }
+})
+
 router.put('/load', async (req, res) => {
     try {
         sampleManifest.forEach(async (item, idx) => {
