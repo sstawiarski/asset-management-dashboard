@@ -4,7 +4,7 @@ const sampleManifest = [
         "date":{"$date":{"$numberLong":"1611208800000"}},
         "manifest":[
             {
-                "item":"X800-920",
+                "item":"X800-87650",
                 "type":"crossover sub",
                 "quantity":"1",
                 "notes":"n/a"

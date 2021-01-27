@@ -14,6 +14,6 @@ const Manifest = new Schema({
     manifest: [ManifestItems]
 });
 
-const Manifests = mongoose.model('manifest', Manifest);
+//const Manifests = mongoose.model('manifest', Manifest);
 
-module.exports = Manifests;
+module.exports = Manifest;
