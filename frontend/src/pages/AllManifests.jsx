@@ -26,10 +26,11 @@ import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search'
+import SearchIcon from '@material-ui/icons/Search';
+import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case assets
-const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
+const selectedFields = ["id", "date", "created by", "assets"];
 
 const AllManifests = (props) => {
 
@@ -157,9 +158,7 @@ const AllManifests = (props) => {
     }, [filters]);
 
 
-    useEffect(() => {
-        setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
+
 
     return (
         <div>
@@ -173,7 +172,7 @@ const AllManifests = (props) => {
                     filters={filters}
                     setFilters={setFilters}
                     count={assetCount}
-                    variant="asset"
+                    variant="shipment"
                     checkboxes={true}>
 
                     <TableToolbar
@@ -203,11 +202,12 @@ const AllManifests = (props) => {
                             </>
                             :
                             <>
-                                <Tooltip title={"Create"}>
-                                    <IconButton aria-label={"create"}>
-                                        <AddIcon onClick={() => setDialogs({ create: true })} />
+                                
+                                <Link to="/shipments/add-new" >
+                                    <IconButton >
+                                        <AddIcon />
                                     </IconButton>
-                                </Tooltip>
+                                </Link>
                                 <Container className='searchBar' align='right'>
                                     <div >
                                         <TextField id="searchBox"
@@ -242,73 +242,10 @@ const AllManifests = (props) => {
                 </CustomTable>
 
             </div>
+           { /*put manifest filter here*/}
 
-            {/* Put all the toolbar dialogs here */}
-            <AssetFilter
-                open={dialogs["filter"]}
-                setOpen={(isOpen) => setDialogs({ filter: isOpen })}
-                setActiveFilters={setActiveFilters}
-                override={override} />
-
-            <RetireAssetDialog
-                open={dialogs["retire"]}
-                setOpen={(isOpen) => setDialogs({ retire: isOpen })}
-                selected={selected}
-                onSuccess={onSuccess}
-                override={override} />
-
-            <ChangeGroupTagDialog
-                open={dialogs["groupTag"]}
-                setOpen={(isOpen) => setDialogs({ groupTag: isOpen })}
-                selected={selected}
-                onSuccess={onSuccess}
-                override={override} />
-            <ChangeAssignmentDialog
-                open={dialogs["assignee"]}
-                setOpen={(isOpen) => setDialogs({ assignee: isOpen })}
-                selected={selected}
-                onSuccess={onSuccess}
-                override={override} />
-
-            <ChangeOwnershipDialog
-                open={dialogs["owner"]}
-                setOpen={(isOpen) => setDialogs({ owner: isOpen })}
-                selected={selected}
-                onSuccess={onSuccess}
-                override={override} />
-
-            <ChangeAssignmentTypeDialog
-                open={dialogs["assignmentType"]}
-                setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })}
-                selected={selected}
-                onSuccess={onSuccess}
-                override={override} />
-
-            <CreateAssetDialog
-                open={dialogs["create"]}
-                setOpen={(isOpen) => setDialogs({ create: isOpen })}
-                onSuccess={onSuccess}
-                onSemiSuccess={onSemiSuccess} />
-
-            <InvalidSerialsDialog
-                open={dialogs["invalid"]}
-                setOpen={(isOpen) => setDialogs({ invalid: isOpen })}
-                items={invalidSerial} />
-
-            {/* Warning when asset is edited separately from its assembly */}
-            <AssetEditWarning
-                open={dialogs["assetEditWarning"]}
-                setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
-                items={childAssets}
-                handleOverride={() => {
-                    setOverride(true);
-                    setDialogs({ assetEditWarning: false })
-                    setDialogs({ [nextDialog]: true })
-                    setNext("")
-                    setChildAssets([])
-                }}
-            />
-
+           
+            
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
