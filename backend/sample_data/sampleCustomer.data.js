@@ -5,7 +5,7 @@ const sampleCustomer = [
         "firstName": "",
         "lastName": "",
         "companyName": "BHGE Drilling",
-        "addressLine1": "345 Main St",
+        "addressLine1": "346 Main St",
         "addressLine2": "Suite 1912",
         "city": "Houston",
         "state": "TX",
