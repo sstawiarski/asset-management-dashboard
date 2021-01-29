@@ -21,6 +21,7 @@ const paths = {
     '/customers/load': customerPaths.load,
 
     '/employees/load': employeePaths.load,
+    '/employees/:employeeId': employeePaths.getById,
 
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,
