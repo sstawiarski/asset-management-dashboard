@@ -217,7 +217,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
                         <Select
                             labelId="asset-type-label"
-                            labelWidth={105}
+                            labelWidth={90}
                             id="asset-type-label"
                             error={missingType}
                             value={schema}
@@ -299,7 +299,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                         <InputLabel id="asset-type-label">Owner</InputLabel>
                         <Select
                             labelId="owner-label"
-                            labelWidth={105}
+                            labelWidth={50}
                             fullWidth
                             id="owner-label"
                             value={owner}
