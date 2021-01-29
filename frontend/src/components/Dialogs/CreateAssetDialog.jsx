@@ -61,6 +61,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [missingType, setMissingType] = useState(false);
     const [missingBegin, setMissingBegin] = useState(false);
     const [missingEnd, setMissingEnd] = useState(false);
+    const [missingOwner, setMissingOwner] = useState(false);
 
     /* Fetches list of asset types for dropdown */
     useEffect(() => {
@@ -81,6 +82,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
         if (entryType === "range" && (beginRange === "" || endRange === "")) {
             if (beginRange === "") setMissingBegin(true);
             if (endRange === "") setMissingEnd(true);
+            return;
+        }
+
+        if (owner === "") {
+            setMissingOwner(true);
             return;
         }
 
@@ -193,6 +199,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
         setMissingBegin(false);
         setMissingEnd(false);
         setMissingType(false);
+        setMissingOwner(false);
         setOwner("");
         setEntryType("range");
         setIncorrect([]);
@@ -302,9 +309,13 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                             labelWidth={50}
                             fullWidth
                             id="owner-label"
+                            error={missingOwner}
                             value={owner}
                             defaultValue="Supply Chain-USA"
-                            onChange={(event) => setOwner(event.target.value)}
+                            onChange={(event) => {
+                                if (missingOwner) setMissingOwner(false);
+                                setOwner(event.target.value);
+                            }}
                         >
                             {/* TODO: De-hardcode */}
                             <MenuItem value="Supply Chain-USA">Supply Chain-USA</MenuItem>
