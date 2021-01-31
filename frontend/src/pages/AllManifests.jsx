@@ -30,11 +30,10 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case assets
-const selectedFields = ["date", "createdBy", "status"];
-const sampleManifests = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed" },{"createdBy" : "Jane Doe", "date" : "2021-01-28T06:00:00.000+00:00", "status" : "staged" }];
+const selectedFields = ["date", "createdBy", "status", "shipmentType", "shipFrom", "shipTo"];
+const sampleManifests = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed", "shipmentType" : "outgoing", "shipFrom" : "Nabors TX yard", "shipTo" : "BHGE Drilling" },{"createdBy" : "Jane Doe", "date" : "2021-01-28T06:00:00.000+00:00", "status" : "staged", "shipmentType" : "incoming" }];
 const AllManifests = (props) => {
 
-    const [manifests] = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed" }];
     const [childAssets, setChildAssets] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
@@ -145,7 +144,7 @@ const AllManifests = (props) => {
                     setFilters={setFilters}
                     count={assetCount}
                     variant="shipment"
-                    checkboxes={true}>
+                    >
 
                     <TableToolbar
                         title="All Manifests"
@@ -156,9 +155,7 @@ const AllManifests = (props) => {
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
-                                <IconButton aria-label={"edit"}>
-                                    <EditIcon onClick={handleClick} />
-                                </IconButton>
+                                
                                 <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
@@ -196,11 +193,7 @@ const AllManifests = (props) => {
                                         />
                                     </div>
                                 </Container>
-                                <Tooltip title={"Filter"}>
-                                    <IconButton aria-label={"filter"}>
-                                        <FilterListIcon onClick={() => setDialogs({ filter: true })} />
-                                    </IconButton>
-                                </Tooltip>
+                                
                             </>
                         }
                     </TableToolbar>
