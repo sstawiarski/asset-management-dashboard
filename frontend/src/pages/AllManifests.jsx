@@ -30,11 +30,11 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case assets
-const selectedFields = ["id", "date", "created by", "assets"];
-
+const selectedFields = ["date", "createdBy", "status"];
+const sampleManifests = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed" },{"createdBy" : "Jane Doe", "date" : "2021-01-28T06:00:00.000+00:00", "status" : "staged" }];
 const AllManifests = (props) => {
 
-    const [assets, setAssets] = useState([]);
+    const [manifests] = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed" }];
     const [childAssets, setChildAssets] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
@@ -126,36 +126,8 @@ const AllManifests = (props) => {
         }
     }, [invalidSerial])
 
-    useEffect(() => {
-        //generate the fetch url based on active filters and their keys
-        const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments";
-            const keys = Object.keys(filters);
-            keys.forEach((key, idx) => {
-                if (idx === 0) {
-                    url = `${url}?${key}=${filters[key]}`;
-                } else {
-                    url = `${url}&${key}=${filters[key]}`;
-                }
-            });
-
-            return url;
-        };
-
-        const urlToFetch = generateURL(filters);
-        fetch(urlToFetch)
-            .then(response => {
-                if (response.status < 300) {
-                    return response.json();
-                } else {
-                    return { data: [], count: [{ count: 0 }] };
-                }
-            })
-            .then(json => {
-                setAssets(json.data);
-                setAssetCount(json.count[0].count);
-            });
-    }, [filters]);
+   
+        
 
 
 
@@ -165,7 +137,7 @@ const AllManifests = (props) => {
             <Header heading="Manifests" subheading="View All" />
             <div>
                 <CustomTable
-                    data={assets}
+                    data={sampleManifests}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
