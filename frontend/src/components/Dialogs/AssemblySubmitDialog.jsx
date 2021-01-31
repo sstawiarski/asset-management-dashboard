@@ -13,12 +13,14 @@ import CloseIcon from '@material-ui/icons/Close';
 import DoneIcon from '@material-ui/icons/Done';
 import SimpleList from '../Tables/SimpleList';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submission, handleCancel }) => {
     const [serial, setSerial] = useState("");
     const [error, setError] = useState("");
     const [good, setGood] = useState(null);
     const [isLoading, setLoading] = useState(false);
+    const [user, setUser] = useLocalStorage('user', {});
 
     const debounced = useRef(debounce((ser) => {
 
@@ -102,7 +104,8 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                 owner: submission.owner,
                 groupTag: submission.groupTag,
                 override: submission.override,
-                serial: serial
+                serial: serial,
+                user: user.uniqueId
             }
             fetch("http://localhost:4000/assets/create-Assembly", {
                 method: 'POST',

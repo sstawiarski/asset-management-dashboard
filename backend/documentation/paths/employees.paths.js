@@ -36,6 +36,66 @@ const employeePaths = {
                 }
             }
         }
+    },
+    'getById': {
+        get: {
+            tags: ['Employees'],
+            description: 'Retreive a single employee name based on a supplied ID',
+            operationId: 'findEmployee',
+            parameters: [
+                {
+                    name: 'employeeId',
+                    in: 'path',
+                    schema: {
+                        type: 'string',
+                        example: '1238671',
+                        description: "Employee's unique numerical ID"
+                    },
+                    required: true
+
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Employee information was found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    name: {
+                                        type: 'string'
+                                    },
+                                    employeeId: {
+                                        type: 'number'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '404': {
+                    description: 'No employee with the specified ID was found',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error attempting to find employee',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
