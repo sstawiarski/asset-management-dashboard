@@ -8,8 +8,12 @@ import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
 import AssetTimeline from '../components/AssetTimeline'
 import Manifest from '../components/Manifest';
-import { Button } from '@material-ui/core';
+import { Button, Tooltip } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import EditIcon from '@material-ui/icons/Edit';
+
+import AssemblyModificationWarning from '../components/Dialogs/AssemblyModificationWarning';
 
 import { dateOptions } from '../utils/constants.utils';
 
@@ -35,6 +39,19 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         display: "block"
+    },
+    error: {
+        color: "red",
+    },
+    errorIcon: {
+        position: "relative",
+        color: "red",
+        fontSize: "14px",
+        top: "3px",
+        paddingRight: "3px"
+    },
+    errorDiv: {
+        float: "right"
     }
 }));
 
@@ -46,6 +63,7 @@ const AssetDetails = (props) => {
     const [events, setEvents] = useState([]);
     const [page, setPage] = useState(0);
     const [empty, setEmpty] = useState(false);
+    const [warningOpen, setWarning] = useState(false);
 
     useEffect(() => {
         fetch(`http://localhost:4000/assets/${serial}`)
@@ -141,13 +159,31 @@ const AssetDetails = (props) => {
                                         asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={12} md={6} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Assembly Manifest</Typography>
+                                                {asset.incomplete ?
+                                                    <Tooltip title={
+                                                        <>
+                                                            <Typography variant="caption" style={{ color: "white" }}><b>Missing Items:</b></Typography>
+                                                            <br />
+                                                            {asset.missingItems ? asset.missingItems.map((item, idx) => <><Typography key={idx} variant="caption" style={{ color: "white" }}>{item}</Typography><br /></>) : null}
+                                                        </>
+                                                    } arrow placement="top">
+                                                        <div className={classes.errorDiv}>
+                                                            <ErrorOutlineIcon className={classes.errorIcon} />
+                                                            <Typography variant="caption" className={classes.error}><b>Incomplete</b></Typography>
+                                                        </div>
+                                                    </Tooltip>
+
+                                                    : null}
                                                 <Manifest data={asset} />
+
+                                                <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => setWarning(true)}>Edit</Button>
+
                                             </Grid>
                                             : null
                                     }
                                     <Grid item xs={12} sm={12} md={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Asset Timeline</Typography>
-                                        <AssetTimeline data={events} onMore={() => setPage(page+1)} empty={empty} />
+                                        <AssetTimeline data={events} onMore={() => setPage(page + 1)} empty={empty} />
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -155,6 +191,7 @@ const AssetDetails = (props) => {
                     </Grid>
                 </Grid>
             </Grid>
+        <AssemblyModificationWarning open={warningOpen} setOpen={setWarning} assembly={asset} />         
         </div>
     );
 };
