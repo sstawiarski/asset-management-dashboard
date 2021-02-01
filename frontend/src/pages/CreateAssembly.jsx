@@ -4,6 +4,7 @@
  * License: MIT
  */
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Typography from '@material-ui/core/Typography';
@@ -85,6 +86,7 @@ const headCells = [{ label: "Serial" }];
 
 const CreateAssembly = () => {
     const classes = useStyles();
+    const history = useHistory();
 
     const [assets, setAssets] = useState([]);
     const [assemblyStarted, toggleAssembly] = useState(false);
@@ -108,6 +110,24 @@ const CreateAssembly = () => {
     const [submission, setSubmission] = useState({});
     const [moreInfo, setMoreInfo] = useState([]);
     const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
+
+    useEffect(() => {
+        if (history.location.state) {
+            if (history.location.state.isAssemblyEdit) {
+                getSchema(history.location.state.assemblyType, true).then(response => {
+                    setSchema(response);
+                    toggleAssembly(true);
+                });
+
+                fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
+                .then(res => res.json())
+                .then(json => {
+                    const existingItems = json.data.map(item => item.serial);
+                    setCartItems(existingItems);
+                });
+            }
+        }
+    }, [history])
 
     //get assets from database that don't belong to an assembly
     useEffect(() => {
@@ -255,6 +275,7 @@ const CreateAssembly = () => {
 
     return (
         <div className={classes.root}>
+            { history.location.state ? history.location.state.isAssemblyEdit ? <span>You're coming from {history.location.state.serial}!</span> : null : null }
 
             <Grid container spacing={2}>
                 <Grid item xs={12}>
