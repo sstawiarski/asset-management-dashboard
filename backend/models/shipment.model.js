@@ -26,6 +26,6 @@ const Shipment = new Schema({
     manifest: [manifest]
 });
 
-const Shipments = mongoose.model('shipment', Shipment);
+const Shipments = mongoose.model('shipment', 'shipments', Shipment);
 
 module.exports = Shipments;
