@@ -1,7 +1,7 @@
 const sampleManifest = [
     {
         "createdBy":"Joe Dirt",
-        "date":{"$date":{"$numberLong":"1611208800000"}},
+        "date":'2020-01-31',
         "manifest":[
             {
                 "item":"X800-87650",
