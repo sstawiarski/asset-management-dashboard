@@ -9,7 +9,6 @@ const ManifestItems = new Schema({
 });
 
 const Manifest = new Schema({
-    createdBy: { type: String, required: false, unique: false },
     date: { type: mongoose.Schema.Types.Date, required: false, unique: false },
     manifest: [ManifestItems]
 });
