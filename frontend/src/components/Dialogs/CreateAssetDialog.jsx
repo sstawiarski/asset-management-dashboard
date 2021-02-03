@@ -106,6 +106,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             const check = options.filter(item => item.name === schema);
             const serialTest = check[0].serializationFormat.split("-");
             const badOnes = serial.filter(s => {
+                if (check[0].name === "Gamma Sensor" || check[0].name === "Directional Sensor") {
+                    const reg = new RegExp(check[0].serializationFormat);
+                    return !reg.test(s);
+                }
+
                 const item = s.split('-');
                 return item[0] !== serialTest[0];
             });
@@ -260,11 +265,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                                     if (!serialEntered) setEntered(true);
                                     setSerials(event.target.value) 
                                 }}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                        console.log(serials)
-                                    }
-                                }}>
+                                >
 
                             </TextField>
                             {incorrect.length > 0 ?
