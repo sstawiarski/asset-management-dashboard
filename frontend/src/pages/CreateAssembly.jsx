@@ -30,6 +30,7 @@ import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDial
 import AssemblySubmitDialog from '../components/Dialogs/AssemblySubmitDialog';
 import IncompleteAssemblyDialog from '../components/Dialogs/IncompleteAssemblyDialog';
 import QuickAssetView from '../components/Dialogs/QuickAssetView';
+import WarningDialog from '../components/Dialogs/WarningDialog';
 
 import { compareSchema, getSchema } from '../utils/assembly.utils';
 
@@ -109,6 +110,8 @@ const CreateAssembly = () => {
     const [missingItems, setMissingItems] = useState([]);
     const [submission, setSubmission] = useState({});
     const [moreInfo, setMoreInfo] = useState([]);
+    const [hasParents, setHasParents] = useState(false);
+    const [haveParents, setHaveParents] = useState([]);
     const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
 
     useEffect(() => {
@@ -134,7 +137,12 @@ const CreateAssembly = () => {
         if (assemblyStarted) {
             if (schema) {
                 const assemblyType = encodeURI(schema.name);
-                setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+                try {
+                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`);
+                } catch {
+                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+                }
+                
             }
         }
     }, [assemblyStarted, schema]);
@@ -144,7 +152,11 @@ const CreateAssembly = () => {
             let originalURL = `http://localhost:4000/assets?parentId=null&assetType=Asset`;
             if (schema) {
                 const assemblyType = encodeURI(schema.name);
-                originalURL += `&inAssembly=${assemblyType}`;
+                try {
+                    originalURL += `&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`;
+                } catch {
+                    originalURL += `&inAssembly=${assemblyType}`;
+                }
             }
 
             Object.keys(filters).forEach(key => {
@@ -196,7 +208,6 @@ const CreateAssembly = () => {
         }));
         getSchema(childState.assemblyType, true).then(response => {
             setSchema(response);
-            console.log("State: " + JSON.stringify(childState))
             setCreatorOpen(false);
             toggleAssembly(true);
         });
@@ -220,6 +231,23 @@ const CreateAssembly = () => {
     }
 
     const handleAddToCart = (items) => {
+        const badSerials = [];
+        items.forEach(item => {
+            const fullInfo = assets.find(asset => asset.serial === item);
+            if (fullInfo.parentId) {
+                badSerials.push(item);
+            }
+        });
+
+        if (badSerials.length) {
+            const onlyGood = items.filter(item => !badSerials.includes(item));
+            setCartItems(orig => ([...orig, ...onlyGood]));
+            setSelected([]);
+            setHaveParents(badSerials);
+            setHasParents(true);
+            return;
+        }
+
         setCartItems(orig => ([...orig, ...items]));
         setSelected([]);
     }
@@ -240,7 +268,6 @@ const CreateAssembly = () => {
                     arr.push([item, moreInfo[idx]]);
                     return arr;
                 }, []),
-                override: false,
                 owner: state.owner,
                 groupTag: state.groupTag,
                 serializationFormat: schema["serializationFormat"]
@@ -275,8 +302,6 @@ const CreateAssembly = () => {
 
     return (
         <div className={classes.root}>
-            { history.location.state ? history.location.state.isAssemblyEdit ? <span>You're coming from {history.location.state.serial}!</span> : null : null }
-
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Header heading="Products" subheading="Assembly Creator" />
@@ -299,7 +324,8 @@ const CreateAssembly = () => {
                                 moreInfo={moreInfo}
                                 setMoreInfo={setMoreInfo}
                                 lookup="assetName"
-                                clickable={QuickAssetView}>
+                                clickable={QuickAssetView}
+                                inactive="parentId">
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {selected.length > 0 ?
@@ -382,6 +408,18 @@ const CreateAssembly = () => {
                 }
                 }
                 missingItems={missingItems} />
+
+                <WarningDialog
+                open={hasParents}
+                setOpen={setHasParents}
+                handleOverride={() => {
+                    setCartItems(c => [...c, ...haveParents]);
+                    setHasParents(false);
+                    setHaveParents([]);
+                }}
+                text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
+                title="Asset Update Warning"
+                items={haveParents} />
 
 
             <Snackbar open={success !== null} autoHideDuration={5000} onClose={() => setSuccess(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>

@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
 import WarningIcon from '@material-ui/icons/Warning';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook'
 
 const useStyles = makeStyles({
     warning: {
@@ -41,6 +42,7 @@ const useStyles = makeStyles({
 const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
     const classes = useStyles();
     const history = useHistory();
+    const user = useLocalStorage('user', {});
 
     const handleClose = () => {
         setOpen(false);
@@ -56,7 +58,7 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
                         <WarningIcon className={classes.warning} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="h6" style={{ textAlign: "center" }}>Modifying this assembly remove all of its child assets</Typography>
+                        <Typography variant="h6" style={{ textAlign: "center" }}>Modifying this assembly will mark it as disassembled</Typography>
                     </Grid>
                     <Grid item xs={12} className={classes.confirm}>
                         <Typography variant="body1">Do you wish to continue?</Typography>
@@ -66,17 +68,34 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">Cancel</Button>
-                <Link to={{
-                    pathname: '/assets/create-assembly',
-                    state: {
-                        isAssemblyEdit: true,
-                        serial: assembly.serial,
-                        assemblyType: assembly.assetName
-                    }
-                }}
-                style={{ textDecoration: "none" }}>
-                    <Button color="primary">Modify</Button>
-                </Link>
+                    <Button
+                        onClick={() => {
+                            fetch("http://localhost:4000/assets", {
+                                method: "PATCH",
+                                mode: 'cors',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                },
+                                body: {
+                                    assets: [assembly.serial],
+                                    update: {
+                                        assembled: false
+                                    },
+                                    disassembly: true,
+                                    user: user.uniqueId
+                                }
+                            })
+                            history.push({
+                                pathname: '/assets/create-assembly',
+                                state: {
+                                    isAssemblyEdit: true,
+                                    serial: assembly.serial,
+                                    assemblyType: assembly.assetName
+                                }
+                            })
+                        }}
+                        color="primary">Modify</Button>
 
             </DialogActions>
         </Dialog>

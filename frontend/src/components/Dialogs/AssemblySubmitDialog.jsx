@@ -103,11 +103,10 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                 missingItems: submission.missingItems,
                 owner: submission.owner,
                 groupTag: submission.groupTag,
-                override: submission.override,
                 serial: serial,
                 user: user.uniqueId
             }
-            fetch("http://localhost:4000/assets/create-Assembly", {
+            fetch("http://localhost:4000/assets/assembly", {
                 method: 'POST',
                 mode: 'cors',
                 headers: {

@@ -174,7 +174,8 @@ const AllAssets = (props) => {
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
-                    checkboxes={true}>
+                    checkboxes={true}
+                    inactive="assembled">
 
                     <TableToolbar
                         title="All Assets"

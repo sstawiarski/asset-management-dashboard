@@ -47,6 +47,10 @@ router.get("/", async (req, res, err) => {
             if (Object.keys(assemblySchema).length > 0) {
               p["assetName"] = { $in: assemblySchema.components };
             }
+          } else if (c === "isAssembly") {
+            const disassembled = await Asset.find({ assembled: false }, { serial: 1 });
+            const disSerials = disassembled.map(item => item.serial);
+            p["$or"] = [{ parentId: null }, { parentId: { $in: disSerials } }];
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -54,6 +58,9 @@ router.get("/", async (req, res, err) => {
             } else if (query[c] === "false") {
               p[c] = false;
             } else if (query[c] === "null") {
+              if (query.isAssembly && c === "parentId") {
+                return pc;
+              }
               p[c] = null;
             } else {
               p[c] = query[c];
@@ -342,10 +349,12 @@ router.patch("/", async (req, res) => {
   try {
     const list = req.body.assets; //list of selected serials from client
     const username = JSON.parse(decrypt(req.body.user));
+    const isDisassembly = req.body.disassembly;
 
     //object from client representing fields to update
     //should really only be one
     const field = req.body.update;
+    console.log(field);
     const fieldName = Object.getOwnPropertyNames(field)[0];
 
     //get all parent assembly documents so we can get their serial and update children
@@ -378,7 +387,13 @@ router.patch("/", async (req, res) => {
 
     //updates main assets and assemblies selected
     //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
-    await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+    const ret = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+    console.log(ret);
+
+    if (isDisassembly) {
+      res.status(205).json({ message: "Successfully marked assembly as disassembled" });
+      return;
+    }
 
     //check whether any children are edited apart from their parent
     if (missingParentSerials.length > 0) {
@@ -543,50 +558,44 @@ router.put("/load", async (req, res) => {
   }
 });
 
-router.post('/create-Assembly', async (req, res, err) => {
+router.post('/assembly', async (req, res, err) => {
   try {
-    const assets = req.body.assets
-    const override = req.body.override
+    const username = JSON.parse(decrypt(req.body.user));
+    const newAssembly = new Asset({
+      serial: req.body.serial,
+      assetName: req.body.type,
+      missingItems: req.body.missingItems,
+      owner: req.body.owner,
+      assetType: "Assembly",
+      parentId: null,
+      dateCreated: Date.now(),
+      groupTag: req.body.groupTag,
+      checkedOut: false,
+      assignmentType: "Owned",
+      incomplete: req.body.missingItems.length ? true : false,
+      assembled: true
+    });
 
-    // Queryig DB to find the assetTYPE
-    const asset = await Asset.findOne({ assetName: req.body.type, provisioned: true });
-    if (!asset) {
-      res.status(404).json({
-        message: "No available assembly serials."
-      })
-      return;
+    await newAssembly.save();
+    for (const asset of req.body.assets) {
+      await Asset.findOneAndUpdate({ serial: asset }, { parentId: req.body.serial });
     }
 
-    if (override) {
-      await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: req.body.missingItems, groupTag: req.body.groupTag, provisioned: false })
-      await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
-      res.status(200).json({ message: "Successfully updated" })
-    }
-    else {
-      const findSerial = await Asset.find({ serial: { $in: assets }, parentId: null })
-      if (findSerial.length === assets.length) {
-        await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: [], groupTag: req.body.groupTag, provisioned: false })
-        await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
-        res.status(200).json({ message: "Successfully updated" })
+    const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+    const creation = new Event({
+      eventType: "Creation",
+      eventTime: Date.now(),
+      key: `CRE-${count.next}`,
+      productIds: [req.body.serial, ...req.body.assets],
+      initiatingUser: username.employeeId,
+      eventData: {
+        details: `Created new assembly with serial ${req.body.serial}`
       }
-      else {
-        if (findSerial) {
-          const objs = findSerial.map(obj => obj.serial);
-          const missingSers = assets.filter(ser => !objs.includes(ser));
-          res.status(403).json({
-            message: "Some assets were added to other assemblies prior to this submission.",
-            internalCode: "assets_already_used",
-            used: missingSers
-          })
-        } else {
-          res.status(500).json({
-            message: "Error finding assets",
-            interalCode: "cannot_find_assets"
-          })
-        }
+    });
 
-      }
-    }
+    await creation.save();
+
+    res.status(200).json({ message: "Successfully created assembly", key: `CRE-${count.next}`});
 
   }
   catch (err) {
@@ -685,7 +694,7 @@ router.get("/assembly/schema", async (req, res) => {
 
   try {
     let schema = null;
-    console.log(query)
+
     if (isAll) {
       schema = await AssemblySchema.find(query).select({
         _id: 0,
@@ -705,7 +714,6 @@ router.get("/assembly/schema", async (req, res) => {
         message: "Error finding assembly schema",
         internal_code: "schema_error",
       });
-      console.log(schema)
     }
   } catch (err) {
     console.log(err);

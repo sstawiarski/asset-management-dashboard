@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Paper from '@material-ui/core/Paper';
@@ -59,6 +60,8 @@ const AssetDetails = (props) => {
 
     const { serial } = props.match.params;
     const classes = useStyles();
+    const history = useHistory();
+
     const [asset, setAsset] = useState({});
     const [events, setEvents] = useState([]);
     const [page, setPage] = useState(0);
@@ -176,7 +179,31 @@ const AssetDetails = (props) => {
                                                     : null}
                                                 <Manifest data={asset} />
 
-                                                <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => setWarning(true)}>Edit</Button>
+                                                <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => {
+                                                    try {
+                                                        if (asset.assembled) {
+                                                            setWarning(true);
+                                                        } else {
+                                                            history.push({
+                                                                pathname: '/assets/create-assembly',
+                                                                state: {
+                                                                    isAssemblyEdit: true,
+                                                                    serial: asset.serial,
+                                                                    assemblyType: asset.assetName
+                                                                }
+                                                            })
+                                                        }
+                                                    } catch {
+                                                        history.push({
+                                                            pathname: '/assets/create-assembly',
+                                                            state: {
+                                                                isAssemblyEdit: true,
+                                                                serial: asset.serial,
+                                                                assemblyType: asset.assetName
+                                                            }
+                                                        })
+                                                    }
+                                                }}>Edit</Button>
 
                                             </Grid>
                                             : null
@@ -191,7 +218,7 @@ const AssetDetails = (props) => {
                     </Grid>
                 </Grid>
             </Grid>
-        <AssemblyModificationWarning open={warningOpen} setOpen={setWarning} assembly={asset} />         
+            <AssemblyModificationWarning open={warningOpen} setOpen={setWarning} assembly={asset} />
         </div>
     );
 };
