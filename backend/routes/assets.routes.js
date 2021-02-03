@@ -185,7 +185,7 @@ router.get("/", async (req, res, err) => {
           const exactMatch = [result[0].data[0]];
           res.status(200).json({
             count: [{ count: 1 }],
-            data: [exactMatch]
+            data: exactMatch
           });
 
         } else {

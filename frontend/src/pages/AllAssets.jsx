@@ -49,8 +49,9 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
     const handleKeyDown = (e) => {
+        const value = e.target.value;
         if (e.key === 'Enter') {
-            setFilters(s => ({ ...s, search: e.target.value }))
+            setFilters(s => ({ ...s, search: value }))
         }
     }
 
