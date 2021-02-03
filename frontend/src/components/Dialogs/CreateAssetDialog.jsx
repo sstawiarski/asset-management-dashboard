@@ -17,6 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import { Typography } from '@material-ui/core';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -62,6 +63,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [missingBegin, setMissingBegin] = useState(false);
     const [missingEnd, setMissingEnd] = useState(false);
     const [missingOwner, setMissingOwner] = useState(false);
+    const [user, setUser] = useLocalStorage('user', {});
 
     /* Fetches list of asset types for dropdown */
     useEffect(() => {
@@ -139,6 +141,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                 data.list = serial;
                 data.assetName = schema;
                 data.owner = owner;
+                data.user = user.uniqueId;
                 sendData(data).then(res => {
                     if (res.invalid.length > 0) {
                         onSemiSuccess(res.invalid);
@@ -155,6 +158,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             data.endRange = endRange;
             data.owner = owner;
             data.assetName = schema;
+            data.user = user.uniqueId;
             sendData(data).then(res => {
                 if (res.invalid.length > 0) {
                     onSemiSuccess(res.invalid);

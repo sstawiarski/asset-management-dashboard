@@ -12,6 +12,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -28,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
+
+    const [user, setUser] = useLocalStorage('user', {});
 
     /* Store state of select dropdown */
     const [type, setType] = useState("");
@@ -56,7 +59,8 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
             update: {
                 assignmentType: type
             },
-            override: override
+            override: override,
+            user: user.uniqueId
         }
 
         sendData(data)

@@ -24,4 +24,24 @@ router.put('/load', async (req, res) => {
     }
 });
 
+router.get('/:employeeId', async (req, res) => {
+    try {
+        const id = parseInt(req.params.employeeId);
+        const employee = await Employee.findOne({ employeeId: id });
+        if (employee) {
+            const name = employee.firstName + " " + employee.lastName;
+            const toSend = {
+                employeeId: id,
+                name: name
+            };
+            res.status(200).json(toSend);
+        } else {
+            res.status(404).json({ message: "Employee not found for ID", internalCode: "employee_not_found" });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Error retreiving employee', internalCode: "employee_retreival_error" })
+    }
+});
+
 module.exports = router;

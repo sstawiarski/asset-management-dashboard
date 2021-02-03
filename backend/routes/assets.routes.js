@@ -9,7 +9,7 @@ const Event = require("../models/event.model");
 const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
-
+const decrypt = require('../auth.utils').decrypt;
 
 router.get("/", async (req, res, err) => {
 
@@ -240,6 +240,7 @@ router.post('/', async (req, res, err) => {
 
     const { serialBase, list, beginRange, endRange, owner, type, assetName } = req.body;
     const invalid = [];
+    const username = JSON.parse(decrypt(req.body.user)).employeeId;
 
     if (type === "list") {
       const created = [];
@@ -270,6 +271,7 @@ router.post('/', async (req, res, err) => {
         eventTime: Date.now(),
         key: `CRE-${count.next}`,
         productIds: created,
+        initiatingUser: username,
         eventData: {
           details: `Asset(s) created in system.`
         }
@@ -312,6 +314,7 @@ router.post('/', async (req, res, err) => {
         eventTime: Date.now(),
         key: `CRE-${count.next}`,
         productIds: createdSerials,
+        initiatingUser: username,
         eventData: {
           details: `Asset(s) created in system.`
         }
@@ -338,6 +341,7 @@ router.post('/', async (req, res, err) => {
 router.patch("/", async (req, res) => {
   try {
     const list = req.body.assets; //list of selected serials from client
+    const username = JSON.parse(decrypt(req.body.user));
 
     //object from client representing fields to update
     //should really only be one
@@ -405,6 +409,7 @@ router.patch("/", async (req, res) => {
             eventTime: Date.now(),
             key: `REM-${count.next}`,
             productIds: missingParentSerials[idx],
+            initiatingUser: username.employeeId,
             eventData: {
               details: `Removed ${name} from ${missingParentSerials[idx]} and marked incomplete.`
             }
@@ -482,6 +487,7 @@ router.patch("/", async (req, res) => {
         eventTime: Date.now(),
         key: `${eventInfo[1]}${counter.next}`,
         productIds: allAffectedAssets,
+        initiatingUser: username.employeeId,
         eventData: {
           details: `Changed ${allAffectedAssets.length} product(s) ${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} to ${field[fieldName]}.`
         }

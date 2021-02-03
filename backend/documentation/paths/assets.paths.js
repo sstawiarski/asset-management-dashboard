@@ -149,6 +149,15 @@ const assetPaths = {
                         description: 'The serial number to end provisioning at when using the range method (inclusive)'
                     },
                     required: false
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
                 }
             ],
             responses: {
@@ -233,6 +242,15 @@ const assetPaths = {
                     },
                     description: 'Boolean whether or not to force update child assets whose assembly is not getting updated, remove them from the assembly, and mark it incomplete',
                     required: false
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
                 }
             ],
             responses: {
