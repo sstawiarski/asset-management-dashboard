@@ -171,7 +171,7 @@ router.get('/', async (req, res) => {
                     const exactMatch = [result[0].data[0]];
                     res.status(200).json({
                         count: [{ count: 1 }],
-                        data: [exactMatch]
+                        data: exactMatch
                     });
                 } else {
 
@@ -245,6 +245,8 @@ router.put('/load', (req, res) => {
 
 router.get('/:serial', async (req, res) => {
     const serial = req.params.serial.toUpperCase();
+    const limit = parseInt(req.query.limit);
+    const skip = parseInt(req.query.skip);
     try {
         let events = await Event.find({
             productIds: {
@@ -253,8 +255,8 @@ router.get('/:serial', async (req, res) => {
         }).sort({ eventTime: -1 });
 
         if (req.query) {
-            if (req.query.limit && (req.query.skip >= 0)) {
-                events = events.slice(req.query.skip*req.query.limit, req.query.skip*req.query.limit + req.query.limit);
+            if (limit && (skip >= 0)) {
+                events = events.slice(skip*limit, skip*limit + limit);
             }
         }
         res.status(200).json(events);
