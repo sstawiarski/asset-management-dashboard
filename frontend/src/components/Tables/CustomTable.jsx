@@ -252,8 +252,7 @@ const NewTable = (props) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
-
-                                        <TableRow
+                                        <TableRow key={index}
                                             hover
                                             onClick={(event) => {
                                                 if (Clickable) {
@@ -267,7 +266,6 @@ const NewTable = (props) => {
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={item[selectedFields[0]]}
                                             selected={isItemSelected}
                                             className={inactive === "parentId" ? item[inactive] ? classes.inactive : "row" : item[inactive] === false ? classes.inactive : "row"}
                                         >
