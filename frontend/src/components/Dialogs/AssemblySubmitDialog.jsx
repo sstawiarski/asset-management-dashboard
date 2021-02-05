@@ -20,23 +20,23 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
     const [error, setError] = useState("");
     const [good, setGood] = useState(null);
     const [isLoading, setLoading] = useState(false);
-    const [user, setUser] = useLocalStorage('user', {});
+    const [user, ] = useLocalStorage('user', {});
 
     const debounced = useRef(debounce((ser) => {
 
         fetch(`http://localhost:4000/assets/${ser}`)
-        .then(response => {
-            if (ser.length === 0) {
+            .then(response => {
+                if (ser.length === 0) {
+                    setLoading(false);
+                    return;
+                }
+                if (response.status === 200) {
+                    setError("Serial already exists in database!");
+                } else {
+                    setGood("Serial will be provisioned upon submission");
+                }
                 setLoading(false);
-                return;
-            }
-            if (response.status === 200) {
-                setError("Serial already exists in database!");
-            } else {
-                setGood("Serial will be provisioned upon submission");
-            }
-            setLoading(false);
-        });
+            });
     }, 1000));
 
     useEffect(() => {
@@ -48,7 +48,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
         }
         if (serial.length <= 3) return;
 
-        const lastIndex = serial.lastIndexOf('-') === -1 ? serial.length-1 : serial.lastIndexOf('-') + 1;
+        const lastIndex = serial.lastIndexOf('-') === -1 ? serial.length - 1 : serial.lastIndexOf('-') + 1;
         const secondPart = serial.substring(lastIndex, serial.length);
         if (!secondPart) {
             setError("Serial is missing trailing numbers")
@@ -73,10 +73,10 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
             setSerial(value);
             return;
         }
-        
+
         const index = value.lastIndexOf('-') === -1 ? value.length : value.lastIndexOf('-') + 1;
         const firstPart = value.substring(0, index);
-        
+
         if (firstPart !== submission.serializationFormat && value.length !== 0) {
             setError("Serial does not match format for assembly type");
             setSerial(value);
@@ -87,27 +87,32 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if (!serial) {
+        if (!serial && !submission.serial) {
             setError("No serial entered!");
             return;
-        } else if (serial.split("-")[0] !== submission.serializationFormat.split("-")[0]) {
+        } else if (serial.split("-")[0] !== submission.serializationFormat.split("-")[0] && !submission.serial) {
             setError("Entered serial does not match format for assembly type");
             return;
         }
 
         try {
             const actualItems = submission.assets.map(entry => entry[0]);
-            const submit = {
+            const submit = submission.reassembling ? {
                 assets: actualItems,
-                type: submission.type,
+                serial: submission.serial,
                 missingItems: submission.missingItems,
-                owner: submission.owner,
-                groupTag: submission.groupTag,
-                serial: serial,
                 user: user.uniqueId
-            }
+            } : {
+                    assets: actualItems,
+                    type: submission.type,
+                    missingItems: submission.missingItems,
+                    owner: submission.owner,
+                    groupTag: submission.groupTag,
+                    serial: serial,
+                    user: user.uniqueId
+                }
             fetch("http://localhost:4000/assets/assembly", {
-                method: 'POST',
+                method: submission.reassembling ? 'PATCH' : 'POST',
                 mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,42 +159,49 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                     <Grid item xs={6}>
                         <Typography variant="subtitle1"><b>Serial</b></Typography>
                     </Grid>
-                    <Grid item xs={6}>
-                        <FormControl variant="outlined" size="small">
-                            <InputLabel htmlFor="outlined-adornment"></InputLabel>
-                            <OutlinedInput
-                                id="outlined-adornment"
-                                error={error}
+                    {submission.reassembling ?
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1">{submission.serial}</Typography>
+                        </Grid>
+                        :
+                        <Grid item xs={6}>
+                            <FormControl variant="outlined" size="small">
+                                <InputLabel htmlFor="outlined-adornment"></InputLabel>
+                                <OutlinedInput
+                                    id="outlined-adornment"
+                                    error={error}
 
-                                value={serial}
-                                onChange={handleChange}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        {isLoading ? <CircularProgress style={{width: "25px", height: "25px"}}/> : error ? <CloseIcon style={{color: "red"}}/> : good ? <DoneIcon style={{color: "#1b9e37" }} /> : null}
-                                    </InputAdornment>
-                                }
-                                labelWidth={0}
-                            />
-                        </FormControl>
+                                    value={serial}
+                                    onChange={handleChange}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            {isLoading ? <CircularProgress style={{ width: "25px", height: "25px" }} /> : error ? <CloseIcon style={{ color: "red" }} /> : good ? <DoneIcon style={{ color: "#1b9e37" }} /> : null}
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={0}
+                                />
+                            </FormControl>
 
-                        {
-                            error ?
-                                <>
-                                    <br />
-                                    <Typography variant="caption" style={{color: "red"}}>Error: {error}</Typography>
-                                </>
-                                : null
-                        }
+                            {
+                                error ?
+                                    <>
+                                        <br />
+                                        <Typography variant="caption" style={{ color: "red" }}>Error: {error}</Typography>
+                                    </>
+                                    : null
+                            }
 
-                        {
-                            (good && !error) ?
-                            <>
-                            <br />
-                                <Typography variant="caption">{good}</Typography>
-                                </>
-                                : null
-                        }
-                    </Grid>
+                            {
+                                (good && !error) ?
+                                    <>
+                                        <br />
+                                        <Typography variant="caption">{good}</Typography>
+                                    </>
+                                    : null
+                            }
+                        </Grid>
+                    }
+
 
                     <Grid item xs={12} style={{ marginTop: "20px" }}>
                         <Typography variant="subtitle1"><b>Manifest</b></Typography>

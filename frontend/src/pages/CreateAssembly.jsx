@@ -112,6 +112,7 @@ const CreateAssembly = () => {
     const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
+    const [abandoned, setAbandoned] = useState(false);
     const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
 
     useEffect(() => {
@@ -123,11 +124,11 @@ const CreateAssembly = () => {
                 });
 
                 fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
-                .then(res => res.json())
-                .then(json => {
-                    const existingItems = json.data.map(item => item.serial);
-                    setCartItems(existingItems);
-                });
+                    .then(res => res.json())
+                    .then(json => {
+                        const existingItems = json.data.map(item => item.serial);
+                        setCartItems(existingItems);
+                    });
             }
         }
     }, [history])
@@ -142,7 +143,7 @@ const CreateAssembly = () => {
                 } catch {
                     setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
                 }
-                
+
             }
         }
     }, [assemblyStarted, schema]);
@@ -261,6 +262,16 @@ const CreateAssembly = () => {
 
     const handleSubmitCheck = () => {
         compareSchema(schema, cartItems).then(result => {
+            
+            let serialForReassembly = null;
+            let reassembling = false;
+            try {
+                if (history.location.state.isAssemblyEdit) {
+                    serialForReassembly = history.location.state.serial;
+                    reassembling = true;
+                }
+            } catch {}
+
             setSubmission(s => ({
                 ...s,
                 type: schema["name"],
@@ -270,7 +281,9 @@ const CreateAssembly = () => {
                 }, []),
                 owner: state.owner,
                 groupTag: state.groupTag,
-                serializationFormat: schema["serializationFormat"]
+                serializationFormat: schema["serializationFormat"],
+                serial: serialForReassembly,
+                reassembling: reassembling
             }))
             if (!result[0]) {
                 setMissingItems(result[1]);
@@ -285,6 +298,12 @@ const CreateAssembly = () => {
 
     const handleSubmitCancel = () => {
         toggleOverride(false);
+        setSubmitOpen(false);
+        setIncomplete(false);
+    };
+
+    const handleAbandon = () => {
+        toggleOverride(false);
         setCreatorOpen(false);
         toggleAssembly(false);
         setSchema(null);
@@ -298,16 +317,20 @@ const CreateAssembly = () => {
         setSubmission({});
         setCartItems([]);
         setState({});
-    }
+        setActiveFilters({});
+        setFilters({ limit: 5 });
+        setAbandoned(false);
+    };
 
     return (
         <div className={classes.root}>
             <Grid container spacing={2}>
+
                 <Grid item xs={12}>
                     <Header heading="Products" subheading="Assembly Creator" />
                 </Grid>
-                <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
 
+                <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
                     {
                         assemblyStarted
                             ? <CustomTable
@@ -330,14 +353,14 @@ const CreateAssembly = () => {
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {selected.length > 0 ?
                                         <Tooltip title={"Add"}>
-                                            <IconButton aria-label={"add"}>
-                                                <AddIcon onClick={() => handleAddToCart(selected)} />
+                                            <IconButton aria-label={"add"} onClick={() => handleAddToCart(selected)}>
+                                                <AddIcon />
                                             </IconButton>
                                         </Tooltip>
                                         :
                                         <Tooltip title={"Filter"}>
-                                            <IconButton aria-label={"filter"}>
-                                                <FilterListIcon onClick={() => setFilterOpen(true)} />
+                                            <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
+                                                <FilterListIcon />
                                             </IconButton>
                                         </Tooltip>}
                                 </TableToolbar>
@@ -360,31 +383,33 @@ const CreateAssembly = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={12} md={4} lg={4}>
-
-                    {assemblyStarted ?
-
-                        <CartTable
-                            header={headCells}
-                            rows={cartItems}
-                            handleRemove={handleRemoveFromCart}
-                            onSubmit={handleSubmitCheck}
-                        />
-
-                        : null}
-
-
+                    {
+                        assemblyStarted ?
+                            <>
+                                <CartTable
+                                    header={headCells}
+                                    rows={cartItems}
+                                    handleRemove={handleRemoveFromCart}
+                                    onSubmit={handleSubmitCheck}
+                                />
+                                <Button onClick={() => setAbandoned(true)} style={{ float: "right", color: "red" }}>Abandon</Button>
+                            </>
+                            : null
+                    }
                 </Grid>
             </Grid>
 
             <CreateNewAssemblyDialog
                 creatorOpen={creatorOpen}
                 handleCreate={handleCreate}
-                handleCancel={handleCancel} />
+                handleCancel={handleCancel}
+            />
 
             <AssetFilter
                 open={filterOpen}
                 setOpen={(isOpen) => setFilterOpen(isOpen)}
-                setActiveFilters={setActiveFilters} />
+                setActiveFilters={setActiveFilters}
+            />
 
             <AssemblySubmitDialog
                 open={submitOpen}
@@ -392,7 +417,8 @@ const CreateAssembly = () => {
                 onSuccess={() => setSuccess(true)}
                 onFailure={() => setSuccess(false)}
                 handleCancel={handleSubmitCancel}
-                submission={submission} />
+                submission={submission}
+            />
 
             <IncompleteAssemblyDialog
                 open={incomplete}
@@ -407,9 +433,10 @@ const CreateAssembly = () => {
                     setSubmitOpen(true);
                 }
                 }
-                missingItems={missingItems} />
+                missingItems={missingItems}
+            />
 
-                <WarningDialog
+            <WarningDialog
                 open={hasParents}
                 setOpen={setHasParents}
                 handleOverride={() => {
@@ -419,12 +446,34 @@ const CreateAssembly = () => {
                 }}
                 text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
                 title="Asset Update Warning"
-                items={haveParents} />
+                items={haveParents}
+            />
+
+            <WarningDialog
+                open={abandoned}
+                setOpen={setAbandoned}
+                handleOverride={handleAbandon}
+                text="Abandoning this assembly will erase all current modifications"
+                title="Abandon Assembly?"
+                items={null}
+            />
 
 
-            <Snackbar open={success !== null} autoHideDuration={5000} onClose={() => setSuccess(null)} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
+            <Snackbar
+                open={success !== null}
+                autoHideDuration={5000}
+                onClose={() => {
+                    if (success) {
+                        setSuccess(null)
+                        handleAbandon();
+                    }
+                    setSuccess(null)
+                }}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}
+            >
                 <Alert onClose={() => setSuccess(null)} severity={success ? "success" : "error"}>
-                    {success ? "Assembly successfully created!" : "Failed to submit assembly..."}
+                    {success ? "Assembly successfully created or modified!" : "Failed to submit assembly..."}
                 </Alert>
             </Snackbar>
         </div>

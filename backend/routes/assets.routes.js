@@ -51,6 +51,34 @@ router.get("/", async (req, res, err) => {
             const disassembled = await Asset.find({ assembled: false }, { serial: 1 });
             const disSerials = disassembled.map(item => item.serial);
             p["$or"] = [{ parentId: null }, { parentId: { $in: disSerials } }];
+          } else if (c === "exclude") {
+            const jsonExclude = decodeURI(query[c]);
+            const excludeArr = JSON.parse(jsonExclude);
+            if (p["assetName"]) {
+              const prev = p["assetName"];
+              delete p["assetName"];
+
+              if (p["$and"]) {
+                p["$and"] = [...p["$and"], {
+                  assetName: {
+                    $nin: excludeArr,
+                    ...prev
+                  }
+                }];
+              } else {
+                p["$and"] = [
+                  {
+                    assetName: {
+                      $nin: excludeArr,
+                      ...prev
+                    }
+                  }
+                ];
+              }
+
+            } else {
+              p["assetName"] = { $nin: excludeArr };
+            }
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -577,9 +605,7 @@ router.post('/assembly', async (req, res, err) => {
     });
 
     await newAssembly.save();
-    for (const asset of req.body.assets) {
-      await Asset.findOneAndUpdate({ serial: asset }, { parentId: req.body.serial });
-    }
+    await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
 
     const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
     const creation = new Event({
@@ -595,7 +621,7 @@ router.post('/assembly', async (req, res, err) => {
 
     await creation.save();
 
-    res.status(200).json({ message: "Successfully created assembly", key: `CRE-${count.next}`});
+    res.status(200).json({ message: "Successfully created assembly", key: `CRE-${count.next}` });
 
   }
   catch (err) {
@@ -604,6 +630,48 @@ router.post('/assembly', async (req, res, err) => {
       message: "Error creating assembly",
       interalCode: "assembly_creation_error"
     })
+  }
+});
+
+router.patch('/assembly', async (req, res) => {
+  try {
+    const { serial, missingItems, assets, user } = req.body;
+    const username = JSON.parse(decrypt(user));
+
+    const missing = missingItems ? missingItems : [];
+
+    await Asset.updateOne({ serial: serial, assetType: "Assembly" }, {
+      missingItems: missing,
+      assembled: true,
+      incomplete: missing.length > 0 ? true : false
+    });
+
+    const withParents = await Asset.find({
+      serial: {
+        $in: assets
+      },
+      parentId: {
+        $ne: serial
+      }
+    });
+
+    const parentSers = withParents.map(item => item.parentId);
+
+    const assetNames = withParents.map(item => item.assetName);
+
+    await Asset.updateMany({ serial: { $in: assets } }, { parentId: serial });
+
+    let i = 0;
+    for (const parent of parentSers) {
+      await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] } });
+      i++;
+    }
+
+    res.status(200).json({ message: "Successfully updated assembly" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error updating assembly", internalCode: "assembly_update_error" });
   }
 });
 
