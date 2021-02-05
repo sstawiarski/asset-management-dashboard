@@ -121,10 +121,12 @@ const Sidebar = (props) => {
 
   const handleDrawerOpen = () => {
     setOpen(true);
+    props.onOpen("#FAFAFA");
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
+    props.onOpen("#60ACBD");
   };
 
   return (
@@ -139,7 +141,7 @@ const Sidebar = (props) => {
           ),
         }}
         style={{
-          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 72 : drawerWidth : open ? 220 : 72
+          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 73 : drawerWidth : open ? 220 : 73
         }}
         open={open}
       >
