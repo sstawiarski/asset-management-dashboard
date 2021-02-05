@@ -19,6 +19,7 @@ const Event = new Schema({
     productIds: { type: mongoose.Schema.Types.Array, required: true, unique: false },
     eventType: { type: String, enum: eventTypes, required: true, unique: false },
     eventTime: { type: mongoose.Schema.Types.Date, required: true, unique: false },
+    initiatingUser: { type: mongoose.Schema.Types.Number, required: false, unique: false },
     eventData: { type: mongoose.Schema.Types.Mixed, required: true, unique: false },
     confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false }
 });

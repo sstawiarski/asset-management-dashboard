@@ -10,6 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -30,6 +31,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     /* Store state of select dropdown */
     const [owner, setOwner] = useState("");
     const [dropdown, setDropdown] = useState([]);
+    const [user, setUser] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -55,7 +57,8 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
             update: {
                 owner: owner
             },
-            override: override
+            override: override,
+            user: user.uniqueId
         }
 
         sendData(data)
