@@ -62,7 +62,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Switch>
         <Route exact path="/login" render={(props) => <LoginPage {...props} />} />
-        {!loggedIn ? <Redirect to='/login' /> : null}
+        {!loggedIn && Object.keys(local).length <= 0 ? <Redirect to='/login' /> : null}
         <Route>
           <div className="App">
             <div className={classes.root}>
