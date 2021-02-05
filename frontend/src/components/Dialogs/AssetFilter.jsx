@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
-import { Grid, RadioGroup, TextField, FormControl, DialogTitle, DialogContent } from '@material-ui/core';
+import { Grid, RadioGroup, TextField, FormControl, DialogTitle, DialogContent, FormGroup, Checkbox } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,15 +15,26 @@ import {
 
 export default function FormDialog({ open, setOpen, setActiveFilters }) {
 
-    const [state, setState] = React.useState({
+    const [state, setState] = useState({
         retired: "all",
         dateCreated: null,
         dateUpdated: null,
         assignmentType: "all",
         assetType: "all",
         groupTag: "",
-        checkedOut: "all"
-    })
+        checkedOut: "all",
+        assembled: "all",
+        assetTypes: null
+    });
+
+    useEffect(() => {
+        fetch('http://localhost:4000/assets/schemas')
+            .then(res => res.json())
+            .then(json => {
+                const types = json.map(item => ({ name: item.name, checked: true }));
+                setState(s => ({ ...s, assetTypes: types }));
+            })
+    }, [])
 
     const handleClose = () => {
         setOpen(false);
@@ -34,7 +45,17 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
         const onlyActive = Object.keys(state)
             .reduce((p, c) => {
                 if (!disallowed.includes(state[c])) {
-                    if (state[c] === "Yes") {
+                    if (c === "assetTypes") {
+                        if (state[c]) {
+                            const excluding = state[c].reduce((res, type) => {
+                                if (!type.checked) {
+                                    res.push(type.name)
+                                }
+                                return res;
+                            }, []);
+                            p["exclude"] = encodeURI(JSON.stringify(excluding));
+                        }
+                    } else if (state[c] === "Yes") {
                         p[c] = true;
                     } else if (state[c] === "No") {
                         p[c] = false;
@@ -51,10 +72,27 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
 
     const handleChange = (event) => {
         const { name, value } = event.target
-        setState(s => ({
-            ...s,
-            [name]: value
-        }));
+        if (value === "assetTypes") {
+            const found = state.assetTypes.findIndex(item => item.name === name);
+            const foundType = state.assetTypes[found];
+            const newVal = !foundType.checked;
+            let newAssets = state.assetTypes;
+            newAssets[found] = { name: name, checked: newVal };
+            setState(s => ({
+                ...s,
+                assetTypes: newAssets
+            }));
+        } else {
+            setState(s => ({
+                ...s,
+                [name]: value
+            }));
+        }
+    };
+
+    const handleBoxes = (boolean) => {
+        const newSelections = state.assetTypes.map(item => ({ ...item, checked: boolean }));
+        setState(s => ({ ...s, assetTypes: newSelections }));
     }
 
     const handleReset = () => {
@@ -66,8 +104,10 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
             assetType: "all",
             assignmentType: "all",
             groupTag: "",
-            checkedOut: "all"
-        }))
+            checkedOut: "all",
+            assembled: "all"
+        }));
+        handleBoxes(true);
     }
 
     const handleDateChange = (name, newDate) => {
@@ -125,7 +165,82 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                             </RadioGroup>
                         </FormControl>
                     </Grid>
+
+                    {
+                        state.assetType === "Assembly" ?
+                            <>
+                                <Grid item xs={3} />
+                                <Grid item xs={3} />
+                                <Grid item xs={3} style={{ paddingTop: "10px" }}>
+                                    <FormControl component="fieldset">
+                                        <span>Assembly State</span>
+                                        <RadioGroup aria-label="types" name="assembled" value={state.assembled} onChange={handleChange}>
+                                            <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                            <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
+                                            <FormControlLabel value="No" control={<Radio />} label="No" />
+                                        </RadioGroup>
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={3} />
+                            </>
+                            : null
+                    }
+
+                    {
+                        state.assetTypes ?
+                            <Grid item xs={12} style={{ paddingTop: "10px" }}>
+
+                                <span>Asset Types</span>
+                                <br />
+                                <div style={{ textAlign: "center" }}>
+                                    <FormControl component="fieldset">
+
+                                        <FormGroup name="assetTypes" aria-label="types">
+                                            {state.assetTypes.slice(0, Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
+                                                return (
+
+                                                    <FormControlLabel
+                                                        key={type.name}
+                                                        control={<Checkbox
+                                                            checked={type.checked}
+                                                            name={type.name}
+                                                            value="assetTypes"
+                                                            onChange={handleChange}
+                                                            color="primary"
+                                                        />}
+                                                        label={type.name} />
+                                                )
+                                            })}
+                                        </FormGroup>
+                                    </FormControl>
+                                    <FormControl component="fieldset">
+                                        <FormGroup name="assetTypes" aria-label="types">
+                                            {state.assetTypes.slice(Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
+                                                return (
+                                                    <FormControlLabel
+                                                        key={type.name}
+                                                        control={<Checkbox
+                                                            checked={type.checked}
+                                                            name={type.name}
+                                                            value="assetTypes"
+                                                            onChange={handleChange}
+                                                            color="primary"
+                                                        />}
+                                                        label={type.name} />)
+                                            })}
+                                        </FormGroup>
+                                    </FormControl>
+                                    <br />
+                                    <Button variant="text" color="secondary" onClick={() => handleBoxes(true)}>Select All</Button>
+                                    <Button variant="text" color="secondary" onClick={() => handleBoxes(false)}>Clear</Button>
+                                </div>
+
+                            </Grid>
+                            : null
+                    }
+
                 </Grid>
+
 
                 <Grid container justify="space-evenly" style={{ marginTop: "20px" }}>
                     <Grid item xs={5}>
@@ -174,7 +289,6 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                 <Grid container justify="space-around" style={{ marginTop: "20px" }}>
                     <Grid item xs={6}>
                         <TextField
-                            autoFocus
                             margin="dense"
                             id="groupTag"
                             name="groupTag"

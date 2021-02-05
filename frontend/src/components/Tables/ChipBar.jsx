@@ -51,6 +51,41 @@ const ChipBar = (props) => {
                             return str.toUpperCase();
                         })
 
+                        //generate alternating colors for the chips
+                        const iter = idx + 1;
+                        const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
+
+                        if (label === "exclude") {
+                            const excludeArr = JSON.parse(decodeURI(activeFilters[label]));
+                            return (
+                                <React.Fragment key={idx}>
+                                { excludeArr.map((exclude, index) => (
+                                    <Chip 
+                                    key={exclude}
+                                    className={classes.chip}
+                                    label={`${capitalized}: ${exclude}`}
+                                    color={((index+1) % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary"}
+                                    onDelete={() => {
+                                        setActiveFilters(s => {
+                                            let newFilters = { ...s };
+                                            const filters = JSON.parse(decodeURI(s[label]));
+                                            const withoutExclude = filters.filter(item => item !== exclude);
+                                            delete newFilters[label];
+                                            newFilters[label] = encodeURI(JSON.stringify(withoutExclude));
+                                            setFilters(f => {
+                                                delete f[label];
+                                                f[label] = encodeURI(JSON.stringify(withoutExclude));
+                                                return f;
+                                            });
+                                            return newFilters;
+                                        });
+                                    }}
+                                    />
+                                )) }
+                                </React.Fragment>
+                            );
+                        }
+
                         //complicated parsing of the individual filters into human-readable results for the chip label
                         const value = typeof activeFilters[label] === "string" ?
                             activeFilters[label].replace(/^./, function (str) { return str.toUpperCase(); })
@@ -62,9 +97,6 @@ const ChipBar = (props) => {
                                     : null;
 
 
-                        //generate alternating colors for the chips
-                        const iter = idx + 1;
-                        const color = (iter % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary";
 
                         return <Chip
                             key={idx}
