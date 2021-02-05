@@ -63,7 +63,7 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title }) =>
                         : null}
 
                     <Grid item xs={12} className={classes.confirm}>
-                        <Typography variant="body1">Do you wish to override this warning?</Typography>
+                        <Typography variant="body1">Do you wish to continue?</Typography>
                     </Grid>
                 </Grid>
 
