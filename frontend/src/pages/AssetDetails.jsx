@@ -13,6 +13,7 @@ import { Button, Tooltip } from '@material-ui/core';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
 import AssemblyModificationWarning from '../components/Dialogs/AssemblyModificationWarning';
 
@@ -52,7 +53,17 @@ const useStyles = makeStyles((theme) => ({
         paddingRight: "3px"
     },
     errorDiv: {
-        float: "right"
+        display: "inline-block"
+    },
+    puzzle: {
+        position: "relative",
+        top: "3px",
+        paddingRight: "3px",
+        color: "#E5C92D",
+        fontSize: "14px",
+    },
+    puzzleText: {
+        color: "#E5C92D",
     }
 }));
 
@@ -91,7 +102,7 @@ const AssetDetails = (props) => {
             })
             .then(json => {
                 if (json.length === 0) setEmpty(true);
-                setEvents([...events, ...json]);
+                setEvents(e => [...e, ...json]);
             });
     }, [page, serial]);
 
@@ -162,12 +173,13 @@ const AssetDetails = (props) => {
                                         asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={12} md={6} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Assembly Manifest</Typography>
+                                                <div style={{ textAlign: "right" }}>
                                                 {asset.incomplete ?
                                                     <Tooltip title={
                                                         <>
                                                             <Typography variant="caption" style={{ color: "white" }}><b>Missing Items:</b></Typography>
                                                             <br />
-                                                            {asset.missingItems ? asset.missingItems.map((item, idx) => <><Typography key={idx} variant="caption" style={{ color: "white" }}>{item}</Typography><br /></>) : null}
+                                                            {asset.missingItems ? asset.missingItems.map((item, idx) => <React.Fragment key={idx}><Typography variant="caption" style={{ color: "white" }}>{item}</Typography><br /></React.Fragment>) : null}
                                                         </>
                                                     } arrow placement="top">
                                                         <div className={classes.errorDiv}>
@@ -177,6 +189,15 @@ const AssetDetails = (props) => {
                                                     </Tooltip>
 
                                                     : null}
+                                                    <br />
+                                                    { asset.assembled === false ? 
+                                                    <div className={classes.errorDiv}>
+                                                        <ExtensionIcon className={classes.puzzle} />
+                                                        <Typography variant="caption" className={classes.puzzleText}><b>Disassembled</b></Typography>
+                                                    </div>
+                                                    : null }
+                                                </div>
+
                                                 <Manifest data={asset} />
 
                                                 <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => {
