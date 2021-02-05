@@ -186,8 +186,8 @@ const AllAssets = (props) => {
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
-                                <IconButton aria-label={"edit"}>
-                                    <EditIcon onClick={handleClick} />
+                                <IconButton aria-label={"edit"} onClick={handleClick}>
+                                    <EditIcon />
                                 </IconButton>
                                 <Menu
                                     id="edit-menu"
@@ -205,8 +205,8 @@ const AllAssets = (props) => {
                             :
                             <>
                                 <Tooltip title={"Create"}>
-                                    <IconButton aria-label={"create"}>
-                                        <AddIcon onClick={() => setDialogs({ create: true })} />
+                                    <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
+                                        <AddIcon />
                                     </IconButton>
                                 </Tooltip>
                                 <Container className='searchBar' align='right'>
@@ -226,8 +226,8 @@ const AllAssets = (props) => {
                                     </div>
                                 </Container>
                                 <Tooltip title={"Filter"}>
-                                    <IconButton aria-label={"filter"}>
-                                        <FilterListIcon onClick={() => setDialogs({ filter: true })} />
+                                    <IconButton aria-label={"filter"} onClick={() => setDialogs({ filter: true })}>
+                                        <FilterListIcon />
                                     </IconButton>
                                 </Tooltip>
                             </>

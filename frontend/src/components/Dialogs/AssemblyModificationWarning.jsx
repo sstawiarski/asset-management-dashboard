@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
@@ -42,7 +41,7 @@ const useStyles = makeStyles({
 const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
     const classes = useStyles();
     const history = useHistory();
-    const user = useLocalStorage('user', {});
+    const [user, ] = useLocalStorage('user', {});
 
     const handleClose = () => {
         setOpen(false);
@@ -77,14 +76,14 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
                                     'Content-Type': 'application/json',
                                     'Accept': 'application/json'
                                 },
-                                body: {
+                                body: JSON.stringify({
                                     assets: [assembly.serial],
                                     update: {
                                         assembled: false
                                     },
                                     disassembly: true,
                                     user: user.uniqueId
-                                }
+                                })
                             })
                             history.push({
                                 pathname: '/assets/create-assembly',
