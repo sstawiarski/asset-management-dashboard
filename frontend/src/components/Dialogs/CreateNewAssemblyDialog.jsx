@@ -50,17 +50,24 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
     const handleSubmit = (event) => {
         event.preventDefault();
         handleCreate(state);
+        setState({
+            assemblyType: "",
+            groupTag: "",
+            owner: "",
+            types: []
+        })
     }
 
     useEffect(() => {
-        fetch("http://localhost:4000/assets/assembly/schema?all=true&assembly=true")
-        .then(response => response.json())
-        .then(json => setState(s => ({
-            ...s,
-            types: json
-        })));
-
-    }, [])
+        if (creatorOpen) {
+            fetch("http://localhost:4000/assets/assembly/schema?all=true&assembly=true")
+            .then(response => response.json())
+            .then(json => setState(s => ({
+                ...s,
+                types: json
+            })));
+        }
+    }, [creatorOpen])
 
     return (
         <Dialog onClose={handleCancel} onSubmit={handleSubmit} open={creatorOpen} >
@@ -78,7 +85,7 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             value={state.assemblyType}
                             labelWidth={110}
                             onChange={handleChange}>
-                                {state.types.length > 0 ? state.types.map((menuItem, idx) => <MenuItem key={idx} value={menuItem.name}>{menuItem.name}</MenuItem>) : null}
+                            {state.types.length > 0 ? state.types.map((menuItem, idx) => <MenuItem key={idx} value={menuItem.name}>{menuItem.name}</MenuItem>) : null}
                         </Select>
                     </FormControl>
                     <div className={classes.formControl}>
