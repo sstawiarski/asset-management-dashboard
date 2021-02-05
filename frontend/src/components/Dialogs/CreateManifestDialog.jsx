@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+
 const CreateManifestDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const classes = useStyles();
 
@@ -62,6 +64,11 @@ const CreateManifestDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [contractId, setContractId] = useState("");
     const [manifest, setManifest] = useState("");
 
+    const handleClose = () => {
+        setOpen(false);
+     
+    }
+
     return (
         <Dialog maxWidth="xs" fullWidth open={open} onClose={handleClose} aria-labelledby="create-manifest-dialog-title">
 
@@ -71,137 +78,33 @@ const CreateManifestDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
             <DialogContent>
 
-            <ToggleButtonGroup
-                value={alignment}
-                exclusive
-                onChange={handleAlignment}
-                aria-label="text alignment"
-            >
-                <ToggleButton value="left" aria-label="Incoming">
-                    <FormatAlignLeftIcon />
-                </ToggleButton>
+                <ToggleButtonGroup
+                    exclusive
+                    aria-label="text alignment"
+                >
+                    <ToggleButton value="left" aria-label="Incoming">
+                        
+                    </ToggleButton>
+                    
+                    <ToggleButton value="right" aria-label="Outgoing">
+
+                    </ToggleButton>
+
+                  
+
+                </ToggleButtonGroup>
+    
+
+
                 
-                <ToggleButton value="right" aria-label="Outgoing">
-                    <FormatAlignRightIcon />
-                </ToggleButton>
-
-                <ToggleButton value="justify" aria-label="justified" disabled>
-                    <FormatAlignJustifyIcon />
-                </ToggleButton>
-
-            </ToggleButtonGroup>
-  
-
-
-                <div className={classes.item}>
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="manifest-type-label">Manifest Name</InputLabel>
-
-                        <Select
-                            labelId="manifest-type-label"
-                            labelWidth={105}
-                            id="manifest-type-label"
-                            error={missingType}
-                            value={schema}
-                            onChange={(event) => { 
-                                if (missingType) setMissingType(false);
-                                setSchema(event.target.value) 
-                            }}
-                        >
-                            {options ? options.map((option, key) => <MenuItem key={key} value={option.name}>{option.name}</MenuItem>) : null}
-
-                        </Select>
-                    </FormControl>
-                    <FormControl component="fieldset" className={classes.entry}>
-                        <FormLabel component="legend">Method</FormLabel>
-                        <RadioGroup row aria-label="method" name="method" value={entryType} onChange={handleEntryTypeChange}>
-                            <FormControlLabel value="range" control={<Radio />} label="Range" />
-                            <FormControlLabel value="list" control={<Radio />} label="List" />
-                        </RadioGroup>
-                    </FormControl>
-                    <br />
-                    {entryType === "list"
-                        ?
-                        <div className={classes.entry}>
-                            <TextField
-                                id="serial-list"
-                                style={{ width: "100%" }}
-                                multiline
-                                rows={6}
-                                variant="outlined"
-                                error={!serialEntered}
-                                value={serials}
-                                onChange={(event) => { 
-                                    if (!serialEntered) setEntered(true);
-                                    setSerials(event.target.value) 
-                                }}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                        console.log(serials)
-                                    }
-                                }}>
-
-                            </TextField>
-                            {incorrect.length > 0 ?
-                                <>
-                                    <Typography variant="subtitle1" style={{ color: "red" }}><b>ERROR: Some serials are incorrectly formatted:</b></Typography>
-                                    <ul>
-                                        {incorrect.map(item => <><li key={item.serial}>{item.serial} (line {item.line})</li></>)}
-                                    </ul>
-                                </>
-                                : null}
-                        </div>
-                        :
-                        <div>
-                            <TextField
-                                className={classes.range}
-                                variant="outlined"
-                                value={beginRange}
-                                onChange={(event) => { 
-                                    if (missingBegin) setMissingBegin(false);
-                                    setBeginRange(event.target.value) 
-                                }}
-                                error={re.test(beginRange) ? false : beginRange !== "" ? true : missingBegin ? true : false}
-                            />
-                            <span style={{ display: "inline-block", padding: "15px 0px 15px 15px", marginRight: "-5px" }}> to </span>
-                            <TextField
-                                className={classes.range}
-                                variant="outlined"
-                                value={endRange}
-                                onChange={(event) => { 
-                                    if (missingEnd) setMissingEnd(false);
-                                    setEndRange(event.target.value) 
-                                }}
-                                error={re.test(endRange) ? false : endRange !== "" ? true : missingEnd ? true : false}
-                            />
-                        </div>
-                    }
-
-                    <FormControl variant="outlined" className={classes.owner}>
-                        <InputLabel id="manifest-type-label">Owner</InputLabel>
-                        <Select
-                            labelId="owner-label"
-                            labelWidth={105}
-                            fullWidth
-                            id="owner-label"
-                            value={owner}
-                            defaultValue="Supply Chain-USA"
-                            onChange={(event) => setOwner(event.target.value)}
-                        >
-                            {/* TODO: De-hardcode */}
-                            <MenuItem value="Supply Chain-USA">Supply Chain-USA</MenuItem>
-                            <MenuItem value="Supply Chain-CA">Supply Chain-CA</MenuItem>
-
-                        </Select>
-                    </FormControl>
-                </div>
+                            
             </DialogContent>
 
             <DialogActions>
                 <Button onClick={handleClose} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={handleSubmit} type="submit" color="primary">
+                <Button onClick={handleClose} type="submit" color="primary">
                     Submit
                 </Button>
             </DialogActions>
