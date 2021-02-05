@@ -588,6 +588,7 @@ router.put("/load", async (req, res) => {
 
 router.post('/assembly', async (req, res, err) => {
   try {
+    const override = req.body.override;
     const username = JSON.parse(decrypt(req.body.user));
     const newAssembly = new Asset({
       serial: req.body.serial,
@@ -605,7 +606,33 @@ router.post('/assembly', async (req, res, err) => {
     });
 
     await newAssembly.save();
-    await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
+    if (override) {
+      await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
+      res.status(200).json({ message: "Successfully updated" })
+    } else {
+      const findSerial = await Asset.find({ serial: { $in: req.body.assets }, parentId: null }, { serial: 1, assetName: 1 });
+      if (findSerial.length === assets.length) {
+        await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
+        res.status(200).json({ message: "Successfully updated" })
+      } else {
+        if (findSerial) {
+          const objs = findSerial.map(obj => obj.serial);
+          const missingSers = assets.filter(ser => !objs.includes(ser));
+
+          res.status(403).json({
+            message: "Some assets already have parent assemblies",
+            internalCode: "assets_already_used",
+            used: missingSers
+          })
+        } else {
+          res.status(500).json({
+            message: "Error finding assets",
+            interalCode: "cannot_find_assets"
+          })
+        }
+      }
+    }
+   
 
     const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
     const creation = new Event({
@@ -666,6 +693,24 @@ router.patch('/assembly', async (req, res) => {
       await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] } });
       i++;
     }
+
+    const eventType = getEventType("assemblyMod");
+    const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+    
+    const uniqueParents = [...new Set(parentSers)];
+    
+    const modification = new Event({
+      eventType: eventType[0],
+      eventTime: Date.now(),
+      key: `${eventType[1]}${count.next}`,
+      productIds: [req.body.serial, ...req.body.assets, ...uniqueParents],
+      initiatingUser: username.employeeId,
+      eventData: {
+        details: `Updated assembly with serial ${req.body.serial}. Removed children from ${JSON.stringify(uniqueParents)} and added to this assembly.`
+      }
+    });
+
+    await modification.save();
 
     res.status(200).json({ message: "Successfully updated assembly" });
 
@@ -837,6 +882,8 @@ function getEventType(field) {
       return ["Change of Assignment Type", "ASN-"];
     case "creation":
       return ["Creation", "CRE-"];
+    case "assemblyMod":
+      return ["Assembly Modification", "ABM-"]
   }
 }
 

@@ -20,6 +20,7 @@ import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'; //incomi
 import CancelIcon from '@material-ui/icons/Cancel'; //removal of child assets
 import AddIcon from '@material-ui/icons/Add'; //creation
 import Tooltip from '@material-ui/core/Tooltip';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
 import EventDetailsViewer from './EventDetailsViewer';
 
@@ -49,9 +50,9 @@ const useStyles = makeStyles({
         }
     },
     moreEventsButton: {
-        marginLeft: "50%", 
-        marginRight: "50%", 
-        fontSize: "32px", 
+        marginLeft: "50%",
+        marginRight: "50%",
+        fontSize: "32px",
         width: "40px",
         marginTop: "20px",
         backgroundColor: "#DDDDDD",
@@ -92,6 +93,8 @@ const getIcon = (eventType) => {
             return (<CancelIcon style={classes.icon} />);
         case "CRE":
             return (<AddIcon style={classes.icon} />);
+        case "ABM":
+            return (<ExtensionIcon style={classes.icon} />);
         default:
             return null;
     }
@@ -145,9 +148,9 @@ const AssetTimeline = ({ data, onMore, empty }) => {
                     );
                 }) : null}
             </Timeline>
-            {!empty ? 
+            {!empty ?
                 <Tooltip title="View More" placement="bottom">
-                <MoreHorizIcon className={classes.moreEventsButton} onClick={onMore} />
+                    <MoreHorizIcon className={classes.moreEventsButton} onClick={onMore} />
                 </Tooltip>
                 : <Typography variant="subtitle2">No remaining events</Typography>}
             <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
