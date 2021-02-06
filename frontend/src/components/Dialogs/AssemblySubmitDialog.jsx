@@ -155,6 +155,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                     } else {
                         onFailure();
                     }
+                    setSerial("");
                     handleCancel();
                 })
 
@@ -166,7 +167,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
 
 
     return (
-        <Dialog open={open} onClose={handleCancel} aria-labelledby="form-dialog-title">
+        <Dialog open={open} onClose={() => {handleCancel(); setSerial("");}} aria-labelledby="form-dialog-title">
 
             <DialogTitle>Submit Assembly</DialogTitle>
 
@@ -242,7 +243,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
+                <Button onClick={() => { handleCancel(); setSerial("");}} color="primary">
                     Cancel
           </Button>
                 <Button onClick={handleSubmit} type="submit" color="primary">
