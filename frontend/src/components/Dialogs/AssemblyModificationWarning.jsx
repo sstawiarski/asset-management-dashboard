@@ -1,13 +1,22 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 
+//Library Tools
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
+
+//Material-UI Components
+import Grid from '@material-ui/core/Grid';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import Typography from '@material-ui/core/Typography';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
+//Icons
 import WarningIcon from '@material-ui/icons/Warning';
+
+//Tools
 import useLocalStorage from '../../utils/auth/useLocalStorage.hook'
 
 const useStyles = makeStyles({
@@ -35,13 +44,12 @@ const useStyles = makeStyles({
     root: {
         padding: "0px 25px 0px 25px"
     }
-})
-
+});
 
 const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
     const classes = useStyles();
     const history = useHistory();
-    const [user, ] = useLocalStorage('user', {});
+    const [user,] = useLocalStorage('user', {});
 
     const handleClose = () => {
         setOpen(false);
@@ -67,34 +75,36 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button
-                        onClick={() => {
-                            fetch("http://localhost:4000/assets", {
-                                method: "PATCH",
-                                mode: 'cors',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
+
+                {/* Mark assembly as disassembled in the database prior to redirecting to the assembly modification tool */}
+                <Button
+                    onClick={() => {
+                        fetch("http://localhost:4000/assets", {
+                            method: "PATCH",
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                assets: [assembly.serial],
+                                update: {
+                                    assembled: false
                                 },
-                                body: JSON.stringify({
-                                    assets: [assembly.serial],
-                                    update: {
-                                        assembled: false
-                                    },
-                                    disassembly: true,
-                                    user: user.uniqueId
-                                })
+                                disassembly: true,
+                                user: user.uniqueId
                             })
-                            history.push({
-                                pathname: '/assets/create-assembly',
-                                state: {
-                                    isAssemblyEdit: true,
-                                    serial: assembly.serial,
-                                    assemblyType: assembly.assetName
-                                }
-                            })
-                        }}
-                        color="primary">Modify</Button>
+                        })
+                        history.push({
+                            pathname: '/assets/create-assembly',
+                            state: {
+                                isAssemblyEdit: true,
+                                serial: assembly.serial,
+                                assemblyType: assembly.assetName
+                            }
+                        })
+                    }}
+                    color="primary">Modify</Button>
 
             </DialogActions>
         </Dialog>
