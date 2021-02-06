@@ -49,6 +49,9 @@ const AllManifests = (props) => {
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
+    //sample data
+    const sampleManifests = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
@@ -172,7 +175,7 @@ const AllManifests = (props) => {
             <Header heading="Manifests" subheading="View All" />
             <div>
                 <CustomTable
-                    data={manifests}
+                    data={sampleManifests}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
