@@ -24,6 +24,7 @@ import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ExtensionIcon from '@material-ui/icons/Extension';
 import { Link } from "react-router-dom";
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
@@ -394,7 +395,7 @@ const Sidebar = (props) => {
                 >
                   <Grid item>
                     {open === true ? (
-                      <DynamicFeedIcon style={{ fontSize: 17 }} className={classes.icon} />
+                      <ExtensionIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>

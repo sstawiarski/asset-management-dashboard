@@ -18,6 +18,7 @@ import Alert from '@material-ui/lab/Alert';
 //Icons
 import FilterListIcon from '@material-ui/icons/FilterList';
 import AddIcon from '@material-ui/icons/Add';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
 //Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
@@ -48,14 +49,17 @@ const useStyles = makeStyles((theme) => ({
         display: "flex"
     },
     item: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
+        marginTop: "10rem"
     },
     break: {
         flexGrow: 1,
         fontWeight: "bold"
     },
-    button: {
-        color: "#3CB3E6"
+    puzzle: {
+        color: theme.palette.secondary.light,
+        fontSize: "5rem",
+        opacity: "75%",
     },
     title: {
         marginLeft: "20px",
@@ -125,7 +129,7 @@ const CreateAssembly = () => {
 
 
     //TODO: Check whether all these useEffects are actually necessary
-    
+
     /* Initial setup if existing assembly is being modified */
     useEffect(() => {
         if (history.location.state) {
@@ -410,9 +414,11 @@ const CreateAssembly = () => {
 
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
-                                    <Typography variant="body1" className={classes.item}>No Assembly In Progress</Typography>
-                                    <div style={{ flexBasis: "100%", height: 0 }} />
-                                    <Button className={classes.button} onClick={handleStart}>Create New Assembly</Button>
+                                    <ExtensionIcon className={classes.puzzle} />
+                                    <Typography variant="h5">Welcome to the Assembly Manager!</Typography>
+                                    <Typography variant="h6" className={classes.item}>No Assembly In Progress</Typography>
+                                    <div style={{ flexBasis: "100%", height: "5rem" }} />
+                                    <Button color="primary" variant="contained" onClick={handleStart}>Start Assembly</Button>
                                 </Box>
                             </Paper>
                     }
@@ -501,6 +507,7 @@ const CreateAssembly = () => {
             {/* Resets all creator state upon success or leave intact for another try if the assembly fails to submit */}
             <Snackbar
                 open={success !== null}
+                onEnter={() => toggleAssembly(false)}
                 autoHideDuration={5000}
                 onClose={() => {
                     if (success) {
@@ -511,11 +518,13 @@ const CreateAssembly = () => {
                 }}
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
                 style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
-
-                <Alert onClose={() => setSuccess(null)} severity={success ? "success" : "error"}>
-                    {success ? "Assembly successfully created or modified!" : "Failed to submit assembly..."}
-                </Alert>
-
+                {
+                    success !== null ?
+                        <Alert onClose={() => setSuccess(null)} severity={success ? "success" : "error"}>
+                            {success === true ? "Assembly successfully created or modified!" : "Failed to submit assembly..."}
+                        </Alert>
+                        : null
+                }
             </Snackbar>
         </div>
     );
