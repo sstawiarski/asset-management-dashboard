@@ -706,6 +706,11 @@ router.patch('/assembly', async (req, res) => {
       incomplete: missing.length > 0 ? true : false
     });
 
+    const findChildren = await Asset.find({ parentId: serial });
+    const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
+
+    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null });
+
     //find all new children that already have parents
     const withParents = await Asset.find({
       serial: {
