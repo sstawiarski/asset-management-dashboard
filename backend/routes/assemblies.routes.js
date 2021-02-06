@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const connection = mongoose.connection;
 const Assembly = require("../models/assembly.model");
 
+//TODO: deal with the duplication of this functionality in assets.routes.js
 router.get('/types', async (req, res) => {
     try {
         const types = await Assembly.find({}).select({ name: 1, _id: 0 });

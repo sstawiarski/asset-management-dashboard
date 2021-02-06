@@ -398,7 +398,7 @@ const Sidebar = (props) => {
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {open === true ? <Typography variant="body2">Assembly Creator</Typography> : null}
+                    {open === true ? <Typography variant="body2">Assembly Manager</Typography> : null}
                   </Grid>
                 </Grid>
               </div>

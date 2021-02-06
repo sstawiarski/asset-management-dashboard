@@ -360,7 +360,7 @@ const CreateAssembly = () => {
             <Grid container spacing={2}>
 
                 <Grid item xs={12}>
-                    <Header heading="Products" subheading="Assembly Creator" />
+                    <Header heading="Assets" subheading="Assembly Manager" />
                 </Grid>
 
                 <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
@@ -446,6 +446,7 @@ const CreateAssembly = () => {
                 open={filterOpen}
                 setOpen={(isOpen) => setFilterOpen(isOpen)}
                 setActiveFilters={setActiveFilters}
+                assetList={schema ? schema["name"] : null}
             />
 
             <AssemblySubmitDialog
