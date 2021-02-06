@@ -8,11 +8,4 @@ const Manifest = new Schema({
     notes: { type: String, required: false, unique: false }
 });
 
-// const Manifest = new Schema({
-//     date: { type: mongoose.Schema.Types.Date, required: false, unique: false },
-//     manifest: [ManifestItems]
-// });
-
-const Manifests = mongoose.model('manifest', Manifest);
-
 module.exports = Manifest;
