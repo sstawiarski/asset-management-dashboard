@@ -11,7 +11,7 @@ const eventTypes = [
     'Change of Retirement Status',
     'Change of Assignment Type',
     'Reassignment',
-    'Removal of Child Asset'
+    'Assembly Modification'
 ]
 
 const Event = new Schema({

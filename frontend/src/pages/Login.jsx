@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
+
+//Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory, Redirect } from 'react-router-dom';
+
+//Material-UI Components
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import logo from "../logo.svg"
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import FormControl from '@material-ui/core/FormControl';
+
+//Icons
+import logo from "../logo.svg"
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+
+//Tools
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -63,8 +72,10 @@ const useStyles = makeStyles((theme) => ({
 const LoginPage = (props) => {
     const classes = useStyles();
     const history = useHistory();
-    const [local, setLocal] = useLocalStorage('user', {});
 
+    const [local, setLocal] = useLocalStorage('user', {}); //user login control
+
+    /* Sign in text box state */
     const [state, setState] = useState({
         userId: "",
         password: "",
@@ -72,6 +83,7 @@ const LoginPage = (props) => {
         result: null
     });
 
+    /* Display message for 5 seconds whenever a user logs out */
     useEffect(() => {
         if (history.location.state) {
             if (history.location.state.onSignOut) {
@@ -80,8 +92,9 @@ const LoginPage = (props) => {
                 }, 5000);
             }
         }
-    }, [history])
+    }, [history]);
 
+    /* Sign in text box change handler */
     const handleChange = (event) => {
         setState({
             ...state,
@@ -90,6 +103,7 @@ const LoginPage = (props) => {
         });
     };
 
+    /* Submits login information and handler results */
     const handleSubmit = (event) => {
         event.preventDefault();
 
@@ -119,7 +133,10 @@ const LoginPage = (props) => {
 
     return (
         <div className={classes.background}>
+
+            {/* If logged in, redirect to the dashboard */}
             {Object.keys(local).length > 0 ? <Redirect to='/' /> : null}
+
             <div className={classes.box}>
                 <div className={classes.imgBox}>
                     <img src={logo} alt="logo" />
@@ -162,6 +179,8 @@ const LoginPage = (props) => {
                                     fullWidth />
                             </FormControl>
                         </Grid>
+
+                        {/* Display error results when login information is incorrect */}
                         {
                             state.result ?
                                 <Grid item>
@@ -170,9 +189,12 @@ const LoginPage = (props) => {
                                 : null
                         }
                     </Grid>
+
                     <div className={classes.loginButton}>
                         <Button type="submit" color="secondary" variant="outlined" onClick={handleSubmit}>Login</Button>
                     </div>
+
+                    {/* Display message when user logs out */}
                     {
                         history.location.state ?
                             <Typography style={{ textAlign: "left" }} variant="subtitle2"><i>Signed out from {history.location.state.name.firstName} {history.location.state.name.lastName}</i></Typography>

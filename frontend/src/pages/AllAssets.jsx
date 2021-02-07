@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import FilterListIcon from '@material-ui/icons/FilterList';
-import EditIcon from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-
+//Internal Components
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
+//Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
 import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
 import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
@@ -23,9 +17,19 @@ import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
 import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
 import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
 
+//Material-UI Imports
+import FilterListIcon from '@material-ui/icons/FilterList';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
+import Container from '@material-ui/core/Container';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search'
 
 //the object fields to get for the table we need, in this case assets
@@ -48,6 +52,7 @@ const AllAssets = (props) => {
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
+    /* Handles searchbar when enter key is pressed */
     const handleKeyDown = (e) => {
         const value = e.target.value;
         if (e.key === 'Enter') {
@@ -55,14 +60,17 @@ const AllAssets = (props) => {
         }
     }
 
+    /* Handle floating menu placement for toolbar */
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
     }
 
+    /* Close menu */
     const handleClose = () => {
         setAnchor(null);
     }
 
+    /* Check selected items for existing parent */
     const handleMenuClick = (event) => {
         setAnchor(null);
         const children = [];
@@ -93,6 +101,7 @@ const AllAssets = (props) => {
 
     }
 
+    /* Handles stepping through warning dialog to the actual edit dialog */
     useEffect(() => {
         if (!nextDialog) return;
         if (childAssets.length > 0) {
@@ -102,6 +111,7 @@ const AllAssets = (props) => {
         }
     }, [childAssets, nextDialog]);
 
+    /* Successful edit event */
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
             setSelected([]);
@@ -112,7 +122,12 @@ const AllAssets = (props) => {
         }
     };
 
-    //for use with creation of assets
+    /**
+     * Used for asset creator
+     * Runs when some serials could not be provisioned
+     * 
+     * @param {*} invalidSerials Array of serials that were not able to be created
+     */
     const onSemiSuccess = (invalidSerials) => {
         if (invalidSerials.length > 0) {
             setInvalid(invalidSerials);
@@ -120,12 +135,14 @@ const AllAssets = (props) => {
         }
     }
 
+    /* Opens the invalid serials dialog whenever some serials could not be provisioned */
     useEffect(() => {
         if (invalidSerial.length > 0) {
             setDialogs({ invalid: true });
         }
     }, [invalidSerial])
 
+    /* Filter the results list */
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
@@ -158,6 +175,7 @@ const AllAssets = (props) => {
     }, [filters]);
 
 
+    /* Reset results page to the first one whenever filters are changed */
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
     }, [activeFilters])
@@ -175,7 +193,8 @@ const AllAssets = (props) => {
                     setFilters={setFilters}
                     count={assetCount}
                     variant="asset"
-                    checkboxes={true}>
+                    checkboxes={true}
+                    inactive="assembled">
 
                     <TableToolbar
                         title="All Assets"
@@ -186,9 +205,12 @@ const AllAssets = (props) => {
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
-                                <IconButton aria-label={"edit"}>
-                                    <EditIcon onClick={handleClick} />
+                                {/* Edit button */}
+                                <IconButton aria-label={"edit"} onClick={handleClick}>
+                                    <EditIcon />
                                 </IconButton>
+
+                                {/* Floating menu for bulk edit actions */}
                                 <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
@@ -204,11 +226,14 @@ const AllAssets = (props) => {
                             </>
                             :
                             <>
+                                {/* Creator button */}
                                 <Tooltip title={"Create"}>
-                                    <IconButton aria-label={"create"}>
-                                        <AddIcon onClick={() => setDialogs({ create: true })} />
+                                    <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
+                                        <AddIcon />
                                     </IconButton>
                                 </Tooltip>
+
+                                {/* Table searchbar */}
                                 <Container className='searchBar' align='right'>
                                     <div >
                                         <TextField id="searchBox"
@@ -225,9 +250,11 @@ const AllAssets = (props) => {
                                         />
                                     </div>
                                 </Container>
+
+                                {/* Filter button */}
                                 <Tooltip title={"Filter"}>
-                                    <IconButton aria-label={"filter"}>
-                                        <FilterListIcon onClick={() => setDialogs({ filter: true })} />
+                                    <IconButton aria-label={"filter"} onClick={() => setDialogs({ filter: true })}>
+                                        <FilterListIcon />
                                     </IconButton>
                                 </Tooltip>
                             </>
