@@ -11,6 +11,7 @@ import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
+import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
@@ -80,6 +81,7 @@ function App() {
                   <Route path="/" exact component={Dashboard} />
                   <Route exact path="/test" component={TestPage} />
                   <Route path="/search/:query" component={SearchDetails} />
+                  <Route path="/shipments/view-all" component={AllManifests} />
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
