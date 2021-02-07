@@ -14,6 +14,7 @@ const status = [
 ];
 
 const Shipment = new Schema({
+    createdBy: { type: String, required: true, unique: false},
     created: { type: mongoose.Schema.Types.Date, required: true, unique: false },
     updated: { type: mongoose.Schema.Types.Date, required: false, unique: false },
     completed: { type: mongoose.Schema.Types.Date, required: false, unique: false },
