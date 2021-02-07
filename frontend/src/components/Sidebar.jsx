@@ -24,6 +24,7 @@ import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
 import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import SettingsIcon from "@material-ui/icons/Settings";
+import ExtensionIcon from '@material-ui/icons/Extension';
 import { Link } from "react-router-dom";
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
@@ -121,10 +122,12 @@ const Sidebar = (props) => {
 
   const handleDrawerOpen = () => {
     setOpen(true);
+    props.onOpen("#FAFAFA");
   };
 
   const handleDrawerClose = () => {
     setOpen(false);
+    props.onOpen("#60ACBD");
   };
 
   return (
@@ -139,7 +142,7 @@ const Sidebar = (props) => {
           ),
         }}
         style={{
-          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 72 : drawerWidth : open ? 220 : 72
+          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 73 : drawerWidth : open ? 220 : 73
         }}
         open={open}
       >
@@ -392,11 +395,11 @@ const Sidebar = (props) => {
                 >
                   <Grid item>
                     {open === true ? (
-                      <DynamicFeedIcon style={{ fontSize: 17 }} className={classes.icon} />
+                      <ExtensionIcon style={{ fontSize: 17 }} className={classes.icon} />
                     ) : null}
                   </Grid>
                   <Grid item>
-                    {open === true ? <Typography variant="body2">Assembly Creator</Typography> : null}
+                    {open === true ? <Typography variant="body2">Assembly Manager</Typography> : null}
                   </Grid>
                 </Grid>
               </div>

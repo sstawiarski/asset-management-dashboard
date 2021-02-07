@@ -29,24 +29,28 @@ import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
-//the object fields to get for the table we need, in this case assets
-const selectedFields = ["date", "createdBy", "status", "shipmentType", "shipFrom", "shipTo"];
-const sampleManifests = [{"createdBy" : "John Doe", "date" : "2021-01-21T06:00:00.000+00:00", "status" : "completed", "shipmentType" : "outgoing", "shipFrom" : "Nabors TX yard", "shipTo" : "BHGE Drilling" },{"createdBy" : "Jane Doe", "date" : "2021-01-28T06:00:00.000+00:00", "status" : "staged", "shipmentType" : "incoming" }];
+//the object fields to get for the table we need, in this case shipments
+const selectedFields = ["created", "createdBy", "status", "shipmentType", "shipFrom", "shipTo"];
+
 const AllManifests = (props) => {
 
-    const [childAssets, setChildAssets] = useState([]);
+    const [manifests, setManifests] = useState([]);
+    const [childManifests, setChildManifests] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
     const [invalidSerial, setInvalid] = useState([]);
-    const [assetCount, setAssetCount] = useState(0);
+    const [manifestCount, setManifestCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
     const [nextDialog, setNext] = useState("");
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
+
+    //sample data
+    const sampleManifests = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -69,7 +73,7 @@ const AllManifests = (props) => {
 
         Promise.all(
             selected.map(serial =>
-                fetch(`http://localhost:4000/shipments`)
+                fetch(`http://localhost:4000/shipments/${serial}?project=parentId`)
                     .then(resp => {
                         if (resp.status < 300) {
                             return resp.json()
@@ -87,19 +91,19 @@ const AllManifests = (props) => {
                 }
                 return;
             })
-            setChildAssets(children)
+            setChildManifests(children)
         });
 
     }
 
     useEffect(() => {
         if (!nextDialog) return;
-        if (childAssets.length > 0) {
+        if (childManifests.length > 0) {
             setDialogs({ assetEditWarning: true });
         } else {
             setDialogs({ [nextDialog]: true });
         }
-    }, [childAssets, nextDialog]);
+    }, [childManifests, nextDialog]);
 
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
@@ -125,7 +129,42 @@ const AllManifests = (props) => {
         }
     }, [invalidSerial])
 
-   
+   useEffect(() => {
+        //generate the fetch url based on active filters and their keys
+        const generateURL = (filters) => {
+            let url = "http://localhost:4000/shipments";
+            const keys = Object.keys(filters);
+            keys.forEach((key, idx) => {
+                if (idx === 0) {
+                    url = `${url}?${key}=${filters[key]}`;
+                } else {
+                    url = `${url}&${key}=${filters[key]}`;
+                }
+            });
+
+            return url;
+        };
+
+        const urlToFetch = generateURL(filters);
+        fetch(urlToFetch)
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return { data: [], count: [{ count: 0 }] };
+                }
+            })
+            .then(json => {
+                setManifests(json.data);
+                setManifestCount(json.count[0].count);
+            });
+    }, [filters]);
+
+
+    useEffect(() => {
+        setFilters(s => ({ ...s, page: 0 }));
+    }, [activeFilters])
+
         
 
 
@@ -142,7 +181,7 @@ const AllManifests = (props) => {
                     setSelected={setSelected}
                     filters={filters}
                     setFilters={setFilters}
-                    count={assetCount}
+                    count={manifestCount}
                     variant="shipment"
                     >
 

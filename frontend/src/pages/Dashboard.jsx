@@ -1,14 +1,19 @@
 import React from 'react';
+
+//Library Tools
+import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 
+//Material-UI Components
 import Typography from '@material-ui/core/Typography';
 
+//Icons
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import DomainIcon from "@material-ui/icons/Domain";
 
+//Custom Components
 import Searchbar from '../components/Searchbar/Searchbar';
 import Header from '../components/Header';
-import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles({
     moduleHeader: {
@@ -17,10 +22,8 @@ const useStyles = makeStyles({
         alignSelf: "center"
     },
     moduleName: {
-        
         color:"#2E474E",
         flexGrow: "1",
-        
     },
     moduleIcon: {
         fontSize: "100px",
@@ -32,7 +35,6 @@ const useStyles = makeStyles({
         borderRadius: "3px",
         //border: "1px solid #2E474E",
         boxShadow: "2px 2px 3px #888888"
-
     },
     Modules: {
       display: "flex",
@@ -40,11 +42,8 @@ const useStyles = makeStyles({
       marginTop: "20px"
     },
     moduleContainer: {
-       
-
     },
     link: {
-        
         textDecoration: "none",
         cursor: "pointer"
     }
@@ -52,7 +51,6 @@ const useStyles = makeStyles({
 
 const Dashboard = () => {
     const classes = useStyles();
-
 
     return (
         <div>
@@ -74,7 +72,6 @@ const Dashboard = () => {
             </div>
         </div>
     );
-
 }
 
 export default Dashboard;
