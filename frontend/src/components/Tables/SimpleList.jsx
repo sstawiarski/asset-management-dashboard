@@ -46,7 +46,7 @@ const SimpleList = (props) => {
                         if (item instanceof Array) {
                             return (
                                 <TableRow className={classes.body} key={item}>
-                                    {item.map(thing => <TableCell>{thing}</TableCell>)}
+                                    {item.map((thing, idx) => <TableCell key={idx}>{thing}</TableCell>)}
                                 </TableRow>
                             );
                         } else {

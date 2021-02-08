@@ -11,6 +11,7 @@ import CreateAssembly from './pages/CreateAssembly';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
+import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
@@ -34,6 +35,7 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       main: '#71AABB',
+      contrastText: "#FFFFFF"
     },
     secondary: {
       main: '#48656b',
@@ -62,7 +64,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Switch>
         <Route exact path="/login" render={(props) => <LoginPage {...props} />} />
-        {!loggedIn ? <Redirect to='/login' /> : null}
+        {!loggedIn && Object.keys(local).length <= 0 ? <Redirect to='/login' /> : null}
         <Route>
           <div className="App">
             <div className={classes.root}>
@@ -79,6 +81,7 @@ function App() {
                   <Route path="/" exact component={Dashboard} />
                   <Route exact path="/test" component={TestPage} />
                   <Route path="/search/:query" component={SearchDetails} />
+                  <Route path="/shipments/view-all" component={AllManifests} />
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />

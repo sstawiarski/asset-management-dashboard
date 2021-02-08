@@ -17,6 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import { Typography } from '@material-ui/core';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -61,6 +62,8 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [missingType, setMissingType] = useState(false);
     const [missingBegin, setMissingBegin] = useState(false);
     const [missingEnd, setMissingEnd] = useState(false);
+    const [missingOwner, setMissingOwner] = useState(false);
+    const [user, setUser] = useLocalStorage('user', {});
 
     /* Fetches list of asset types for dropdown */
     useEffect(() => {
@@ -84,6 +87,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             return;
         }
 
+        if (owner === "") {
+            setMissingOwner(true);
+            return;
+        }
+
         /* setup data object to send based on API docs and required parameters */
         let data = {};
 
@@ -100,6 +108,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             const check = options.filter(item => item.name === schema);
             const serialTest = check[0].serializationFormat.split("-");
             const badOnes = serial.filter(s => {
+                if (check[0].name === "Gamma Sensor" || check[0].name === "Directional Sensor") {
+                    const reg = new RegExp(check[0].serializationFormat);
+                    return !reg.test(s);
+                }
+
                 const item = s.split('-');
                 return item[0] !== serialTest[0];
             });
@@ -128,6 +141,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                 data.list = serial;
                 data.assetName = schema;
                 data.owner = owner;
+                data.user = user.uniqueId;
                 sendData(data).then(res => {
                     if (res.invalid.length > 0) {
                         onSemiSuccess(res.invalid);
@@ -144,6 +158,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             data.endRange = endRange;
             data.owner = owner;
             data.assetName = schema;
+            data.user = user.uniqueId;
             sendData(data).then(res => {
                 if (res.invalid.length > 0) {
                     onSemiSuccess(res.invalid);
@@ -193,6 +208,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
         setMissingBegin(false);
         setMissingEnd(false);
         setMissingType(false);
+        setMissingOwner(false);
         setOwner("");
         setEntryType("range");
         setIncorrect([]);
@@ -217,7 +233,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
                         <Select
                             labelId="asset-type-label"
-                            labelWidth={105}
+                            labelWidth={90}
                             id="asset-type-label"
                             error={missingType}
                             value={schema}
@@ -253,11 +269,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                                     if (!serialEntered) setEntered(true);
                                     setSerials(event.target.value) 
                                 }}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                        console.log(serials)
-                                    }
-                                }}>
+                                >
 
                             </TextField>
                             {incorrect.length > 0 ?
@@ -299,12 +311,16 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                         <InputLabel id="asset-type-label">Owner</InputLabel>
                         <Select
                             labelId="owner-label"
-                            labelWidth={105}
+                            labelWidth={50}
                             fullWidth
                             id="owner-label"
+                            error={missingOwner}
                             value={owner}
                             defaultValue="Supply Chain-USA"
-                            onChange={(event) => setOwner(event.target.value)}
+                            onChange={(event) => {
+                                if (missingOwner) setMissingOwner(false);
+                                setOwner(event.target.value);
+                            }}
                         >
                             {/* TODO: De-hardcode */}
                             <MenuItem value="Supply Chain-USA">Supply Chain-USA</MenuItem>

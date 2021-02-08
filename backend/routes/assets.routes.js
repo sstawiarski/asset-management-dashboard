@@ -9,12 +9,10 @@ const Event = require("../models/event.model");
 const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
-
+const decrypt = require('../auth.utils').decrypt;
 
 router.get("/", async (req, res, err) => {
-
   try {
-
     let aggregateArray = [];
 
     //if there are possible filters other than search
@@ -26,10 +24,12 @@ router.get("/", async (req, res, err) => {
       const filters = await Object.keys(query)
         .reduce(async (pc, c) => {
           const p = await pc;
+
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
           if (c === "dateCreated" || c === "dateUpdated") {
+
             const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
             const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
             p["$and"] = [{
@@ -41,12 +41,57 @@ router.get("/", async (req, res, err) => {
                 $lte: afterDate
               }
             }];
+
           } else if (c === "inAssembly") {
+
+            //inAssembly query param allows us to only show assets that are components of the inAssembly name
             const assemblyType = decodeURI(query[c]);
             const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
             if (Object.keys(assemblySchema).length > 0) {
               p["assetName"] = { $in: assemblySchema.components };
             }
+
+          } else if (c === "isAssembly") {
+
+            //isAssembly query param limits results to only assets who do not have a parentId or whose parent assembly is marked disassembled
+            const disassembled = await Asset.find({ assembled: false }, { serial: 1 });
+            const disSerials = disassembled.map(item => item.serial);
+            p["$or"] = [{ parentId: null }, { parentId: { $in: disSerials } }];
+
+          } else if (c === "exclude") {
+
+            //exclude query param is a stringified array of asset names that should not be included in the results (i.e. Only want to see Gap Subs? exclude will be ["Carrier"..."Landing Sub"... etc])
+            const jsonExclude = decodeURI(query[c]);
+            const excludeArr = JSON.parse(jsonExclude);
+
+            //since assetName was set earlier we must replace with an $and and keep it
+            if (p["assetName"]) {
+              const prev = p["assetName"];
+              delete p["assetName"];
+
+              if (p["$and"]) {
+                //find all assets that are not in the exclude array
+                p["$and"] = [...p["$and"], {
+                  assetName: {
+                    $nin: excludeArr,
+                    ...prev
+                  }
+                }];
+              } else {
+                p["$and"] = [
+                  {
+                    assetName: {
+                      $nin: excludeArr,
+                      ...prev
+                    }
+                  }
+                ];
+              }
+
+            } else {
+              p["assetName"] = { $nin: excludeArr };
+            }
+
           } else if (!disallowed.includes(c)) {
             //convert the "true" and "false" strings in the query into actual booleans
             if (query[c] === "true") {
@@ -54,6 +99,10 @@ router.get("/", async (req, res, err) => {
             } else if (query[c] === "false") {
               p[c] = false;
             } else if (query[c] === "null") {
+              //parentId is taken care of when isAssembly is set so we can ignore it
+              if (query.isAssembly && c === "parentId") {
+                return pc;
+              }
               p[c] = null;
             } else {
               p[c] = query[c];
@@ -179,24 +228,25 @@ router.get("/", async (req, res, err) => {
     //filter results to determine better or even exact matches
     if (req.query.search) {
 
+      //results are found
       if (result[0].data.length) {
 
+        //if top match is an exact match, return only that one
         if (result[0].data[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
           const exactMatch = [result[0].data[0]];
           res.status(200).json({
             count: [{ count: 1 }],
-            data: [exactMatch]
+            data: exactMatch
           });
 
         } else {
-
+          //if matches are extremely close then only return the close matches
           if (result[0].data[0].confidenceScore > 10) {
             const closeMatches = result[0].data.filter(asset => asset.confidenceScore > 10);
             res.status(200).json({
               count: [{ count: closeMatches.length }],
               data: [...closeMatches]
             });
-
           } else {
             res.status(200).json(result[0]);
           }
@@ -211,7 +261,6 @@ router.get("/", async (req, res, err) => {
 
       //return all results found if not a search
     } else {
-
       if (result[0].data.length) {
         res.status(200).json(result[0]);
 
@@ -240,15 +289,19 @@ router.post('/', async (req, res, err) => {
 
     const { serialBase, list, beginRange, endRange, owner, type, assetName } = req.body;
     const invalid = [];
+    const username = JSON.parse(decrypt(req.body.user)).employeeId; //get user info for the event document later
 
+    //creating from a list of predefined serials
     if (type === "list") {
       const created = [];
       for (let serial of list) {
+        //check if serial already exists and add it to an array to alert the user
         const existingDoc = await Asset.find({ serial: serial });
         if (existingDoc.length) {
           invalid.push(serial);
           continue;
         } else {
+          //if not already existing, create it with default info
           const newAsset = new Asset({
             serial: serial,
             assetName: assetName,
@@ -264,12 +317,14 @@ router.post('/', async (req, res, err) => {
         }
       }
 
+      //create event document
       const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
       const creation = new Event({
         eventType: "Creation",
         eventTime: Date.now(),
         key: `CRE-${count.next}`,
         productIds: created,
+        initiatingUser: username,
         eventData: {
           details: `Asset(s) created in system.`
         }
@@ -282,12 +337,16 @@ router.post('/', async (req, res, err) => {
         invalid: invalid
       })
 
+      //create assets from a specified range
     } else if (type === "range") {
       const beginningSerial = parseInt(beginRange);
       const endingSerial = parseInt(endRange);
       const createdSerials = [];
+
       for (let i = beginningSerial; i <= endingSerial; i++) {
         const newSerial = serialBase + "" + i;
+
+        //check if serial already exists
         const existing = await Asset.find({ serial: newSerial });
         if (existing.length) {
           invalid.push(newSerial);
@@ -312,15 +371,19 @@ router.post('/', async (req, res, err) => {
         eventTime: Date.now(),
         key: `CRE-${count.next}`,
         productIds: createdSerials,
+        initiatingUser: username,
         eventData: {
           details: `Asset(s) created in system.`
         }
       });
       await creation.save();
+
+      //send back success message with any serials that could not be provisioned
       res.status(200).json({
         message: "Successfully created assets",
         invalid: invalid
-      })
+      });
+
     } else {
       res.status(403).json({ message: "Type selection missing", internalCode: "type_selection_missing" });
     }
@@ -338,10 +401,13 @@ router.post('/', async (req, res, err) => {
 router.patch("/", async (req, res) => {
   try {
     const list = req.body.assets; //list of selected serials from client
+    const username = JSON.parse(decrypt(req.body.user));
+    const isDisassembly = req.body.disassembly;
 
     //object from client representing fields to update
     //should really only be one
     const field = req.body.update;
+    console.log(field);
     const fieldName = Object.getOwnPropertyNames(field)[0];
 
     //get all parent assembly documents so we can get their serial and update children
@@ -374,7 +440,13 @@ router.patch("/", async (req, res) => {
 
     //updates main assets and assemblies selected
     //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
-    await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+    const ret = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
+    console.log(ret);
+
+    if (isDisassembly) {
+      res.status(205).json({ message: "Successfully marked assembly as disassembled" });
+      return;
+    }
 
     //check whether any children are edited apart from their parent
     if (missingParentSerials.length > 0) {
@@ -405,6 +477,7 @@ router.patch("/", async (req, res) => {
             eventTime: Date.now(),
             key: `REM-${count.next}`,
             productIds: missingParentSerials[idx],
+            initiatingUser: username.employeeId,
             eventData: {
               details: `Removed ${name} from ${missingParentSerials[idx]} and marked incomplete.`
             }
@@ -482,6 +555,7 @@ router.patch("/", async (req, res) => {
         eventTime: Date.now(),
         key: `${eventInfo[1]}${counter.next}`,
         productIds: allAffectedAssets,
+        initiatingUser: username.employeeId,
         eventData: {
           details: `Changed ${allAffectedAssets.length} product(s) ${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} to ${field[fieldName]}.`
         }
@@ -509,15 +583,22 @@ router.patch("/", async (req, res) => {
   }
 });
 
+/**
+ * Get schemas for non-assemblies
+ */
 router.get('/schemas', async (req, res) => {
   try {
     const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
+    res.status(500).json({ message: "Error getting schemas", internalCode: "asset_schema_fetch_error" });
   }
 })
 
+/**
+ * Load sample assets into database
+ */
 router.put("/load", async (req, res) => {
   try {
     sampleAssets.forEach(async (item) => {
@@ -537,50 +618,67 @@ router.put("/load", async (req, res) => {
   }
 });
 
-router.post('/create-Assembly', async (req, res, err) => {
+/**
+ * Create a new assembly
+ */
+router.post('/assembly', async (req, res, err) => {
   try {
-    const assets = req.body.assets
-    const override = req.body.override
+    const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+    const newAssembly = new Asset({
+      serial: req.body.serial,
+      assetName: req.body.type,
+      missingItems: req.body.missingItems,
+      owner: req.body.owner,
+      assetType: "Assembly",
+      parentId: null,
+      dateCreated: Date.now(),
+      groupTag: req.body.groupTag,
+      checkedOut: false,
+      assignmentType: "Owned",
+      incomplete: req.body.missingItems.length ? true : false,
+      assembled: true
+    });
 
-    // Queryig DB to find the assetTYPE
-    const asset = await Asset.findOne({ assetName: req.body.type, provisioned: true });
-    if (!asset) {
-      res.status(404).json({
-        message: "No available assembly serials."
-      })
-      return;
-    }
+    await newAssembly.save();
 
-    if (override) {
-      await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: req.body.missingItems, groupTag: req.body.groupTag, provisioned: false })
-      await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
-      res.status(200).json({ message: "Successfully updated" })
-    }
-    else {
-      const findSerial = await Asset.find({ serial: { $in: assets }, parentId: null })
-      if (findSerial.length === assets.length) {
-        await Asset.updateOne({ assetName: req.body.type, provisioned: true }, { assetType: "Assembly", owner: req.body.owner, missingItems: [], groupTag: req.body.groupTag, provisioned: false })
-        await Asset.updateMany({ serial: { $in: assets } }, { parentId: asset.serial })
-        res.status(200).json({ message: "Successfully updated" })
+    //find all child assets that already have a parent
+    const withParents = await Asset.find({
+      serial: {
+        $in: req.body.assets
+      },
+      parentId: {
+        $ne: null
       }
-      else {
-        if (findSerial) {
-          const objs = findSerial.map(obj => obj.serial);
-          const missingSers = assets.filter(ser => !objs.includes(ser));
-          res.status(403).json({
-            message: "Some assets were added to other assemblies prior to this submission.",
-            internalCode: "assets_already_used",
-            used: missingSers
-          })
-        } else {
-          res.status(500).json({
-            message: "Error finding assets",
-            interalCode: "cannot_find_assets"
-          })
-        }
+    });
 
-      }
+    const parentSers = withParents.map(item => item.parentId);
+    const assetNames = withParents.map(item => item.assetName);
+
+     //update all assets with the new parent
+     await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
+
+     //update old parents to be missing the item and mark each as incomplete
+    let i = 0;
+    for (const parent of parentSers) {
+      await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true });
+      i++;
     }
+
+    const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+    const creation = new Event({
+      eventType: "Creation",
+      eventTime: Date.now(),
+      key: `CRE-${count.next}`,
+      productIds: [req.body.serial, ...req.body.assets],
+      initiatingUser: username.employeeId,
+      eventData: {
+        details: `Created new assembly with serial ${req.body.serial}`
+      }
+    });
+
+    await creation.save();
+
+    res.status(200).json({ message: "Successfully created assembly", key: `CRE-${count.next}` });
 
   }
   catch (err) {
@@ -592,7 +690,79 @@ router.post('/create-Assembly', async (req, res, err) => {
   }
 });
 
-//load databse with assembly schemas for comparison when creating an assembly
+/**
+ * Update an existing assembly
+ */
+router.patch('/assembly', async (req, res) => {
+  try {
+    const { serial, missingItems, assets, user } = req.body;
+    const username = JSON.parse(decrypt(user));
+
+    const missing = missingItems ? missingItems : [];
+
+    await Asset.updateOne({ serial: serial, assetType: "Assembly" }, {
+      missingItems: missing,
+      assembled: true,
+      incomplete: missing.length > 0 ? true : false
+    });
+
+    const findChildren = await Asset.find({ parentId: serial });
+    const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
+
+    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null });
+
+    //find all new children that already have parents
+    const withParents = await Asset.find({
+      serial: {
+        $in: assets
+      },
+      parentId: {
+        $ne: serial
+      }
+    });
+
+    const parentSers = withParents.map(item => item.parentId);
+    const assetNames = withParents.map(item => item.assetName);
+
+    //update children with new parent
+    await Asset.updateMany({ serial: { $in: assets } }, { parentId: serial });
+
+    //update parents to mark incomplete
+    let i = 0;
+    for (const parent of parentSers) {
+      await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true });
+      i++;
+    }
+
+    const eventType = getEventType("assemblyMod");
+    const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+
+    const uniqueParents = [...new Set(parentSers)];
+
+    const modification = new Event({
+      eventType: eventType[0],
+      eventTime: Date.now(),
+      key: `${eventType[1]}${count.next}`,
+      productIds: [req.body.serial, ...req.body.assets, ...uniqueParents],
+      initiatingUser: username.employeeId,
+      eventData: {
+        details: `Updated assembly with serial ${req.body.serial}. Removed children from ${JSON.stringify(uniqueParents)} and added to this assembly.`
+      }
+    });
+
+    await modification.save();
+
+    res.status(200).json({ message: "Successfully updated assembly" });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error updating assembly", internalCode: "assembly_update_error" });
+  }
+});
+
+/**
+ * Load databse with assembly schemas for comparison when creating an assembly
+ */
 router.put("/assembly/schema", async (req, res) => {
   try {
     const assemblySchemas = [{
@@ -658,12 +828,15 @@ router.put("/assembly/schema", async (req, res) => {
 
 });
 
+/**
+ * Get schemas for assemblies
+ */
 router.get("/assembly/schema", async (req, res) => {
   let query = {};
 
   const type = decodeURI(req.query.type);
   const assembly = req.query.assembly;
-  const isAll = req.query.all === "true" ? true : req.query.all === "false" ? false : null;
+  const isAll = req.query.all === "true" ? true : req.query.all === "false" ? false : null; //specify whether to retreive one or all schemas
   if (type && !isAll) {
     query.name = type;
   }
@@ -679,7 +852,7 @@ router.get("/assembly/schema", async (req, res) => {
 
   try {
     let schema = null;
-    console.log(query)
+
     if (isAll) {
       schema = await AssemblySchema.find(query).select({
         _id: 0,
@@ -699,7 +872,6 @@ router.get("/assembly/schema", async (req, res) => {
         message: "Error finding assembly schema",
         internal_code: "schema_error",
       });
-      console.log(schema)
     }
   } catch (err) {
     console.log(err);
@@ -708,8 +880,11 @@ router.get("/assembly/schema", async (req, res) => {
       internal_code: "schema_error",
     });
   }
-})
+});
 
+/**
+ * Retreive a single asset document
+ */
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
   const { project } = req.query
@@ -755,6 +930,8 @@ function getEventType(field) {
       return ["Change of Assignment Type", "ASN-"];
     case "creation":
       return ["Creation", "CRE-"];
+    case "assemblyMod":
+      return ["Assembly Modification", "ABM-"]
   }
 }
 

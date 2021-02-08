@@ -149,6 +149,15 @@ const assetPaths = {
                         description: 'The serial number to end provisioning at when using the range method (inclusive)'
                     },
                     required: false
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
                 }
             ],
             responses: {
@@ -233,6 +242,15 @@ const assetPaths = {
                     },
                     description: 'Boolean whether or not to force update child assets whose assembly is not getting updated, remove them from the assembly, and mark it incomplete',
                     required: false
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
                 }
             ],
             responses: {
@@ -387,6 +405,208 @@ const assetPaths = {
                 },
                 '503': {
                     description: 'Error loading sample data into database',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    'assembly': {
+        post: {
+            tags: ['Assets'],
+            description: 'Create a new assembly and update its children',
+            operationId: 'assemblyCreate',
+            parameters: [
+                {
+                    name: 'serial',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/serial'
+                    },
+                    required: true
+                },
+                {
+                    name: 'assetName',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/assetType'
+                    },
+                    required: true
+                },
+                {
+                    name: 'assets',
+                    in: 'body',
+                    description: 'Child assets of the assembly to create',
+                    schema: {
+                        $ref: '#/components/schemas/productIds'
+                    },
+                    required: true
+                },
+                {
+                    name: 'missingItems',
+                    in: 'body',
+                    description: 'Plaintext names of the assets the assembly is missing',
+                    schema: {
+                        type: 'array',
+                        description: 'Names of the asset types the assembly is missing',
+                        items: {
+                            type: 'string',
+                            example: 'Landing Sub'
+                        }
+                    },
+                    required: false
+                },
+                {
+                    name: 'owner',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/owner'
+                    },
+                    required: true
+                },
+                {
+                    name: 'groupTag',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/groupTag'
+                    },
+                    required: true
+                },
+                {
+                    name: 'override',
+                    in: 'body',
+                    schema: {
+                        type: 'boolean',
+                        description: 'Whether or not to override child parent assignments and remove them from their existing parent'
+                    },
+                    required: true
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Assembly successfully created and child assets successfully updated',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '403': {
+                    description: 'Some selected assets already had parent ids and were not overridden',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    },
+                                    internalCode: {
+                                        type: 'string'
+                                    },
+                                    used: {
+                                        $ref: '#/components/schemas/productIds'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error creating assembly',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        patch: {
+            tags: ['Assets'],
+            description: 'Update an assembly and its children',
+            operationId: 'assemblyUpdate',
+            parameters: [
+                {
+                    name: 'serial',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/serial'
+                    },
+                    required: true
+                },
+                {
+                    name: 'missingItems',
+                    in: 'body',
+                    schema: {
+                        type: 'array',
+                        description: 'Names of the asset types the assembly is missing',
+                        items: {
+                            type: 'string',
+                            example: 'Landing Sub'
+                        }
+                    },
+                    required: false
+                },
+                {
+                    name: 'assets',
+                    in: 'body',
+                    schema: {
+                        $ref: '#/components/schemas/productIds'
+                    },
+                    required: true
+                },
+                {
+                    name: 'user',
+                    in: 'body',
+                    schema: {
+                        type: 'string'
+                    },
+                    description: 'Encrypted user id information',
+                    required: true
+                }
+            ],
+            responses: {
+                '200': {
+                    description: 'Assembly and children successfully updated',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    message: {
+                                        type: 'string'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                '500': {
+                    description: 'Error updating assembly',
                     content: {
                         'application/json': {
                             schema: {

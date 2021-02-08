@@ -10,6 +10,7 @@ const paths = {
     '/assets/:serial': assetsPaths.findBySerial,
     '/assets/:searchFilter': assetsPaths.findByFilter,
     '/assets/assembly/schema': assetsPaths["assembly/schema"],
+    '/assets/assembly': assetsPaths["assembly"],
     
     '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,
@@ -21,6 +22,7 @@ const paths = {
     '/customers/load': customerPaths.load,
 
     '/employees/load': employeePaths.load,
+    '/employees/:employeeId': employeePaths.getById,
 
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,

@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
     check: {
         color: "#46c240",
         marginLeft: "8px"
+    },
+    inactive: {
+        backgroundColor: theme.palette.action.disabledBackground
     }
 }));
 
@@ -101,7 +104,8 @@ const NewTable = (props) => {
         setSelected,
         filters,
         setFilters,
-        compare
+        compare,
+        inactive
     } = props;
     const url = types[variant];
 
@@ -222,12 +226,12 @@ const NewTable = (props) => {
                         size={'medium'}
                         aria-label={`${variant} table`}
                     >
-                        
-                        
 
 
-                        
-                
+
+
+
+
                         <TableHead
                             classes={classes}
                             numSelected={selected.length}
@@ -248,7 +252,7 @@ const NewTable = (props) => {
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
-                                        <TableRow
+                                        <TableRow key={index}
                                             hover
                                             onClick={(event) => {
                                                 if (Clickable) {
@@ -262,9 +266,11 @@ const NewTable = (props) => {
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
-                                            key={item[selectedFields[0]]}
                                             selected={isItemSelected}
+                                            className={inactive === "parentId" ? item[inactive] ? classes.inactive : "row" : item[inactive] === false ? classes.inactive : "row"}
                                         >
+                                            { /* TODO: Make inactivity consistent i.e. retired = true = inactive => active = false = inactive? */}
+                                            
                                             {checkboxes ?
                                                 <TableCell
                                                     padding="checkbox"
@@ -311,14 +317,15 @@ const NewTable = (props) => {
                                                     } else if (typeof item[arrayItem] === "boolean") {
                                                         return (<TableCell key={arrayItem} align="left">
                                                             {item[arrayItem] ? "Yes" : "No"}
+                                                            <br />
                                                             {
                                                                 arrayItem === "checkedOut" ?
                                                                     <>
-                                                                        <br />
                                                                         <Typography variant="caption" style={{ color: "#838383" }}>{item["assignee"]}</Typography>
                                                                     </>
                                                                     : null
                                                             }
+                                                            <br />
                                                         </TableCell>);
                                                     }
 

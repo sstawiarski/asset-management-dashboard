@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
+
+//Library tools
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 
+//Material-UI Imports
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -8,9 +12,17 @@ import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
 import AssetTimeline from '../components/AssetTimeline'
 import Manifest from '../components/Manifest';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import EditIcon from '@material-ui/icons/Edit';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
+//Dialogs
+import AssemblyModificationWarning from '../components/Dialogs/AssemblyModificationWarning';
+
+//Tools
 import { dateOptions } from '../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
@@ -35,6 +47,29 @@ const useStyles = makeStyles((theme) => ({
     },
     button: {
         display: "block"
+    },
+    error: {
+        color: "red",
+    },
+    errorIcon: {
+        position: "relative",
+        color: "red",
+        fontSize: "14px",
+        top: "3px",
+        paddingRight: "3px"
+    },
+    errorDiv: {
+        display: "inline-block"
+    },
+    puzzle: {
+        position: "relative",
+        top: "3px",
+        paddingRight: "3px",
+        color: "#E5C92D",
+        fontSize: "14px",
+    },
+    puzzleText: {
+        color: "#E5C92D",
     }
 }));
 
@@ -42,11 +77,24 @@ const AssetDetails = (props) => {
 
     const { serial } = props.match.params;
     const classes = useStyles();
+    const history = useHistory();
+
+    //the active asset
     const [asset, setAsset] = useState({});
+
+    //the events for the timeline
     const [events, setEvents] = useState([]);
+
+    //page of events
     const [page, setPage] = useState(0);
+
+    //indicates no more pages of events to view
     const [empty, setEmpty] = useState(false);
 
+    //warning dialog open status for when assembly is being disassembled
+    const [warningOpen, setWarning] = useState(false);
+
+    /* Fetch asset information and first events page */
     useEffect(() => {
         fetch(`http://localhost:4000/assets/${serial}`)
             .then(response => {
@@ -70,7 +118,7 @@ const AssetDetails = (props) => {
             })
             .then(json => {
                 if (json.length === 0) setEmpty(true);
-                setEvents([...events, ...json]);
+                setEvents(e => [...e, ...json]);
             });
     }, [page, serial]);
 
@@ -137,17 +185,80 @@ const AssetDetails = (props) => {
                                 </Grid>
 
                                 <Grid container className={classes.item}>
+                                    {/* Check whether asset is an Assembly and display manifest */}
                                     {
                                         asset.assetType === "Assembly" ?
                                             <Grid item xs={12} sm={12} md={6} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Assembly Manifest</Typography>
+                                                <div style={{ textAlign: "right" }}>
+
+                                                    {/* Render text and list of missing items if items are missing or status is disassembled */}
+                                                    {
+                                                        asset.incomplete ?
+                                                            <Tooltip title={
+                                                                <>
+                                                                    <Typography variant="caption" style={{ color: "white" }}><b>Missing Items:</b></Typography>
+                                                                    <br />
+                                                                    {asset.missingItems ? asset.missingItems.map((item, idx) => <React.Fragment key={idx}><Typography variant="caption" style={{ color: "white" }}>{item}</Typography><br /></React.Fragment>) : null}
+                                                                </>
+                                                            } arrow placement="top">
+                                                                <div className={classes.errorDiv}>
+                                                                    <ErrorOutlineIcon className={classes.errorIcon} />
+                                                                    <Typography variant="caption" className={classes.error}><b>Incomplete</b></Typography>
+                                                                </div>
+                                                            </Tooltip>
+
+                                                            : null
+                                                    }
+                                                    <br />
+                                                    {
+                                                        asset.assembled === false ?
+                                                            <div className={classes.errorDiv}>
+                                                                <ExtensionIcon className={classes.puzzle} />
+                                                                <Typography variant="caption" className={classes.puzzleText}><b>Disassembled</b></Typography>
+                                                            </div>
+                                                            : null
+                                                    }
+                                                </div>
+
+                                                {/* List of child components */}
                                                 <Manifest data={asset} />
+
+                                                {/* Use this page's asset serial and push state to the assembly creator page to modify an existing assembly */}
+                                                <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => {
+                                                    try {
+                                                        if (asset.assembled) {
+                                                            setWarning(true);
+                                                        } else {
+                                                            history.push({
+                                                                pathname: '/assets/create-assembly',
+                                                                state: {
+                                                                    isAssemblyEdit: true,
+                                                                    serial: asset.serial,
+                                                                    assemblyType: asset.assetName
+                                                                }
+                                                            })
+                                                        }
+                                                    } catch {
+                                                        history.push({
+                                                            pathname: '/assets/create-assembly',
+                                                            state: {
+                                                                isAssemblyEdit: true,
+                                                                serial: asset.serial,
+                                                                assemblyType: asset.assetName
+                                                            }
+                                                        })
+                                                    }
+                                                }}>Edit</Button>
+
                                             </Grid>
                                             : null
                                     }
+
+                                    {/* Display asset timeline */}
                                     <Grid item xs={12} sm={12} md={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Asset Timeline</Typography>
-                                        <AssetTimeline data={events} onMore={() => setPage(page+1)} empty={empty} />
+                                        <AssetTimeline data={events} onMore={() => setPage(page + 1)} empty={empty} />
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -155,6 +266,9 @@ const AssetDetails = (props) => {
                     </Grid>
                 </Grid>
             </Grid>
+
+            {/* Warning dialog for when assembly is about to be edited but it is still marked 'assembled' */}
+            <AssemblyModificationWarning open={warningOpen} setOpen={setWarning} assembly={asset} />
         </div>
     );
 };

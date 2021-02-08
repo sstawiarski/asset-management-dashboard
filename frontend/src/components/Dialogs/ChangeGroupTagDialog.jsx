@@ -9,6 +9,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -28,6 +29,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
 
     /* Store state of select dropdown */
     const [groupTag, setGroupTag] = useState("");
+    const [user, setUser] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -53,7 +55,8 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
             update: {
                 groupTag: groupTag
             },
-            override: override
+            override: override,
+            user: user.uniqueId
         }
 
         sendData(data)
