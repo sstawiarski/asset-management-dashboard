@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
+import { makeStyles } from '@material-ui/core/styles'
 
 //Material-UI Components
 import Grid from '@material-ui/core/Grid';
@@ -16,11 +18,30 @@ import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
+const useStyles = makeStyles((theme) => ({
+    filterList: {
+        paddingLeft: "20%"
+    },
+    autocomplete: {
+        marginBottom: "40px",
+        padding: "10px"
+    },
+    subtitle: {
+        color: "grey"
+    },
+    dateContainer: {
+        marginTop: "20px"
+    }
+}));
 
+const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
+    const classes = useStyles();
+
+    /* All filter state */
     const [state, setState] = useState({
         shipmentType: "all",
         dateCreated: null,
@@ -36,19 +57,43 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 
     /* Get available shipment locations */
     useEffect(() => {
-
+        fetch('http://localhost:4000/locations')
+            .then(res => res.json())
+            .then(json => {
+                setState(s => ({ ...s, allShippingOptions: json }));
+            });
     }, [])
 
     /* Limit the locations selectable based on shipment type */
     useEffect(() => {
+
         if (state.shipmentType === "all") {
-            setState(s => ({...s, shipFromOptions: s.allShippingOptions, shipToOptions: s.allShippingOptions}));
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions
+            }));
         } else if (state.shipmentType === "Incoming") {
-            setState(s => ({...s, shipFromOptions: s.allShippingOptions, shipToOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")}));
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")
+            }));
         } else if (state.shipmentType === "Outgoing") {
-            setState(s => ({...s, shipToOptions: s.allShippingOptions, shipFromOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")}));
+            setState(s => ({
+                ...s,
+                shipToOptions: s.allShippingOptions,
+                shipFromOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")
+            }));
+        } else {
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions
+            }));
         }
-    }, [state.shipmentType])
+
+    }, [state.shipmentType, state.allShippingOptions])
 
     const handleClose = () => {
         setOpen(false);
@@ -57,10 +102,13 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
     /* Convert the input values to proper stringified JSON and then send them to the parent */
     const handleSubmit = () => {
         const disallowed = ["all", null, ""];
-        const onlyActive = Object.keys(state)
+        const disallowedLabels = ["allShippingOptions", "shipToOptions", "shipFromOptions"];
+        const onlyActive = Object.keys(state).filter(label => !disallowedLabels.includes(label))
             .reduce((p, c) => {
                 if (!disallowed.includes(state[c])) {
-                    if (state[c] === "Yes") {
+                    if (c === "shipFrom" || c === "shipTo") {
+                        p[c] = state[c]._id;
+                    } else if (state[c] === "Yes") {
                         p[c] = true;
                     } else if (state[c] === "No") {
                         p[c] = false;
@@ -75,15 +123,22 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
         setOpen(false);
     }
 
+    /* Handles non-date filter state changes */
     const handleChange = (event) => {
         const { name, value } = event.target
-        setState(s => ({
-            ...s,
-            [name]: value
-        }));
 
+        //clear current selections if type changes
+        if (name === "shipmentType") {
+            setState(s => ({ ...s, shipTo: null, shipFrom: null, [name]: value }));
+        } else {
+            setState(s => ({
+                ...s,
+                [name]: value
+            }));
+        }
     };
 
+    /* Resets all filter states without removing the fetched location list */
     const handleReset = () => {
         setState(s => ({
             ...s,
@@ -99,21 +154,21 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
         }));
     }
 
+    /* Date filter change handler */
     const handleDateChange = (name, newDate) => {
         setState(s => ({
             ...s,
             [name]: newDate
-        }))
+        }));
     }
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>{"Filter Shipments"}</DialogTitle>
-
             <DialogContent>
-                <Grid container justify="space-between" style={{ paddingLeft: "20%" }}>
+                <Grid className={classes.filterList} container justify="space-between">
 
-
+                    {/* Filter incoming vs. outgoing shipments */}
                     <Grid item xs={6}>
                         <FormControl component="fieldset">
                             <span>Shipment Type</span>
@@ -126,6 +181,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 
                     </Grid>
 
+                    {/* Filter by current shipment status */}
                     <Grid item xs={6}>
                         <FormControl component="fieldset">
                             <span>Status</span>
@@ -139,28 +195,75 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                     </Grid>
                 </Grid>
 
-                <Grid container justify="space-evenly" style={{ marginTop: "20px" }}>
-                    {/* TODO: Change to grouped by type of location */}
+                {/* Shipment location filters with autocomplete and grouping by location type */}
+                <Grid className={classes.dateContainer} container justify="space-evenly">
                     <Grid item xs={6}>
                         <Autocomplete
                             id="shipment-from-locator"
+                            className={classes.autocomplete}
                             options={state.shipFromOptions}
+                            getOptionLabel={(option) => option.name}
+                            groupBy={(option) => option.type}
                             value={state.shipFrom}
-                            onChange={(event, newValue) => setState(s => ({...s, shipFrom: newValue}))}
-                            style={{ marginBottom: "40px", paddingRight: "20px" }}
+                            onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
                             renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
+                            renderOption={(option) => {
+                                /* Render autocomplete list with subtitles that tell either the operator name, client name, or address */
+                                return (
+                                    <>
+                                        <div>
+                                            {option.name}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
+                                                {
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
+                                                }
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <Autocomplete
                             id="shipment-to-locator"
                             options={state.shipToOptions}
+                            getOptionLabel={(option) => option.name}
                             value={state.shipTo}
-                            onChange={(event, newValue) => setState(s => ({...s, shipTo: newValue}))}
-                            style={{ marginBottom: "40px" }}
+                            groupBy={(option) => option.type}
+                            onChange={(event, newValue) => setState(s => ({ ...s, shipTo: newValue }))}
+                            className={classes.autocomplete}
+                            renderOption={(option) => {
+                                return (
+                                    <>
+                                        <div>
+                                            {option.name}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
+                                                {
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
+                                                }
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
                             renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" />}
                         />
                     </Grid>
+
+                    {/* Date filters */}
                     <Grid item xs={5}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Grid container justify="space-evenly">
@@ -223,20 +326,22 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                             </Grid>
                         </MuiPickersUtilsProvider>
                     </Grid>
-
                 </Grid>
-
             </DialogContent>
+
             <DialogActions>
-                <Button onClick={handleReset} color="primary">
-                    Reset
-          </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    Filter
-          </Button>
+                <Button onClick={handleReset} color="primary">Reset</Button>
+                <Button onClick={handleSubmit} color="primary">Filter</Button>
             </DialogActions>
+
         </Dialog>
-    )
-}
+    );
+};
+
+ShipmentFilter.propTypes = {
+    open: PropTypes.bool.isRequired,
+    setOpen: PropTypes.func.isRequired,
+    setActiveFilters: PropTypes.func.isRequired
+};
 
 export default ShipmentFilter;

@@ -12,11 +12,20 @@ const sampleRepairFacilities = require('../sample_data/sampleRepairFacility.data
 router.get('/', async (req, res) => {
     const type = req.query.type;
     try {
+
+        /* No specific type selected, send all as one array with appropriate type and name identifiers */
         if (!type) {
-            res.status(400).json({
-                message: "Missing location type query paramter",
-                internal_code: "missing_query_params"
-            })
+            let rigs = await Rig.find({}, { contactName: 0, contactNumber: 0, __v: 0 }).sort({ rigName: 1 });
+            rigs = rigs.map(item => ({ ...item._doc, type: "Rig", name: item._doc.rigName }));
+
+            let staging = await StagingFacility.find({}, { contactName: 0, contactNumber: 0, __v: 0 }).sort({ facilityName: 1 });
+            staging = staging.map(item => ({ ...item._doc, type: "Staging Facility", name: item._doc.facilityName }));
+
+            let repair = await RepairFacility.find({}, { contactName: 0, contactNumber: 0, __v: 0 }).sort({ facilityName: 1 });
+            repair = repair.map(item => ({ ...item._doc, type: "Repair Facility", name: item._doc.facilityName }));
+
+            const result = [ ...repair, ...rigs, ...staging];
+            res.status(200).json(result);
         } else {
             if (type === "rig") {
                 const rigs = await Rig.find({});

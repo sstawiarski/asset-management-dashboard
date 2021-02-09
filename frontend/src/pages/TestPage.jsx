@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Button from '@material-ui/core/Button';
 
@@ -12,6 +12,11 @@ const TestPage = () => {
     const [createOpen1, setCreateOpen1] = useState(false);
     const [createOpen2, setCreateOpen2] = useState(false);
     const [shipmentOpen, setShipmentOpen] = useState(false);
+    const [activeFilters, setActiveFilters] = useState({});
+
+    useEffect(() => {
+        console.log(activeFilters);
+    }, [activeFilters])
 
     return (
         <div>
@@ -22,7 +27,7 @@ const TestPage = () => {
             {/* Take in open and assets from parent component so dialog can know what is selected */}
             <CreateManifestDialog open={createOpen1} setOpen={setCreateOpen1} />
             <CreateAssetDialog open={createOpen2} setOpen={setCreateOpen2} assets={['G800-1119']} />
-            <ShipmentFilter open={shipmentOpen} setOpen={setShipmentOpen} />
+            <ShipmentFilter open={shipmentOpen} setOpen={setShipmentOpen} setActiveFilters={setActiveFilters} />
         </div>
     );
 };

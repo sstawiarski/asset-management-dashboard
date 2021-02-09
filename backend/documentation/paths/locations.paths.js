@@ -35,16 +35,6 @@ const locationPaths = {
                         }
                     }
                 },
-                '400': {
-                    description: 'Missing location type parameter',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            }
-                        }
-                    }
-                },
                 '500': {
                     description: 'Error retrieving location data',
                     content: {
