@@ -25,7 +25,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
     const [state, setState] = useState({
         retired: "all",
         dateCreated: null,
-        dateUpdated: null,
+        lastUpdated: null,
         assignmentType: "all",
         assetType: "all",
         groupTag: "",
@@ -116,7 +116,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
             ...s,
             retired: "all",
             dateCreated: null,
-            dateUpdated: null,
+            lastUpdated: null,
             assetType: "all",
             assignmentType: "all",
             groupTag: "",
@@ -294,11 +294,11 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
                                     format="MM/dd/yyyy"
                                     margin="normal"
                                     id="date-picker-inline"
-                                    name="dateUpdated"
-                                    label="Date Updated"
-                                    value={state.dateUpdated}
+                                    name="lastUpdated"
+                                    label="Last Updated"
+                                    value={state.lastUpdated}
                                     inputVariant="outlined"
-                                    onChange={date => handleDateChange("dateUpdated", date)}
+                                    onChange={date => handleDateChange("lastUpdated", date)}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}
