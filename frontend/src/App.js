@@ -15,6 +15,7 @@ import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
+import ShipmentDetails from './pages/ShipmentDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -82,6 +83,7 @@ function App() {
                   <Route exact path="/test" component={TestPage} />
                   <Route path="/search/:query" component={SearchDetails} />
                   <Route path="/shipments/view-all" component={AllManifests} />
+                  <Route path="/shipments/:key" component={ShipmentDetails} />
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
