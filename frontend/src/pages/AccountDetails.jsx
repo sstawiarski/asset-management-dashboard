@@ -14,6 +14,7 @@ import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button'
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];
@@ -37,11 +38,17 @@ const useStyles = makeStyles((theme) => ({
         display: "block",
         marginLeft: "auto",
         marginRight: "auto",
-        width: "50%"
+        width: "50%",
+        backgroundColor: "white",
+        marginBottom: '20px',
+        marginTop: '40px',
     },
     break: {
         flexGrow: 1,
         fontWeight: "bold"
+    },
+    grid: {
+        alignItems: "center",
     }
    
 }));
@@ -50,52 +57,57 @@ const AccountDetails = () => {
 	const classes = useStyles();
 
     return (
-        <div>
+        <div >
             <Header heading="John Smith" />
+            <div className={classes.center}>
+                <Grid container>
+                	
+                	<Grid item xs={3} className={classes.item}>
+                         <Typography variant="subtitle1" className={classes.break}>Employee ID:</Typography>
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                    	<Typography variant="body1">{employeeID}</Typography>
+                    </Grid>
+                          
+                </Grid >
 
-            <Grid container>
-            	
-            	<Grid item xs={3} className={classes.item}>
-                     <Typography variant="subtitle1" className={classes.break}>Employee ID:</Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.item}>
-                	<Typography variant="body1">{employeeID}</Typography>
-                </Grid>
-                      
-            </Grid >
+                <Grid container>
+                	
+                	<Grid item xs={3} className={classes.item}>
+                         <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                    	<Typography variant="body1">{username}</Typography>
+                    </Grid>
+                          
+                </Grid >
 
-            <Grid container>
-            	
-            	<Grid item xs={3} className={classes.item}>
-                     <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.item}>
-                	<Typography variant="body1">{username}</Typography>
-                </Grid>
-                      
-            </Grid >
+                <Grid container>
+                	
+                	<Grid item xs={3} className={classes.item}>
+                         <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                    	<Typography variant="body1">{email}</Typography>
+                    </Grid>
+                          
+                </Grid >
 
-            <Grid container>
-            	
-            	<Grid item xs={3} className={classes.item}>
-                     <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.item}>
-                	<Typography variant="body1">{email}</Typography>
-                </Grid>
-                      
-            </Grid >
+                <Grid container>
+                	
+                	<Grid item xs={3} className={classes.item}>
+                         <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
+                    </Grid>
+                    <Grid item xs={3} className={classes.item}>
+                    	<Typography variant="body1">{password}</Typography>
+                    </Grid>
+                          
+                </Grid >
+            </div>
 
-            <Grid container>
-            	
-            	<Grid item xs={3} className={classes.item}>
-                     <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
-                </Grid>
-                <Grid item xs={3} className={classes.item}>
-                	<Typography variant="body1">{password}</Typography>
-                </Grid>
-                      
-            </Grid >
+            <Button variant="contained" color="primary">
+            Edit Profile
+            </Button>
 
 
       
