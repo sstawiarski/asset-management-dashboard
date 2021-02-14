@@ -24,7 +24,8 @@ const Shipment = new Schema({
     shipTo: { type: mongoose.Schema.Types.Mixed, required: true, unique: false },
     specialInstructions: { type: String, required: false, unique: false },
     contractId: { type: String, required: false, unique: false },
-    manifest: [manifest]
+    manifest: [manifest],
+    shipmentId: { type: String, required: true, unique: true }
 });
 
 const Shipments = mongoose.model('shipment', Shipment);
