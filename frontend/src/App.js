@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,12 +15,14 @@ import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
+import NewSidebar from './components/NewSidebar';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: "row",
+    minHeight: "100vh"
   },
   content: {
     flexGrow: 12,
@@ -47,7 +49,7 @@ function App() {
   const classes = useStyles();
 
   const history = useHistory();
-  const [background, setBackground] = useState("#60ACBD");
+  const location = useLocation();
   const [local, setLocal] = useLocalStorage('user', {});
   const [loggedIn, setLogged] = useState(false);
 
@@ -57,8 +59,7 @@ function App() {
     } else {
       setLogged(true);
     }
-  }
-    , [local])
+  }, [local]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -68,12 +69,8 @@ function App() {
         <Route>
           <div className="App">
             <div className={classes.root}>
-              <div style={{
-                background: background,
-                lineHeight: "0px",
-                boxShadow: "1px 0px 3px rgba(0,0,0,0.5)"
-              }}>
-                <Sidebar onOpen={setBackground} />
+              <div style={{ boxShadow: "8px -12px 9px rgba(0,0,0,0.5)", marginLeft: "-10px" }}>
+                <NewSidebar style={{ height: "100vh" }} location={location} />
               </div>
               <main className={classes.content}>
                 <img src={logo} className="App-logo" title="Go to Dashboard" alt="logo" onClick={() => history.push('/')} />
@@ -85,6 +82,8 @@ function App() {
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
+                  <Route exact path="/account" component={null} />
+                  <Route exact path="/settings" component={null} />
                 </Switch>
               </main>
             </div>
