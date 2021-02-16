@@ -8,7 +8,6 @@ import './App.css';
 import logo from "./logo.svg";
 import AssetDetails from './pages/AssetDetails';
 import CreateAssembly from './pages/CreateAssembly';
-import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 import AllManifests from './pages/AllManifests';
@@ -22,14 +21,15 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: "row",
-    minHeight: "100vh"
+    minHeight: "100vh",
+    backgroundColor: "#F0FCFF"
   },
   content: {
     flexGrow: 12,
     marginBottom: "20px",
     paddingLeft: theme.spacing(1),
     paddingTop: theme.spacing(4),
-    paddingRight: theme.spacing(4)
+    paddingRight: theme.spacing(4),
   },
 }))
 
@@ -69,10 +69,13 @@ function App() {
         <Route>
           <div className="App">
             <div className={classes.root}>
-              <div style={{ boxShadow: "8px -12px 9px rgba(0,0,0,0.5)", marginLeft: "-10px" }}>
+              <div style={{ 
+                boxShadow: "8px -12px 9px rgba(0,0,0,0.5)", 
+              marginLeft: "-10px"
+             }}>
                 <NewSidebar style={{ height: "100vh" }} location={location} />
               </div>
-              <main className={classes.content}>
+              <div className={classes.content}>
                 <img src={logo} className="App-logo" title="Go to Dashboard" alt="logo" onClick={() => history.push('/')} />
                 <Switch>
                   <Route path="/" exact component={Dashboard} />
@@ -85,7 +88,7 @@ function App() {
                   <Route exact path="/account" component={null} />
                   <Route exact path="/settings" component={null} />
                 </Switch>
-              </main>
+              </div>
             </div>
           </div>
         </Route>
