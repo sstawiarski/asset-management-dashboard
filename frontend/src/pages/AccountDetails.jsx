@@ -14,7 +14,8 @@ import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button'
+import Button from '@material-ui/core/Button';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];
@@ -32,23 +33,20 @@ const useStyles = makeStyles((theme) => ({
     },
     item: {
         padding: "10px",
+        marginLeft: "0",
+        alignItems: "flex-start",
 
     },
     center: {
-        display: "block",
+        alignContent: "flex-start",
         marginLeft: "auto",
         marginRight: "auto",
         width: "50%",
         backgroundColor: "white",
         marginBottom: '20px',
         marginTop: '40px',
-    },
-    break: {
-        flexGrow: 1,
-        fontWeight: "bold"
-    },
-    grid: {
-        alignItems: "center",
+        
+    
     }
    
 }));
@@ -58,7 +56,8 @@ const AccountDetails = () => {
 
     return (
         <div >
-            <Header heading="John Smith" />
+            <AccountCircleIcon fontSize="large" color="primary"/>
+            <Typography variant="h5"  color="primary">John Smith</Typography>
             <div className={classes.center}>
                 <Grid container>
                 	
@@ -82,7 +81,7 @@ const AccountDetails = () => {
                           
                 </Grid >
 
-                <Grid container>
+                <Grid container className={classes.break}>
                 	
                 	<Grid item xs={3} className={classes.item}>
                          <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
@@ -93,7 +92,7 @@ const AccountDetails = () => {
                           
                 </Grid >
 
-                <Grid container>
+                <Grid container className={classes.break}>
                 	
                 	<Grid item xs={3} className={classes.item}>
                          <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
