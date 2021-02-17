@@ -85,6 +85,7 @@ const MapPage = (props) => {
 
   //gets current location for the start of the map
   //*********************************************************** */
+  /*
   useEffect(() => {
     const { current = {} } = mapRef;
     const { leafletElement: map } = current;
