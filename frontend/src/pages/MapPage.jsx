@@ -3,7 +3,7 @@ import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import './MapPage.css';
 import Grid from '@material-ui/core/Grid';
-import ManifestEampleTable from '../components/Tables/ManifestExampleTable';
+
 import Header from '../components/Header';
 import MapIcon from '@material-ui/icons/Map';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -11,7 +11,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 //temporary usage until shipment creation is complete
 import Geocode from 'react-geocode';
 import { Button, Divider } from '@material-ui/core';
-import AllManifests from './AllManifests';
+
 import ManifestTable from '../components/Tables/ManifestTable';
 
 
@@ -125,14 +125,13 @@ const MapPage = (props) => {
           <Header heading="Shipments" subheading="View All" />
         </Grid>
         <Grid item className="mapGrid" xs={9}>
-          <Map ref={mapRef} center={[30.346410, -95.470390]} zoom={12}
-            style={{ width: "95%", height: "90%", marginLeft: "2%" }}>
+          <Map ref={mapRef} center={[30.346410, -95.470390]} zoom={12}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
 
-            {selManifest ?
+            {/* selManifest ?
               <Marker
                 position={[selManifest.latitude,selManifest.longitude]}>
                 <Popup><b>{selManifest.name}</b><br />

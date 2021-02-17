@@ -12,16 +12,7 @@ import CustomTable from './CustomTable'
 import TableToolbar from '../Tables/TableToolbar';
 import ChipBar from '../Tables/ChipBar';
 
-import AssetFilter from '../Dialogs/AssetFilter'
-import RetireAssetDialog from '../Dialogs/RetireAssetDialog';
-import ChangeGroupTagDialog from '../Dialogs/ChangeGroupTagDialog';
-import ChangeAssignmentDialog from '../Dialogs/ChangeAssignmentDialog';
-import ChangeOwnershipDialog from '../Dialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../Dialogs/AssignmentTypeDialogue';
-import AssetEditWarning from '../Dialogs/AssetEditWarning';
-import CreateAssetDialog from '../Dialogs/CreateAssetDialog';
-import InvalidSerialsDialog from '../Dialogs/InvalidSerialsDialog'
-import ShipmentFilter from '../Dialogs/ShipmentFilter';
+
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -290,10 +281,6 @@ const ManifestTable = (props) => {
             </div>
            { /*put manifest filter here*/}
 
-           <ShipmentFilter open={dialogs["filter"]}
-                setOpen={(isOpen) => setDialogs({ filter: isOpen })}
-                setActiveFilters={setActiveFilters} />
-            
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
