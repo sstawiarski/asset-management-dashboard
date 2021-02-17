@@ -13,6 +13,7 @@ import Geocode from 'react-geocode';
 import { Button, Divider } from '@material-ui/core';
 
 import ManifestTable from '../components/Tables/ManifestTable';
+import ManifestExampleTable from '../components/Tables/ManifestExampleTable';
 
 
 
@@ -157,7 +158,7 @@ const MapPage = (props) => {
                 ]}
                 >
                 <div>
-                  <h2> {selManifest.item} </h2>
+                  <h2> {selManifest.name} </h2>
                   <p> {selManifest.type} </p>
                   <p> {selManifest.quantity} </p>
                   <p> {selManifest.notes} </p>
@@ -186,12 +187,13 @@ const MapPage = (props) => {
             
             
           </Grid>
-          <ManifestTable handleClick={(manifest) => {
+          {/*<ManifestTable handleClick={(manifest) => {
+            console.log("Clicked.");
             setSelManifest(manifest);
           }}
           />
-          
-          {/*<ManifestEampleTable handleClick={(manifest) => {
+        }*/
+          <ManifestExampleTable handleClick={(manifest) => {
             if(selManifest !== manifest){
             setSelManifest(manifest);
             }
@@ -201,7 +203,7 @@ const MapPage = (props) => {
           }}
             manifest={selManifest}
           />
-          */}
+          }
         
         </Grid>
       </Grid>
