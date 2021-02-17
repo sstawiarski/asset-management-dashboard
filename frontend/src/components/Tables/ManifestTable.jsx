@@ -80,7 +80,7 @@ const ManifestTable = (props) => {
     }
 
     const handleClick = (event) => {
-        setAnchor(event.currentTarget);
+
     }
 
     const handleClose = () => {

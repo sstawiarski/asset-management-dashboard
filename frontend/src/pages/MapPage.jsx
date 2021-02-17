@@ -132,19 +132,11 @@ const MapPage = (props) => {
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
 
-            { selManifest ?
-              <Marker
-                position={[selManifest.latitude,selManifest.longitude]}>
-                <Popup><b>{selManifest.name}</b><br />
-                  <b>Current Location:</b><br />
-              Conroe, TX<br />
-              Rig 1234
-              </Popup>
-              </Marker> : null}
-            {/*current sample code to map markers for later use
 
-            //mapping manifests to the map
-            manifests.map(manifest => (
+            {//current sample code to map markers for later use
+
+            /*mapping manifests to the map
+            selManifest.map(manifest => (
               <Marker
               key={manifest.item}
               position={[manifest.latitude, manifest.longitude]}
@@ -153,18 +145,16 @@ const MapPage = (props) => {
                 setSelManifest(manifest);
               }}
                />
-            ))
+              ))
+            */
 
             //mapping pop-ups based on selected manifests
             selManifest && (
               <Popup
                 position={[
                   selManifest.latitude,
-                  selmanifest.longitude
+                  selManifest.longitude
                 ]}
-                onClose{() =>{
-                  setSelManifest(null);
-                }}
                 >
                 <div>
                   <h2> {selManifest.item} </h2>
@@ -176,7 +166,7 @@ const MapPage = (props) => {
             )
 
 
-            */}
+            }
 
           </Map>
         </Grid>
@@ -199,7 +189,6 @@ const MapPage = (props) => {
           <ManifestTable handleClick={(manifest) => {
             setSelManifest(manifest);
           }}
-          manifest={selManifest}
           />
           
           {/*<ManifestEampleTable handleClick={(manifest) => {
