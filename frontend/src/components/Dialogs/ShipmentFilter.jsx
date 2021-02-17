@@ -77,13 +77,13 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
             setState(s => ({
                 ...s,
                 shipFromOptions: s.allShippingOptions,
-                shipToOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")
+                shipToOptions: s.allShippingOptions.filter(obj => obj.locationType === "Staging Facility")
             }));
         } else if (state.shipmentType === "Outgoing") {
             setState(s => ({
                 ...s,
                 shipToOptions: s.allShippingOptions,
-                shipFromOptions: s.allShippingOptions.filter(obj => obj.type === "Staging Facility")
+                shipFromOptions: s.allShippingOptions.filter(obj => obj.locationType === "Staging Facility")
             }));
         } else {
             setState(s => ({
@@ -202,8 +202,8 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                             id="shipment-from-locator"
                             className={classes.autocomplete}
                             options={state.shipFromOptions}
-                            getOptionLabel={(option) => option.name}
-                            groupBy={(option) => option.type}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
+                            groupBy={(option) => option.locationType}
                             value={state.shipFrom}
                             onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
                             renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
@@ -212,7 +212,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                                 return (
                                     <>
                                         <div>
-                                            {option.name}
+                                            {option.locationName} {`(${option.key})`}
                                             <Typography className={classes.subtitle} variant="subtitle2">
                                                 {
                                                     option.operator ?
@@ -234,16 +234,16 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                         <Autocomplete
                             id="shipment-to-locator"
                             options={state.shipToOptions}
-                            getOptionLabel={(option) => option.name}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
                             value={state.shipTo}
-                            groupBy={(option) => option.type}
+                            groupBy={(option) => option.locationType}
                             onChange={(event, newValue) => setState(s => ({ ...s, shipTo: newValue }))}
                             className={classes.autocomplete}
                             renderOption={(option) => {
                                 return (
                                     <>
                                         <div>
-                                            {option.name}
+                                            {option.locationName} {`(${option.key})`}
                                             <Typography className={classes.subtitle} variant="subtitle2">
                                                 {
                                                     option.operator ?
