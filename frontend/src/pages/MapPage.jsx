@@ -132,7 +132,7 @@ const MapPage = (props) => {
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
 
-            {/* selManifest ?
+            { selManifest ?
               <Marker
                 position={[selManifest.latitude,selManifest.longitude]}>
                 <Popup><b>{selManifest.name}</b><br />
