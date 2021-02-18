@@ -16,13 +16,12 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
-const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
-const eventFields = ["key", "eventTime", "eventType"];
-const employeeID = "123456";
-const username = "jsmith";
-const email = "johnsmith@gmail.com";
-const password = "*******";
+
+
+
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -51,13 +50,40 @@ const useStyles = makeStyles((theme) => ({
    
 }));
 const AccountDetails = () => {
+    const base64url = require('base64url');
+    const employeeID = "123456";
+    const username = "jsmith";
+    const email = "johnsmith@gmail.com";
+    const password = "*******";
+    const [local, setLocal] = useLocalStorage('user', {});
+    const user =  local.firstName + " " + local.lastName;
+    const uniqueID = JSON.stringify(local.uniqueId);
+    const encodedID = base64url(uniqueID);
+    const url = "http://localhost:4000/auth/" + encodedID;
+    const [employee, setEmployee] = useState([]); 
+
+    /* Fetch user info */
+    useEffect(() => {
+        fetch(url)
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } 
+            })
+            .then(json => {
+                if (json) {
+                    setEmployee(json.data);
+                }
+            });
+    }, [url]);
+
     
 	const classes = useStyles();
 
     return (
         <div >
             <AccountCircleIcon fontSize="large" color="primary"/>
-            <Typography variant="h5"  color="primary">John Smith</Typography>
+            <Typography variant="h5"  color="primary">{user}</Typography>
             <div className={classes.center}>
                 <Grid container>
                 	
