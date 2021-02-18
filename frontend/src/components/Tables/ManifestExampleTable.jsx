@@ -20,6 +20,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { Long } from 'mongodb';
 
 function createData(name, latitude, longitude) {
   return { name, latitude, longitude };
@@ -224,8 +225,13 @@ export default function EnhancedTable(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
+
       const newSelecteds = rows.map((n) => n.name);
+      const objects = rows.map(item => rows.find(obj => obj.name === item))
       setSelected(newSelecteds);
+      props.onUpdate({
+        rows
+      }) 
       return;
     }
     setSelected([]);
@@ -299,12 +305,28 @@ export default function EnhancedTable(props) {
                     <TableRow
                       hover
                       onClick={() => { 
-                        props.handleClick({
-                        name: row.name,
-                        latitude: row.latitude,
-                        longitude: row.longitude
-                      }) 
-                      setSelected(row.name)
+                        const selectedIndex = selected.indexOf(row.name);
+                        let newSelected = [];
+                        if (selectedIndex === -1) {
+                          newSelected = newSelected.concat(selected, row.name);
+                        } else if (selectedIndex === 0) {
+                          newSelected = newSelected.concat(selected.slice(1));
+                        } else if (selectedIndex === selected.length - 1) {
+                          newSelected = newSelected.concat(selected.slice(0, -1));
+                        } else if (selectedIndex > 0) {
+                          newSelected = newSelected.concat(
+                            selected.slice(0, selectedIndex),
+                            selected.slice(selectedIndex + 1),
+                          );
+                        }
+                        const objects = newSelected.map(item => rows.find(obj => obj.name === item))
+                        props.onUpdate(objects)
+                        props.lastSelect({
+                          name: row.name,
+                          latitude: row.latitude,
+                          longitude: row.longitude}
+                        )
+                      setSelected(newSelected)
                     }}
 
                       aria-checked={isItemSelected}

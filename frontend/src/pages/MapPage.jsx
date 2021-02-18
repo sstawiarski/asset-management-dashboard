@@ -37,7 +37,7 @@ Geocode.fromAddress("Eiffel Tower").then(
 
 
 const MapPage = (props) => {
-  const [manifests, setManifests] = useState();
+  const [manifests, setManifests] = useState([]);
   const [selManifest, setSelManifest] = useState(null);
   const [url, setURL] = useState('http://localhost:400/manifests') //might need tweaking
   const mapRef = useRef();
@@ -127,7 +127,7 @@ const MapPage = (props) => {
           <Header heading="Shipments" subheading="View All" />
         </Grid>
         <Grid item className="mapGrid" xs={9}>
-          <Map ref={mapRef} center={[30.346410, -95.470390]} zoom={12}>
+          <Map ref={mapRef} center={selManifest? [selManifest.latitude, selManifest.longitude]: [30.346410, -95.470390]} zoom={12}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -136,26 +136,41 @@ const MapPage = (props) => {
 
             {//current sample code to map markers for later use
 
-            /*mapping manifests to the map
-            selManifest.map(manifest => (
+            //mapping manifests to the map
+            manifests && (
+              /*
               <Marker
-              key={manifest.item}
+              key={manifests.name}
+              position={[manifests.latitude, manifests.longitude]}
+              onclick={() => {
+                //for handling the table if we use one
+                setSelManifest(manifests);
+              }}
+               />)
+               */
+              manifests.map(manifest => (
+              <Marker
+              key={manifest.name}
               position={[manifest.latitude, manifest.longitude]}
               onclick={() => {
                 //for handling the table if we use one
                 setSelManifest(manifest);
               }}
                />
-              ))
-            */
+               
+              )))
+            }
 
-            //mapping pop-ups based on selected manifests
+            {//mapping pop-ups based on selected manifests
             selManifest && (
               <Popup
                 position={[
                   selManifest.latitude,
                   selManifest.longitude
                 ]}
+                onClose={() =>{
+                  setSelManifest();
+                }}
                 >
                 <div>
                   <h2> {selManifest.name} </h2>
@@ -163,10 +178,9 @@ const MapPage = (props) => {
                   <p> {selManifest.quantity} </p>
                   <p> {selManifest.notes} </p>
                 </div>
+                
               </Popup>
             )
-
-
             }
 
           </Map>
@@ -193,16 +207,8 @@ const MapPage = (props) => {
           }}
           />
         }*/
-          <ManifestExampleTable handleClick={(manifest) => {
-            if(selManifest !== manifest){
-            setSelManifest(manifest);
-            }
-            else{
-              setSelManifest(null);
-            }
-          }}
-            manifest={selManifest}
-          />
+          <ManifestExampleTable onUpdate={(objects) => {setManifests(objects);}}
+              lastSelect= {(manifest)=> {setSelManifest(manifest);}}/>
           }
         
         </Grid>
