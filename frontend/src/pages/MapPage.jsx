@@ -39,6 +39,7 @@ Geocode.fromAddress("Eiffel Tower").then(
 const MapPage = (props) => {
   const [manifests, setManifests] = useState([]);
   const [selManifest, setSelManifest] = useState(null);
+  const [centerManifest, setCenterManifest] = useState(null);
   const [url, setURL] = useState('http://localhost:400/manifests') //might need tweaking
   const mapRef = useRef();
 
@@ -86,7 +87,7 @@ const MapPage = (props) => {
 
   //gets current location for the start of the map
   //*********************************************************** */
-  /*
+  
   useEffect(() => {
     const { current = {} } = mapRef;
     const { leafletElement: map } = current;
@@ -127,7 +128,7 @@ const MapPage = (props) => {
           <Header heading="Shipments" subheading="View All" />
         </Grid>
         <Grid item className="mapGrid" xs={9}>
-          <Map ref={mapRef} center={selManifest? [selManifest.latitude, selManifest.longitude]: [30.346410, -95.470390]} zoom={12}>
+          <Map ref={mapRef} center={centerManifest? [centerManifest.latitude, centerManifest.longitude]: [30.346410, -95.470390]} zoom={12}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -155,6 +156,7 @@ const MapPage = (props) => {
               onclick={() => {
                 //for handling the table if we use one
                 setSelManifest(manifest);
+                setCenterManifest(manifest);
               }}
                />
                
@@ -172,9 +174,10 @@ const MapPage = (props) => {
                   setSelManifest();
                 }}
                 >
+                  {/*add properties to view here in <p/> elements*/}
                 <div>
                   <h2> {selManifest.name} </h2>
-                  <p> {selManifest.type} </p>
+                  <p> {selManifest.location} </p>
                   <p> {selManifest.quantity} </p>
                   <p> {selManifest.notes} </p>
                 </div>
@@ -201,14 +204,12 @@ const MapPage = (props) => {
             
             
           </Grid>
-          {/*<ManifestTable handleClick={(manifest) => {
-            console.log("Clicked.");
-            setSelManifest(manifest);
-          }}
-          />
-        }*/
+          {
           <ManifestExampleTable onUpdate={(objects) => {setManifests(objects);}}
-              lastSelect= {(manifest)=> {setSelManifest(manifest);}}/>
+              lastSelect= {(manifest)=> {
+                setCenterManifest(manifest);
+                  setSelManifest(manifest);
+                }}/>
           }
         
         </Grid>

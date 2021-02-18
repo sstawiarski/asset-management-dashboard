@@ -22,15 +22,15 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { Long } from 'mongodb';
 
-function createData(name, latitude, longitude) {
-  return { name, latitude, longitude };
+function createData(name, latitude, longitude, location) {
+  return { name, latitude, longitude, location };
 }
 
 const rows = [
-  createData('G800-1111', 30.335398, -95.415175),
-  createData('Donut', 30.635398, -95.415175),
-  createData('Eclair', 30.735398, -95.415175),
-  createData('Frozen yoghurt', 30.835398, -95.415175),
+  createData('G800-1111', 30.335398, -95.415175, "Here"),
+  createData('Donut', 30.635398, -95.415175, "Over here"),
+  createData('Eclair', 30.735398, -95.415175, "Right here"),
+  createData('Frozen yoghurt', 30.835398, -95.415175, "Should be here"),
   createData('Gingerbread',30.935398, -95.415175),
   createData('Honeycomb', 30.235398, -95.415175),
   createData('Ice cream sandwich', 30.135398, -95.415175),
@@ -64,8 +64,7 @@ function stableSort(array, comparator) {
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Shipment' },
-  { id: 'latitude', numeric: true, disablePadding: true, label: 'latitude'},
-  { id: 'longitude', numeric: true, disablePadding: true, label: 'longitude'}
+  { id: 'location', numeric: false, disablePadding: true, label: 'Location' },
 ];
 
 function EnhancedTableHead(props) {
@@ -224,16 +223,16 @@ export default function EnhancedTable(props) {
   };
 
   const handleSelectAllClick = (event) => {
+    var objects=null;
     if (event.target.checked) {
 
       const newSelecteds = rows.map((n) => n.name);
-      const objects = rows.map(item => rows.find(obj => obj.name === item))
+      objects = rows.map(item=>item);
+      props.onUpdate(objects);
       setSelected(newSelecteds);
-      props.onUpdate({
-        rows
-      }) 
       return;
     }
+    props.onUpdate(objects);
     setSelected([]);
   };
 
@@ -321,11 +320,13 @@ export default function EnhancedTable(props) {
                         }
                         const objects = newSelected.map(item => rows.find(obj => obj.name === item))
                         props.onUpdate(objects)
+                        if(objects.length>0){
                         props.lastSelect({
-                          name: row.name,
-                          latitude: row.latitude,
-                          longitude: row.longitude}
-                        )
+                          name: objects[objects.length-1].name,
+                          latitude: objects[objects.length-1].latitude,
+                          longitude: objects[objects.length-1].longitude,
+                          location: objects[objects.length-1].location}
+                        )}
                       setSelected(newSelected)
                     }}
 
