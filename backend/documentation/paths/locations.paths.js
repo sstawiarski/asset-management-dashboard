@@ -2,7 +2,7 @@ const locationPaths = {
     'root': {
         get: {
             tags: ['Locations'],
-            description: 'Get all locations of a specific type',
+            description: 'Get all locations of a specific type or in general',
             operationId: 'getLocations',
             parameters: [
                 {
@@ -10,8 +10,8 @@ const locationPaths = {
                     in: "query",
                     schema: {
                         type: "string",
-                        description: "Either rig, staging, or repair to define which locations to find",
-                        example: 'rig'
+                        description: "Either Rig, Staging Facility, or Repair Facility to define which locations to find (URI encoded)",
+                        example: 'Rig'
                     }
                 }
             ],
@@ -21,22 +21,23 @@ const locationPaths = {
                     content: {
                         'application/json': {
                             schema: {
-                                oneOf: [
-                                    {
-                                        $ref: '#/components/schemas/Rigs',
-                                    },
-                                    {
-                                        $ref: '#/components/schemas/StagingFacilities',
-                                    },
-                                    {
-                                        $ref: '#/components/schemas/RepairFacilities'
-                                    }],
+                                $ref: '#/components/schemas/Locations'
                             }
                         }
                     }
                 },
                 '400': {
-                    description: 'Missing location type parameter',
+                    description: 'Invalid location type specifier provided in query',
+                    content: {
+                        'application/json': {
+                            schema: {
+                                $ref: '#/components/schemas/Error'
+                            }
+                        }
+                    }
+                },
+                '404': {
+                    description: 'No location documents found for specified type',
                     content: {
                         'application/json': {
                             schema: {
