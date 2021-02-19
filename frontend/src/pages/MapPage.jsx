@@ -233,7 +233,9 @@ const MapPage = (props) => {
             </Grid>
           </Grid>
 
-          <ManifestExampleTable onUpdate={(objects) => setManifests(objects)} />
+          <ManifestExampleTable 
+          onUpdate={(objects) => setManifests(objects)} 
+          onLatestClick={(manifest) => setSelManifest(manifest)} />
 
         </Grid>
       </Grid>

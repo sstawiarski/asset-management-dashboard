@@ -210,7 +210,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable(props) {
   const classes = useStyles();
-  const { onUpdate } = props;
+  const { onUpdate, onLatestClick } = props;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -252,8 +252,17 @@ export default function EnhancedTable(props) {
       );
     }
     const objects = newSelected.map(item => rows.find(obj => obj.name === item))
+    const latestObject = rows.find(obj => obj.name === name);
     onUpdate(objects);
     setSelected(newSelected);
+
+    //open popup if it is being selected, remove popup if being deselected
+    if (selectedIndex === -1) {
+      onLatestClick(latestObject);
+    } else {
+      onLatestClick(null);
+    }
+    
   };
 
   const handleChangePage = (event, newPage) => {
