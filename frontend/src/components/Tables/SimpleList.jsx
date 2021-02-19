@@ -63,12 +63,12 @@ const SimpleList = (props) => {
                                     className={classes.body}
                                     key={item}
                                     onClick={
-                                        link ?
+                                        link && item[item.length-1] === true ?
                                             () => history.push(`${link}${item[0]}`)
                                             : null
                                     }
                                 >
-                                    {item.map((thing, idx) => <TableCell className={idx === 0 ? classes.bodyLink : null} key={idx}>{thing}</TableCell>)}
+                                    {item.map((thing, idx) => <TableCell className={idx === 0 && item[item.length-1] === true ? classes.bodyLink : null} key={idx}>{thing}</TableCell>)}
                                 </TableRow>
                                 :
                                 <TableRow className={classes.body} key={item}>

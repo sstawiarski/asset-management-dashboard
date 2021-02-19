@@ -9,11 +9,14 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
-
-import SimpleList from '../components/Tables/SimpleList';
 import Button from '@material-ui/core/Button';
+import Skeleton from '@material-ui/lab/Skeleton';
+
+//Icons
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
+//Custom Components
+import SimpleList from '../components/Tables/SimpleList';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';
@@ -72,15 +75,12 @@ const ShipmentDetails = (props) => {
     const classes = useStyles();
 
     // the active shipment
-    // TODO: current using manually typed placeholder data
-    const [shipment, setShipment] = useState({"createdBy":"Test 1","created":"1580774400000","updated":"1580774400000","completed":"1580774400000","status":"Staging","shipmentType":"Incoming","shipFrom":"Calgary","shipTo":"Houston","specialInstructions":"seriously, don't lose this","contractId":"345678","manifest":[{"item":"X800-87650","type":"crossover sub","quantity":"1","notes":"just testing this beast out!"},{"item":"box of boxes of batteries","type":"batteries","quantity":1500,"notes":"keep batteries in individual cases!  fire hazard!  there's a lot of 'em!"}]});
+    const [shipment, setShipment] = useState(null);
+    const [headers, setHeaders] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     /* Fetch shipment information */
     useEffect(() => {
-
-        /* TODO: Not current functional, uncomment once API endpoint is implemented */
-
-        /*
         fetch(`http://localhost:4000/shipments/${key}`)
             .then(response => {
                 if (response.status < 300) {
@@ -91,10 +91,20 @@ const ShipmentDetails = (props) => {
             })
             .then(json => {
                 if (json) {
-                    setShipment(({ ...json, manifest: json.manifest.map(item => Object.values(item)) }));
+                    setShipment(({
+                        ...json, manifest: json.manifest.map(item => {
+                            const vals = Object.values(item);
+                            vals.shift();
+                            return vals;
+                        })
+                    }));
+                    const head = Object.keys(json.manifest[0]);
+                    head.shift();
+                    setHeaders(head);
+                    setLoading(false);
                 }
             });
-            */
+
     }, [key]);
 
     return (
@@ -115,64 +125,109 @@ const ShipmentDetails = (props) => {
                                 <Grid container>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Key</Typography>
-                                        <Typography variant="body1">{key}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{key}</Typography>
+                                        }
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Type</Typography>
-                                        <Typography variant="body1">{shipment.shipmentType}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.shipmentType}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Status</Typography>
-                                        <Typography variant="body1">{shipment.status}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.status}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Created By</Typography>
-                                        <Typography variant="body1">{shipment.createdBy}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.createdBy}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Ship From</Typography>
-                                        <Typography variant="body1">{shipment.shipFrom}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.shipFrom.locationName}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Ship To</Typography>
-                                        <Typography variant="body1">{shipment.shipTo}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.shipTo.locationName}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Date Created</Typography>
-                                        <Typography variant="body1">{new Date(shipment.created).toLocaleDateString('en-US', dateOptions)}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{new Date(shipment.created).toLocaleDateString('en-US', dateOptions)}</Typography>
+                                        }
+
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Contract ID</Typography>
-                                        <Typography variant="body1">{shipment.contractId}</Typography>
+                                        {
+                                            loading ?
+                                                <Skeleton variant="text" />
+                                                : <Typography variant="body1">{shipment.contractId}</Typography>
+                                        }
+
                                     </Grid>
 
                                     {
-                                        shipment.updated ?
-                                            <Grid item xs={3} className={classes.item}>
-                                                <Typography variant="subtitle1" className={classes.break}>Last Updated</Typography>
-                                                <Typography variant="body1">{new Date(shipment.updated).toLocaleDateString('en-US', dateOptions)}</Typography>
-                                            </Grid>
+                                        shipment && !loading ?
+                                            shipment.updated ?
+                                                <Grid item xs={3} className={classes.item}>
+                                                    <Typography variant="subtitle1" className={classes.break}>Last Updated</Typography>
+                                                    <Typography variant="body1">{new Date(shipment.updated).toLocaleDateString('en-US', dateOptions)}</Typography>
+                                                </Grid>
+                                                : null
                                             : null
                                     }
 
                                 </Grid>
 
                                 <Grid container className={classes.item}>
-                                            <Grid item xs={12} sm={12} md={6} className={classes.item}>
-                                                <Typography variant="subtitle1" className={classes.break}>Shipment Manifest</Typography>
-                                                {/* List of child components */}
-                                                <SimpleList 
-
-                                                label="shipment manifest"
-                                                data={shipment.manifest.map(item => Object.values(item))} 
-                                                headers={Object.keys(shipment.manifest[0]).map(key => {
-                                                    const regex = /(\b[a-z](?!\s))/g;
-                                                    const newString = key.replace(regex, (str) => str.toUpperCase());
-                                                    return newString;
-                                                })}
-                                                link="/shipments/"
+                                    <Grid item xs={12} sm={12} md={6} className={classes.item}>
+                                        <Typography variant="subtitle1" className={classes.break}>Shipment Manifest</Typography>
+                                        {/* List of child components */}
+                                        {
+                                            loading ?
+                                                <Skeleton variant="rect" height={300} style={{ borderRadius: "6px" }}/>
+                                                : <SimpleList
+                                                    label="shipment manifest"
+                                                    data={shipment.manifest}
+                                                    headers={headers.map(key => {
+                                                        const regex = /(\b[a-z](?!\s))/g;
+                                                        const newString = key.replace(regex, (str) => str.toUpperCase());
+                                                        return newString === "Serialized" ? null : newString;
+                                                    })}
+                                                    link="/assets/"
                                                 />
-                                            </Grid>
+                                        }
+
+                                    </Grid>
                                 </Grid>
                             </Paper>
                         </Grid>
