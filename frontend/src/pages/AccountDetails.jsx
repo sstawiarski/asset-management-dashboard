@@ -1,66 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import IconButton from '@material-ui/core/IconButton';
-import AssetFilter from '../components/Dialogs/AssetFilter';
-import EventFilter from '../components/Dialogs/EventFilter';
-import Header from '../components/Header';
-import CustomTable from '../components/Tables/CustomTable'
-import TableToolbar from '../components/Tables/TableToolbar';
-import ChipBar from '../components/Tables/ChipBar';
+import base64url from 'base64url';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
-
-
-
-
-
 const useStyles = makeStyles((theme) => ({
     root: {
         marginLeft: "10px",
     },
     paper: {
-        width: "100%",
+        width: "100%"
     },
     item: {
         padding: "10px",
         marginLeft: "0",
-        alignItems: "flex-start",
-
     },
     center: {
-        alignContent: "flex-start",
         marginLeft: "auto",
         marginRight: "auto",
         width: "50%",
-        backgroundColor: "white",
         marginBottom: '20px',
         marginTop: '40px',
-        
-    
+        padding: "40px 10px 40px 10px"
+    },
+    break: {
+        fontWeight: "bold"
+    },
+    name: {
+        color: theme.palette.secondary.main
     }
-   
 }));
+
+const exampleEmployee = {
+    "employeeId": 92759802,
+    "firstName":"John",
+    "lastName":"Smith",
+    "username":"jsmith",
+    "email":"jsmith@company.com",
+    "jobTitle":"honcho",
+    "birthDate": Date.now(),
+    "gender":"m",
+    "passwordLength": 8
+};
+
 const AccountDetails = () => {
-    const base64url = require('base64url');
-    const employeeID = "123456";
-    const username = "jsmith";
-    const email = "johnsmith@gmail.com";
-    const password = "*******";
-    const [local, setLocal] = useLocalStorage('user', {});
-    const user =  local.firstName + " " + local.lastName;
-    const uniqueID = JSON.stringify(local.uniqueId);
-    const encodedID = base64url(uniqueID);
-    const url = "http://localhost:4000/auth/" + encodedID;
-    const [employee, setEmployee] = useState([]); 
+    const classes = useStyles();
+    const [local,] = useLocalStorage('user', {});
+
+    const user = local.firstName + " " + local.lastName;
+    const encodedID = base64url(JSON.stringify(local.uniqueId));
+    const url = `http://localhost:4000/auth/${encodedID}`;
+
+    const [employee, setEmployee] = useState(null);
 
     /* Fetch user info */
     useEffect(() => {
@@ -68,77 +63,73 @@ const AccountDetails = () => {
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
-                } 
+                }
             })
             .then(json => {
                 if (json) {
-                    setEmployee(json.data);
+                    setEmployee(json);
+                } else {
+                    setEmployee(exampleEmployee);
                 }
             });
     }, [url]);
 
-    
-	const classes = useStyles();
-
     return (
         <div >
-            <AccountCircleIcon fontSize="large" color="primary"/>
-            <Typography variant="h5"  color="primary">{user}</Typography>
-            <div className={classes.center}>
-                <Grid container>
-                	
-                	<Grid item xs={3} className={classes.item}>
-                         <Typography variant="subtitle1" className={classes.break}>Employee ID:</Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.item}>
-                    	<Typography variant="body1">{employeeID}</Typography>
-                    </Grid>
-                          
-                </Grid >
+            <AccountCircleIcon fontSize="large" color="primary" />
+            <Typography variant="h5" className={classes.name}>{user}</Typography>
+            <Paper elevation={3} className={classes.center}>
+                {
+                    employee ?
+                        <>
+                            <Grid container direction="row">
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="subtitle1" className={classes.break}>Employee ID:</Typography>
+                                </Grid>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="body1">{employee.employeeId}</Typography>
+                                </Grid>
 
-                <Grid container>
-                	
-                	<Grid item xs={3} className={classes.item}>
-                         <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.item}>
-                    	<Typography variant="body1">{username}</Typography>
-                    </Grid>
-                          
-                </Grid >
+                            </Grid>
 
-                <Grid container className={classes.break}>
-                	
-                	<Grid item xs={3} className={classes.item}>
-                         <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.item}>
-                    	<Typography variant="body1">{email}</Typography>
-                    </Grid>
-                          
-                </Grid >
+                            <Grid container>
 
-                <Grid container className={classes.break}>
-                	
-                	<Grid item xs={3} className={classes.item}>
-                         <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
-                    </Grid>
-                    <Grid item xs={3} className={classes.item}>
-                    	<Typography variant="body1">{password}</Typography>
-                    </Grid>
-                          
-                </Grid >
-            </div>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
+                                </Grid>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="body1">{employee.username}</Typography>
+                                </Grid>
 
-            <Button variant="contained" color="primary">
-            Edit Profile
-            </Button>
+                            </Grid>
 
+                            <Grid container className={classes.break}>
 
-      
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
+                                </Grid>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="body1">{employee.email}</Typography>
+                                </Grid>
 
+                            </Grid>
 
-          
+                            <Grid container className={classes.break}>
+
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
+                                </Grid>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography>
+                                </Grid>
+
+                            </Grid>
+                        </>
+                        : null
+                }
+            </Paper>
+
+            <Button variant="contained" color="primary">Edit Profile</Button>
         </div>
 
     )
