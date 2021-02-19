@@ -6,10 +6,11 @@ const sampleShipment = require('../sample_data/sampleShipment.data');
 
 router.get('/', async (req, res) => {
     try {
-        const shipments = await Shipment.find();
+        const shipments = await Shipment.find({}, { __v: 0, manifest: 0 }).populate('shipFrom').populate('shipTo');
         res.status(200).json(shipments)
     }
     catch (err) {
+        console.log(err);
         res.status(500).json({
             message: "Error loading sample data into database",
             internal_code: "database_load_error"
