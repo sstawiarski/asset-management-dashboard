@@ -12,6 +12,7 @@ import Header from '../components/Header';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
+import EventDetailsViewer from '../components/EventDetailsViewer';
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];
@@ -152,6 +153,9 @@ const SearchDetails = () => {
                     variant="event"
                     selected={[]}
                     checkboxes={false}
+                    clickable={({ isOpen, identifier, setOpen, ...rest }) => {
+                        return <EventDetailsViewer open={isOpen} event={identifier} onClose={() => setOpen(false)} {...rest} />
+                    }}
                 >
                     <TableToolbar
                         title="Event Results"
