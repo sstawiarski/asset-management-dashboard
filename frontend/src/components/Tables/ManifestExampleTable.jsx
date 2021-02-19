@@ -31,7 +31,7 @@ const rows = [
   createData('Donut', 30.635398, -95.415175),
   createData('Eclair', 30.735398, -95.415175),
   createData('Frozen yoghurt', 30.835398, -95.415175),
-  createData('Gingerbread',30.935398, -95.415175),
+  createData('Gingerbread', 30.935398, -95.415175),
   createData('Honeycomb', 30.235398, -95.415175),
   createData('Ice cream sandwich', 30.135398, -95.415175),
 ];
@@ -64,8 +64,8 @@ function stableSort(array, comparator) {
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Shipment' },
-  { id: 'latitude', numeric: true, disablePadding: true, label: 'latitude'},
-  { id: 'longitude', numeric: true, disablePadding: true, label: 'longitude'}
+  { id: 'latitude', numeric: true, disablePadding: true, label: 'latitude' },
+  { id: 'longitude', numeric: true, disablePadding: true, label: 'longitude' }
 ];
 
 function EnhancedTableHead(props) {
@@ -129,13 +129,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
@@ -156,10 +156,10 @@ const EnhancedTableToolbar = (props) => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Assets
-        </Typography>
-      )}
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            Assets
+          </Typography>
+        )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
@@ -168,12 +168,12 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        )}
     </Toolbar>
   );
 };
@@ -210,6 +210,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable(props) {
   const classes = useStyles();
+  const { onUpdate } = props;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -225,22 +226,19 @@ export default function EnhancedTable(props) {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-
       const newSelecteds = rows.map((n) => n.name);
-      const objects = rows.map(item => rows.find(obj => obj.name === item))
+      const objects = newSelecteds.map(item => rows.find(obj => obj.name === item))
       setSelected(newSelecteds);
-      props.onUpdate({
-        rows
-      }) 
+      onUpdate(objects);
       return;
     }
     setSelected([]);
+    onUpdate([]);
   };
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
-
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
@@ -253,7 +251,8 @@ export default function EnhancedTable(props) {
         selected.slice(selectedIndex + 1),
       );
     }
-
+    const objects = newSelected.map(item => rows.find(obj => obj.name === item))
+    onUpdate(objects);
     setSelected(newSelected);
   };
 
@@ -304,36 +303,12 @@ export default function EnhancedTable(props) {
                   return (
                     <TableRow
                       hover
-                      onClick={() => { 
-                        const selectedIndex = selected.indexOf(row.name);
-                        let newSelected = [];
-                        if (selectedIndex === -1) {
-                          newSelected = newSelected.concat(selected, row.name);
-                        } else if (selectedIndex === 0) {
-                          newSelected = newSelected.concat(selected.slice(1));
-                        } else if (selectedIndex === selected.length - 1) {
-                          newSelected = newSelected.concat(selected.slice(0, -1));
-                        } else if (selectedIndex > 0) {
-                          newSelected = newSelected.concat(
-                            selected.slice(0, selectedIndex),
-                            selected.slice(selectedIndex + 1),
-                          );
-                        }
-                        const objects = newSelected.map(item => rows.find(obj => obj.name === item))
-                        props.onUpdate(objects)
-                        props.lastSelect({
-                          name: row.name,
-                          latitude: row.latitude,
-                          longitude: row.longitude}
-                        )
-                      setSelected(newSelected)
-                    }}
-
+                      onClick={(event) => handleClick(event, row.name)}
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
                       selected={isItemSelected}
-                      style={props.manifest ? props.manifest.name === row.name ? {backgroundColor: "#cccccc" }: null : null}
+                      style={props.manifest ? props.manifest.name === row.name ? { backgroundColor: "#cccccc" } : null : null}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox

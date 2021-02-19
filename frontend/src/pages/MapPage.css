@@ -1,7 +1,7 @@
 .leaflet-container {
-    width: 100%;
+    width: 95%;
     height: 100%;
-    margin-left: left;
+    margin-left: 2%;
 
 }
 
@@ -25,5 +25,5 @@
 }
 
 .listContainer{
-    margin-top: 4%;
+
 }
