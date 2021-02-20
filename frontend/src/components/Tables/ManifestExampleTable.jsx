@@ -27,11 +27,19 @@ function createData(name, latitude, longitude, location) {
 }
 
 const rows = [
+<<<<<<< HEAD
   createData('G800-1111', 30.335398, -95.415175, "Here"),
   createData('Donut', 30.635398, -95.415175, "Over here"),
   createData('Eclair', 30.735398, -95.415175, "Right here"),
   createData('Frozen yoghurt', 30.835398, -95.415175, "Should be here"),
   createData('Gingerbread',30.935398, -95.415175),
+=======
+  createData('G800-1111', 30.335398, -95.415175),
+  createData('Donut', 30.635398, -95.415175),
+  createData('Eclair', 30.735398, -95.415175),
+  createData('Frozen yoghurt', 30.835398, -95.415175),
+  createData('Gingerbread', 30.935398, -95.415175),
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
   createData('Honeycomb', 30.235398, -95.415175),
   createData('Ice cream sandwich', 30.135398, -95.415175),
 ];
@@ -64,7 +72,12 @@ function stableSort(array, comparator) {
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Shipment' },
+<<<<<<< HEAD
   { id: 'location', numeric: false, disablePadding: true, label: 'Location' },
+=======
+  { id: 'latitude', numeric: true, disablePadding: true, label: 'latitude' },
+  { id: 'longitude', numeric: true, disablePadding: true, label: 'longitude' }
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
 ];
 
 function EnhancedTableHead(props) {
@@ -128,13 +141,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
@@ -155,10 +168,10 @@ const EnhancedTableToolbar = (props) => {
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Assets
-        </Typography>
-      )}
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            Assets
+          </Typography>
+        )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
@@ -167,12 +180,12 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        )}
     </Toolbar>
   );
 };
@@ -209,6 +222,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable(props) {
   const classes = useStyles();
+  const { onUpdate, onLatestClick } = props;
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -225,21 +239,26 @@ export default function EnhancedTable(props) {
   const handleSelectAllClick = (event) => {
     var objects=null;
     if (event.target.checked) {
-
       const newSelecteds = rows.map((n) => n.name);
+<<<<<<< HEAD
       objects = rows.map(item=>item);
       props.onUpdate(objects);
       setSelected(newSelecteds);
+=======
+      const objects = newSelecteds.map(item => rows.find(obj => obj.name === item))
+      setSelected(newSelecteds);
+      onUpdate(objects);
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
       return;
     }
     props.onUpdate(objects);
     setSelected([]);
+    onUpdate([]);
   };
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
-
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
     } else if (selectedIndex === 0) {
@@ -252,8 +271,18 @@ export default function EnhancedTable(props) {
         selected.slice(selectedIndex + 1),
       );
     }
-
+    const objects = newSelected.map(item => rows.find(obj => obj.name === item))
+    const latestObject = rows.find(obj => obj.name === name);
+    onUpdate(objects);
     setSelected(newSelected);
+
+    //open popup if it is being selected, remove popup if being deselected
+    if (selectedIndex === -1) {
+      onLatestClick(latestObject);
+    } else {
+      onLatestClick(null);
+    }
+    
   };
 
   const handleChangePage = (event, newPage) => {
@@ -303,6 +332,7 @@ export default function EnhancedTable(props) {
                   return (
                     <TableRow
                       hover
+<<<<<<< HEAD
                       onClick={() => { 
                         const selectedIndex = selected.indexOf(row.name);
                         let newSelected = [];
@@ -330,11 +360,14 @@ export default function EnhancedTable(props) {
                       setSelected(newSelected)
                     }}
 
+=======
+                      onClick={(event) => handleClick(event, row.name)}
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
                       aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.name}
                       selected={isItemSelected}
-                      style={props.manifest ? props.manifest.name === row.name ? {backgroundColor: "#cccccc" }: null : null}
+                      style={props.manifest ? props.manifest.name === row.name ? { backgroundColor: "#cccccc" } : null : null}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox

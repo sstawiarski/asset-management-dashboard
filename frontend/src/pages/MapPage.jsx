@@ -15,8 +15,41 @@ import { Button, Divider } from '@material-ui/core';
 import ManifestTable from '../components/Tables/ManifestTable';
 import ManifestExampleTable from '../components/Tables/ManifestExampleTable';
 
+/* Find center point of multiple markers so map is centered when multiple are selected */
+const geoAverage = (items) => {
+  if (items === null || items.length === 0) {
+    return [30.346410, -95.470390];
+  }
+  if (items.length === 1) {
+    return [items[0].latitude, items[0].longitude];
+  }
 
+  let x = 0.0;
+  let y = 0.0;
+  let z = 0.0;
 
+  items.forEach(obj => {
+    const lat = obj.latitude * Math.PI / 180;
+    const lon = obj.longitude * Math.PI / 180;
+
+    x += Math.cos(lat) * Math.cos(lon);
+    y += Math.cos(lat) * Math.sin(lon);
+    z += Math.sin(lat);
+  });
+
+  const total = items.length;
+
+  x = x / total;
+  y = y / total;
+  z = z / total;
+
+  const centralLon = Math.atan2(y, x);
+  const centalSqRt = Math.sqrt(x * x + y * y);
+  const centralLat = Math.atan2(z, centalSqRt);
+
+  return [(centralLat * 180 / Math.PI), (centralLon * 180 / Math.PI)];
+
+};
 
 //current geocode, will need to be restricted for security later
 Geocode.setApiKey("AIzaSyBw2ingCRrvpqdTC3sLBXRYPvIGB2hirMM");
@@ -34,7 +67,6 @@ Geocode.fromAddress("Eiffel Tower").then(
     console.error(error);
   }
 );
-
 
 const MapPage = (props) => {
   const [manifests, setManifests] = useState([]);
@@ -85,6 +117,21 @@ const MapPage = (props) => {
       });
   }, [url]);
 
+  //resize map zoom when multiple items are selected
+  useEffect(() => {
+    const { current } = mapRef;
+    const { leafletElement: map } = current;
+    if (manifests.length) {
+
+      const bounds = manifests.map(item => {
+        return [item.latitude, item.longitude];
+      });
+      const bound2 = new L.latLngBounds(bounds);
+      map.fitBounds(bound2, { padding: L.point(50, 50) });
+
+    }
+  }, [manifests]);
+
   //gets current location for the start of the map
   //*********************************************************** */
   
@@ -124,10 +171,13 @@ const MapPage = (props) => {
   return (
     <Grid className="mapDiv" direction='row' spacing={0}>
       <Grid container spacing={0} className="mapContainer" direction='row'>
+
         <Grid item className='mapHeader' xs={12}>
           <Header heading="Shipments" subheading="View All" />
         </Grid>
+
         <Grid item className="mapGrid" xs={9}>
+<<<<<<< HEAD
           <Map ref={mapRef} center={centerManifest? [centerManifest.latitude, centerManifest.longitude]: [30.346410, -95.470390]} zoom={12}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -161,15 +211,35 @@ const MapPage = (props) => {
                />
                
               )))
+=======
+          <Map ref={mapRef} center={geoAverage(manifests)} zoom={12}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
+
+            {
+              manifests.length ?
+
+                manifests.map(shipment => (
+                  <Marker
+                    key={shipment.name}
+                    position={[shipment.latitude, shipment.longitude]}
+                    onclick={() => {
+                      //handles popup
+                      setSelManifest(shipment);
+                    }}/>
+                ))
+
+                : null
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
             }
 
-            {//mapping pop-ups based on selected manifests
-            selManifest && (
-              <Popup
-                position={[
+            {
+              selManifest ?
+
+                <Popup position={[
                   selManifest.latitude,
                   selManifest.longitude
                 ]}
+<<<<<<< HEAD
                 onClose={() =>{
                   setSelManifest();
                 }}
@@ -184,26 +254,39 @@ const MapPage = (props) => {
                 
               </Popup>
             )
+=======
+                  onClose={() => {
+                    setSelManifest(null);
+                  }}>
+                  <div>
+                    <h2> {selManifest.name} </h2>
+                    <p> {selManifest.type} </p>
+                    <p> {selManifest.quantity} </p>
+                    <p> {selManifest.notes} </p>
+                  </div>
+
+                </Popup>
+
+                : null
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
             }
 
           </Map>
         </Grid>
         <Grid item xs={3} className='listContainer'>
 
-          <Grid xs={12} container direction="row" justify="space-evenly" style={{ paddingBottom: "10px" }}>
+          <Grid xs={12} container direction="row" justify="space-evenly" style={{ marginBottom: "-25px" }}>
             <Grid item xs={4}>
-            <Button color="primary" startIcon={<ListAltIcon />}>List</Button>
+              <Button color="primary" startIcon={<ListAltIcon />}>List</Button>
             </Grid>
             <Grid item xs={4}>
-            <Divider orientation="vertical" variant="inset" />
+              <Divider orientation="vertical" variant="inset" />
             </Grid>
             <Grid item xs={4}>
-            <Button color="primary" disabled style={{ color: "black", textDecoration: "underline" }} startIcon={<MapIcon />}>Map</Button>
+              <Button color="primary" disabled style={{ color: "black", textDecoration: "underline" }} startIcon={<MapIcon />}>Map</Button>
             </Grid>
-            
-            
-            
           </Grid>
+<<<<<<< HEAD
           {
           <ManifestExampleTable onUpdate={(objects) => {setManifests(objects);}}
               lastSelect= {(manifest)=> {
@@ -212,6 +295,13 @@ const MapPage = (props) => {
                 }}/>
           }
         
+=======
+
+          <ManifestExampleTable 
+          onUpdate={(objects) => setManifests(objects)} 
+          onLatestClick={(manifest) => setSelManifest(manifest)} />
+
+>>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
         </Grid>
       </Grid>
     </Grid>
