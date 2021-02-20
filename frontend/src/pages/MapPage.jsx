@@ -177,41 +177,6 @@ const MapPage = (props) => {
         </Grid>
 
         <Grid item className="mapGrid" xs={9}>
-<<<<<<< HEAD
-          <Map ref={mapRef} center={centerManifest? [centerManifest.latitude, centerManifest.longitude]: [30.346410, -95.470390]} zoom={12}>
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            />
-
-
-            {//current sample code to map markers for later use
-
-            //mapping manifests to the map
-            manifests && (
-              /*
-              <Marker
-              key={manifests.name}
-              position={[manifests.latitude, manifests.longitude]}
-              onclick={() => {
-                //for handling the table if we use one
-                setSelManifest(manifests);
-              }}
-               />)
-               */
-              manifests.map(manifest => (
-              <Marker
-              key={manifest.name}
-              position={[manifest.latitude, manifest.longitude]}
-              onclick={() => {
-                //for handling the table if we use one
-                setSelManifest(manifest);
-                setCenterManifest(manifest);
-              }}
-               />
-               
-              )))
-=======
           <Map ref={mapRef} center={geoAverage(manifests)} zoom={12}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
 
@@ -229,7 +194,6 @@ const MapPage = (props) => {
                 ))
 
                 : null
->>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
             }
 
             {
@@ -239,22 +203,6 @@ const MapPage = (props) => {
                   selManifest.latitude,
                   selManifest.longitude
                 ]}
-<<<<<<< HEAD
-                onClose={() =>{
-                  setSelManifest();
-                }}
-                >
-                  {/*add properties to view here in <p/> elements*/}
-                <div>
-                  <h2> {selManifest.name} </h2>
-                  <p> {selManifest.location} </p>
-                  <p> {selManifest.quantity} </p>
-                  <p> {selManifest.notes} </p>
-                </div>
-                
-              </Popup>
-            )
-=======
                   onClose={() => {
                     setSelManifest(null);
                   }}>
@@ -268,7 +216,6 @@ const MapPage = (props) => {
                 </Popup>
 
                 : null
->>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
             }
 
           </Map>
@@ -286,22 +233,10 @@ const MapPage = (props) => {
               <Button color="primary" disabled style={{ color: "black", textDecoration: "underline" }} startIcon={<MapIcon />}>Map</Button>
             </Grid>
           </Grid>
-<<<<<<< HEAD
-          {
-          <ManifestExampleTable onUpdate={(objects) => {setManifests(objects);}}
-              lastSelect= {(manifest)=> {
-                setCenterManifest(manifest);
-                  setSelManifest(manifest);
-                }}/>
-          }
-        
-=======
 
           <ManifestExampleTable 
           onUpdate={(objects) => setManifests(objects)} 
           onLatestClick={(manifest) => setSelManifest(manifest)} />
-
->>>>>>> 1f552055be42fb835c100e36de4b63b2cc81f8d5
         </Grid>
       </Grid>
     </Grid>
