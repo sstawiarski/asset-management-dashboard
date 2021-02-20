@@ -185,6 +185,11 @@ const MapPage = (props) => {
 
                 manifests.map(shipment => (
                   <Marker
+                  /*for use when using actual shipments
+                  key={shipment.manifest.key}
+                    position={[shipment.manifest.shipFrom.latitude,
+                       shipment.manifest.shipFrom.longitude]}
+                  */
                     key={shipment.name}
                     position={[shipment.latitude, shipment.longitude]}
                     onclick={() => {
@@ -200,6 +205,9 @@ const MapPage = (props) => {
               selManifest ?
 
                 <Popup position={[
+                  /*for use when using actual shipments
+                  selManifest.manifest.shipFrom.latitude,
+                  selManifest.manifest.shipFrom.longitude */
                   selManifest.latitude,
                   selManifest.longitude
                 ]}
@@ -207,6 +215,12 @@ const MapPage = (props) => {
                     setSelManifest(null);
                   }}>
                   <div>
+                    {/*for use with actual shipments
+                    <h2> {selManifest.manifest.key} </h2>
+                    <p> {selManifest.shipmentType} </p>
+                    <p> {selManifest.status} </p>
+                    <p> {selManifest.specialInstructions} </p>
+                     */}
                     <h2> {selManifest.name} </h2>
                     <p> {selManifest.type} </p>
                     <p> {selManifest.quantity} </p>

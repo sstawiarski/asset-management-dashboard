@@ -236,6 +236,7 @@ export default function EnhancedTable(props) {
     props.onUpdate(objects);
     setSelected([]);
     onUpdate([]);
+    onLatestClick(null);
   };
 
   const handleClick = (event, name) => {
