@@ -30,7 +30,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["created", "createdBy", "status", "shipmentType", "shipFrom", "shipTo"];
+const selectedFields = ["createdBy", "created", "status", "shipmentType", "shipFrom", "shipTo"];
 
 const AllManifests = (props) => {
 
@@ -175,7 +175,7 @@ const AllManifests = (props) => {
             <Header heading="Manifests" subheading="View All" />
             <div>
                 <CustomTable
-                    data={sampleManifests}
+                    data={manifests}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
