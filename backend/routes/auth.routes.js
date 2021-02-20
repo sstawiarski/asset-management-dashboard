@@ -49,4 +49,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.get('/auth/:userId', (request, response) => {
+
+    const accountId = Number(request.params.id);
+    const getAccount = accounts.find((account) => account.id === accountId);
+  
+    if (!getAccount) {
+      response.status(500).send('Account not found.')
+    } else {
+      response.json(getAccount);
+    }
+  });
+
 module.exports = router;
