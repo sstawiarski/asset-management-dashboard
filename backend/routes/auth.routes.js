@@ -5,7 +5,6 @@ const connection = mongoose.connection;
 const Employee = require('../models/employee.model');
 const encrypt = require('../auth.utils').encrypt;
 const decrypt = require('../auth.utils').decrypt;
-const base64url = require('base64url');
 
 /* 
  * Simple POST endpoint for user authentication
@@ -50,25 +49,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get('/:user', async (req, res) => {
-    try {
-        const user = base64url.decode(req.params.user);
-        const employee = decrypt(JSON.parse(user).uniqueId);
-        const { employeeId } = JSON.parse(employee);
+router.get('/auth/:userId', (request, response) => {
 
-        let found = await Employee.findOne({ employeeId: employeeId }, { __v: 0, _id: 0 });
-        if (found) {
-            const passwordLength = found.password.length;
-            found.set('password', undefined, { strict: false });
-            found.set('passwordLength', passwordLength, { strict: false });
-            res.status(200).json(found);
-        } else {
-            res.status(404).json({ message: "Unable to find user", internalCode: "user_not_found" });
-        }
-    } catch (err) {
-        res.status(500);
-        console.log(err);
+    const accountId = Number(request.params.id);
+    const getAccount = accounts.find((account) => account.id === accountId);
+  
+    if (!getAccount) {
+      response.status(500).send('Account not found.')
+    } else {
+      response.json(getAccount);
     }
-});
+  });
 
 module.exports = router;
