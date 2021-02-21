@@ -15,6 +15,7 @@ import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
 import NewSidebar from './components/NewSidebar';
+import AccountDetails from'./pages/AccountDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +51,7 @@ function App() {
 
   const history = useHistory();
   const location = useLocation();
-  const [local, setLocal] = useLocalStorage('user', {});
+  const [local, ] = useLocalStorage('user', {});
   const [loggedIn, setLogged] = useState(false);
 
   useEffect(() => {

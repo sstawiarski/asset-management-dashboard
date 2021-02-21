@@ -189,11 +189,13 @@ const Sidebar = (props) => {
                   justify="flex-start"
 
                 >
+                  <Link to="/AccountDetails">
                   <Grid item>
                     <AccountCircleIcon
                       className={classes.IconButton}
                     />
                   </Grid>
+                  </Link>
                   <Grid item>
                     {open === true ? <Typography variant="h6" className={classes.name}>{fullName}</Typography> : null}
                   </Grid>
@@ -212,9 +214,11 @@ const Sidebar = (props) => {
             <Grid item container direction="row" alignItems="center">
               <Grid item>
                 {open === false ? (
+                  <Link to="/AccountDetails">
                   <AccountCircleIcon
                     className={classes.IconButton}
                   />
+                  </Link>
                 ) : null}
               </Grid>
             </Grid>
