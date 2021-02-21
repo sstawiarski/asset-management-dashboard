@@ -15,6 +15,7 @@ import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
+import AccountDetails from'./pages/AccountDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -48,7 +49,7 @@ function App() {
 
   const history = useHistory();
   const [background, setBackground] = useState("#60ACBD");
-  const [local, setLocal] = useLocalStorage('user', {});
+  const [local, ] = useLocalStorage('user', {});
   const [loggedIn, setLogged] = useState(false);
 
   useEffect(() => {
@@ -85,6 +86,7 @@ function App() {
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
+                  <Route path="/account" component={AccountDetails} />
                 </Switch>
               </main>
             </div>
