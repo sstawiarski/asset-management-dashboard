@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
 router.get('/:user', async (req, res) => {
     try {
         const user = base64url.decode(req.params.user);
-        const employee = decrypt(JSON.parse(user).uniqueId);
+        const employee = decrypt(JSON.parse(user));
         const { employeeId } = JSON.parse(employee);
 
         let found = await Employee.findOne({ employeeId: employeeId }, { __v: 0, _id: 0 });
@@ -67,7 +67,6 @@ router.get('/:user', async (req, res) => {
         }
     } catch (err) {
         res.status(500);
-        console.log(err);
     }
 });
 

@@ -49,7 +49,7 @@ function App() {
 
   const history = useHistory();
   const [background, setBackground] = useState("#60ACBD");
-  const [local, setLocal] = useLocalStorage('user', {});
+  const [local, ] = useLocalStorage('user', {});
   const [loggedIn, setLogged] = useState(false);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ function App() {
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
-                  <Route path="/AccountDetails" component={AccountDetails} />
+                  <Route path="/account" component={AccountDetails} />
                 </Switch>
               </main>
             </div>
