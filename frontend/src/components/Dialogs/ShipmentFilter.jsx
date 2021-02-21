@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import DateFnsUtils from '@date-io/date-fns';
 import 'date-fns';
+import { makeStyles } from '@material-ui/core/styles'
 
 //Material-UI Components
 import Grid from '@material-ui/core/Grid';
@@ -10,45 +12,88 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import FormControl from '@material-ui/core/FormControl';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Radio from '@material-ui/core/Radio';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import DialogActions from '@material-ui/core/DialogActions';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
-export default function FormDialog({ open, setOpen, setActiveFilters, shipmentList }) {
+const useStyles = makeStyles((theme) => ({
+    filterList: {
+        paddingLeft: "20%"
+    },
+    autocomplete: {
+        marginBottom: "40px",
+        padding: "10px"
+    },
+    subtitle: {
+        color: "grey"
+    },
+    dateContainer: {
+        marginTop: "20px"
+    }
+}));
 
+const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
+    const classes = useStyles();
+
+    /* All filter state */
     const [state, setState] = useState({
-        retired: "all",
+        shipmentType: "all",
         dateCreated: null,
         dateUpdated: null,
-        assignmentType: "all",
-        assetType: "all",
-        groupTag: "",
-        checkedOut: "all",
-        assembled: "all",
-        assetTypes: null,
+        completed: null,
+        status: "all",
+        shipFrom: null,
+        shipTo: null,
+        shipFromOptions: [],
+        shipToOptions: [],
+        allShippingOptions: []
     });
 
-    /* Fetch names for all asset/assembly types in the database */
+    /* Get available shipment locations */
     useEffect(() => {
-        let url = shipmentList ? `http://localhost:4000/assets/assembly/schema?type=${shipmentList}` : 'http://localhost:4000/assets/assembly/schema?all=true';
-        fetch(url)
+        fetch('http://localhost:4000/locations')
             .then(res => res.json())
             .then(json => {
-                let types = null;
-                if (shipmentList) {
-                    types = json["components"].map(item => ({ name: item, checked: true }));
-                } else {
-                    types = json.map(item => ({ name: item.name, checked: true }));
-                }
-                setState(s => ({ ...s, assetTypes: types }));
+                setState(s => ({ ...s, allShippingOptions: json }));
             });
-    }, [shipmentList])
+    }, [])
+
+    /* Limit the locations selectable based on shipment type */
+    useEffect(() => {
+
+        if (state.shipmentType === "all") {
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions
+            }));
+        } else if (state.shipmentType === "Incoming") {
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions.filter(obj => obj.locationType === "Staging Facility")
+            }));
+        } else if (state.shipmentType === "Outgoing") {
+            setState(s => ({
+                ...s,
+                shipToOptions: s.allShippingOptions,
+                shipFromOptions: s.allShippingOptions.filter(obj => obj.locationType === "Staging Facility")
+            }));
+        } else {
+            setState(s => ({
+                ...s,
+                shipFromOptions: s.allShippingOptions,
+                shipToOptions: s.allShippingOptions
+            }));
+        }
+
+    }, [state.shipmentType, state.allShippingOptions])
 
     const handleClose = () => {
         setOpen(false);
@@ -57,19 +102,12 @@ export default function FormDialog({ open, setOpen, setActiveFilters, shipmentLi
     /* Convert the input values to proper stringified JSON and then send them to the parent */
     const handleSubmit = () => {
         const disallowed = ["all", null, ""];
-        const onlyActive = Object.keys(state)
+        const disallowedLabels = ["allShippingOptions", "shipToOptions", "shipFromOptions"];
+        const onlyActive = Object.keys(state).filter(label => !disallowedLabels.includes(label))
             .reduce((p, c) => {
                 if (!disallowed.includes(state[c])) {
-                    if (c === "assetTypes") {
-                        if (state[c]) {
-                            const excluding = state[c].reduce((res, type) => {
-                                if (!type.checked) {
-                                    res.push(type.name)
-                                }
-                                return res;
-                            }, []);
-                            p["exclude"] = encodeURI(JSON.stringify(excluding));
-                        }
+                    if (c === "shipFrom" || c === "shipTo") {
+                        p[c] = state[c]._id;
                     } else if (state[c] === "Yes") {
                         p[c] = true;
                     } else if (state[c] === "No") {
@@ -85,18 +123,13 @@ export default function FormDialog({ open, setOpen, setActiveFilters, shipmentLi
         setOpen(false);
     }
 
+    /* Handles non-date filter state changes */
     const handleChange = (event) => {
         const { name, value } = event.target
-        if (value === "assetTypes") {
-            const found = state.assetTypes.findIndex(item => item.name === name);
-            const foundType = state.assetTypes[found];
-            const newVal = !foundType.checked;
-            let newAssets = state.assetTypes;
-            newAssets[found] = { name: name, checked: newVal };
-            setState(s => ({
-                ...s,
-                assetTypes: newAssets
-            }));
+
+        //clear current selections if type changes
+        if (name === "shipmentType") {
+            setState(s => ({ ...s, shipTo: null, shipFrom: null, [name]: value }));
         } else {
             setState(s => ({
                 ...s,
@@ -105,167 +138,132 @@ export default function FormDialog({ open, setOpen, setActiveFilters, shipmentLi
         }
     };
 
-    /* Asset type checkbox handler */
-    const handleBoxes = (boolean) => {
-        const newSelections = state.assetTypes.map(item => ({ ...item, checked: boolean }));
-        setState(s => ({ ...s, assetTypes: newSelections }));
-    }
-
+    /* Resets all filter states without removing the fetched location list */
     const handleReset = () => {
         setState(s => ({
             ...s,
-            retired: "all",
+            shipmentType: "all",
             dateCreated: null,
             dateUpdated: null,
-            assetType: "all",
-            assignmentType: "all",
-            groupTag: "",
-            checkedOut: "all",
-            assembled: "all"
+            completed: null,
+            status: "all",
+            shipFrom: null,
+            shipTo: null,
+            shipFromOptions: [],
+            shipToOptions: []
         }));
-        handleBoxes(true);
     }
 
+    /* Date filter change handler */
     const handleDateChange = (name, newDate) => {
         setState(s => ({
             ...s,
             [name]: newDate
-        }))
+        }));
     }
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-            <DialogTitle>{"Filter Assets"}</DialogTitle>
-
+            <DialogTitle>{"Filter Shipments"}</DialogTitle>
             <DialogContent>
-                <Grid container justify="space-evenly">
-                    <Grid item xs={3}>
+                <Grid className={classes.filterList} container justify="space-between">
+
+                    {/* Filter incoming vs. outgoing shipments */}
+                    <Grid item xs={6}>
+                        <FormControl component="fieldset">
+                            <span>Shipment Type</span>
+                            <RadioGroup aria-label="shipment type" name="shipmentType" value={state.shipmentType} onChange={handleChange}>
+                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                <FormControlLabel value="Incoming" control={<Radio />} label="Incoming" />
+                                <FormControlLabel value="Outgoing" control={<Radio />} label="Outgoing" />
+                            </RadioGroup>
+                        </FormControl>
+
+                    </Grid>
+
+                    {/* Filter by current shipment status */}
+                    <Grid item xs={6}>
                         <FormControl component="fieldset">
                             <span>Status</span>
-                            <RadioGroup aria-label="status" name="retired" value={state.retired} onChange={handleChange}>
+                            <RadioGroup aria-label="status" name="status" value={state.status} onChange={handleChange}>
                                 <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                <FormControlLabel value="No" control={<Radio />} label="Active" />
-                                <FormControlLabel value="Yes" control={<Radio />} label="Retired" />
+                                <FormControlLabel value="Staging" control={<Radio />} label="Staging" />
+                                <FormControlLabel value="Completed" control={<Radio />} label="Completed" />
+                                <FormControlLabel value="Abandoned" control={<Radio />} label="Abandoned" />
                             </RadioGroup>
                         </FormControl>
                     </Grid>
-
-                    <Grid item xs={3}>
-                        <FormControl component="fieldset">
-                            <span>Assignment</span>
-                            <RadioGroup aria-label="assignment" name="assignmentType" value={state.assignmentType} onChange={handleChange}>
-                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                <FormControlLabel value="Owned" control={<Radio />} label="Owned" />
-                                <FormControlLabel value="Rental" control={<Radio />} label="Rented" />
-                            </RadioGroup>
-                        </FormControl>
-
-                    </Grid>
-                    <Grid item xs={3}>
-                        <FormControl component="fieldset">
-                            <span>Type</span>
-                            <RadioGroup aria-label="types" name="assetType" value={state.assetType} onChange={handleChange}>
-                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                <FormControlLabel value="Asset" control={<Radio />} label="Asset" />
-                                <FormControlLabel value="Assembly" control={<Radio />} label="Assembly" />
-                            </RadioGroup>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={3}>
-                        <FormControl component="fieldset">
-                            <span>Checked Out</span>
-                            <RadioGroup aria-label="types" name="checkedOut" value={state.checkedOut} onChange={handleChange}>
-                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-                                <FormControlLabel value="No" control={<Radio />} label="No" />
-                            </RadioGroup>
-                        </FormControl>
-                    </Grid>
-
-                    {/* Display filter for assembled vs. disassembled assembly only when asset type is specified as assembly */}
-                    {
-                        state.assetType === "Assembly" ?
-                            <>
-                                <Grid item xs={3} />
-                                <Grid item xs={3} />
-                                <Grid item xs={3} style={{ paddingTop: "10px" }}>
-                                    <FormControl component="fieldset">
-                                        <span>Assembly State</span>
-                                        <RadioGroup aria-label="types" name="assembled" value={state.assembled} onChange={handleChange}>
-                                            <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                            <FormControlLabel value="Yes" control={<Radio />} label="Assembled" />
-                                            <FormControlLabel value="No" control={<Radio />} label="Disassembled" />
-                                        </RadioGroup>
-                                    </FormControl>
-                                </Grid>
-                                <Grid item xs={3} />
-                            </>
-                            : null
-                    }
-
-                    {
-                        state.assetTypes ?
-                            <Grid item xs={12} style={{ paddingTop: "10px" }}>
-
-                                <span>Asset Types</span>
-                                <br />
-                                <div style={{ textAlign: "center" }}>
-                                    <FormControl component="fieldset">
-
-                                        <FormGroup name="assetTypes" aria-label="types">
-                                            {/* Split names of asset names into two rows and display */}
-                                            {
-                                                state.assetTypes.slice(0, Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
-                                                    return (
-                                                        <FormControlLabel
-                                                            key={type.name}
-                                                            control={
-                                                                <Checkbox
-                                                                    checked={type.checked}
-                                                                    name={type.name}
-                                                                    value="assetTypes"
-                                                                    onChange={handleChange}
-                                                                    color="primary"
-                                                                />
-                                                            }
-                                                            label={type.name} />
-                                                    )
-                                                })
-                                            }
-                                        </FormGroup>
-                                    </FormControl>
-                                    <FormControl component="fieldset">
-                                        <FormGroup name="assetTypes" aria-label="types">
-                                            {
-                                                state.assetTypes.slice(Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
-                                                    return (
-                                                        <FormControlLabel
-                                                            key={type.name}
-                                                            control={
-                                                                <Checkbox
-                                                                    checked={type.checked}
-                                                                    name={type.name}
-                                                                    value="assetTypes"
-                                                                    onChange={handleChange}
-                                                                    color="primary"
-                                                                />
-                                                            }
-                                                            label={type.name} />)
-                                                })
-                                            }
-                                        </FormGroup>
-                                    </FormControl>
-                                    <br />
-                                    <Button variant="text" color="secondary" onClick={() => handleBoxes(true)}>Select All</Button>
-                                    <Button variant="text" color="secondary" onClick={() => handleBoxes(false)}>Clear</Button>
-                                </div>
-                            </Grid>
-                            : null
-                    }
-
                 </Grid>
 
-                <Grid container justify="space-evenly" style={{ marginTop: "20px" }}>
+                {/* Shipment location filters with autocomplete and grouping by location type */}
+                <Grid className={classes.dateContainer} container justify="space-evenly">
+                    <Grid item xs={6}>
+                        <Autocomplete
+                            id="shipment-from-locator"
+                            className={classes.autocomplete}
+                            options={state.shipFromOptions}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
+                            groupBy={(option) => option.locationType}
+                            value={state.shipFrom}
+                            onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
+                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
+                            renderOption={(option) => {
+                                /* Render autocomplete list with subtitles that tell either the operator name, client name, or address */
+                                return (
+                                    <>
+                                        <div>
+                                            {option.locationName} {`(${option.key})`}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
+                                                {
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
+                                                }
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Autocomplete
+                            id="shipment-to-locator"
+                            options={state.shipToOptions}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
+                            value={state.shipTo}
+                            groupBy={(option) => option.locationType}
+                            onChange={(event, newValue) => setState(s => ({ ...s, shipTo: newValue }))}
+                            className={classes.autocomplete}
+                            renderOption={(option) => {
+                                return (
+                                    <>
+                                        <div>
+                                            {option.locationName} {`(${option.key})`}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
+                                                {
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
+                                                }
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" />}
+                        />
+                    </Grid>
+
+                    {/* Date filters */}
                     <Grid item xs={5}>
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Grid container justify="space-evenly">
@@ -308,32 +306,42 @@ export default function FormDialog({ open, setOpen, setActiveFilters, shipmentLi
                         </MuiPickersUtilsProvider>
                     </Grid>
 
-                </Grid>
-                <Grid container justify="space-around" style={{ marginTop: "20px" }}>
-                    <Grid item xs={6}>
-                        <TextField
-                            margin="dense"
-                            id="groupTag"
-                            name="groupTag"
-                            label="Group Tag"
-                            type="text"
-                            fullWidth
-                            variant="outlined"
-                            value={state.groupTag}
-                            onChange={handleChange}
-                        />
+                    <Grid item xs={5}>
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <Grid container justify="space-evenly">
+                                <KeyboardDatePicker
+
+                                    format="MM/dd/yyyy"
+                                    margin="normal"
+                                    id="date-picker-inline"
+                                    name="completed"
+                                    inputVariant="outlined"
+                                    label="Date Completed"
+                                    value={state.completed}
+                                    onChange={date => handleDateChange("completed", date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                />
+                            </Grid>
+                        </MuiPickersUtilsProvider>
                     </Grid>
                 </Grid>
-
             </DialogContent>
+
             <DialogActions>
-                <Button onClick={handleReset} color="primary">
-                    Reset
-          </Button>
-                <Button onClick={handleSubmit} color="primary">
-                    Filter
-          </Button>
+                <Button onClick={handleReset} color="primary">Reset</Button>
+                <Button onClick={handleSubmit} color="primary">Filter</Button>
             </DialogActions>
+
         </Dialog>
-    )
-}
+    );
+};
+
+ShipmentFilter.propTypes = {
+    open: PropTypes.bool.isRequired,
+    setOpen: PropTypes.func.isRequired,
+    setActiveFilters: PropTypes.func.isRequired
+};
+
+export default ShipmentFilter;
