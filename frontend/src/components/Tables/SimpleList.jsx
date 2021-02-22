@@ -48,27 +48,38 @@ const SimpleList = (props) => {
                     headers.length ?
                         <TableHead className={classes.header}>
                             <TableRow>
-                                {headers.map(header => <TableCell key={header}>{header}</TableCell>)}
+                                {headers.map(header => {
+                                    if (header === null) return null;
+                                    return (<TableCell key={header}>{header}</TableCell>)
+                                })
+                                }
                             </TableRow>
                         </TableHead>
                         : null
                 }
                 <TableBody>
                     {
-                        data.map(item => {
+                        data.map((item, idx) => {
                             /* If array is given, map it, other print it (strings usually) */
                             /* If "link" prop is supplied, use the first array item as the ID to link to */
                             return item instanceof Array ?
                                 <TableRow
                                     className={classes.body}
-                                    key={item}
+                                    key={idx}
                                     onClick={
-                                        link && item[item.length-1] === true ?
+                                        link && item[item.length - 1] === true ?
                                             () => history.push(`${link}${item[0]}`)
                                             : null
                                     }
                                 >
-                                    {item.map((thing, idx) => <TableCell className={idx === 0 && item[item.length-1] === true ? classes.bodyLink : null} key={idx}>{thing}</TableCell>)}
+                                    {item.map((thing, idx) => {
+                                        let working = thing;
+                                        const isSerialized = item[item.length - 1];
+                                        if (isSerialized === true || isSerialized === false) {
+                                            if (idx === item.length - 1) return null;
+                                        }
+                                        return (<TableCell className={idx === 0 && isSerialized === true ? classes.bodyLink : null} key={idx}>{working}</TableCell>);
+                                    })}
                                 </TableRow>
                                 :
                                 <TableRow className={classes.body} key={item}>
