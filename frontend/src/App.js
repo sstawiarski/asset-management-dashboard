@@ -87,7 +87,7 @@ function App() {
                   <Route path="/shipments/view-all" component={AllManifests} />
                   <Route path="/shipments/track" component={MapPage} />
                   <Route path="/shipments/:key" component={ShipmentDetails} />
-                  <Route exact path="/assets/create-assembly" component={CreateAssembly} />
+                  <Route exact path="/assets/assembly-manager" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
                   <Route exact path="/account" component={AccountDetails} />
