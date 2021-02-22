@@ -22,6 +22,7 @@ import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDial
 import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
 import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
 import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
+import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -155,8 +156,8 @@ const AllManifests = (props) => {
                 }
             })
             .then(json => {
-                setManifests(json.data);
-                setManifestCount(json.count[0].count);
+                //setManifests(json.data);
+                //setManifestCount(json.count[0].count);
             });
     }, [filters]);
 
@@ -175,7 +176,7 @@ const AllManifests = (props) => {
             <Header heading="Manifests" subheading="View All" />
             <div>
                 <CustomTable
-                    data={manifests}
+                    data={sampleManifests}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
@@ -232,7 +233,9 @@ const AllManifests = (props) => {
                                         />
                                     </div>
                                 </Container>
-                                
+                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true}))}>
+                                        <FilterListIcon />
+                                    </IconButton>
                             </>
                         }
                     </TableToolbar>
@@ -247,7 +250,7 @@ const AllManifests = (props) => {
 
             </div>
            { /*put manifest filter here*/}
-
+           <ShipmentFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} setActiveFilters={setActiveFilters} />
            
             
             {/* Displays success or failure message */}

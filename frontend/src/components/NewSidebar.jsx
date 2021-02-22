@@ -138,6 +138,8 @@ const getURL = (name, loggedInUser) => {
             return "/assets/view-all"
         case "View All Shipments":
             return "/shipments/view-all"
+        case "Track":
+                return "/shipments/track"
         case "Add New":
             return "/shipments/shipment-creator"
         case "Assembly Manager":
