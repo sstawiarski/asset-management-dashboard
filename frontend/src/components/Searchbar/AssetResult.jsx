@@ -100,7 +100,7 @@ const AssetResult = ({ data, divider }) => {
         <div className={classes.root}>
             <div className={classes.searchItem}>
                 <div style={{ marginLeft: '5px' }}>
-                    <Link to={`/details/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
+                    <Link to={`/assets/${data.serial}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <Typography variant="body1"><b>{data.serial}</b></Typography>
                         <Typography variant="body2">{data.assetName}</Typography>
                         <Typography variant="body2">{data.assetType}</Typography>

@@ -28,7 +28,7 @@ router.get("/", async (req, res, err) => {
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
-          if (c === "dateCreated" || c === "dateUpdated") {
+          if (c === "dateCreated" || c === "lastUpdated") {
 
             const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
             const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
@@ -440,8 +440,7 @@ router.patch("/", async (req, res) => {
 
     //updates main assets and assemblies selected
     //See mongoose API docs -- [Model name].updateMany( { filters }, { fields and values to update });
-    const ret = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, field);
-    console.log(ret);
+    const ret = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, { ...field, lastUpdated: Date.now() });
 
     if (isDisassembly) {
       res.status(205).json({ message: "Successfully marked assembly as disassembled" });
@@ -455,6 +454,7 @@ router.patch("/", async (req, res) => {
       if (req.body.override) {
         await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, {
           parentId: null,
+          lastUpdated: Date.now(),
           ...field
         });
 
@@ -464,6 +464,7 @@ router.patch("/", async (req, res) => {
               serial: missingParentSerials[idx]
             },
             {
+              lastUpdated: Date.now(),
               incomplete: true,
               $push: {
                 missingItems: name
@@ -489,11 +490,11 @@ router.patch("/", async (req, res) => {
         //else only update the children that don't have this problem
       } else {
         const newList = list.filter(item => !missingChildSerials.includes(item));
-        await Asset.updateMany({ serial: { $in: newList }, assetType: "Asset" }, field);
+        await Asset.updateMany({ serial: { $in: newList }, assetType: "Asset" }, { ...field, lastUpdated: Date.now() });
       }
       //else update all assets
     } else {
-      await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, field);
+      await Asset.updateMany({ serial: { $in: list }, assetType: "Asset" }, { ...field, lastUpdated: Date.now() });
     }
 
 
@@ -508,7 +509,7 @@ router.patch("/", async (req, res) => {
 
     if (parentSerials.length) {
       foundChildren = await Asset.find({ parentId: { $in: parentSerials }, assetType: "Asset" }).select({ serial: 1 });
-      await Asset.updateMany({ parentId: { $in: parentSerials } }, field);
+      await Asset.updateMany({ parentId: { $in: parentSerials } }, { ...field, lastUpdated: Date.now() });
     }
 
     //get event type and key beginning -- function declared at bottom of this file
@@ -703,13 +704,14 @@ router.patch('/assembly', async (req, res) => {
     await Asset.updateOne({ serial: serial, assetType: "Assembly" }, {
       missingItems: missing,
       assembled: true,
-      incomplete: missing.length > 0 ? true : false
+      incomplete: missing.length > 0 ? true : false,
+      lastUpdated: Date.now()
     });
 
     const findChildren = await Asset.find({ parentId: serial });
     const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
 
-    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null });
+    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() });
 
     //find all new children that already have parents
     const withParents = await Asset.find({
@@ -725,12 +727,12 @@ router.patch('/assembly', async (req, res) => {
     const assetNames = withParents.map(item => item.assetName);
 
     //update children with new parent
-    await Asset.updateMany({ serial: { $in: assets } }, { parentId: serial });
+    await Asset.updateMany({ serial: { $in: assets } }, { parentId: serial, lastUpdated: Date.now() });
 
     //update parents to mark incomplete
     let i = 0;
     for (const parent of parentSers) {
-      await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true });
+      await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true, lastUpdated: Date.now() });
       i++;
     }
 

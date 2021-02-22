@@ -257,7 +257,8 @@ const NewTable = (props) => {
                                             onClick={(event) => {
                                                 if (Clickable) {
                                                     setClicked(true);
-                                                    setIdentifier(item[selectedFields[0]]);
+                                                    if (variant === "asset") setIdentifier(item[selectedFields[0]]);
+                                                    else setIdentifier(item);
                                                 } else {
                                                     event.stopPropagation();
                                                     history.push(`${url}${item[selectedFields[0]]}`)
