@@ -16,6 +16,7 @@ import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
 import NewSidebar from './components/NewSidebar';
 import AccountDetails from'./pages/AccountDetails';
+import ShipmentDetails from './pages/ShipmentDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 import MapPage from './pages/MapPage';
 
@@ -85,10 +86,11 @@ function App() {
                   <Route path="/search/:query" component={SearchDetails} />
                   <Route path="/shipments/view-all" component={AllManifests} />
                   <Route path="/shipments/track" component={MapPage} />
+                  <Route path="/shipments/:key" component={ShipmentDetails} />
                   <Route exact path="/assets/create-assembly" component={CreateAssembly} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
-                  <Route exact path="/account" component={null} />
+                  <Route exact path="/account" component={AccountDetails} />
                   <Route exact path="/settings" component={null} />
                 </Switch>
               </div>
