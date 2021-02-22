@@ -14,9 +14,12 @@
     "base64url": "^3.0.1",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
+    "leaflet": "^1.7.1",
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-geocode": "^0.2.3",
+    "react-leaflet": "^2.7.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0"
   },
