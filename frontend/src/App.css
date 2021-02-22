@@ -29,4 +29,8 @@
   color: #61dafb;
 }
 
+.leaflet-container {
+  height: calc(100% + 50px);
+  min-height: 300px;
+}
 
