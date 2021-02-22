@@ -14,7 +14,7 @@ import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
 import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
-import NewSidebar from './components/NewSidebar';
+import Sidebar from './components/Sidebar';
 import AccountDetails from'./pages/AccountDetails';
 import ShipmentDetails from './pages/ShipmentDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
@@ -76,7 +76,7 @@ function App() {
                 boxShadow: "8px -12px 9px rgba(0,0,0,0.5)", 
               marginLeft: "-10px"
              }}>
-                <NewSidebar style={{ height: "100vh" }} location={location} />
+                <Sidebar style={{ height: "100vh" }} location={location} />
               </div>
               <div className={classes.content}>
                 <img src={logo} className="App-logo" title="Go to Dashboard" alt="logo" onClick={() => history.push('/')} />

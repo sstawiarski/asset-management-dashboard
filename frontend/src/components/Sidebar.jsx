@@ -1,483 +1,485 @@
-// author: Maija Kingston
-// https://github.com/mui-org/material-ui/blob/master/docs/src/pages/components/drawers/MiniDrawer.js
+import React, { useState } from 'react';
 
-import React, { useState, useContext } from "react";
-import PropTypes from "prop-types";
-import * as classNames from "classnames";
-import { makeStyles } from "@material-ui/core/styles";
+//Library Tools
+import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
-import Drawer from "@material-ui/core/Drawer";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import Grid from "@material-ui/core/Grid";
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
-import MenuIcon from "@material-ui/icons/Menu";
+//Material-UI Imports
+import Collapse from '@material-ui/core/Collapse';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Divider from '@material-ui/core/Divider';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItem from '@material-ui/core/ListItem';
+import IconButton from '@material-ui/core/IconButton';
+
+//Icons
+import ListIcon from "@material-ui/icons/List";
+import MenuIcon from '@material-ui/icons/Menu';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import SettingsIcon from "@material-ui/icons/Settings";
+import ExtensionIcon from '@material-ui/icons/Extension';
+import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import HomeIcon from "@material-ui/icons/Home";
 import LocalShippingIcon from "@material-ui/icons/LocalShipping";
 import DomainIcon from "@material-ui/icons/Domain";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import ListIcon from "@material-ui/icons/List";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import AssignmentIndIcon from "@material-ui/icons/AssignmentInd";
-import DynamicFeedIcon from "@material-ui/icons/DynamicFeed";
-import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import SettingsIcon from "@material-ui/icons/Settings";
-import ExtensionIcon from '@material-ui/icons/Extension';
-import { Link } from "react-router-dom";
+
+//Tools
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
-let drawerWidth = 220;
+const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
-  root: {
-
-  },
-
-  Sidebar: {
-    minHeight: "100vh",
-    border: "none"
-  },
-
-  IconButton: {
-    padding: 10,
-    marginLeft: 10,
-    color: "#294950",
-    "&:hover": {
-      color: "#8ab7c2",
+const useStyles = makeStyles((theme) => ({
+    menuIcon: {
+        marginRight: 20
     },
-  },
-
-  AccountCircleIcon: {
-    background: "#60ACBD"
-  },
-
-  open: {
-    "&:hover": {
-      color: "#8ab7c2",
+    name: {
+        color: "white",
+        textShadow: "1px 1px 4px #0f0f0f",
+        flexBasis: "100%",
     },
-  },
-
-  onClick: {
-    marginLeft: 50,
-    "&:hover": {
-      color: "#8ab7c2",
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+        whiteSpace: 'nowrap'
     },
-  },
-
-  SettingsIcon: {
-    marginLeft: 50,
-  },
-  ExitToAppIcon: {
-    padding: 10,
-    marginLeft: 10,
-    color: "#EA5F61",
-  },
-  drawerPaper: {
-    background: "#FAFAFA",
-    overflowX: "hidden",
-    position: "relative",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerPaperClose: {
-    overflowX: "hidden",
-    position: "relative",
-    background: "#60ACBD",
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    width: theme.spacing(7),
-    [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9),
+    drawerOpen: {
+        width: drawerWidth,
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        })
     },
-  },
-  link: {
-    color: "inherit",
-    textDecoration: "none",
-    paddingLeft: "5px",
-    display: "inherit"
-  },
-  icon: {
-    paddingRight: 10,
-  },
-  name: {
-    color: "white",
-    textShadow: "1px 1px 4px #0f0f0f"
-  },
-
+    drawerClose: {
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        overflowX: 'hidden',
+        width: theme.spacing(7) + 1,
+        [theme.breakpoints.up('sm')]: {
+            width: theme.spacing(9) + 1,
+        },
+        backgroundColor: theme.palette.primary.main
+    },
+    toolbar: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: theme.spacing(1, 0, 0, 0),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        flexWrap: "wrap",
+        backgroundColor: theme.palette.primary.main
+    },
+    accountHeader: {
+        flexBasis: "100%"
+    },
+    moduleText: {
+        color: "#3b3a3a"
+    },
+    signOut: {
+        color: "#EA5F61",
+        marginTop: "5rem"
+    },
+    highlighted: {
+        color: "#ddebee"
+    },
+    nonHighlighted: {
+        color: "rgba(0, 0, 0, 0.6)"
+    }
 }));
 
-const Sidebar = (props) => {
-  const classes = useStyles();
-  const [open, setOpen] = useState(false);
-  const [local, setLocal] = useLocalStorage('user', {});
-  const history = useHistory();
+/* Get icon for the specified sidebar link title */
+const getIcon = (name) => {
+    switch (name) {
+        case "Home":
+            return <HomeIcon />
+        case "Assets":
+            return <DomainIcon />
+        case "Shipments":
+            return <LocalShippingIcon />
+        case "Sign Out":
+            return <ExitToAppIcon style={{ color: "#EA5F61" }} />
+        case "View All":
+            return <ListIcon />
+        case "Track":
+            return <GpsFixedIcon />
+        case "Add New":
+            return <AddCircleOutlineIcon />
+        case "Assembly Manager":
+            return <ExtensionIcon />
+        case "Assignments":
+            return <AssignmentIndIcon />
+        default:
+            return null;
+    }
+};
 
-  const fullName = local.firstName + " " + local.lastName;
+/* Get the url for the specified link name
+ * Pass in the logged in user so a logout message can be displayed on the login screen
+ */
+const getURL = (name, loggedInUser) => {
+    switch (name) {
+        case "Home":
+            return "/"
+        case "Sign Out":
+            return { pathname: '/login', state: { onSignOut: true, name: loggedInUser } }
+        case "View All Assets":
+            return "/assets/view-all"
+        case "View All Shipments":
+            return "/shipments/view-all"
+        case "Track":
+                return "/shipments/track"
+        case "Add New":
+            return "/shipments/shipment-creator"
+        case "Assembly Manager":
+            return "/assets/assembly-manager"
+        case "Assignments":
+            return "/assets/assignments"
+        default:
+            return null;
+    }
+};
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-    props.onOpen("#FAFAFA");
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-    props.onOpen("#60ACBD");
-  };
-
-  return (
-    <div className={classes.root}>
-      <Drawer
-        variant="permanent"
-        className={classes.Drawer}
-        classes={{
-          paper: classNames(
-            classes.drawerPaper,
-            !open && classes.drawerPaperClose
-          ),
-        }}
-        style={{
-          width: local.firstName ? fullName.length > 9 ? open ? drawerWidth + fullName.length + 35 : 73 : drawerWidth : open ? 220 : 73
-        }}
-        open={open}
-      >
-        <div className={classes.Sidebar}>
-          <Grid
-            className={classes.AccountCircleIcon}
-            container
-            direction="column"
-            justify="space-between"
-            alignItems="flex-start"
-            spacing={1}
-
-
-          >
-            <Grid item>
-              {open === true ? (
-                <ChevronLeftIcon
-                  className={classes.IconButton}
-                  onClick={
-                    open === false
-                      ? handleDrawerOpen
-                      : handleDrawerClose
-                  }
-                />
-              ) : (
-                  <MenuIcon
-                    className={classes.IconButton}
-                    onClick={
-                      open === true
-                        ? handleDrawerClose
-                        : handleDrawerOpen
-                    }
-                  />
-                )}
-            </Grid>
-
-            {open === true ? (
-              <div>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-
-                >
-                  <Link to="/AccountDetails">
-                  <Grid item>
-                    <AccountCircleIcon
-                      className={classes.IconButton}
-                    />
-                  </Grid>
-                  </Link>
-                  <Grid item>
-                    {open === true ? <Typography variant="h6" className={classes.name}>{fullName}</Typography> : null}
-                  </Grid>
-                  <Grid item className={classes.open}>
-                    {open === true ? (
-                      <SettingsIcon
-                        className={classes.SettingsIcon}
-                        style={{ fontSize: 16 }}
-                      />
-                    ) : null}
-                  </Grid>
-                </Grid>
-
-              </div>
-            ) : null}
-            <Grid item container direction="row" alignItems="center">
-              <Grid item>
-                {open === false ? (
-                  <Link to="/AccountDetails">
-                  <AccountCircleIcon
-                    className={classes.IconButton}
-                  />
-                  </Link>
-                ) : null}
-              </Grid>
-            </Grid>
-
-          </Grid>
-
-          <Grid
-            container
-            direction="column"
-            justify="flex-start"
-            alignItems="flex-start"
-            spacing={1}
-          >
-            <Link to="/" className={classes.link}>
-              <Grid
-                item
-                container
-                direction="row"
-                alignItems="center"
-                justify="flex-start"
-              >
-                <Grid item>
-                  <HomeIcon
-                    className={classes.IconButton}
-                  />
-                </Grid>
-                <Grid item className={classes.open}>
-                  {open === true ? <Typography variant="body1">Home</Typography> : null}
-                </Grid>
-              </Grid>
-            </Link>
-
-            <Link to="/shipments/view-all" className={classes.link}>
-              <Grid
-                item
-                container
-                direction="row"
-                alignItems="center"
-                justify="flex-start"
-              >
-                <Grid item>
-                  <LocalShippingIcon className={classes.IconButton} />
-                </Grid>
-                <Grid item>
-                  {open === true ? <Typography variant="body1">Shipping</Typography> : null}
-                </Grid>
-                <Grid item>
-                  {open === true ? (
-                    <KeyboardArrowDownIcon style={{ fontSize: 10 }} />
-                  ) : null}
-                </Grid>
-              </Grid>
-            </Link>
-
-            <Link to="/shipments/view-all" className={classes.link}>
-              <div style={{ marginBottom: "10px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2">View All</Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-
-            <Link to="/shipments/track" className={classes.link}>
-              <div style={{ marginBottom: "10px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <GpsFixedIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2">Track</Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-            <Link to="/shipments/create" className={classes.link}>
-              <div style={{ marginBottom: "10px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <AddCircleOutlineIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2">Add New</Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-
-            <Link to="/assets/view-all" className={classes.link}>
-              <div style={{ marginTop: "-15px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                >
-                  <Grid item>
-                    <DomainIcon className={classes.IconButton} />
-                  </Grid>
-                  <Grid item className={classes.open}>
-                    {open === true ? <Typography variant="body1">Assets</Typography> : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? (
-                      <KeyboardArrowDownIcon style={{ fontSize: 10 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-
-            <Link to="/assets/view-all" className={classes.link}>
-              <div style={{ marginBottom: "10px" }}>
-
-
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <ListIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2"> View All </Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-
-            <Link to="/assets/create-assembly" className={classes.link}>
-              <div style={{ marginBottom: "10px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <ExtensionIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2">Assembly Manager</Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-
-            <Link to="/assets/assignments" className={classes.link}>
-              <div style={{ marginBottom: "20px" }}>
-                <Grid
-                  item
-                  container
-                  direction="row"
-                  alignItems="center"
-                  justify="flex-start"
-                  className={classes.onClick}
-                >
-                  <Grid item>
-                    {open === true ? (
-                      <AssignmentIndIcon style={{ fontSize: 17 }} className={classes.icon} />
-                    ) : null}
-                  </Grid>
-                  <Grid item>
-                    {open === true ? <Typography variant="body2">Assignments</Typography> : null}
-                  </Grid>
-                </Grid>
-              </div>
-            </Link>
-          </Grid>
-
-
-          <Grid
-            container
-            direction="column"
-            justify="flex-end"
-            alignItems="center"
-          >
-            <Grid
-              container
-              direction="row"
-              justify="flex-start"
-              alignItems="center"
-            >
-              <Grid item>
-                {open === true ? (
-                  <Link to={{
-                    pathname: '/login', state: { onSignOut: true, name: local }
-                  }}
-                    onClick={() => {
-                      setLocal(null);
-                    }}
-                    className={classes.link}>
-                    <Typography variant="body1" className={classes.ExitToAppIcon}>Sign Out</Typography>
-                  </Link>
-                ) : null}
-              </Grid>
-              <Grid item>
-                <Link to={{
-                  pathname: '/login', state: { onSignOut: true, name: local }
-                }}
-                  onClick={() => {
-                    setLocal(null);
-                  }}
-                  className={classes.link}>
-                  <ExitToAppIcon className={classes.ExitToAppIcon} />
-                </Link>
-              </Grid>
-            </Grid>
-          </Grid>
-        </div>
-      </Drawer>
-    </div>
-  );
+/**
+ * Route matching to determine highlighted link in sidebar
+ * Highlights parent module if sidebar is closed, individual link if sidebar is open
+ * 
+ * @param {} location 
+ * @param {*} link 
+ * @param {*} open 
+ */
+const isHighlighted = (location, link, open) => {
+    if (location) {
+        const text = location.pathname;
+        if (text.includes('/assets') && (link === 'Assets' && !open)) {
+            return true;
+        } else if (text.includes('/shipments') && link === 'Shipments') {
+            return true;
+        } else if (text === '/' && link === "Home") {
+            return true;
+        } else if (text === "/assets/view-all" && link === "View All Assets" && open) {
+            return true;
+        } else if (text === "/assets/assembly-manager" && link === "Assembly Manager" && open) {
+            return true;
+        } else if (text === "/assets/assignments" && link === "Assignments" && open) {
+            return true;
+        } else if (text === "/shipments/view-all" && link === "View All Shipments" && open) {
+            return true;
+        } else if (text === "/shipments/track" && link === "Track" && open) {
+            return true;
+        } else if (text === "/shipments/create" && link === "Create" && open) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return false;
 }
 
-Sidebar.propTypes = {
+const Sidebar = ({ location }) => {
+    const classes = useStyles();
+    const history = useHistory();
+
+    /* Main drawer open state */
+    const [open, setOpen] = useState(false);
+
+    /* Open state for the dropdowns of additional links for both modules */
+    const [openAssetCollapse, setOpenAssetCollapse] = useState(false);
+    const [openShipmentCollapse, setOpenShipmentCollapse] = useState(false);
+
+    /* Logged in user state for rendering the name in the sidebar */
+    const [local, setLocal] = useLocalStorage('user', {});
+
+    const fullName = local.firstName + " " + local.lastName;
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
+
+    return (
+        <>
+            <CssBaseline />
+            <Drawer
+                variant="permanent"
+                className={clsx(classes.drawer, {
+                    [classes.drawerOpen]: open,
+                    [classes.drawerClose]: !open,
+                })}
+                classes={{
+                    paper: clsx({
+                        [classes.drawerOpen]: open,
+                        [classes.drawerClose]: !open,
+                    }),
+                }}
+            >
+                <div className={classes.toolbar}>
+
+                    {/* Drawer open and close button */}
+                    <IconButton
+                        onClick={open ? handleDrawerClose : handleDrawerOpen}
+                        className={open ? "sidebar-close-icon" : classes.menuIcon}
+                        style={open ? { marginRight: "8px" } : null}
+                    >
+                        {
+                            open ?
+                                <ChevronRightIcon />
+                                : <MenuIcon />
+                        }
+                    </IconButton>
+
+                    {/* Account icon, name, and settings header section */}
+                    <List className={classes.accountHeader}>
+                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null}>
+
+                            {/* Render account icon as one of 2 types of buttons for better styling open vs. closed */}
+                            {
+                                open ?
+                                    <IconButton
+                                        size="small"
+                                        disableRipple
+                                        style={{ marginLeft: "20px", marginRight: "10px" }}
+                                        onClick={() => history.push('/account')}
+                                    >
+                                        <AccountCircleIcon />
+                                    </IconButton>
+                                    :
+                                    <ListItemIcon onClick={() => history.push('/account')}>
+                                        <AccountCircleIcon style={{ marginLeft: "24px" }} />
+                                    </ListItemIcon>
+                            }
+
+                            {/* Logged in user name */}
+                            <ListItemText
+                                primary={fullName}
+                                className={classes.name}
+                                primaryTypographyProps={{ variant: "h6", style: !open ? { width: 0, visibility: "hidden" } : null }}
+                            />
+
+                            {/* Settings icon */}
+                            <IconButton
+                                size="small"
+                                disableRipple
+                                style={!open ? { width: 0, visibility: "hidden" } : null}
+                                onClick={() => history.push('/settings')}
+                            >
+                                <SettingsIcon style={!open ? { width: 0, visibility: "hidden" } : null} />
+                            </IconButton>
+
+                        </ListItem>
+                    </List>
+                </div>
+
+                {
+                    open ?
+                        <Divider />
+                        : null
+                }
+
+                {/* Generate list of actual sidebar links */}
+                <List>
+                    {
+                        ['Home', 'Assets', 'Shipments', 'Sign Out'].map(text => {
+                            return (
+                                <React.Fragment key={text}>
+                                    <ListItem
+                                        button
+                                        disableRipple={!open ? true : false}
+                                        className={text === "Sign Out" ? classes.signOut : null}
+                                        onClick={() => {
+
+                                            /* Change link types depending on open or closed and make sign out link action custom */
+                                            if (text === "Assets") {
+                                                if (open) setOpenAssetCollapse(!openAssetCollapse);
+                                                else history.push(getURL("View All Assets"));
+                                            } else if (text === "Shipments") {
+                                                if (open) setOpenShipmentCollapse(!openShipmentCollapse);
+                                                else history.push(getURL("View All Shipments"));
+                                            } else if (text === "Sign Out") {
+                                                history.push(getURL("Sign Out", local));
+                                                setLocal(null);
+                                            } else {
+                                                history.push(getURL(text));
+                                            }
+
+                                        }}>
+
+                                        {/* Link icon and label, use helper function to determine if it should be highlighted as the current page */}
+                                        <ListItemIcon className={
+                                            text === "Sign Out" ?
+                                                null
+                                                : isHighlighted(location, text, open) ?
+                                                    !open ? classes.highlighted : classes.moduleText
+                                                    : classes.nonHighlighted}
+                                        >
+                                            {
+                                                getIcon(text)
+                                            }
+                                        </ListItemIcon>
+
+                                        <ListItemText
+                                            primary={text}
+                                            className={
+                                                text === "Sign Out" ?
+                                                    null
+                                                    : isHighlighted(location, text, open) ?
+                                                        !open ? classes.highlighted : classes.moduleText
+                                                        : classes.nonHighlighted
+                                            }
+                                        />
+
+                                        {/* Render expand or close icon for the parent lists depending on if they are open */}
+                                        {
+                                            text === "Assets" ?
+                                                openAssetCollapse ?
+                                                    <ExpandLess />
+                                                    : <ExpandMore />
+                                                : null
+                                        }
+
+                                        {
+                                            text === "Shipments" ?
+                                                openShipmentCollapse ?
+                                                    <ExpandLess />
+                                                    : <ExpandMore />
+                                                : null
+                                        }
+                                    </ListItem>
+
+                                    {/* Render sublists */}
+                                    {
+                                        text === "Assets" ?
+                                            <Collapse
+                                                in={openAssetCollapse}
+                                                timeout="auto"
+                                                unmountOnExit>
+                                                <List component="div" disablePadding>
+                                                    {
+                                                        open ?
+                                                            ["View All", "Assembly Manager", "Assignments"].map((item, idx) => {
+                                                                return (
+                                                                    <ListItem
+                                                                        key={idx}
+                                                                        button
+                                                                        disableRipple
+                                                                        style={{ paddingLeft: 32 }}
+                                                                        onClick={() => {
+                                                                            if (history) {
+                                                                                if (item === "View All") {
+                                                                                    history.push(getURL("View All Assets"))
+                                                                                } else {
+                                                                                    history.push(getURL(item));
+                                                                                }
+                                                                            }
+                                                                        }}>
+
+                                                                        <ListItemIcon
+                                                                            className={
+                                                                                isHighlighted(location, item === "View All" ? item + " Assets" : item, open) ?
+                                                                                    classes.moduleText
+                                                                                    : classes.nonHighlighted
+                                                                            }>
+
+                                                                            {
+                                                                                getIcon(item)
+                                                                            }
+
+                                                                        </ListItemIcon>
+
+                                                                        <ListItemText
+                                                                            className={
+                                                                                isHighlighted(location, item === "View All" ? item + " Assets" : item, open) ?
+                                                                                    classes.moduleText
+                                                                                    : classes.nonHighlighted
+                                                                            }
+                                                                            primary={item}
+                                                                            primaryTypographyProps={{ variant: "body2" }} />
+                                                                    </ListItem>
+                                                                );
+                                                            })
+                                                            : null
+                                                    }
+                                                </List>
+                                            </Collapse>
+
+                                            : text === "Shipments" ?
+                                                <Collapse
+                                                    in={openShipmentCollapse}
+                                                    timeout="auto"
+                                                    unmountOnExit>
+                                                    <List component="div" disablePadding>
+                                                        {
+                                                            open ?
+                                                                ["View All", "Track", "Add New"].map((item, idx) => {
+                                                                    return (
+                                                                        <ListItem
+                                                                            key={idx}
+                                                                            button
+                                                                            disableRipple
+                                                                            style={{ paddingLeft: 32 }}
+                                                                            onClick={() => {
+                                                                                if (history) {
+                                                                                    if (item === "View All") {
+                                                                                        history.push(getURL("View All Shipments"))
+                                                                                    } else {
+                                                                                        history.push(getURL(item));
+                                                                                    }
+                                                                                }
+                                                                            }}>
+
+                                                                            <ListItemIcon
+                                                                                className={
+                                                                                    isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
+                                                                                        ? classes.highlighted
+                                                                                        : classes.nonHighlighted}>
+
+                                                                                {
+                                                                                    getIcon(item)
+                                                                                }
+
+                                                                            </ListItemIcon>
+
+                                                                            <ListItemText
+                                                                                className={
+                                                                                    isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
+                                                                                        ? classes.highlighted
+                                                                                        : classes.nonHighlighted
+                                                                                }
+                                                                                primary={item}
+                                                                                primaryTypographyProps={{ variant: "body2" }}
+                                                                                style={{ color: "#636363" }} />
+
+                                                                        </ListItem>
+                                                                    );
+                                                                })
+                                                                : null
+                                                        }
+                                                    </List>
+                                                </Collapse>
+                                                : null
+                                    }
+                                </React.Fragment>
+                            )
+                        })
+                    }
+                </List>
+            </Drawer>
+        </>
+    )
 };
 
 export default Sidebar;
