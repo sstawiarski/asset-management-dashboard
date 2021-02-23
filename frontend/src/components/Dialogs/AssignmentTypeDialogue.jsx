@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
-    const [user, setUser] = useLocalStorage('user', {});
+    const [user, ] = useLocalStorage('user', {});
 
     /* Store state of select dropdown */
     const [type, setType] = useState("");

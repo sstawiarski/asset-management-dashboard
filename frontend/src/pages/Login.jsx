@@ -152,6 +152,9 @@ const LoginPage = (props) => {
                                 value={state.userId}
                                 error={Boolean(state.result)}
                                 onChange={handleChange}
+                                onKeyDown={(event) => {
+                                    if (event.key === "Enter") handleSubmit(event);
+                                }}
                                 fullWidth />
                         </Grid>
                         <Grid item>
@@ -176,6 +179,9 @@ const LoginPage = (props) => {
                                     }
                                     value={state.password}
                                     onChange={handleChange}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter") handleSubmit(event);
+                                    }}
                                     fullWidth />
                             </FormControl>
                         </Grid>

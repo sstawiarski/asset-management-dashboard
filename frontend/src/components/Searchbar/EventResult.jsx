@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Portal from '@material-ui/core/Portal';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
+import EventDetailsViewer from '../EventDetailsViewer';
 
 const dateOptions = {
     month: "long",
@@ -46,22 +47,22 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-const EventResult = ({ data }) => {
+const EventResult = ({ data, closePopper }) => {
     const classes = useStyles();
 
     const [showProducts, toggleProducts] = useState(false);
+    const [showDetails, toggleShowDetails] = useState(false);
 
     const container = React.useRef(null); //location of events dropdown to open
 
     return (
+        <>
         <div className={classes.root}>
             <div className={classes.searchItem}>
-                <div style={{ marginLeft: '5px' }}>
-                    <Link to={`/events/${data.key}`} style={{ textDecoration: "none", color: "inherit" }}>
+                <div style={{ marginLeft: '5px' }} onClick={() => toggleShowDetails(true)}>
                         <Typography variant="body1"><b>{data.key}</b></Typography>
                         <Typography variant="body2">{data.eventType}</Typography>
                         <Typography variant="body2">{new Date(data.eventTime).toLocaleDateString('en-US', dateOptions)}</Typography>
-                    </Link>
                 </div>
             </div>
             <div style={{ marginLeft: '5px' }}>
@@ -106,6 +107,8 @@ const EventResult = ({ data }) => {
                 <Divider />
             </div>
         </div>
+        <EventDetailsViewer event={data} open={showDetails} onClose={() => toggleShowDetails(false)} />
+        </>
     );
 };
 

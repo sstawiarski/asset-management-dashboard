@@ -37,23 +37,6 @@ mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore
     });
 });
 
-app.get("/", async (req, res) => {
-    if (req.query.type === "parent") {
-        mongoose.connection.db.collection('assembly', (err, collection) => {
-            collection.find({ serial: req.query.search }).toArray((err, data) => {
-                res.json(data);
-            })
-        });
-    } else {
-        mongoose.connection.db.collection('asset', (err, collection) => {
-            collection.find({ serial: req.query.search }).toArray((err, data) => {
-                res.json(data);
-            })
-        });
-    }
-    
-})
-
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
 app.use('/assets', assetRoutes);

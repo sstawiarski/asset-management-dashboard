@@ -35,18 +35,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const exampleEmployee = {
-    "employeeId": 92759802,
-    "firstName":"John",
-    "lastName":"Smith",
-    "username":"jsmith",
-    "email":"jsmith@company.com",
-    "jobTitle":"honcho",
-    "birthDate": Date.now(),
-    "gender":"m",
-    "passwordLength": 8
-};
-
 const AccountDetails = () => {
     const classes = useStyles();
     const [local,] = useLocalStorage('user', {});
@@ -68,8 +56,6 @@ const AccountDetails = () => {
             .then(json => {
                 if (json) {
                     setEmployee(json);
-                } else {
-                    setEmployee(exampleEmployee);
                 }
             });
     }, [url]);

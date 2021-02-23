@@ -8,32 +8,22 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import Header from '../components/Header'
-import CustomTable from '../components/Tables/CustomTable'
-import TableToolbar from '../components/Tables/TableToolbar';
-import ChipBar from '../components/Tables/ChipBar';
+import CustomTable from './CustomTable'
+import TableToolbar from '../Tables/TableToolbar';
+import ChipBar from '../Tables/ChipBar';
 
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
-import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
-import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
-import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
-import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
-import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
-import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
-import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
+
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
+import { Button, Container, InputAdornment, TextField, Grid, Icon } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["createdBy", "created", "status", "shipmentType", "shipFrom", "shipTo"];
+const selectedFields = ["id","status","shipFrom", "shipTo", "shipmentType"];
 
-const AllManifests = (props) => {
+const ManifestTable = (props) => {
 
     const [manifests, setManifests] = useState([]);
     const [childManifests, setChildManifests] = useState([]);
@@ -51,7 +41,37 @@ const AllManifests = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
     //sample data
-    const sampleManifests = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
+    const sampleManifests = [
+        {"createdBy" : "John Doe",
+        "created" : "2021-01-21",
+        "status" : "completed" ,
+        "shipmentType" : "incoming",
+        "shipTo" : "Houston", 
+        "shipFrom" : "Calgary",
+        "latitude" : "30.36",
+        "longitude" : "-95.48",
+        "id" : "12213"
+    },
+        {"createdBy" : "James Doe",
+        "created" : "2021-01-28",
+        "status" : "completed", 
+        "shipmentType" : "outgoing",
+        "shipTo" : "Calgary", 
+        "shipFrom" : "Houston",
+        "latitude" : "30.66",
+        "longitude" : "-95.58",
+        "id" : "12155"
+    },
+        {"createdBy" : "Jane Doe",
+        "created" : "2021-01-28",
+        "status" : "staged",
+        "shipmentType" : "outgoing",
+        "shipTo" : "Calgary",
+        "shipFrom" : "Houston",
+        "latitude" : "30.46",
+        "longitude" : "-95.58"
+        ,"id" : "22154"
+    }];
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -59,8 +79,25 @@ const AllManifests = (props) => {
         }
     }
 
-    const handleClick = (event) => {
-        setAnchor(event.currentTarget);
+    const handleClick = (event,name) => {
+        console.log("Clicked in table.");
+        const selectedIndex = selected.indexOf(name);
+        let newSelected = [];
+    
+        if (selectedIndex === -1) {
+          newSelected = newSelected.concat(selected, name);
+        } else if (selectedIndex === 0) {
+          newSelected = newSelected.concat(selected.slice(1));
+        } else if (selectedIndex === selected.length - 1) {
+          newSelected = newSelected.concat(selected.slice(0, -1));
+        } else if (selectedIndex > 0) {
+          newSelected = newSelected.concat(
+            selected.slice(0, selectedIndex),
+            selected.slice(selectedIndex + 1),
+          );
+        }
+    
+        setSelected(newSelected);
     }
 
     const handleClose = () => {
@@ -156,8 +193,15 @@ const AllManifests = (props) => {
                 }
             })
             .then(json => {
-                //setManifests(json.data);
-                //setManifestCount(json.count[0].count);
+                if (json) {
+                    try {
+                        setManifests(json.data);
+                        setManifestCount(json.count[0].count);
+                    } catch (err) {
+                        console.log(err);
+                    }
+                    
+                }
             });
     }, [filters]);
 
@@ -173,7 +217,6 @@ const AllManifests = (props) => {
 
     return (
         <div>
-            <Header heading="Manifests" subheading="View All" />
             <div>
                 <CustomTable
                     data={sampleManifests}
@@ -184,10 +227,11 @@ const AllManifests = (props) => {
                     setFilters={setFilters}
                     count={manifestCount}
                     variant="shipment"
+                    checkboxes={true}
                     >
 
                     <TableToolbar
-                        title="All Manifests"
+                        title="Manifests"
                         selected={selected}>
 
 
@@ -231,11 +275,14 @@ const AllManifests = (props) => {
                                             }}
                                             onKeyDown={handleKeyDown}
                                         />
+                                    
                                     </div>
                                 </Container>
-                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true}))}>
+                                <Tooltip title={"Filter"}>
+                                    <IconButton aria-label={"filter"} onClick={() => setDialogs({ filter: true })}>
                                         <FilterListIcon />
                                     </IconButton>
+                                </Tooltip>
                             </>
                         }
                     </TableToolbar>
@@ -250,9 +297,7 @@ const AllManifests = (props) => {
 
             </div>
            { /*put manifest filter here*/}
-           <ShipmentFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} setActiveFilters={setActiveFilters} />
-           
-            
+
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
@@ -263,4 +308,4 @@ const AllManifests = (props) => {
 
 }
 
-export default AllManifests;
+export default ManifestTable;

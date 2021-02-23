@@ -29,7 +29,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
 
     /* Store state of select dropdown */
     const [groupTag, setGroupTag] = useState("");
-    const [user, setUser] = useLocalStorage('user', {});
+    const [user, ] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {

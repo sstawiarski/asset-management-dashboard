@@ -1,5 +1,5 @@
 const schemas = {
-    searchFilter:{
+    searchFilter: {
         type: 'string',
         example: 'assetType + dateCreated',
         description: 'Concatenates search queries based on filtered input'
@@ -59,7 +59,7 @@ const schemas = {
         description: 'Whether asset is owned or rented by assigned person',
         enum: ['Owned', 'Rented']
     },
-    contactNumber: {
+    contractNumber: {
         type: 'string',
         description: 'The contract number to which an asset belongs'
     },
@@ -103,8 +103,8 @@ const schemas = {
             assignmentType: {
                 $ref: '#/components/schemas/assignmentType'
             },
-            contactNumber: {
-                $ref: '#/components/schemas/contactNumber'
+            contractNumber: {
+                $ref: '#/components/schemas/contractNumber'
             },
             retired: {
                 $ref: '#/components/schemas/retired'
@@ -140,66 +140,11 @@ const schemas = {
         type: 'string',
         description: 'Telephone number of the rig contact'
     },
-    Rig: {
-        type: 'object',
-        description: 'Data for a single Rig document',
-        properties: {
-            client: {
-                $ref: '#/components/schemas/client'
-            },
-            operator: {
-                $ref: '#/components/schemas/operator'
-            },
-            rigName: {
-                $ref: '#/components/schemas/rigName'
-            },
-            contactName: {
-                $ref: '#/components/schemas/contactName'
-            },
-            contactNumber: {
-                $ref: '#/components/schemas/contactNumber'
-            }
-        }
-    },
-    Rigs: {
-        type: 'array',
-        decription: 'Multiple rig documents in an array',
-        items: {
-            $ref: '#/components/schemas/Rig'
-        }
-    },
 
     facilityName: {
         type: 'string',
         description: 'Name of the facility',
         example: 'Nabors TX Yard'
-    },
-    StagingFacility: {
-        type: 'object',
-        description: 'Document of a single staging facility',
-        properties: {
-            facilityName: {
-                $ref: '#/components/schemas/facilityName'
-            },
-            operator: {
-                $ref: '#/components/schemas/operator'
-            },
-            rigName: {
-                $ref: '#/components/schemas/rigName'
-            },
-            contactName: {
-                $ref: '#/components/schemas/contactName'
-            },
-            contactNumber: {
-                $ref: '#/components/schemas/contactNumber'
-            }
-        }
-    },
-    StagingFacilities: {
-        type: 'array',
-        items: {
-            $ref: '#/components/schemas/StagingFacility'
-        }
     },
 
     address: {
@@ -208,7 +153,7 @@ const schemas = {
         example: '123 Fake Street'
     },
     city: {
-        type:'string'
+        type: 'string'
     },
     state: {
         type: 'string'
@@ -216,12 +161,22 @@ const schemas = {
     zip: {
         type: 'string'
     },
-    RepairFacility: {
+
+    Location: {
         type: 'object',
-        description: 'Document for a single repair facility',
+        description: 'Document for a single physical location (possible Rig, Staging Facility, or Repair Facility)',
         properties: {
-            facilityName: {
+            key: {
+                type: "string",
+                description: "A unique location key",
+                example: "NABORS-TX"
+            },
+            locationName: {
                 $ref: '#/components/schemas/facilityName'
+            },
+            locationType: {
+                type: "string",
+                enum: ["Repair Facility", "Staging Facility", "Rig"]
             },
             address: {
                 $ref: '#/components/schemas/address'
@@ -240,14 +195,34 @@ const schemas = {
             },
             contactNumber: {
                 $ref: '#/components/schemas/contactNumber'
+            },
+            rigName: {
+                $ref: '#/components/schemas/rigName'
+            },
+            operator: {
+                $ref: '#/components/schemas/operator'
+            },
+            client: {
+                $ref: '#/components/schemas/client'
+            },
+            coordinates: {
+                type: "object",
+                properties: {
+                    latitude: {
+                        type: "number"
+                    },
+                    longitude: {
+                        type: "number"
+                    }
+                }
             }
         }
     },
-    RepairFacilities: {
-        type: 'array',
-        description: 'Array of repair facility documents',
+
+    Locations: {
+        type: "array",
         items: {
-            $ref: '#/components/schemas/RepairFacility'
+            $ref: '#/components/schemas/Location'
         }
     },
 

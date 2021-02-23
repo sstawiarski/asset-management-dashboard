@@ -63,7 +63,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [missingBegin, setMissingBegin] = useState(false);
     const [missingEnd, setMissingEnd] = useState(false);
     const [missingOwner, setMissingOwner] = useState(false);
-    const [user, setUser] = useLocalStorage('user', {});
+    const [user, ] = useLocalStorage('user', {});
 
     /* Fetches list of asset types for dropdown */
     useEffect(() => {

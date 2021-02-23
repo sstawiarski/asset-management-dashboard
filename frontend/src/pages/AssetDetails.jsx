@@ -175,10 +175,10 @@ const AssetDetails = (props) => {
                                         <Typography variant="body1">{asset.owner}</Typography>
                                     </Grid>
                                     {
-                                        asset.dateUpdated ?
+                                        asset.lastUpdated ?
                                             <Grid item xs={3} className={classes.item}>
                                                 <Typography variant="subtitle1" className={classes.break}>Last Updated</Typography>
-                                                <Typography variant="body1">{asset.dateUpdated ? new Date(asset.dateUpdated).toLocaleDateString('en-US', dateOptions) : "Never"}</Typography>
+                                                <Typography variant="body1">{new Date(asset.lastUpdated).toLocaleDateString('en-US', dateOptions)}</Typography>
                                             </Grid>
                                             : null
                                     }
