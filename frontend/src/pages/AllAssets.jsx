@@ -31,6 +31,9 @@ import Container from '@material-ui/core/Container';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search'
+import MapIcon from '@material-ui/icons/Map';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import {Divider, Grid} from '@material-ui/core';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
@@ -68,6 +71,28 @@ const AllAssets = (props) => {
     /* Close menu */
     const handleClose = () => {
         setAnchor(null);
+    }
+
+    /*Handles the map view change */
+    const useMapView =(e) => {
+        //change the colors of the buttons
+        e.currentTarget.style.color='black';
+        var buttonColor=document.getElementsByClassName("AssetListButton");
+        buttonColor[0].style.color="grey";
+        //change the size of the asset table
+        var tableSize= document.getElementsByClassName("AssetTableDiv");
+        tableSize[0].style.width="40%";
+        tableSize[0].style.align="right";
+    }
+
+    const useListView = (e) => {
+        //change the colors of the buttons
+        e.currentTarget.style.color='black';
+        var buttonColor=document.getElementsByClassName("AssetMapButton");
+        buttonColor[0].style.color="grey";
+        //change the size of the asset table
+        var tableSize= document.getElementsByClassName("AssetTableDiv");
+        tableSize[0].style.width="100%";
     }
 
     /* Check selected items for existing parent */
@@ -181,7 +206,7 @@ const AllAssets = (props) => {
     }, [activeFilters])
 
     return (
-        <div>
+        <div className="AssetTableDiv">
             <Header heading="Assets" subheading="View All" />
             <div>
                 <CustomTable
@@ -227,11 +252,42 @@ const AllAssets = (props) => {
                             :
                             <>
                                 {/* Creator button */}
+                                <Grid container direction='row' justify="left" xs={2}>
+                                <Grid item>
                                 <Tooltip title={"Create"}>
                                     <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
                                         <AddIcon />
                                     </IconButton>
                                 </Tooltip>
+                                </Grid>
+
+                                {/*Map-View/List-View */}
+                                
+                                    <Grid item xs={5}>
+                                        <Tooltip title={"Map-View"}>
+                                            <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{active: {color: 'red'}}}
+                                                //add onClick
+                                                onClick={useMapView}
+                                            >
+                                                <MapIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                <Grid item xs={1}>
+                                {/*    <Divider orientation="vertical" />*/}
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Tooltip title={"List-View"} >
+                                        <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:"black"}}
+                                            //add onClick
+                                            onClick={useListView}
+                                        >
+                                            <ListAltIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </Grid>
+                                </Grid>
+
 
                                 {/* Table searchbar */}
                                 <Container className='searchBar' align='right'>
