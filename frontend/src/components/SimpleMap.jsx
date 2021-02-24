@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
-const arrowheads = require('leaflet-arrowheads'); //adding arrow pointing to destination to the line
+import arrow from "leaflet-arrowheads";
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
@@ -109,7 +109,7 @@ const SimpleMap = ({ start, end }) => {
                         : null
                 }
             </FeatureGroup>
-            
+
             {/* Conditionally render popup based on state control set in Marker onClick functions */}
             {
                 popupPosition ?
