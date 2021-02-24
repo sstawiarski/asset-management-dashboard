@@ -34,3 +34,9 @@
   min-height: 300px;
 }
 
+.leaflet-popup-content {
+  min-width: 300px;
+}
+.leaflet-popup-content p {
+  margin: 0;
+}

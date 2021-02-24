@@ -2,12 +2,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Components
-import { Map, Marker, TileLayer, FeatureGroup, GeoJSON } from 'react-leaflet';
+import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
+import Typography from '@material-ui/core/Typography';
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
-import 'leaflet-arrowheads'; //adding arrow pointing to destination to the line
+const arrowheads = require('leaflet-arrowheads'); //adding arrow pointing to destination to the line
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
@@ -45,6 +46,7 @@ const SimpleMap = ({ start, end }) => {
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
     const [center, setCenter] = useState([0, 0]); //center of the map
+    const [popupPosition, setPopupPosition] = useState(null); //the coordinates of the Marker popup
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
@@ -101,12 +103,47 @@ const SimpleMap = ({ start, end }) => {
                 {
                     coords ?
                         <>
-                            <Marker position={coords.start} />
-                            <Marker position={coords.end} />
+                            <Marker position={coords.start} onclick={() => setPopupPosition({ coords: coords.start, location: "start" })} />
+                            <Marker position={coords.end} onclick={() => setPopupPosition({ coords: coords.end, location: "end" })} />
                         </>
                         : null
                 }
             </FeatureGroup>
+            
+            {/* Conditionally render popup based on state control set in Marker onClick functions */}
+            {
+                popupPosition ?
+                    <Popup position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
+                        <Typography variant="body1" style={{ marginBottom: "10px" }}><b>{popupPosition.location === "start" ? "Ship From" : "Ship To"}</b></Typography>
+
+                        {/* Render out the Location document as the popup content in a clean and somewhat dynamic way */}
+                        {
+                            Object.entries(popupPosition.location === "start" ? start : end)
+                                .map(([key, value]) => {
+
+                                    /* Remove the document keys that are not needed by end users */
+                                    const exclude = ["_id", "__v", "coordinates"];
+                                    if (exclude.includes(key)) return null;
+
+                                    /* Break up key camelCase and capitalize the first letter for a nice label */
+                                    const capitalizedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+
+                                    /*
+                                     * Render each key-value pair as a row in the popup with the key on the left in bold and the value on the right unstyled
+                                     * If the key is "contactNumber", indicating a phone number in the Location document, render a telephone link, otherwise just display the value as normal
+                                     */
+                                    return (
+                                        <div key={key}>
+                                            <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
+                                            <Typography variant="body2" style={{ float: "right" }}>{key === "contactNumber" ? <a href={`tel:${value}`}>{value}</a> : value}</Typography>
+                                            <div style={{ clear: "both" }} />
+                                        </div>
+                                    );
+                                })
+                        }
+                    </Popup>
+                    : null
+            }
         </Map>
     );
 };
