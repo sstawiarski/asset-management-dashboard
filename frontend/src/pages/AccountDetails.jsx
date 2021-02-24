@@ -45,6 +45,8 @@ const AccountDetails = () => {
 
     const [employee, setEmployee] = useState(null);
 
+    const [edit, setEdit] = useState(false);
+
     /* Fetch user info */
     useEffect(() => {
         fetch(url)
@@ -115,7 +117,7 @@ const AccountDetails = () => {
                 }
             </Paper>
 
-            <Button variant="contained" color="primary">Edit Profile</Button>
+            <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button>
         </div>
 
     )
