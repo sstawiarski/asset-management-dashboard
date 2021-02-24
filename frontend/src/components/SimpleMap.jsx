@@ -2,7 +2,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Components
-import { Map, Marker, TileLayer, FeatureGroup } from 'react-leaflet';
+import { Map, Marker, TileLayer, FeatureGroup, GeoJSON } from 'react-leaflet';
+
+//Library Tools
+import { makeStyles } from '@material-ui/core/styles';
+import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
+import 'leaflet-arrowheads'; //adding arrow pointing to destination to the line
+const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
  * Finds the center (average) of 2 coordinates
@@ -22,13 +28,24 @@ const centerPoints = (start, end) => {
     return [newLat, newLon];
 };
 
+const useStyles = makeStyles((theme) => ({
+    line: {
+        strokeDasharray: 5,
+        stroke: "#E10000",
+        opacity: 0.5
+    }
+}))
+
 const SimpleMap = ({ start, end }) => {
+    const classes = useStyles();
+
     /* Refs to the map components, used to set bounds and make the two markers fit */
     const mapRef = useRef(null);
     const featureRef = useRef(null);
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
     const [center, setCenter] = useState([0, 0]); //center of the map
+    const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
     /* Wait until render to allow use of map Refs */
@@ -60,6 +77,11 @@ const SimpleMap = ({ start, end }) => {
             //find geographic center
             const centered = centerPoints(startCoords, endCoords);
             setCenter(centered);
+
+            //calculate line path
+            const line = helpers([startCoords, endCoords].map(item => [item[1], item[0]]));
+            const curved = bezierSpline(line);
+            setCurve(curved);
         }
 
     }, [start, end]);
@@ -72,6 +94,9 @@ const SimpleMap = ({ start, end }) => {
             />
 
             <FeatureGroup ref={featureRef}>
+                {/* Line between the two points */}
+                <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} />
+
                 {/* Conditionally render the markers */}
                 {
                     coords ?
