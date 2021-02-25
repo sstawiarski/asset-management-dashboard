@@ -19,6 +19,7 @@ import AccountDetails from'./pages/AccountDetails';
 import ShipmentDetails from './pages/ShipmentDetails';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 import MapPage from './pages/MapPage';
+import AllAssetsWithMap from './pages/AllAssetsWithMap';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,7 +89,7 @@ function App() {
                   <Route path="/shipments/track" component={MapPage} />
                   <Route path="/shipments/:key" component={ShipmentDetails} />
                   <Route exact path="/assets/assembly-manager" component={CreateAssembly} />
-                  <Route exact path="/assets/view-all" component={AllAssets} />
+                  <Route exact path="/assets/view-all" component={AllAssetsWithMap} />
                   <Route path="/assets/:serial" component={AssetDetails} />
                   <Route exact path="/account" component={AccountDetails} />
                   <Route exact path="/settings" component={null} />
