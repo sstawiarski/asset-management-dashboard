@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Map, Marker, Popup, TileLayer } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 import './MapPage.css';
 import Grid from '@material-ui/core/Grid';
@@ -177,7 +177,7 @@ const MapPage = (props) => {
         </Grid>
 
         <Grid item className="mapGrid" xs={9}>
-          <Map ref={mapRef} center={geoAverage(manifests)} zoom={12}>
+          <MapContainer ref={mapRef} center={geoAverage(manifests)} zoom={12}>
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' />
 
             {
@@ -232,7 +232,7 @@ const MapPage = (props) => {
                 : null
             }
 
-          </Map>
+          </MapContainer>
         </Grid>
         <Grid item xs={3} className='listContainer'>
 

@@ -117,7 +117,7 @@ const AccountDetails = () => {
                 }
             </Paper>
 
-            <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button>
+            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Cancel</Button> <Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Submit</Button></div> }
         </div>
 
     )
