@@ -17,6 +17,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 //Custom Components
 import SimpleList from '../components/Tables/SimpleList';
+import SimpleMap from '../components/SimpleMap';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';
@@ -27,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
     paper: {
         width: "100%",
+        paddingBottom: "75px"
     },
     item: {
         padding: "10px"
@@ -78,6 +80,7 @@ const ShipmentDetails = (props) => {
     const [shipment, setShipment] = useState(null);
     const [headers, setHeaders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [hasLocations, setHasLocations] = useState(true);
 
     /* Fetch shipment information */
     useEffect(() => {
@@ -99,6 +102,13 @@ const ShipmentDetails = (props) => {
                         })
                     }));
                     const head = Object.keys(json.manifest[0]);
+                    try {
+                        if (Object.keys(json.shipTo.coordinates).length > 0 && Object.keys(json.shipFrom.coordinates).length > 0) {
+                            setHasLocations(true);
+                        }
+                    } catch {
+                        setHasLocations(false);
+                    }
                     head.shift();
                     setHeaders(head);
                     setLoading(false);
@@ -209,12 +219,12 @@ const ShipmentDetails = (props) => {
                                 </Grid>
 
                                 <Grid container className={classes.item}>
-                                    <Grid item xs={12} sm={12} md={6} className={classes.item}>
+                                    <Grid item xs={12} sm={12} md={hasLocations ? 6 : !shipment ? 6 : 12} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Shipment Manifest</Typography>
                                         {/* List of child components */}
                                         {
                                             loading ?
-                                                <Skeleton variant="rect" height={300} style={{ borderRadius: "6px" }}/>
+                                                <Skeleton variant="rect" height={300} style={{ borderRadius: "6px" }} />
                                                 : <SimpleList
                                                     label="shipment manifest"
                                                     data={shipment.manifest}
@@ -225,6 +235,23 @@ const ShipmentDetails = (props) => {
                                                     })}
                                                     link="/assets/"
                                                 />
+                                        }
+
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={6} className={classes.item}>
+                                        {(hasLocations || loading) ? <Typography variant="subtitle1" className={classes.break}>Route</Typography> : null}
+                                        {/* Map */}
+                                        {
+                                            loading ?
+                                                <Skeleton variant="rect" height={300} style={{ borderRadius: "6px" }} />
+                                                : hasLocations ?
+                                                    <>
+                                                        <SimpleMap
+                                                            start={shipment.shipFrom}
+                                                            end={shipment.shipTo}
+                                                        />
+                                                    </>
+                                                    : null
                                         }
 
                                     </Grid>
