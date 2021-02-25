@@ -4,11 +4,16 @@ import PropTypes from 'prop-types';
 //Library Components
 import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
+import L from 'leaflet';
+
+//Icons
+import ShipFromIcon from './Icons/ShipFromIcon.svg'; //blue icon represents source
+import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destination
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
-import arrow from "leaflet-arrowheads";
+import arrow from "leaflet-arrowheads"; //add arrowheads to line
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
@@ -29,13 +34,39 @@ const centerPoints = (start, end) => {
     return [newLat, newLon];
 };
 
+/* Styles */
 const useStyles = makeStyles((theme) => ({
+    /* Styling for the line between the two points (red dashed line) */
     line: {
         strokeDasharray: 5,
         stroke: "#E10000",
         opacity: 0.5
+    },
+    /* Ensures popup is not covered by the zoom controls */
+    popup: {
+        "& .leaflet-popup-content-wrapper": {
+            marginLeft: "50px"
+        }
     }
-}))
+}));
+
+/* Using SVG to make a custom marker icon for the destination */
+const shipToMarkerIcon = new L.Icon({
+    iconUrl: ShipToIcon,
+    iconSize: [35, 30],
+    iconAnchor: [18, 28],
+    className: 'leaflet-marker-shipto'
+
+});
+
+/* Using SVG to make a custom marker icon for the source */
+const shipFromMarkerIcon = new L.Icon({
+    iconUrl: ShipFromIcon,
+    iconSize: [35, 30],
+    iconAnchor: [18, 28],
+    className: 'leaflet-marker-shipfrom'
+
+});
 
 const SimpleMap = ({ start, end }) => {
     const classes = useStyles();
@@ -63,6 +94,17 @@ const SimpleMap = ({ start, end }) => {
             } catch (err) { }
         }
     }, [refAcquired]);
+
+    /* Centers the popup when it is open, or re-center to fit the two markers when it is closed */
+    useEffect(() => {
+        if (refAcquired) {
+            if (popupPosition) {
+                mapRef.current.leafletElement.setView(popupPosition.coords);
+            } else {
+                mapRef.current.leafletElement.setView(center);
+            }
+        }
+    }, [center, popupPosition, refAcquired]);
 
     /* Extract the appropriate coordinates and perform line and centering calculations */
     useEffect(() => {
@@ -96,6 +138,7 @@ const SimpleMap = ({ start, end }) => {
             />
 
             <FeatureGroup ref={featureRef}>
+
                 {/* Line between the two points */}
                 <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} />
 
@@ -103,17 +146,19 @@ const SimpleMap = ({ start, end }) => {
                 {
                     coords ?
                         <>
-                            <Marker position={coords.start} onclick={() => setPopupPosition({ coords: coords.start, location: "start" })} />
-                            <Marker position={coords.end} onclick={() => setPopupPosition({ coords: coords.end, location: "end" })} />
+                            <Marker icon={shipFromMarkerIcon} position={coords.start} onclick={() => setPopupPosition({ coords: coords.start, location: "start" })} />
+                            <Marker icon={shipToMarkerIcon} position={coords.end} onclick={() => setPopupPosition({ coords: coords.end, location: "end" })} />
                         </>
                         : null
                 }
+
             </FeatureGroup>
 
             {/* Conditionally render popup based on state control set in Marker onClick functions */}
             {
                 popupPosition ?
-                    <Popup position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
+
+                    <Popup className={classes.popup} position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
                         <Typography variant="body1" style={{ marginBottom: "10px" }}><b>{popupPosition.location === "start" ? "Ship From" : "Ship To"}</b></Typography>
 
                         {/* Render out the Location document as the popup content in a clean and somewhat dynamic way */}
@@ -142,6 +187,7 @@ const SimpleMap = ({ start, end }) => {
                                 })
                         }
                     </Popup>
+                    
                     : null
             }
         </Map>
