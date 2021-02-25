@@ -16,7 +16,279 @@ router.get('/', async (req, res) => {
             internal_code: "database_load_error"
         })
     }
-})
+});
+
+// Code below implements filtering and pagination from Assets route.  Implement below for Shipments. -efritts
+
+// router.get("/", async (req, res, err) => {
+//     try {
+//       let aggregateArray = [];
+  
+//       //if there are possible filters other than search
+//       if (req.query) {
+//         const query = req.query;
+  
+//         //remove page, limit, search, and sorting params since they do not go in the $match
+//         const disallowed = ["page", "limit", "search", "sort_by", "order"];
+//         const filters = await Object.keys(query)
+//           .reduce(async (pc, c) => {
+//             const p = await pc;
+  
+//             /* MongoDB compares exact dates and times
+//             If we want to see an entire 24 hours, we much get the start and end times of the given day
+//             And get everything in between the start and end */
+//             if (c === "dateCreated" || c === "lastUpdated") {
+  
+//               const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
+//               const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
+//               p["$and"] = [{
+//                 [c]: {
+//                   $gte: beforeDate
+//                 }
+//               }, {
+//                 [c]: {
+//                   $lte: afterDate
+//                 }
+//               }];
+  
+//             } else if (c === "inAssembly") {
+  
+//               //inAssembly query param allows us to only show assets that are components of the inAssembly name
+//               const assemblyType = decodeURI(query[c]);
+//               const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
+//               if (Object.keys(assemblySchema).length > 0) {
+//                 p["assetName"] = { $in: assemblySchema.components };
+//               }
+  
+//             } else if (c === "isAssembly") {
+  
+//               //isAssembly query param limits results to only assets who do not have a parentId or whose parent assembly is marked disassembled
+//               const disassembled = await Asset.find({ assembled: false }, { serial: 1 });
+//               const disSerials = disassembled.map(item => item.serial);
+//               p["$or"] = [{ parentId: null }, { parentId: { $in: disSerials } }];
+  
+//             } else if (c === "exclude") {
+  
+//               //exclude query param is a stringified array of asset names that should not be included in the results (i.e. Only want to see Gap Subs? exclude will be ["Carrier"..."Landing Sub"... etc])
+//               const jsonExclude = decodeURI(query[c]);
+//               const excludeArr = JSON.parse(jsonExclude);
+  
+//               //since assetName was set earlier we must replace with an $and and keep it
+//               if (p["assetName"]) {
+//                 const prev = p["assetName"];
+//                 delete p["assetName"];
+  
+//                 if (p["$and"]) {
+//                   //find all assets that are not in the exclude array
+//                   p["$and"] = [...p["$and"], {
+//                     assetName: {
+//                       $nin: excludeArr,
+//                       ...prev
+//                     }
+//                   }];
+//                 } else {
+//                   p["$and"] = [
+//                     {
+//                       assetName: {
+//                         $nin: excludeArr,
+//                         ...prev
+//                       }
+//                     }
+//                   ];
+//                 }
+  
+//               } else {
+//                 p["assetName"] = { $nin: excludeArr };
+//               }
+  
+//             } else if (!disallowed.includes(c)) {
+//               //convert the "true" and "false" strings in the query into actual booleans
+//               if (query[c] === "true") {
+//                 p[c] = true;
+//               } else if (query[c] === "false") {
+//                 p[c] = false;
+//               } else if (query[c] === "null") {
+//                 //parentId is taken care of when isAssembly is set so we can ignore it
+//                 if (query.isAssembly && c === "parentId") {
+//                   return pc;
+//                 }
+//                 p[c] = null;
+//               } else {
+//                 p[c] = query[c];
+//               }
+//             }
+  
+//             return pc;
+//           }, {});
+  
+//         if (req.query.search) {
+//           const searchTerm = req.query.search.replace("-", "");
+  
+//           //match search and regular filters
+//           const search = {
+//             $match: {
+//               $text: {
+//                 $search: nGrams(searchTerm, null, false).join(' ')
+//               },
+//               ...filters
+//             }
+//           }
+  
+//           const confidenceScore = {
+//             $addFields: {
+//               confidenceScore: { $meta: "textScore" }
+//             }
+//           }
+  
+//           aggregateArray.push(search);
+//           aggregateArray.push(confidenceScore)
+  
+//         } else {
+  
+//           //match only the regular filters
+//           const match = {
+//             $match: {
+//               ...filters
+//             }
+//           };
+//           aggregateArray.push(match);
+//         }
+  
+//       } else {
+//         const match = {
+//           $match: {
+  
+//           }
+//         };
+  
+//         aggregateArray.push(match);
+//       }
+  
+//       if (req.query.sort_by) {
+//         //default ascending order
+//         const sortOrder = (req.query.order === 'desc' ? -1 : 1);
+  
+//         if (req.query.search) {
+//           const sort = {
+//             $sort: {
+//               confidenceScore: -1,
+//               [req.query.sort_by]: sortOrder
+//             }
+//           };
+//           aggregateArray.push(sort);
+  
+//         } else {
+//           const sort = {
+//             $sort: {
+//               [req.query.sort_by]: sortOrder
+//             }
+//           };
+//           aggregateArray.push(sort);
+//         }
+//       } else {
+//         if (req.query.search) {
+//           const sort = {
+//             $sort: {
+//               confidenceScore: -1,
+//             }
+//           };
+//           aggregateArray.push(sort);
+//         } else {
+//           const sort = {
+//             $sort: {
+//               serial: 1
+//             }
+//           };
+//           aggregateArray.push(sort);
+//         }
+//       }
+  
+//       //pagination initial setup
+//       const skip = {
+//         $skip: (req.query.page && req.query.limit) ? (parseInt(req.query.page) * parseInt(req.query.limit)) : 0
+//       }
+  
+//       //limit to 5 results -- modify later based on pagination
+//       const limit = {
+//         $limit: req.query.limit ? parseInt(req.query.limit) : 5
+//       };
+  
+//       const group = {
+//         $facet: {
+//           count: [{ $count: "count" }],
+//           data: [skip, limit]
+//         }
+//       };
+//       aggregateArray.push(group);
+  
+//       //remove irrelevant fields from retrieved objects
+//       const projection = {
+//         $project: {
+//           _id: false,
+//           'data._id': false,
+//           'data.__v': false,
+//           'data.serial_fuzzy': false
+//         }
+//       }
+//       aggregateArray.push(projection);
+  
+//       const result = await Asset.aggregate(aggregateArray);
+  
+//       //filter results to determine better or even exact matches
+//       if (req.query.search) {
+  
+//         //results are found
+//         if (result[0].data.length) {
+  
+//           //if top match is an exact match, return only that one
+//           if (result[0].data[0].serial.toUpperCase() === req.query.search.toUpperCase()) {
+//             const exactMatch = [result[0].data[0]];
+//             res.status(200).json({
+//               count: [{ count: 1 }],
+//               data: exactMatch
+//             });
+  
+//           } else {
+//             //if matches are extremely close then only return the close matches
+//             if (result[0].data[0].confidenceScore > 10) {
+//               const closeMatches = result[0].data.filter(asset => asset.confidenceScore > 10);
+//               res.status(200).json({
+//                 count: [{ count: closeMatches.length }],
+//                 data: [...closeMatches]
+//               });
+//             } else {
+//               res.status(200).json(result[0]);
+//             }
+//           }
+  
+//         } else {
+//           res.status(404).json({
+//             message: "No assets found in database",
+//             internalCode: "no_assets_found",
+//           });
+//         }
+  
+//         //return all results found if not a search
+//       } else {
+//         if (result[0].data.length) {
+//           res.status(200).json(result[0]);
+  
+//         } else {
+//           res.status(404).json({
+//             message: "No assets found in database",
+//             internalCode: "no_assets_found",
+//           });
+//         }
+//       }
+  
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).json({
+//         message: "Error searching for assets in database",
+//         internalCode: "asset_search_error"
+//       });
+//     }
+//   });
 
 router.put('/load', async (req, res) => {
     try {
