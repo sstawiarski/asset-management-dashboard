@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
-
+import TextField from "@material-ui/core/TextField";
 const useStyles = makeStyles((theme) => ({
     root: {
         marginLeft: "10px",
@@ -86,7 +86,8 @@ const AccountDetails = () => {
                                     <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    <Typography variant="body1">{employee.username}</Typography>
+                                   
+                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" label={employee.username} variant="outlined" /></form>}
                                 </Grid>
 
                             </Grid>
@@ -97,7 +98,7 @@ const AccountDetails = () => {
                                     <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    <Typography variant="body1">{employee.email}</Typography>
+                                    {edit==false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" /></form>}
                                 </Grid>
 
                             </Grid>
@@ -105,13 +106,24 @@ const AccountDetails = () => {
                             <Grid container className={classes.break}>
 
                                 <Grid item xs={6} className={classes.item}>
-                                    <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
+                                    {edit==false ? <Typography variant="subtitle1" className={classes.break}>Password:</Typography> : <Typography variant="subtitle1" className={classes.break}>New Password:</Typography> }
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography>
-                                </Grid>
 
+                                    {edit==false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" /></form>}
+                                </Grid>
                             </Grid>
+                            {edit==true ? 
+                                <Grid container className={classes.break}>
+                                <Grid item xs={6} className={classes.item}>
+                                    <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
+                                </Grid>
+                                    <Grid item xs={6} className={classes.item}>
+                                        <form><TextField id="outlined-basic" label="new password" variant="outlined" /></form>
+                                    </Grid>
+
+                                </Grid> : null
+                            }
                         </>
                         : null
                 }
