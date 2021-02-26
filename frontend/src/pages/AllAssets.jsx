@@ -37,7 +37,7 @@ import {Divider, Grid} from '@material-ui/core';
 
 
 //the object fields to get for the table we need, in this case assets
-const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
+const selectedFields = ["serial", "assetName", 'deployedLocation', "assetType", "owner", "checkedOut", "groupTag"];
 
 const AllAssets = (props) => {
 
@@ -57,6 +57,8 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
     const [listButton, setListButton] = useState(props.listButtonColor);
     const [mapButton, setMapButton] = useState(props.mapButtonColor);
+    const [useMap, setUseMap]=useState(props.mapState);
+ 
 
     /* Handles searchbar when enter key is pressed */
     const handleKeyDown = (e) => {
@@ -194,9 +196,6 @@ const AllAssets = (props) => {
             });
     }, [filters]);
 
-      //gets current location for the start of the map
-  //*********************************************************** */
-  
 
     /* Reset results page to the first one whenever filters are changed */
     useEffect(() => {
@@ -228,6 +227,11 @@ const AllAssets = (props) => {
                     {/* Render main action if no items selected, edit actions if some are selected */}
                     {selected.length > 0 ?
                         <>
+
+
+                            
+
+
                             {/* Edit button */}
                             <IconButton aria-label={"edit"} onClick={handleClick}>
                                 <EditIcon />

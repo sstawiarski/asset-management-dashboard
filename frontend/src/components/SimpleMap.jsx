@@ -68,7 +68,7 @@ const shipFromMarkerIcon = new L.Icon({
 
 });
 
-const SimpleMap = ({ start, end }) => {
+const SimpleMap = ({ start, end }, sample) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
@@ -76,11 +76,14 @@ const SimpleMap = ({ start, end }) => {
     const featureRef = useRef(null);
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
-    const [center, setCenter] = useState([0, 0]); //center of the map
+    const [center, setCenter] = useState([51, -114]); //center of the map
     const [popupPosition, setPopupPosition] = useState(null); //the coordinates of the Marker popup
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
+    const [sampleMarker, setSampleMarker]=useState(null); //sample for marking asset locations
+
+    
     /* Wait until render to allow use of map Refs */
     useEffect(() => {
         setRefAcquired(true);
@@ -190,6 +193,14 @@ const SimpleMap = ({ start, end }) => {
                     
                     : null
             }
+
+            {/*Attempting to map markers for assets with only one position */
+            
+            sampleMarker ? 
+            <Marker icon={shipFromMarkerIcon} position={sampleMarker} onclick={() => setPopupPosition({ coords: sampleMarker, location: "start" })} />
+    :
+    null    
+    }
         </Map>
     );
 };
