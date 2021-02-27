@@ -31,19 +31,19 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["createdBy", "created", "status", "shipmentType", "shipFrom", "shipTo"];
+const selectedFields = ["createdBy", "created", "status", "shipmentType","key", "shipFrom", "shipTo"];
 
-const AllManifests = (props) => {
+const AllShipments = (props) => {
 
-    const [manifests, setManifests] = useState([]);
-    const [childManifests, setChildManifests] = useState([]);
+    const [shipments, setShipments] = useState([]);
+    const [childShipments, setChildShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
     const [invalidSerial, setInvalid] = useState([]);
-    const [manifestCount, setManifestCount] = useState(0);
+    const [shipmentCount, setShipmentCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
     const [nextDialog, setNext] = useState("");
@@ -51,7 +51,7 @@ const AllManifests = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
     //sample data
-    const sampleManifests = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
+    const sampleShipments = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -73,8 +73,8 @@ const AllManifests = (props) => {
         setNext(event.target.getAttribute("name"));
 
         Promise.all(
-            selected.map(serial =>
-                fetch(`http://localhost:4000/shipments/${serial}?project=parentId`)
+            selected.map(key =>
+                fetch(`http://localhost:4000/shipments/${key}?project=parentId`)
                     .then(resp => {
                         if (resp.status < 300) {
                             return resp.json()
@@ -92,19 +92,19 @@ const AllManifests = (props) => {
                 }
                 return;
             })
-            setChildManifests(children)
+            setChildShipments(children)
         });
 
     }
 
     useEffect(() => {
         if (!nextDialog) return;
-        if (childManifests.length > 0) {
+        if (childShipments.length > 0) {
             setDialogs({ assetEditWarning: true });
         } else {
             setDialogs({ [nextDialog]: true });
         }
-    }, [childManifests, nextDialog]);
+    }, [childShipments, nextDialog]);
 
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
@@ -116,19 +116,9 @@ const AllManifests = (props) => {
         }
     };
 
-    //for use with creation of assets
-    const onSemiSuccess = (invalidSerials) => {
-        if (invalidSerials.length > 0) {
-            setInvalid(invalidSerials);
+    
 
-        }
-    }
-
-    useEffect(() => {
-        if (invalidSerial.length > 0) {
-            setDialogs({ invalid: true });
-        }
-    }, [invalidSerial])
+    
 
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
@@ -156,8 +146,8 @@ const AllManifests = (props) => {
                 }
             })
             .then(json => {
-                //setManifests(json.data);
-                //setManifestCount(json.count[0].count);
+                setShipments(json.data);
+                setShipmentCount(json.count[0].count);
             });
     }, [filters]);
 
@@ -173,21 +163,21 @@ const AllManifests = (props) => {
 
     return (
         <div>
-            <Header heading="Manifests" subheading="View All" />
+            <Header heading="Shipments" subheading="View All" />
             <div>
                 <CustomTable
-                    data={sampleManifests}
+                    data={shipments}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
                     setFilters={setFilters}
-                    count={manifestCount}
+                    count={shipmentCount}
                     variant="shipment"
                     >
 
                     <TableToolbar
-                        title="All Manifests"
+                        title="All Shipments"
                         selected={selected}>
 
 
@@ -196,7 +186,7 @@ const AllManifests = (props) => {
                         {selected.length > 0 ?
                             <>
                                 
-                                <Menu
+                                {/* <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
                                     keepMounted
@@ -207,7 +197,7 @@ const AllManifests = (props) => {
                                     <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
-                                </Menu>
+                                </Menu> */}
                             </>
                             :
                             <>
@@ -249,7 +239,7 @@ const AllManifests = (props) => {
                 </CustomTable>
 
             </div>
-           { /*put manifest filter here*/}
+           { /*put shipment filter here*/}
            <ShipmentFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} setActiveFilters={setActiveFilters} />
            
             
@@ -263,4 +253,4 @@ const AllManifests = (props) => {
 
 }
 
-export default AllManifests;
+export default AllShipments;
