@@ -4,19 +4,19 @@ const mongoose = require('mongoose');
 const Shipment = require('../models/shipment.model');
 const sampleShipment = require('../sample_data/sampleShipment.data');
 
-router.get('/', async (req, res) => {
-    try {
-        const shipments = await Shipment.find({}, { __v: 0, manifest: 0 }).populate('shipFrom').populate('shipTo');
-        res.status(200).json(shipments)
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({
-            message: "Error loading sample data into database",
-            internal_code: "database_load_error"
-        })
-    }
-});
+// router.get('/', async (req, res) => {
+//     try {
+//         const shipments = await Shipment.find({}, { __v: 0, manifest: 0 }).populate('shipFrom').populate('shipTo');
+//         res.status(200).json(shipments)
+//     }
+//     catch (err) {
+//         console.log(err);
+//         res.status(500).json({
+//             message: "Error loading sample data into database",
+//             internal_code: "database_load_error"
+//         })
+//     }
+// });
 
 //Code below implements filtering and pagination from Assets route.  Implement below for Shipments. -efritts
 
@@ -248,7 +248,8 @@ router.put('/load', async (req, res) => {
 
 router.get('/:key', async (req, res) => {
     try {
-        const { key } = req.params;
+        const key = req.params.key;
+        //const { key } = req.params;
         const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
         res.status(200).json(shipment)
     }
