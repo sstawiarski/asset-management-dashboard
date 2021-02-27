@@ -13,15 +13,7 @@ import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
-import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
-import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
-import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
-import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
-import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
-import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
+
 import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
 
 import Snackbar from '@material-ui/core/Snackbar';
@@ -36,13 +28,11 @@ const selectedFields = ["createdBy", "created", "status", "shipmentType","key", 
 const AllShipments = (props) => {
 
     const [shipments, setShipments] = useState([]);
-    const [childShipments, setChildShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
-    const [invalidSerial, setInvalid] = useState([]);
     const [shipmentCount, setShipmentCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
@@ -92,19 +82,12 @@ const AllShipments = (props) => {
                 }
                 return;
             })
-            setChildShipments(children)
+           
         });
 
     }
 
-    useEffect(() => {
-        if (!nextDialog) return;
-        if (childShipments.length > 0) {
-            setDialogs({ assetEditWarning: true });
-        } else {
-            setDialogs({ [nextDialog]: true });
-        }
-    }, [childShipments, nextDialog]);
+    
 
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
