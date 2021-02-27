@@ -50,10 +50,7 @@ router.get("/", async (req, res, err) => {
                   $lte: afterDate
                 }
               }];
-  
-            
-  
-            
+
             } 
            
   
