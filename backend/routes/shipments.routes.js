@@ -168,7 +168,7 @@ router.get("/", async (req, res, err) => {
       }
       aggregateArray.push(projection);
   
-      const result = await Asset.aggregate(aggregateArray);
+      const result = await Shipment.aggregate(aggregateArray);
   
       //filter results to determine better or even exact matches
       if (req.query.search) {
