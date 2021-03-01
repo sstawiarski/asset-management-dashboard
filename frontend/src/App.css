@@ -40,3 +40,26 @@
 .leaflet-popup-content p {
   margin: 0;
 }
+
+.badge {
+  margin-top: -10px;
+  margin-left: -25px;
+  display: block;
+  float: right;
+}
+
+.badge::after {
+  content:attr(value);
+  color: white;
+  font-size: 1em;
+  width: 1em;
+  line-height: 1em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  background: #71ABBB;
+  border-radius:50%;
+  position:relative;
+  left:-4px;
+  top:-15px;
+  opacity:0.9;
+  }
