@@ -7,19 +7,15 @@ import { map } from 'leaflet';
 const AllAssetsWithMap = (props) =>{
     const [mapView, setMapView]=useState(false);
     const [mapMarkers,setMapMarkers]=useState(null);
-    const [sampleMarker,setSampleMarker]=useState();
+    const [sampleMarker,setSampleMarker]=useState([]);
     
-     
-    if(mapMarkers){
-        console.log('marker set');
-        if(sampleMarker===null){
-            setSampleMarker([10,20])
-        }
-    }
-    
-
+    console.log(sampleMarker);
     return(
         <div>
+            {sampleMarker ?
+            console.log("marker set " + sampleMarker)
+        :
+        console.log("no marker set")}
             {mapView ? 
             <Grid container direction='row'>
                 <Grid item xs={8}>
@@ -31,7 +27,12 @@ const AllAssetsWithMap = (props) =>{
                      handleMapSelect={()=>setMapView(true)}
                      handleListSelect={()=>setMapView(false)}
                      mapState={true}
-                     setMapMarkers={(selected)=>setMapMarkers(selected)}
+                     setSampleMarker={(value)=>{
+                        console.log("update from table:");
+                        console.log(value);
+                        setSampleMarker(value);
+                     }
+                    }
                      listButtonColor='grey'
                      mapButtonColor='black'/>
                 </Grid>

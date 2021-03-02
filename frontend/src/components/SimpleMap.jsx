@@ -81,9 +81,12 @@ const SimpleMap = ({ start, end }, sample) => {
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
-    const [sampleMarker, setSampleMarker]=useState(null); //sample for marking asset locations
+    const [sampleMarker, setSampleMarker]=useState(false); //sample for marking asset locations
 
-    
+    console.log(sampleMarker);
+    console.log(sample);
+
+
     /* Wait until render to allow use of map Refs */
     useEffect(() => {
         setRefAcquired(true);
@@ -194,10 +197,14 @@ const SimpleMap = ({ start, end }, sample) => {
                     : null
             }
 
+            {sampleMarker ?
+            console.log("Change in map detected. "+sampleMarker)
+        :
+            console.log("No change in map detected.")}
             {/*Attempting to map markers for assets with only one position */
             
             sampleMarker ? 
-            <Marker icon={shipFromMarkerIcon} position={sampleMarker} onclick={() => setPopupPosition({ coords: sampleMarker, location: "start" })} />
+            <Marker icon={shipFromMarkerIcon} position={[10,30]} onclick={() => setPopupPosition({ coords: [10,30], location: "start" })} />
     :
     null    
     }

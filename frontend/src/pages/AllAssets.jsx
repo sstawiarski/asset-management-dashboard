@@ -33,7 +33,7 @@ import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search'
 import MapIcon from '@material-ui/icons/Map';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import {Divider, Grid} from '@material-ui/core';
+import {Grid} from '@material-ui/core';
 
 
 //the object fields to get for the table we need, in this case assets
@@ -57,7 +57,6 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
     const [listButton, setListButton] = useState(props.listButtonColor);
     const [mapButton, setMapButton] = useState(props.mapButtonColor);
-    const [useMap, setUseMap]=useState(props.mapState);
  
 
     /* Handles searchbar when enter key is pressed */
@@ -227,9 +226,6 @@ const AllAssets = (props) => {
                     {/* Render main action if no items selected, edit actions if some are selected */}
                     {selected.length > 0 ?
                         <>
-
-
-                            
 
 
                             {/* Edit button */}
