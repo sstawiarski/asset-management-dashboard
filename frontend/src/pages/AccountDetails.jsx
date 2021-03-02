@@ -47,6 +47,14 @@ const AccountDetails = () => {
 
     const [edit, setEdit] = useState(false);
 
+    const [state, setState] = useState({
+        username: "",
+        password: "",
+        email: "",
+        visible: false,
+        result: null
+    });
+
     /* Fetch user info */
     useEffect(() => {
         fetch(url)
@@ -61,6 +69,23 @@ const AccountDetails = () => {
                 }
             });
     }, [url]);
+
+     /* Sign in text box change handler */
+    const handleChange = (event) => {
+        setState({
+            ...state,
+            [event.target.name]: event.target.value,
+            result: null
+        });
+    };
+
+     /* Submits updated account data */
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        let body = {};
+        
+    }
 
     return (
         <div >
@@ -129,7 +154,7 @@ const AccountDetails = () => {
                 }
             </Paper>
 
-            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Cancel</Button> <Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Submit</Button></div> }
+            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Cancel</Button> <Button variant="contained" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
         </div>
 
     )
