@@ -152,6 +152,10 @@ const NewTable = (props) => {
             const test2 = selected.concat(test);
             const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
             setSelected(newSelecteds);
+            if(props.setMapItems){
+                //TODO: convert the item names back into objects
+                props.setMapItems(newSelecteds);
+            }
             return;
         }
         setSelected(s => {
@@ -187,6 +191,10 @@ const NewTable = (props) => {
             }
         }
         setSelected(newSelected);
+        if(props.setMapItems){
+            //TODO: convert the item names back into objects
+            props.setMapItems(newSelected);
+        }
         if (moreInfo && additional) setMoreInfo(newAdditional);
     };
 

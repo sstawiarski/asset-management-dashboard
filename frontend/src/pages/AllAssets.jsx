@@ -210,6 +210,10 @@ const AllAssets = (props) => {
                 selectedFields={selectedFields}
                 selected={selected}
                 setSelected={setSelected}
+                setMapItems={(items)=>{
+                    if(props.setSelected){
+                    props.setSelected(items)}
+                }}
                 filters={filters}
                 setFilters={setFilters}
                 count={assetCount}

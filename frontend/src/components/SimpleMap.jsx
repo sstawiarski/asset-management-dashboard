@@ -68,12 +68,13 @@ const shipFromMarkerIcon = new L.Icon({
 
 });
 
-const SimpleMap = ({ start, end }, sample) => {
+const SimpleMap = (props) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
     const mapRef = useRef(null);
     const featureRef = useRef(null);
+    
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
     const [center, setCenter] = useState([51, -114]); //center of the map
@@ -81,11 +82,21 @@ const SimpleMap = ({ start, end }, sample) => {
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
-    const [sampleMarker, setSampleMarker]=useState(false); //sample for marking asset locations
+    const [assetMarkers, setAssetMarkers]=useState(props.data); //sample for marking asset locations
 
-    console.log(sampleMarker);
-    console.log(sample);
+    console.log("data from main page")
+    console.log(props.data);
+    console.log("asset markers");
+    console.log(assetMarkers);
+    if(props.data && assetMarkers!==props.data){
+        setAssetMarkers(props.data);
+    }
 
+    /* Set data from the main parent
+    if(data){
+        setAssetMarkers(data);
+    }
+    
 
     /* Wait until render to allow use of map Refs */
     useEffect(() => {
@@ -115,10 +126,10 @@ const SimpleMap = ({ start, end }, sample) => {
     /* Extract the appropriate coordinates and perform line and centering calculations */
     useEffect(() => {
 
-        if (start && end) {
+        if (props.start && props.end) {
             //extract coordinates
-            const startCoords = Object.values(start.coordinates);
-            const endCoords = Object.values(end.coordinates);
+            const startCoords = Object.values(props.start.coordinates);
+            const endCoords = Object.values(props.end.coordinates);
             setCoords({
                 start: startCoords,
                 end: endCoords
@@ -134,7 +145,7 @@ const SimpleMap = ({ start, end }, sample) => {
             setCurve(curved);
         }
 
-    }, [start, end]);
+    }, [props.start, props.end]);
 
     return (
         <Map ref={mapRef} center={center} zoom={9}>
@@ -169,7 +180,7 @@ const SimpleMap = ({ start, end }, sample) => {
 
                         {/* Render out the Location document as the popup content in a clean and somewhat dynamic way */}
                         {
-                            Object.entries(popupPosition.location === "start" ? start : end)
+                            Object.entries(popupPosition.location === "start" ? props.start : props.end)
                                 .map(([key, value]) => {
 
                                     /* Remove the document keys that are not needed by end users */
@@ -197,14 +208,16 @@ const SimpleMap = ({ start, end }, sample) => {
                     : null
             }
 
-            {sampleMarker ?
-            console.log("Change in map detected. "+sampleMarker)
-        :
-            console.log("No change in map detected.")}
             {/*Attempting to map markers for assets with only one position */
             
-            sampleMarker ? 
-            <Marker icon={shipFromMarkerIcon} position={[10,30]} onclick={() => setPopupPosition({ coords: [10,30], location: "start" })} />
+            assetMarkers.length > 0 ? 
+            
+            
+            assetMarkers.map(asset=> (
+                <Marker icon={shipFromMarkerIcon} position={[50,-114]} onclick={() => setPopupPosition({ coords: [10,30], location: "start" })} />
+            ))
+            
+            
     :
     null    
     }

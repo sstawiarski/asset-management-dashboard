@@ -6,31 +6,27 @@ import { map } from 'leaflet';
 
 const AllAssetsWithMap = (props) =>{
     const [mapView, setMapView]=useState(false);
-    const [mapMarkers,setMapMarkers]=useState(null);
     const [sampleMarker,setSampleMarker]=useState([]);
-    
-    console.log(sampleMarker);
+
+    const [assetMarkers,setAssetMarkers]=useState([]);
+  
+    console.log("after update from table:")
+    console.log(assetMarkers);
     return(
         <div>
-            {sampleMarker ?
-            console.log("marker set " + sampleMarker)
-        :
-        console.log("no marker set")}
             {mapView ? 
             <Grid container direction='row'>
                 <Grid item xs={8}>
-                    <SimpleMap
-                    sample={sampleMarker}/>
+                <SimpleMap
+                    data={assetMarkers}
+                />
                 </Grid>
                 <Grid item xs={4}>
                     <AllAssets
                      handleMapSelect={()=>setMapView(true)}
                      handleListSelect={()=>setMapView(false)}
-                     mapState={true}
-                     setSampleMarker={(value)=>{
-                        console.log("update from table:");
-                        console.log(value);
-                        setSampleMarker(value);
+                     setSelected={(value)=>{
+                        setAssetMarkers(value);
                      }
                     }
                      listButtonColor='grey'
