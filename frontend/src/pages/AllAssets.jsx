@@ -59,6 +59,14 @@ const AllAssets = (props) => {
     const [mapButton, setMapButton] = useState(props.mapButtonColor);
  
 
+    //set the initial values when toggling betwween map and list view
+    if(props.initialSelected.length > 0 && 
+        selected!==props.initialSelected){
+        setSelected(props.initialSelected);
+        props.setInitialSelected([]);
+    }
+
+
     /* Handles searchbar when enter key is pressed */
     const handleKeyDown = (e) => {
         const value = e.target.value;
@@ -79,14 +87,14 @@ const AllAssets = (props) => {
 
     /*Handles the map selection */
     const handleMapSelect=(event)=>{
-        props.handleMapSelect();
+        props.handleMapSelect(selected);
         setListButton('grey')
         setMapButton('black')
     }
 
     /*Handles list selection */
     const handleListSelect=(event)=>{
-        props.handleListSelect();
+        props.handleListSelect(selected);
         setListButton('black')
         setMapButton('grey')
     }
@@ -230,7 +238,31 @@ const AllAssets = (props) => {
                     {/* Render main action if no items selected, edit actions if some are selected */}
                     {selected.length > 0 ?
                         <>
-
+                        <Grid container xs={2} justify='center' alignItems='left'>
+                            <Grid item xs={3}>
+                                <Tooltip title={"Map-View"}>
+                                    <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{color:mapButton}}
+                                        //add onClick
+                                        onClick={handleMapSelect}
+                                    >
+                                    <MapIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                            <Grid item xs={1}>
+                            {/*    <Divider orientation="vertical" />*/}
+                            </Grid>
+                            <Grid item xs={1}>
+                                <Tooltip title={"List-View"} >
+                                    <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:listButton}}
+                                    //add onClick
+                                    onClick={handleListSelect}
+                                    >
+                                        <ListAltIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
 
                             {/* Edit button */}
                             <IconButton aria-label={"edit"} onClick={handleClick}>
@@ -262,38 +294,12 @@ const AllAssets = (props) => {
                                 </IconButton>
                             </Tooltip>
                             </Grid>
-
-                            {/*Map-View/List-View */}
-                            
-                                <Grid item xs={5}>
-                                    <Tooltip title={"Map-View"}>
-                                        <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{color:mapButton}}
-                                            //add onClick
-                                            onClick={handleMapSelect}
-                                        >
-                                            <MapIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                            <Grid item xs={1}>
-                            {/*    <Divider orientation="vertical" />*/}
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Tooltip title={"List-View"} >
-                                    <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:listButton}}
-                                        //add onClick
-                                        onClick={handleListSelect}
-                                    >
-                                        <ListAltIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
                             </Grid>
 
 
                             {/* Table searchbar */}
-                            <Container className='searchBar' align='right'>
-                                <div >
+                            <Grid container  xs={12} className='searchBar' justify='flex-end'>
+                                <Grid item xs={8} >
                                     <TextField id="searchBox"
                                         variant="outlined"
                                         size="small"
@@ -306,8 +312,34 @@ const AllAssets = (props) => {
                                         }}
                                         onKeyDown={handleKeyDown}
                                     />
-                                </div>
-                            </Container>
+                                </Grid>
+                                <Grid container xs={3}>
+                                    {/*Map-View/List-View */}
+                                    <Grid item xs={5}>
+                                        <Tooltip title={"Map-View"}>
+                                            <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{color:mapButton}}
+                                                //add onClick
+                                                onClick={handleMapSelect}
+                                            >
+                                                <MapIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                <Grid item xs={1}>
+                                {/*    <Divider orientation="vertical" />*/}
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <Tooltip title={"List-View"} >
+                                        <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:listButton}}
+                                            //add onClick
+                                            onClick={handleListSelect}
+                                        >
+                                            <ListAltIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </Grid>
+                             </Grid>
+                            </Grid>
 
                             {/* Filter button */}
                             <Tooltip title={"Filter"}>

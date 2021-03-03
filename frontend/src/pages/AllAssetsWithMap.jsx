@@ -9,6 +9,7 @@ const AllAssetsWithMap = (props) =>{
     const [sampleMarker,setSampleMarker]=useState([]);
 
     const [assetMarkers,setAssetMarkers]=useState([]);
+    const [tableSelected, setTableSelected]=useState([]);
   
     console.log("after update from table:")
     console.log(assetMarkers);
@@ -23,23 +24,46 @@ const AllAssetsWithMap = (props) =>{
                 </Grid>
                 <Grid item xs={4}>
                     <AllAssets
-                     handleMapSelect={()=>setMapView(true)}
-                     handleListSelect={()=>setMapView(false)}
+                     handleMapSelect={(selected)=>{
+                        setMapView(true);
+                        setTableSelected(selected);
+                     }
+                    }
+                     handleListSelect={(selected)=>{
+                        setMapView(false);
+                        setTableSelected(selected);
+                    }
+                    }
                      setSelected={(value)=>{
                         setAssetMarkers(value);
                      }
                     }
                      listButtonColor='grey'
-                     mapButtonColor='black'/>
+                     mapButtonColor='black'
+                     initialSelected={tableSelected}
+                     setInitialSelected={(value)=>
+                        setTableSelected(value)}/>
                 </Grid>
             </Grid>
             :
             <div>
                 <AllAssets
-                handleMapSelect={()=>setMapView(true)}
-                handleListSelect={()=>setMapView(false)}
+                handleMapSelect={(selected)=>{
+                    setMapView(true);
+                    setTableSelected(selected);
+                 }
+                }
+                 handleListSelect={(selected)=>{
+                    setMapView(false);
+                    setTableSelected(selected);
+                }
+                }
                 listButtonColor='black'
-                mapButtonColor='grey'/>
+                mapButtonColor='grey'
+                initialSelected={tableSelected}
+                setInitialSelected={(value)=>
+                    setTableSelected(value)}
+                />
             </div>
             }
         </div>

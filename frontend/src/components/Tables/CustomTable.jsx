@@ -154,7 +154,8 @@ const NewTable = (props) => {
             setSelected(newSelecteds);
             if(props.setMapItems){
                 //TODO: convert the item names back into objects
-                props.setMapItems(newSelecteds);
+                const mapItems= newSelecteds.map(item => data.find(obj => obj.serial === item));
+                props.setMapItems(mapItems);
             }
             return;
         }
@@ -193,7 +194,8 @@ const NewTable = (props) => {
         setSelected(newSelected);
         if(props.setMapItems){
             //TODO: convert the item names back into objects
-            props.setMapItems(newSelected);
+            const mapItems= newSelected.map(item => data.find(obj => obj.serial === item));
+            props.setMapItems(mapItems);
         }
         if (moreInfo && additional) setMoreInfo(newAdditional);
     };

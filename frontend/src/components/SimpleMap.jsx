@@ -82,6 +82,7 @@ const SimpleMap = (props) => {
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
+    const [assetPopup, setAssetPopup] = useState(null); //set a pop-up for assets
     const [assetMarkers, setAssetMarkers]=useState(props.data); //sample for marking asset locations
 
     console.log("data from main page")
@@ -214,13 +215,28 @@ const SimpleMap = (props) => {
             
             
             assetMarkers.map(asset=> (
-                <Marker icon={shipFromMarkerIcon} position={[50,-114]} onclick={() => setPopupPosition({ coords: [10,30], location: "start" })} />
+                <Marker
+                key={asset.assetName}
+                position={[50,-114]}
+                 onclick={() => setAssetPopup(asset)}/>
             ))
             
             
-    :
-    null    
-    }
+            :
+            null    
+            }
+            {assetPopup ? 
+            <Popup 
+            position={[50,-114]}
+            onClose={()=>{setAssetPopup(null)}}>
+                <div>
+                    <h2>{assetPopup.assetName}</h2>
+                </div>
+            </Popup>
+            :
+            null
+            }
+
         </Map>
     );
 };
