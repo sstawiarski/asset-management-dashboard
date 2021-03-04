@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 
 const AccountDetails = () => {
     const classes = useStyles();
+    const [username, setUsername] = useState("");
     const [local,] = useLocalStorage('user', {});
 
     const user = local.firstName + " " + local.lastName;
@@ -84,6 +85,8 @@ const AccountDetails = () => {
         event.preventDefault();
 
         let body = {};
+        body.username = state.username;
+        
         
     }
 
@@ -112,7 +115,8 @@ const AccountDetails = () => {
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
                                    
-                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" label={employee.username} variant="outlined" /></form>}
+                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" label={employee.username} variant="outlined"value={username}
+                                        onChange={handleChange} /></form>}
                                 </Grid>
 
                             </Grid>
