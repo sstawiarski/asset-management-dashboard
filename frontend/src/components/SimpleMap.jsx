@@ -213,24 +213,45 @@ const SimpleMap = (props) => {
             
             assetMarkers.length > 0 ? 
             
-            
+            /*TODO: Map the markers if they have coordinates, else, no markers. */
             assetMarkers.map(asset=> (
+                
+                //maps the asset if has coordinates, will need to modify
+                (asset.coordinates? 
+                
                 <Marker
                 key={asset.assetName}
-                position={[50,-114]}
+                position={asset.coordinates}
                  onclick={() => setAssetPopup(asset)}/>
-            ))
-            
-            
+            :
+            null)))
             :
             null    
             }
+
+            {/*assetMarkers.length > 0 ?
+            <Popup
+            //position={assetMarkers[assetmarkers.length-1]}
+            position={[50,-114]}
+            >
+             <h2>{assetMarkers[assetMarkers.length-1].assetName}</h2>
+                <p>Location: {assetMarkers[assetMarkers.length-1].deployedLocation}</p>
+                <p>Owner: {assetMarkers[assetMarkers.length-1].owner}</p>
+                <p></p>   
+            </Popup>
+            :
+            null
+            */}
+
             {assetPopup ? 
             <Popup 
-            position={[50,-114]}
+            position={assetPopup.coordinates}
             onClose={()=>{setAssetPopup(null)}}>
                 <div>
                     <h2>{assetPopup.assetName}</h2>
+                    <p>Location: {assetPopup.deployedLocation}</p>
+                    <p>Owner: {assetPopup.owner}</p>
+                    <p></p>
                 </div>
             </Popup>
             :

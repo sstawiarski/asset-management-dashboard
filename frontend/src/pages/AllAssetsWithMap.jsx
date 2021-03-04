@@ -13,6 +13,11 @@ const AllAssetsWithMap = (props) =>{
   
     console.log("after update from table:")
     console.log(assetMarkers);
+
+    if(tableSelected.length > 0 &&
+        assetMarkers !== tableSelected){
+            setAssetMarkers(tableSelected);
+        }
     return(
         <div>
             {mapView ? 
