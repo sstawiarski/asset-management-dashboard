@@ -273,7 +273,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
 
                                     format="MM/dd/yyyy"
                                     margin="normal"
-                                    id="date-picker-inline"
+                                    id="created-date-picker"
                                     name="dateCreated"
                                     inputVariant="outlined"
                                     label="Date Created"
@@ -293,7 +293,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
                                 <KeyboardDatePicker
                                     format="MM/dd/yyyy"
                                     margin="normal"
-                                    id="date-picker-inline"
+                                    id="updated-date-picker"
                                     name="lastUpdated"
                                     label="Last Updated"
                                     value={state.lastUpdated}
