@@ -137,6 +137,7 @@ const CreateAssembly = () => {
                 getSchema(history.location.state.assemblyType, true).then(response => {
                     setSchema(response);
                     toggleAssembly(true);
+                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
                 });
 
                 fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
@@ -147,46 +148,44 @@ const CreateAssembly = () => {
                     });
             }
         }
-    }, [history])
+    }, [history.location.state])
 
     /* get assets from database that don't belong to an assembly */
     useEffect(() => {
-        if (assemblyStarted) {
-            if (schema) {
+            if (schema && !history.location.state) {
                 const assemblyType = encodeURI(schema.name);
-                try {
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`);
-                } catch {
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
-                }
-
+                console.log(assemblyType)
+                setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
             }
-        }
-    }, [assemblyStarted, schema]);
+    }, [schema, history.location.state]);
 
     /* Set url with applied filters */
     useEffect(() => {
-        setURL(() => {
-            let originalURL = `http://localhost:4000/assets?parentId=null&assetType=Asset`;
-            if (schema) {
-                const assemblyType = encodeURI(schema.name);
-                try {
-                    originalURL += `&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`;
-                } catch {
-                    originalURL += `&inAssembly=${assemblyType}`;
-                }
-            }
+        setURL(u => {
+            let originalURL = "http://localhost:4000/assets?parentId=null&assetType=Asset";
+            const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
+            const necessaryParts = Object.keys(splitUpURL)
+            .filter(item => ["inAssembly", "isAssembly"].includes(item))
+            .reduce((p, c) => {
+                p[c] = splitUpURL[c];
+                return p;
+            }, {});
 
             Object.keys(filters).forEach(key => {
                 originalURL += `&${key}=${filters[key]}`;
-            })
+            });
+
+            Object.keys(necessaryParts).forEach(key => {
+                originalURL += `&${key}=${necessaryParts[key]}`;
+            });
 
             return originalURL;
         });
-    }, [schema, filters]);
+    }, [filters]);
 
     /* Fetch asset list */
     useEffect(() => {
+        console.log(url)
         fetch(url)
             .then(response => {
                 if (response.status < 300) {

@@ -48,7 +48,32 @@ router.get("/", async (req, res, err) => {
             const assemblyType = decodeURI(query[c]);
             const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
             if (Object.keys(assemblySchema).length > 0) {
-              p["assetName"] = { $in: assemblySchema.components };
+              if (p["assetName"]) {
+                const prev = p["assetName"];
+                delete p["assetName"];
+  
+                if (p["$and"]) {
+                  //find all assets that are not in the exclude array
+                  p["$and"] = [...p["$and"], {
+                    assetName: {
+                      $in: assemblySchema.components,
+                      ...prev
+                    }
+                  }];
+                } else {
+                  p["$and"] = [
+                    {
+                      assetName: {
+                        $in: assemblySchema.components,
+                        ...prev
+                      }
+                    }
+                  ];
+                }
+  
+              } else {
+                p["assetName"] = { $in: assemblySchema.components };
+              }
             }
 
           } else if (c === "isAssembly") {
@@ -111,6 +136,7 @@ router.get("/", async (req, res, err) => {
 
           return pc;
         }, {});
+
 
       if (req.query.search) {
         const searchTerm = req.query.search.replace("-", "");
@@ -222,7 +248,7 @@ router.get("/", async (req, res, err) => {
       }
     }
     aggregateArray.push(projection);
-
+    
     const result = await Asset.aggregate(aggregateArray);
 
     //filter results to determine better or even exact matches
@@ -309,7 +335,8 @@ router.post('/', async (req, res, err) => {
             assetType: "Asset",
             checkedOut: false,
             dateCreated: Date.now(),
-            assignmentType: "Owned"
+            assignmentType: "Owned",
+            retired: false
           });
 
           await newAsset.save();
@@ -358,7 +385,8 @@ router.post('/', async (req, res, err) => {
             assetType: "Asset",
             checkedOut: false,
             dateCreated: Date.now(),
-            assignmentType: "Owned"
+            assignmentType: "Owned",
+            retired: false
           });
 
           await newAsset.save();
@@ -637,7 +665,8 @@ router.post('/assembly', async (req, res, err) => {
       checkedOut: false,
       assignmentType: "Owned",
       incomplete: req.body.missingItems.length ? true : false,
-      assembled: true
+      assembled: true,
+      retired: false
     });
 
     await newAssembly.save();

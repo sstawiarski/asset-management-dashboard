@@ -96,7 +96,7 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
                             })
                         })
                         history.push({
-                            pathname: '/assets/create-assembly',
+                            pathname: '/assets/assembly-manager',
                             state: {
                                 isAssemblyEdit: true,
                                 serial: assembly.serial,
