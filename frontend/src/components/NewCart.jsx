@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
+//Library Tools
 import { makeStyles } from '@material-ui/core/styles'
 
+//Material-UI Components
 import Button from '@material-ui/core/Button';
 import Popper from '@material-ui/core/Popper';
 import Grid from '@material-ui/core/Grid';
@@ -9,12 +12,16 @@ import Fade from '@material-ui/core/Fade';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import AddUnserializedDialog from '../components/Dialogs/AddUnserializedDialog';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TextField from '@material-ui/core/TextField';
 
-import { Table, TableBody, TableCell, TableHead, TableRow, TextField } from '@material-ui/core';
+//Icons
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
     popper: {
@@ -22,11 +29,18 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: "2px 3px 7px 0px rgba(0, 0, 0, 0.3)",
         borderRadius: "23px",
         width: "417px",
-        height: "838px",
+        height: "fit-content",
+        maxHeight: "75vh",
         overflow: "scroll"
     },
     cartContent: {
         padding: "20px 20px 50px 20px"
+    },
+    cellWithOverflow: {
+        display: "block",
+        maxWidth: "100px",
+        overflowX: "scroll",
+        marginBottom: "0px"
     },
     headers: {
         paddingTop: "20px"
@@ -37,11 +51,10 @@ const useStyles = makeStyles((theme) => ({
     remove: {
         color: theme.palette.secondary.main
     },
-    submitArea: {
-        background: "#FFFFFF",
-        alignSelf: "flex-end",
-        paddingRight: "20px",
-        marginBottom: "20px"
+    buttonContainer: {
+        display: "flex", 
+        justifyContent: "space-between", 
+        padding: "20px"
     },
     items: {
         borderBottom: "none"
@@ -64,23 +77,27 @@ const useStyles = makeStyles((theme) => ({
     },
     subRow: {
         paddingTop: "0px"
+    },
+    clearButton: {
+        borderColor: "#D10000", 
+        color: "#D10000"
     }
 }));
 
-const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, onRemove, onClickAway, onSubmit, onNoteUpdate, onUnserializedAdd }) => {
+const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, onRemove, onClickAway, onSubmit, onNoteUpdate, onClear }) => {
     const classes = useStyles();
 
-    const [editObj, setEditObj] = useState(null);
-    const [editingNotes, setNotes] = useState("");
-    const [open, setOpen] = useState(false);
+    const [editObj, setEditObj] = useState(null); //the current object whose notes are being edited
+    const [editingNotes, setNotes] = useState(""); //current editing note text
+
 
     const handleCancel = () => {
         setEditObj(null);
         setNotes("")
     };
 
+    /* Provides id key to parent (i.e. the key that identifies an item (serial or UUID)) and the new notes */
     const handleSubmit = (idKey, identifier) => {
-
         const noteUpdateObj = {
             idKey: idKey,
             [idKey]: identifier,
@@ -102,79 +119,79 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
     }
 
     return (
-        <>
-            <Popper
-                className={classes.popper}
-                open={Boolean(anchorEl)}
-                anchorEl={anchorEl}
-                transition>
-                {({ TransitionProps }) => (
-                    <ClickAwayListener onClickAway={onClickAway}>
-                        <Fade {...TransitionProps}>
-                            <Grid container direction="column" justify="space-between">
+        <Popper
+            className={classes.popper}
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            transition>
+            {({ TransitionProps }) => (
+                <ClickAwayListener onClickAway={onClickAway}>
+                    <Fade {...TransitionProps}>
+                        <Grid container direction="column" justify="space-between">
+                            <Grid item xs={12} className={classes.cartContent}>
+                            <Typography variant="h6"><b>{title}</b></Typography>
+                                <Table style={{ width: "100%" }}>
 
+                                    <TableHead>
+                                        <TableRow>
+                                            {[...headers, ""].map(item => <TableCell key={item}><b>{item}</b></TableCell>)}
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {
+                                            cartItems.map((item, idx) => {
+                                                //determine proper identifier to display and send to parent on edit
+                                                const identifier = item.serial !== "N/A" ? item.serial : item.uuid;
+                                                const idPropName = item.serial !== "N/A" ? "serial" : "uuid";
+                                                const idObj = {
+                                                    [idPropName]: identifier
+                                                };
 
-                                <Grid item xs={12} className={classes.cartContent}>
+                                                //determine whether a specific quantity exists for the item, used later to display 1 if not
+                                                const hasQuantity = Object.keys(item).includes("quantity");
 
-                                    <div style={{ display: "block" }}>
-                                        <Typography variant="h5" style={{ float: "left" }}><b>{title}</b></Typography>
-                                        <Tooltip title="Add Unserialized Item" placement="top">
-                                            <IconButton style={{ float: "right" }} onClick={() => setOpen(true)}>
-                                                <AddIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </div>
+                                                return (
+                                                    <>
+                                                        <TableRow key={item.serial !== "N/A" ? item.serial : idx}>
+                                                            {
+                                                                Object.entries(item).map(([key, val]) => {
+                                                                    //ignore irrelevant keys
+                                                                    if (key === "uuid" || key === "quantity" || key === "notes") return null;
 
-
-
-                                    <Table style={{ width: "100%" }}>
-                                        <TableHead>
-                                            <TableRow>
-                                                {[...headers, ""].map(item => <TableCell key={item}><b>{item}</b></TableCell>)}
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                cartItems.map((item, idx) => {
-                                                    const identifier = item.serial !== "N/A" ? item.serial : item.uuid;
-                                                    const idPropName = item.serial !== "N/A" ? "serial" : "uuid";
-                                                    const idObj = {
-                                                        [idPropName]: identifier
-                                                    };
-
-                                                    const hasQuantity = Object.keys(item).includes("quantity");
-
-                                                    return (
-                                                        <>
-                                                            <TableRow key={item.serial !== "N/A" ? item.serial : idx}>
-                                                                {
-                                                                    Object.entries(item).map(([key, val]) => {
-                                                                        if (key === "uuid" || key === "quantity" || key === "notes") return null;
-                                                                        return (<TableCell className={classes.items} key={val}>
-                                                                            <div style={{ display: "block", maxWidth: "100px", overflowX: "scroll", marginBottom: "0px" }}>
-                                                                                {val}
-                                                                            </div>
-
-                                                                        </TableCell>)
-                                                                    }
+                                                                    //return value in container that scrolls if the text is too long
+                                                                    return (
+                                                                        <TableCell className={notes ? classes.items : null} key={val}>
+                                                                            <div className={classes.cellWithOverflow}>{val}</div>
+                                                                        </TableCell>
                                                                     )
                                                                 }
-                                                                {
-                                                                    headers.includes("Quantity") ?
-                                                                        hasQuantity ?
-                                                                            <TableCell className={classes.items}>{item.quantity}</TableCell>
-                                                                            : <TableCell className={classes.items}>1</TableCell>
-                                                                        : null
-                                                                }
-                                                                <TableCell className={classes.items}>
-                                                                    <Tooltip title={`Remove ${item.serial !== "N/A" ? item.serial : item.name}`} placement="right">
-                                                                        <IconButton onClick={() => onRemove(idObj)}>
-                                                                            <DeleteIcon className={classes.remove} />
-                                                                        </IconButton>
-                                                                    </Tooltip>
-                                                                </TableCell>
-                                                            </TableRow>
+                                                                )
+                                                            }
+
+                                                            {/* Display quantity or "1" */}
                                                             {
+                                                                headers.includes("Quantity") ?
+                                                                    hasQuantity ?
+                                                                        <TableCell className={notes ? classes.items : null}>{item.quantity}</TableCell>
+                                                                        : <TableCell className={notes ? classes.items : null}>1</TableCell>
+                                                                    : null
+                                                            }
+
+                                                            {/* Remove from cart button */}
+                                                            <TableCell className={notes ? classes.items : null}>
+                                                                <Tooltip title={`Remove ${item.serial !== "N/A" ? item.serial : item.name}`} placement="right">
+                                                                    <IconButton onClick={() => onRemove(idObj)}>
+                                                                        <DeleteIcon className={classes.remove} />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </TableCell>
+
+                                                        </TableRow>
+
+                                                        {/* Display notes editor if "notes" prop is true, otherwise nothing */}
+                                                        {/* Then check whether the current editing object is the current row and display the editor as needed */}
+                                                        {
+                                                            notes ?
                                                                 identifier === editObj ?
                                                                     <TableRow>
                                                                         <TableCell colSpan={headers.length + 1} className={classes.subRow}>
@@ -199,29 +216,29 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
                                                                         : <TableRow>
                                                                             <TableCell className={classes.subRow} colSpan={headers.length + 1}><Typography className={classes.submitNotes} variant="subtitle2" onClick={() => setEditObj(identifier)}>Add Notes</Typography></TableCell>
                                                                         </TableRow>
-                                                            }
-
-
-                                                        </>
-                                                    );
-                                                }
-                                                )
+                                                                : null
+                                                        }
+                                                    </>
+                                                );
                                             }
-                                        </TableBody>
-
-                                    </Table>
-                                </Grid>
-                                <Grid item xs={12} className={classes.submitArea}>
-                                    <Button onClick={onSubmit} variant="contained" color="primary">Submit</Button>
-                                </Grid>
+                                            )
+                                        }
+                                    </TableBody>
+                                </Table>
                             </Grid>
-                        </Fade>
-                    </ClickAwayListener>
-                )}
 
-            </Popper>
-            <AddUnserializedDialog open={open} onClose={() => setOpen(false)} onSubmit={(item) => { onUnserializedAdd(item); setOpen(false); }} />
-        </>
+                            {/* Clear cart and submit button container */}
+                            <div className={classes.buttonContainer}>
+                                <Button className={classes.clearButton} onClick={onClear} variant="outlined">Clear Cart</Button>
+                                <Button onClick={onSubmit} variant="contained" color="primary">Submit</Button>
+                            </div>
+
+                        </Grid>
+                    </Fade>
+                </ClickAwayListener>
+            )}
+
+        </Popper>
     )
 };
 
@@ -270,7 +287,12 @@ NewCart.propTypes = {
      */
     onNoteUpdate: PropTypes.func,
     /**
-     * Allow notes to be added to items in the cart (for shipments)
+     * Handler for removing all items from the cart
+     */
+    onClear: PropTypes.func.isRequired,
+    /**
+     * Whether or not notes can be added to items in the cart (for shipments)
+     * Also determines where table row borders are added
      */
     notes: PropTypes.bool
 }

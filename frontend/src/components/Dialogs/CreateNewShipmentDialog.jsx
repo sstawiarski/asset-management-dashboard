@@ -9,7 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import DialogContent from '@material-ui/core/DialogContent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { DialogActions, InputLabel, TextField, Typography } from '@material-ui/core';
+import { DialogActions, InputLabel, TextField, Typography, FormControl, Input } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     autocomplete: {
@@ -82,27 +82,29 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
     }
 
     return (
-        <Dialog onClose={handleCancel} onSubmit={handleSubmit} open={creatorOpen}>
+        <Dialog onClose={handleCancel} onSubmit={handleSubmit} open={creatorOpen} fullWidth>
             <DialogTitle>Start New Shipment</DialogTitle>
 
-            <DialogContent style={{ width: "35vw" }}>
+            <DialogContent>
                 <Grid container direction="row">
-                    <Grid item xs={10}>
+                    <Grid item xs={12}>
+                        <FormControl variant="outlined" style={{ width: "50%", display: "block", marginLeft: "auto", marginRight: "auto" }}>
+                        <InputLabel id="type-label">Shipment Type</InputLabel>
                         <Select
-                            label="Shipment Type"
+                            labelId="type-label"
                             id="type"
-                            variant="outlined"
                             name="shipmentType"
                             fullWidth
-                            
+                            labelWidth={110}
                             value={state.shipmentType}
                             onChange={handleChange}>
 
                             <MenuItem value="Incoming">Incoming</MenuItem>
                             <MenuItem value="Outgoing">Outgoing</MenuItem>
                         </Select>
+                        </FormControl>
                     </Grid>
-                    <Grid item xs={4} className={classes.autocomplete}>
+                    <Grid item xs={6} className={classes.autocomplete}>
                         <Autocomplete
                             id="shipment-from-locator"
                             className={classes.autocomplete}
@@ -135,7 +137,7 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             }}
                         />
                     </Grid>
-                    <Grid item xs={4} className={classes.autocomplete}>
+                    <Grid item xs={6} className={classes.autocomplete}>
                         <Autocomplete
                             id="shipment-to-locator"
                             options={state.shipToOptions}

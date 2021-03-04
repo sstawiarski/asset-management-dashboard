@@ -118,6 +118,8 @@ const NewTable = (props) => {
     const setMoreInfo = moreInfo ? props.setMoreInfo : null;
     const lookup = moreInfo ? props.lookup : null;
     const Clickable = props.clickable || null;
+    const returnsObject = props.returnsObject || false;
+    const clearSelectedOnPageChange = props.clearSelectedOnPageChange || false;
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -196,6 +198,10 @@ const NewTable = (props) => {
             page: newPage
         }));
         setPageSelected(selected.length);
+        if (clearSelectedOnPageChange) { 
+            setSelected([]); 
+            setMoreInfo([]);
+        }
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -248,7 +254,7 @@ const NewTable = (props) => {
                             {
                                 data.map((item, index) => {
                                     const isItemSelected = isSelected(item[selectedFields[0]]);
-                                    const isItemCompared = compare ? compare.includes(item[selectedFields[0]]) : false;
+                                    const isItemCompared = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === item[selectedFields[0]]) : compare.includes(item[selectedFields[0]]) : false;
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
