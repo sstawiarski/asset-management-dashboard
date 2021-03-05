@@ -120,9 +120,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
         }
 
         try {
-            const actualItems = submission.employee.map(entry => entry[0]);
-            
-            fetch("http://localhost:4000/employees/${employee.employeeId}", {
+            fetch(`http://localhost:4000/employees/${employee.employeeId}`, {
                 method: 'PATCH',
                 mode: 'cors',
                 headers: {
@@ -149,9 +147,6 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
         } catch (e) {
             console.log(e)
         }
-        
-
-        
     }
 
     return (
