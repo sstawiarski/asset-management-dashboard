@@ -236,8 +236,8 @@ const AllAssets = (props) => {
                                 {/* Render main action if no items selected, edit actions if some are selected */}
                                 {selected.length > 0 ?
                                     <>
-                                        <Grid container xs={12} justify='flex-end' alignItems='left'>
-                                            <Grid item xs={3}>
+                                        <Grid container xs={!map ? 9: 12} justify='flex-end' alignItems='flex-end' >
+                                            <Grid item xs={!map ? 1: 4}>
                                                 <Tooltip title={"Map View"}>
                                                     <IconButton
                                                         className={map ? classes.disabled : classes.enabled}
@@ -249,7 +249,7 @@ const AllAssets = (props) => {
                                                     </IconButton>
                                                 </Tooltip>
                                             </Grid>
-                                            <Grid item xs={3}>
+                                            <Grid item xs={!map ? 2 : 6}>
                                                 <Tooltip title={"List View"} >
                                                     <IconButton
                                                         className={!map ? classes.disabled : classes.enabled}
@@ -316,9 +316,9 @@ const AllAssets = (props) => {
                                                     : null
                                             }
 
-                                            <Grid container xs={!map ? 3 : 12}>
+                                            <Grid container xs={!map ? 3 : 12} justify='flex-end' alignItems='flex-end'>
                                                 {/*Map-View/List-View */}
-                                                <Grid item xs={5}>
+                                                <Grid item xs={!map ? 5 : 4}>
                                                     <Tooltip title={"Map View"}>
                                                         <IconButton
                                                             className={map ? classes.disabled : classes.enabled}
@@ -330,10 +330,8 @@ const AllAssets = (props) => {
                                                         </IconButton>
                                                     </Tooltip>
                                                 </Grid>
-                                                <Grid item xs={1}>
-                                                    {/*    <Divider orientation="vertical" />*/}
-                                                </Grid>
-                                                <Grid item xs={1}>
+                                                
+                                                <Grid item xs={7}>
                                                     <Tooltip title={"List View"} >
                                                         <IconButton
                                                             className={!map ? classes.disabled : classes.enabled}
