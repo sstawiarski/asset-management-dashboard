@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
         height: "fit-content",
         maxHeight: "75vh",
         overflow: "scroll",
-        margin: "40px" 
+        margin: "40px"
     },
     cartContent: {
         padding: "20px 20px 50px 20px"
@@ -53,8 +53,8 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.secondary.main
     },
     buttonContainer: {
-        display: "flex", 
-        justifyContent: "space-between", 
+        display: "flex",
+        justifyContent: "space-between",
         padding: "20px"
     },
     items: {
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: "0px"
     },
     clearButton: {
-        borderColor: "#D10000", 
+        borderColor: "#D10000",
         color: "#D10000"
     }
 }));
@@ -125,13 +125,13 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
             open={Boolean(anchorEl)}
             anchorEl={anchorEl}
             transition
-            placement={ placement ? placement : "bottom"}>
+            placement={placement ? placement : "bottom"}>
             {({ TransitionProps }) => (
                 <ClickAwayListener onClickAway={onClickAway}>
                     <Fade {...TransitionProps}>
                         <Grid container direction="column" justify="space-between">
                             <Grid item xs={12} className={classes.cartContent}>
-                            <Typography variant="h6"><b>{title}</b></Typography>
+                                <Typography variant="h6"><b>{title}</b></Typography>
                                 <Table style={{ width: "100%" }}>
 
                                     <TableHead>
@@ -208,10 +208,9 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
                                                                     : item.notes ?
                                                                         <TableRow>
                                                                             <TableCell className={classes.subRow} colSpan={headers.length + 1}>
-                                                                                <Typography variant="body2">
-                                                                                    <b>Notes</b>
-                                                                                    <Typography variant="body2" className={classes.submitNotes} onClick={() => handleEditExisting(identifier, item.notes)}>Edit</Typography>
-                                                                                </Typography>
+                                                                                <Typography variant="body2"><b>Notes</b></Typography>
+                                                                                <Typography variant="body2" className={classes.submitNotes} onClick={() => handleEditExisting(identifier, item.notes)}>Edit</Typography>
+
                                                                                 <Typography variant="body2">{item.notes}</Typography>
                                                                             </TableCell>
                                                                         </TableRow>
