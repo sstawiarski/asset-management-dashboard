@@ -55,7 +55,7 @@ import { URLTypes as types } from '../../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+
     },
     paper: {
         width: '98%',
@@ -144,6 +144,7 @@ const NewTable = (props) => {
     };
 
     const handleSelectAllClick = (event) => {
+        /* Deselect everything when the select all box is clicked on a different page */
         if (event.target.getAttribute("data-indeterminate") === "true") {
             if (setMapItems !== null) {
                 setMapItems([]);
@@ -153,6 +154,7 @@ const NewTable = (props) => {
         }
         
         if (event.target.checked) {
+            /* Use props to exclude items already "in cart" from being added twice  */
             const onlyGood = data.filter((n) => {
                 const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
                 return !isInCart;
@@ -161,13 +163,16 @@ const NewTable = (props) => {
             const test2 = selected.concat(test);
             const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
             setSelected(newSelecteds);
+
+            /* Maintain full objects even during pagination by adding selected objects to the parent state using the prop setter function */
             if(setMapItems !== null){
-                //TODO: convert the item names back into objects
                 const mapItems = data.filter(obj => newSelecteds.includes(obj.serial));
                 setMapItems(mapItems);
             }
             return;
         }
+
+        /* Remove all selections when select all is being unchecked */
         const data2 = data.map(item => item.serial);
         setSelected(s => {
             return s.filter(item => {
@@ -204,12 +209,21 @@ const NewTable = (props) => {
             }
         }
         setSelected(newSelected);
+
+        /*  
+            Use the existing items array to filter for only the items currently selected,
+            then use the current data loaded in the table to get the new selection data,
+            then get only the unique objects so they don't get added twice
+        */
         if(setMapItems) {
             setMapItems(m => {
-                const result = [...m.filter(mapItem => newSelected.includes(mapItem[selectedFields[0]])), ...data.filter(obj => newSelected.includes(obj[selectedFields[0]]))];
-                return result;
+                const oldItems = m.filter(mapItem => newSelected.includes(mapItem[selectedFields[0]]));
+                const newItems = data.filter(obj => newSelected.includes(obj[selectedFields[0]]));
+                const unique = [...new Map([...oldItems, ...newItems].map(item => [item[selectedFields[0]], item])).values()];
+                return unique;
             });
         }
+
         if (moreInfo && additional) setMoreInfo(newAdditional);
     };
 
@@ -228,6 +242,7 @@ const NewTable = (props) => {
             page: 0
         }));
         setSelected([]);
+        if (setMapItems) setMapItems([]);
         setPageSelected(0);
     };
 

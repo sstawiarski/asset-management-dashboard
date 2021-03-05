@@ -206,7 +206,7 @@ const AllAssets = (props) => {
                 <Grid container spacing={1}>
                     {
                         map ?
-                            <Grid item xs={12} sm={12} md={8}>
+                            <Grid item xs={8} sm={12} md={8}>
                                 <SimpleMap 
                                 data={assetMarkers} 
                                 styling={{ 
@@ -214,11 +214,12 @@ const AllAssets = (props) => {
                                     boxShadow: "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                     minHeight: "50vh",
                                     width: "98%",
+                                    maxWidth: "85vw"
                                     }} />
                             </Grid>
                             : null
                     }
-                    <Grid item xs={12} sm={12} md={map ? 4 : 12}>
+                    <Grid item xs={7} sm={10} md={map ? 4 : 12}>
                         <CustomTable
                             data={assets}
                             selectedFields={selectedFields}
@@ -230,7 +231,8 @@ const AllAssets = (props) => {
                             count={assetCount}
                             variant="asset"
                             checkboxes={true}
-                            inactive="assembled">
+                            inactive="assembled"
+                            >
 
                             <TableToolbar
                                 title="All Assets"
