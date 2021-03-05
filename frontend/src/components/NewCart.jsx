@@ -27,11 +27,12 @@ const useStyles = makeStyles((theme) => ({
     popper: {
         background: "#FFFFFF",
         boxShadow: "2px 3px 7px 0px rgba(0, 0, 0, 0.3)",
-        borderRadius: "23px",
+        borderRadius: "7px",
         width: "417px",
         height: "fit-content",
         maxHeight: "75vh",
-        overflow: "scroll"
+        overflow: "scroll",
+        margin: "40px" 
     },
     cartContent: {
         padding: "20px 20px 50px 20px"
@@ -84,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, onRemove, onClickAway, onSubmit, onNoteUpdate, onClear }) => {
+const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, onRemove, onClickAway, onSubmit, onNoteUpdate, onClear, placement }) => {
     const classes = useStyles();
 
     const [editObj, setEditObj] = useState(null); //the current object whose notes are being edited
@@ -123,7 +124,8 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
             className={classes.popper}
             open={Boolean(anchorEl)}
             anchorEl={anchorEl}
-            transition>
+            transition
+            placement={ placement ? placement : "bottom"}>
             {({ TransitionProps }) => (
                 <ClickAwayListener onClickAway={onClickAway}>
                     <Fade {...TransitionProps}>
@@ -250,7 +252,7 @@ NewCart.propTypes = {
     /**
      * DOM anchor element to render the cart popup at
      */
-    anchorEl: PropTypes.instanceOf(Element).isRequired,
+    anchorEl: PropTypes.instanceOf(Element),
     /**
      * Function to run when user clicks off of the popup
      */

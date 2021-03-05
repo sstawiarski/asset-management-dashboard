@@ -42,24 +42,26 @@
 }
 
 .badge {
-  margin-top: -10px;
-  margin-left: -25px;
-  display: block;
-  float: right;
+  margin: 0px;
+  top: auto;
+  right: 30px;
+  bottom: 48px;
+  left: auto;
+  position: fixed;
 }
 
 .badge::after {
   content:attr(value);
   color: white;
-  font-size: 1em;
-  width: 1em;
+  font-size: 1.2em;
+  width: 1.5em;
   line-height: 1em;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
-  background: #71ABBB;
+  padding-left: 0.3em;
+  padding-right: 0.3em;
+  background: #48656b;
   border-radius:50%;
   position:relative;
-  left:-4px;
-  top:-15px;
+  left:-8px;
+  top:-20px;
   opacity:0.9;
   }

@@ -88,8 +88,8 @@ const useStyles = makeStyles((theme) => ({
     },
     unserializedFab: {
         position: "absolute",
-        bottom: theme.spacing(4),
-        right: theme.spacing(4)
+        bottom: theme.spacing(6),
+        right: theme.spacing(15)
     },
     unserializedAddIcon: {
         marginRight: theme.spacing(1)
@@ -330,19 +330,6 @@ const ShipmentCreator = () => {
                 <Grid item xs={12}>
                     <Header heading="Shipments" subheading="Shipment Creator" />
                 </Grid>
-                <Grid item xs={12}>
-                    {
-                        shipmentStarted ?
-                            <div className="badge" value={cartItems.length}>
-                                <Tooltip title="Cart" placement="top">
-                                    <IconButton onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}>
-                                        <ShoppingCartIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </div>
-                            : null
-                    }
-                </Grid>
 
                 <Grid item xs={12}>
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
@@ -422,7 +409,8 @@ const ShipmentCreator = () => {
                     setCartItems(newCart);
                 }}
                 onClear={() => setCartItems([])}
-                notes />
+                notes
+                placement="top" />
 
             <CreateNewShipmentDialog
                 creatorOpen={creatorOpen}
@@ -503,9 +491,10 @@ const ShipmentCreator = () => {
 
             {
                 shipmentStarted ?
+                <>
                     <Fab
                         className={classes.unserializedFab}
-                        color="primary"
+                        color="secondary"
                         aria-label="add unserialized component"
                         variant="extended"
                         onClick={() => setUnserializedOpen(true)}>
@@ -513,6 +502,14 @@ const ShipmentCreator = () => {
                         <AddIcon className={classes.unserializedAddIcon} />
                         Add Unserialized Item
                     </Fab>
+                    <div className="badge" value={cartItems.length}>
+                    <Fab
+                    color="primary"
+                    onClick={(event) => setAnchorEl(event.target)}>
+                        <ShoppingCartIcon />
+                    </Fab>
+                    </div>
+                    </>
                     : null
             }
 

@@ -14,11 +14,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import Fab from '@material-ui/core/Fab';
 
 //Icons
 import FilterListIcon from '@material-ui/icons/FilterList';
 import AddIcon from '@material-ui/icons/Add';
 import ExtensionIcon from '@material-ui/icons/Extension';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 //Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
@@ -34,6 +36,7 @@ import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
+import NewCart from '../components/NewCart';
 
 //Tools
 import { compareSchema, getSchema } from '../utils/assembly.utils';
@@ -91,7 +94,6 @@ const useStyles = makeStyles((theme) => ({
 
 //fields to select for the particular type of document going into the table
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
-const headCells = [{ label: "Serial" }];
 
 const CreateAssembly = () => {
     const classes = useStyles();
@@ -112,6 +114,7 @@ const CreateAssembly = () => {
     const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     /* Dialog state */
     const [assemblyStarted, toggleAssembly] = useState(false);
@@ -127,9 +130,6 @@ const CreateAssembly = () => {
     const [activeFilters, setActiveFilters] = useState({});
     const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
 
-
-    //TODO: Check whether all these useEffects are actually necessary
-
     /* Initial setup if existing assembly is being modified */
     useEffect(() => {
         if (history.location.state) {
@@ -143,33 +143,32 @@ const CreateAssembly = () => {
                 fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
                     .then(res => res.json())
                     .then(json => {
-                        const existingItems = json.data.map(item => item.serial);
+                        const existingItems = json.data.map(item => ({ serial: item.serial, name: item.assetName }));
                         setCartItems(existingItems);
                     });
             }
         }
-    }, [history.location.state])
+    }, [history.location.state]);
 
     /* get assets from database that don't belong to an assembly */
     useEffect(() => {
-            if (schema && !history.location.state) {
-                const assemblyType = encodeURI(schema.name);
-                console.log(assemblyType)
-                setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
-            }
+        if (schema && !history.location.state) {
+            const assemblyType = encodeURI(schema.name);
+            setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+        }
     }, [schema, history.location.state]);
 
     /* Set url with applied filters */
     useEffect(() => {
         setURL(u => {
             let originalURL = "http://localhost:4000/assets?parentId=null&assetType=Asset";
-            const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
+            const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
             const necessaryParts = Object.keys(splitUpURL)
-            .filter(item => ["inAssembly", "isAssembly"].includes(item))
-            .reduce((p, c) => {
-                p[c] = splitUpURL[c];
-                return p;
-            }, {});
+                .filter(item => ["inAssembly", "isAssembly"].includes(item))
+                .reduce((p, c) => {
+                    p[c] = splitUpURL[c];
+                    return p;
+                }, {});
 
             Object.keys(filters).forEach(key => {
                 originalURL += `&${key}=${filters[key]}`;
@@ -185,7 +184,6 @@ const CreateAssembly = () => {
 
     /* Fetch asset list */
     useEffect(() => {
-        console.log(url)
         fetch(url)
             .then(response => {
                 if (response.status < 300) {
@@ -255,19 +253,22 @@ const CreateAssembly = () => {
     /* Check if selected items already have parent assemblies and then add to cart */
     const handleAddToCart = (items) => {
         const badSerials = [];
+        const newItems = [];
 
         //check for existing parents
         items.forEach(item => {
             const fullInfo = assets.find(asset => asset.serial === item);
             if (fullInfo.parentId) {
-                badSerials.push(item);
+                badSerials.push({ serial: fullInfo.serial, name: fullInfo.assetName });
+            } else {
+                newItems.push({ serial: fullInfo.serial, name: fullInfo.assetName });
             }
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
         if (badSerials.length) {
-            const onlyGood = items.filter(item => !badSerials.includes(item));
-            setCartItems(orig => ([...orig, ...onlyGood]));
+            console.log(badSerials)
+            setCartItems(orig => ([...orig, ...newItems]));
             setSelected([]);
             setHaveParents(badSerials);
             setHasParents(true);
@@ -275,18 +276,9 @@ const CreateAssembly = () => {
         }
 
         //set the cart items if no bad serials are found
-        setCartItems(orig => ([...orig, ...items]));
+        setCartItems(orig => ([...orig, ...newItems]));
         setSelected([]);
     }
-
-    /* Remove serial from cart on click of the 'Remove' button */
-    const handleRemoveFromCart = (serial) => {
-        const newCart = cartItems.filter(item => item !== serial);
-        setCartItems(newCart);
-        const newSelected = selected.filter(asset => newCart.includes(asset));
-        setSelected(newSelected);
-    };
-
     /** 
      * Compares schema saved in state from the helper tool with the assets currently in cart
      * 
@@ -307,10 +299,7 @@ const CreateAssembly = () => {
             setSubmission(s => ({
                 ...s,
                 type: schema["name"],
-                assets: cartItems.reduce((arr, item, idx) => {
-                    arr.push([item, moreInfo[idx]]);
-                    return arr;
-                }, []),
+                assets: cartItems.map((item) => [item.serial, item.name]),
                 owner: state.owner,
                 groupTag: state.groupTag,
                 serializationFormat: schema["serializationFormat"],
@@ -366,7 +355,7 @@ const CreateAssembly = () => {
                     <Header heading="Assets" subheading="Assembly Manager" />
                 </Grid>
 
-                <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
+                <Grid item xs={12}>
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
                         assemblyStarted
@@ -385,7 +374,9 @@ const CreateAssembly = () => {
                                 setMoreInfo={setMoreInfo}
                                 lookup="assetName"
                                 clickable={QuickAssetView}
-                                inactive="parentId">
+                                inactive="parentId"
+                                returnsObject
+                                clearSelectedOnPageChange>
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {
@@ -422,24 +413,21 @@ const CreateAssembly = () => {
                             </Paper>
                     }
                 </Grid>
-
-                <Grid item xs={12} sm={12} md={4} lg={4}>
-                    {/* Render the cart whenever the assembly is started */}
-                    {
-                        assemblyStarted ?
-                            <>
-                                <CartTable
-                                    header={headCells}
-                                    rows={cartItems}
-                                    handleRemove={handleRemoveFromCart}
-                                    onSubmit={handleSubmitCheck}
-                                />
-                                <Button onClick={() => setAbandoned(true)} style={{ float: "right", color: "red" }}>Abandon</Button>
-                            </>
-                            : null
-                    }
-                </Grid>
             </Grid>
+
+            <NewCart
+                cartItems={cartItems}
+                headers={["Serial", "Name", "Quantity"]}
+                onSubmit={handleSubmitCheck}
+                onRemove={(idObj) => {
+                    const [key, value] = Object.entries(idObj)[0];
+                    setCartItems(s => s.filter(item => item[key] !== value));
+                }}
+                onClickAway={() => setAnchorEl(null)}
+                anchorEl={anchorEl}
+                onClear={() => setCartItems([])}
+                placement="top"
+            />
 
             <CreateNewAssemblyDialog
                 creatorOpen={creatorOpen}
@@ -489,7 +477,7 @@ const CreateAssembly = () => {
                 }}
                 text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
                 title="Asset Update Warning"
-                items={haveParents}
+                items={haveParents.map(item => item.serial)}
             />
 
             <WarningDialog
@@ -525,6 +513,21 @@ const CreateAssembly = () => {
                         : null
                 }
             </Snackbar>
+
+            {/* Button for the cart */}
+            {
+                assemblyStarted ?
+                    <div className="badge" value={cartItems.length}>
+                        <Fab
+                            color="primary"
+                            onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}
+                            disableRipple>
+                            <ShoppingCartIcon style={{ fontSize: "35px" }}/>
+                        </Fab>
+                    </div>
+                    : null
+            }
+
         </div>
     );
 }

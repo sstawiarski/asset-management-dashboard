@@ -141,7 +141,7 @@ const getURL = (name, loggedInUser) => {
         case "Track":
                 return "/shipments/track"
         case "Add New":
-            return "/shipments/shipment-creator"
+            return "/shipments/create"
         case "Assembly Manager":
             return "/assets/assembly-manager"
         case "Assignments":
