@@ -46,6 +46,7 @@ const AccountDetails = () => {
 
     const [employee, setEmployee] = useState(null);
 
+    const [error, setError] = useState("");
     const [edit, setEdit] = useState(false);
 
     const [state, setState] = useState({
@@ -74,16 +75,22 @@ const AccountDetails = () => {
 
      /* Sign in text box change handler */
     const handleChange = (event) => {
+
         setState({
             ...state,
             [event.target.name]: event.target.value,
             result: null
         });
+
+        if (state.password != state.confirmPassword) {
+        	setError("Passwords do not match");
+        }
     };
 
      /* Submits updated account data */
     const handleSubmit = (event) => {
         event.preventDefault();
+
 
         let body = {};
         body.username = state.username;
@@ -153,6 +160,17 @@ const AccountDetails = () => {
                                     <Grid item xs={6} className={classes.item}>
                                         <form><TextField id="outlined-basic" label="new password" variant="outlined" name="confirmPassword" value={state.confirmPassword} onChange={handleChange} /></form>
                                     </Grid>
+                                     {/* passwords don't match */}
+                                     <Grid item xs={6} className={classes.center}>
+                                {
+                                    error ?
+                                        <>
+                                            <br />
+                                            <Typography variant="caption" style={{ color: "red" }}>Error: {error}</Typography>
+                                        </>
+                                        : null
+                                }
+                                </Grid>
 
                                 </Grid> : null
                             }
