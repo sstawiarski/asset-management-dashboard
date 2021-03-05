@@ -51,6 +51,7 @@ const AccountDetails = () => {
     const [state, setState] = useState({
         username: "",
         password: "",
+        confirmPassword: "",
         email: "",
         visible: false,
         result: null
@@ -86,7 +87,7 @@ const AccountDetails = () => {
 
         let body = {};
         body.username = state.username;
-        
+
         
     }
 
@@ -115,8 +116,9 @@ const AccountDetails = () => {
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
                                    
-                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" label={employee.username} variant="outlined"value={username}
-                                        onChange={handleChange} /></form>}
+                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" name="username" label={employee.username} variant="outlined" value={state.username}
+                                        onChange={handleChange} /></form>
+                                    }
                                 </Grid>
 
                             </Grid>
@@ -127,7 +129,7 @@ const AccountDetails = () => {
                                     <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    {edit==false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" /></form>}
+                                    {edit==false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" name ="email" value={state.email} onChange={handleChange} /></form>}
                                 </Grid>
 
                             </Grid>
@@ -139,16 +141,17 @@ const AccountDetails = () => {
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
 
-                                    {edit==false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" /></form>}
+                                    {edit==false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" name="password" value={state.password} onChange={handleChange} /></form>}
                                 </Grid>
+                            
                             </Grid>
                             {edit==true ? 
                                 <Grid container className={classes.break}>
-                                <Grid item xs={6} className={classes.item}>
-                                    <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
-                                </Grid>
+	                                <Grid item xs={6} className={classes.item}>
+	                                    <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
+	                                </Grid>
                                     <Grid item xs={6} className={classes.item}>
-                                        <form><TextField id="outlined-basic" label="new password" variant="outlined" /></form>
+                                        <form><TextField id="outlined-basic" label="new password" variant="outlined" name="confirmPassword" value={state.confirmPassword} onChange={handleChange} /></form>
                                     </Grid>
 
                                 </Grid> : null
