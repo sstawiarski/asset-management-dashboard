@@ -118,6 +118,7 @@ const NewTable = (props) => {
     const setMoreInfo = moreInfo ? props.setMoreInfo : null;
     const lookup = moreInfo ? props.lookup : null;
     const Clickable = props.clickable || null;
+    const setMapItems = props.setMapItems || null;
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -143,6 +144,14 @@ const NewTable = (props) => {
     };
 
     const handleSelectAllClick = (event) => {
+        if (event.target.getAttribute("data-indeterminate") === "true") {
+            if (setMapItems !== null) {
+                setMapItems([]);
+                setSelected([])
+            }
+            return;
+        }
+        
         if (event.target.checked) {
             const onlyGood = data.filter((n) => {
                 const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
@@ -152,19 +161,22 @@ const NewTable = (props) => {
             const test2 = selected.concat(test);
             const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
             setSelected(newSelecteds);
-            if(props.setMapItems){
+            if(setMapItems !== null){
                 //TODO: convert the item names back into objects
-                const mapItems= newSelecteds.map(item => data.find(obj => obj.serial === item));
-                props.setMapItems(mapItems);
+                const mapItems = data.filter(obj => newSelecteds.includes(obj.serial));
+                setMapItems(mapItems);
             }
             return;
         }
+        const data2 = data.map(item => item.serial);
         setSelected(s => {
-            const data2 = data.map(item => item.serial);
             return s.filter(item => {
                 return !data2.includes(item);
             })
         });
+        if (setMapItems !== null) {
+            setMapItems([]);
+        }
     };
 
     //checkbox click handler
@@ -192,10 +204,11 @@ const NewTable = (props) => {
             }
         }
         setSelected(newSelected);
-        if(props.setMapItems){
-            //TODO: convert the item names back into objects
-            const mapItems= newSelected.map(item => data.find(obj => obj.serial === item));
-            props.setMapItems(mapItems);
+        if(setMapItems) {
+            setMapItems(m => {
+                const result = [...m.filter(mapItem => newSelected.includes(mapItem[selectedFields[0]])), ...data.filter(obj => newSelected.includes(obj[selectedFields[0]]))];
+                return result;
+            });
         }
         if (moreInfo && additional) setMoreInfo(newAdditional);
     };

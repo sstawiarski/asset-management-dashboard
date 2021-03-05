@@ -203,23 +203,28 @@ const AllAssets = (props) => {
         <div>
             <Header heading="Assets" subheading="View All" />
             <div>
-                <Grid container>
+                <Grid container spacing={1}>
                     {
                         map ?
-                            <Grid item xs={8}>
-                                <SimpleMap data={selected} />
+                            <Grid item xs={12} sm={12} md={8}>
+                                <SimpleMap 
+                                data={assetMarkers} 
+                                styling={{ 
+                                    borderRadius: "4px", 
+                                    boxShadow: "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
+                                    minHeight: "50vh",
+                                    width: "98%",
+                                    }} />
                             </Grid>
                             : null
                     }
-                    <Grid item xs={map ? 4 : 12}>
+                    <Grid item xs={12} sm={12} md={map ? 4 : 12}>
                         <CustomTable
                             data={assets}
                             selectedFields={selectedFields}
                             selected={selected}
                             setSelected={setSelected}
-                            setMapItems={(items) => {
-
-                            }}
+                            setMapItems={setAssetMarkers}
                             filters={filters}
                             setFilters={setFilters}
                             count={assetCount}
@@ -239,26 +244,30 @@ const AllAssets = (props) => {
                                         <Grid container xs={!map ? 9: 12} justify='flex-end' alignItems='flex-end' >
                                             <Grid item xs={!map ? 1: 4}>
                                                 <Tooltip title={"Map View"}>
-                                                    <IconButton
-                                                        className={map ? classes.disabled : classes.enabled}
-                                                        aria-label={"Map-View"}
-                                                        onClick={() => toggleMap(true)}
-                                                        disabled={map}
-                                                    >
-                                                        <MapIcon />
-                                                    </IconButton>
+                                                    <span>
+                                                        <IconButton
+                                                            className={map ? classes.disabled : classes.enabled}
+                                                            aria-label={"Map-View"}
+                                                            onClick={() => toggleMap(true)}
+                                                            disabled={map}
+                                                        >
+                                                            <MapIcon />
+                                                        </IconButton>
+                                                    </span>
                                                 </Tooltip>
                                             </Grid>
                                             <Grid item xs={!map ? 2 : 6}>
                                                 <Tooltip title={"List View"} >
-                                                    <IconButton
-                                                        className={!map ? classes.disabled : classes.enabled}
-                                                        aria-label={"List-View"}
-                                                        onClick={() => toggleMap(false)}
-                                                        disabled={!map}
-                                                    >
-                                                        <ListAltIcon />
-                                                    </IconButton>
+                                                    <span>
+                                                        <IconButton
+                                                            className={!map ? classes.disabled : classes.enabled}
+                                                            aria-label={"List-View"}
+                                                            onClick={() => toggleMap(false)}
+                                                            disabled={!map}
+                                                        >
+                                                            <ListAltIcon />
+                                                        </IconButton>
+                                                    </span>
                                                 </Tooltip>
                                             </Grid>
                                         </Grid>
@@ -320,27 +329,31 @@ const AllAssets = (props) => {
                                                 {/*Map-View/List-View */}
                                                 <Grid item xs={!map ? 5 : 4}>
                                                     <Tooltip title={"Map View"}>
-                                                        <IconButton
-                                                            className={map ? classes.disabled : classes.enabled}
-                                                            aria-label={"Map-View"}
-                                                            onClick={() => toggleMap(true)}
-                                                            disabled={map}
-                                                        >
-                                                            <MapIcon />
-                                                        </IconButton>
+                                                        <span>
+                                                            <IconButton
+                                                                className={map ? classes.disabled : classes.enabled}
+                                                                aria-label={"Map-View"}
+                                                                onClick={() => toggleMap(true)}
+                                                                disabled={map}
+                                                            >
+                                                                <MapIcon />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                 </Grid>
                                                 
                                                 <Grid item xs={7}>
                                                     <Tooltip title={"List View"} >
-                                                        <IconButton
-                                                            className={!map ? classes.disabled : classes.enabled}
-                                                            aria-label={"List-View"}
-                                                            onClick={() => toggleMap(false)}
-                                                            disabled={!map}
-                                                        >
-                                                            <ListAltIcon />
-                                                        </IconButton>
+                                                        <span>
+                                                            <IconButton
+                                                                className={!map ? classes.disabled : classes.enabled}
+                                                                aria-label={"List-View"}
+                                                                onClick={() => toggleMap(false)}
+                                                                disabled={!map}
+                                                            >
+                                                                <ListAltIcon />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                 </Grid>
                                             </Grid>

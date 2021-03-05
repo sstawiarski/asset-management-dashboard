@@ -4,18 +4,19 @@ import PropTypes from 'prop-types';
 //Library Components
 import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import L from 'leaflet';
 
 //Icons
 import ShipFromIcon from './Icons/ShipFromIcon.svg'; //blue icon represents source
 import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destination
+import ErrorIcon from '@material-ui/icons/Error'; //error icon for no coordinate value
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
 import arrow from "leaflet-arrowheads"; //add arrowheads to line
-import ErrorIcon from '@material-ui/icons/Error'; //error icon for no coordinate value
-import {Grid} from '@material-ui/core';
+
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
@@ -58,7 +59,6 @@ const shipToMarkerIcon = new L.Icon({
     iconSize: [35, 30],
     iconAnchor: [18, 28],
     className: 'leaflet-marker-shipto'
-
 });
 
 /* Using SVG to make a custom marker icon for the source */
@@ -67,44 +67,32 @@ const shipFromMarkerIcon = new L.Icon({
     iconSize: [35, 30],
     iconAnchor: [18, 28],
     className: 'leaflet-marker-shipfrom'
-
 });
 
-const SimpleMap = (props) => {
+const SimpleMap = ({ start, end, data, styling }) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
     const mapRef = useRef(null);
     const featureRef = useRef(null);
     
-
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
     const [center, setCenter] = useState([51, -114]); //center of the map
     const [popupPosition, setPopupPosition] = useState(null); //the coordinates of the Marker popup
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
 
-    const [assetPopup, setAssetPopup] = useState(null); //set a pop-up for assets
-    const [assetMarkers, setAssetMarkers]=useState(props.data); //sample for marking asset locations
-
-    console.log("data from main page")
-    console.log(props.data);
-    console.log("asset markers");
-    console.log(assetMarkers);
-    if(props.data && assetMarkers!==props.data){
-        setAssetMarkers(props.data);
-    }
-
-    /* Set data from the main parent
-    if(data){
-        setAssetMarkers(data);
-    }
-    
-
     /* Wait until render to allow use of map Refs */
     useEffect(() => {
         setRefAcquired(true);
     }, [])
+
+    // TESTING printing out data
+    useEffect(() => {
+        if (data) {
+            console.log(data);
+        }
+    }, [data])
 
     /* Reset the map bounds to ensure both markers fit in the viewport */
     useEffect(() => {
@@ -129,10 +117,10 @@ const SimpleMap = (props) => {
     /* Extract the appropriate coordinates and perform line and centering calculations */
     useEffect(() => {
 
-        if (props.start && props.end) {
+        if (start && end) {
             //extract coordinates
-            const startCoords = Object.values(props.start.coordinates);
-            const endCoords = Object.values(props.end.coordinates);
+            const startCoords = Object.values(start.coordinates);
+            const endCoords = Object.values(end.coordinates);
             setCoords({
                 start: startCoords,
                 end: endCoords
@@ -148,10 +136,10 @@ const SimpleMap = (props) => {
             setCurve(curved);
         }
 
-    }, [props.start, props.end]);
+    }, [start, end]);
 
     return (
-        <Map ref={mapRef} center={center} zoom={9}>
+        <Map style={styling ? styling : null} ref={mapRef} center={center} zoom={9}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -183,7 +171,7 @@ const SimpleMap = (props) => {
 
                         {/* Render out the Location document as the popup content in a clean and somewhat dynamic way */}
                         {
-                            Object.entries(popupPosition.location === "start" ? props.start : props.end)
+                            Object.entries(popupPosition.location === "start" ? start : end)
                                 .map(([key, value]) => {
 
                                     /* Remove the document keys that are not needed by end users */
@@ -210,75 +198,6 @@ const SimpleMap = (props) => {
                     
                     : null
             }
-
-            {/*Attempting to map markers for assets with only one position */
-            
-            assetMarkers.length > 0 ? 
-            
-            /*TODO: Map the markers if they have coordinates, else, no markers. */
-            assetMarkers.map(asset=> (
-                
-                //maps the asset if has coordinates, will need to modify
-                (asset.coordinates? 
-                
-                <Marker
-                key={asset.assetName}
-                position={asset.coordinates}
-                 onclick={() => setAssetPopup(asset)}/>
-            :
-            null
-            /* Spawns a pop-up showing which item does not have coordinates
-            <Popup
-            position={center}>
-                <Grid container direction='row' justify='space-evenly' xs={12} alignItems='center'>
-                    <Grid item xs={4}>
-                        <ErrorIcon style={{color: 'red', fontSize: '40'}}/>
-                    </Grid>
-                    <Grid container direction='column' justify='flex-start' xs={8} alignItems='center' spacing={1}>
-                        <Grid item>
-                            <b>Item: {asset.assetName}</b>
-                        </Grid>
-                        <Grid item>
-                            Error: No Location
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Popup>
-            */
-            )))
-            :
-            null    
-            }
-
-            {/*assetMarkers.length > 0 ?
-            <Popup
-            //position={assetMarkers[assetmarkers.length-1]}
-            position={[50,-114]}
-            >
-             <h2>{assetMarkers[assetMarkers.length-1].assetName}</h2>
-                <p>Location: {assetMarkers[assetMarkers.length-1].deployedLocation}</p>
-                <p>Owner: {assetMarkers[assetMarkers.length-1].owner}</p>
-                <p></p>   
-            </Popup>
-            :
-            null
-            */}
-
-            {assetPopup ? 
-            <Popup 
-            position={assetPopup.coordinates}
-            onClose={()=>{setAssetPopup(null)}}>
-                <div>
-                    <h2>{assetPopup.assetName}</h2>
-                    <p>Location: {assetPopup.deployedLocation}</p>
-                    <p>Owner: {assetPopup.owner}</p>
-                    <p>Serial: {assetPopup.serial}</p>
-                </div>
-            </Popup>
-            :
-            null
-            }
-
         </Map>
     );
 };
