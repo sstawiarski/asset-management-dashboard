@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 
 //Internal Components
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
+import SimpleMap from '../components/SimpleMap';
 
 //Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
@@ -27,19 +29,28 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import Container from '@material-ui/core/Container';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search'
 import MapIcon from '@material-ui/icons/Map';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import {Grid} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", 'deployedLocation', "assetType", "owner", "checkedOut", "groupTag"];
 
+const useStyles = makeStyles(theme => ({
+    enabled: {
+        color: "black"
+    },
+    disabled: {
+        color: "rgba(0,0,0, 0.26) !important"
+    }
+}))
+
 const AllAssets = (props) => {
+    const classes = useStyles();
 
     const [assets, setAssets] = useState([]);
     const [childAssets, setChildAssets] = useState([]);
@@ -55,16 +66,9 @@ const AllAssets = (props) => {
     const [nextDialog, setNext] = useState("");
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
-    const [listButton, setListButton] = useState(props.listButtonColor);
-    const [mapButton, setMapButton] = useState(props.mapButtonColor);
- 
+    const [map, toggleMap] = useState(false);
+    const [assetMarkers, setAssetMarkers] = useState([]);
 
-    //set the initial values when toggling betwween map and list view
-    if(props.initialSelected.length > 0 && 
-        selected!==props.initialSelected){
-        setSelected(props.initialSelected);
-        props.setInitialSelected([]);
-    }
 
 
     /* Handles searchbar when enter key is pressed */
@@ -83,20 +87,6 @@ const AllAssets = (props) => {
     /* Close menu */
     const handleClose = () => {
         setAnchor(null);
-    }
-
-    /*Handles the map selection */
-    const handleMapSelect=(event)=>{
-        props.handleMapSelect(selected);
-        setListButton('grey')
-        setMapButton('black')
-    }
-
-    /*Handles list selection */
-    const handleListSelect=(event)=>{
-        props.handleListSelect(selected);
-        setListButton('black')
-        setMapButton('grey')
     }
 
     /* Check selected items for existing parent */
@@ -210,96 +200,166 @@ const AllAssets = (props) => {
     }, [activeFilters])
 
     return (
-        <div className="AssetTableDiv">
-        <Header heading="Assets" subheading="View All" />
         <div>
-            <CustomTable
-                data={assets}
-                selectedFields={selectedFields}
-                selected={selected}
-                setSelected={setSelected}
-                setMapItems={(items)=>{
-                    if(props.setSelected){
-                    props.setSelected(items)}
-                }}
-                filters={filters}
-                setFilters={setFilters}
-                count={assetCount}
-                variant="asset"
-                checkboxes={true}
-                inactive="assembled">
-
-                <TableToolbar
-                    title="All Assets"
-                    selected={selected}>
-
-
-                    {/* Table toolbar icons and menus */}
-                    {/* Render main action if no items selected, edit actions if some are selected */}
-                    {selected.length > 0 ?
-                        <>
-                        <Grid container xs={2} justify='center' alignItems='left'>
-                            <Grid item xs={3}>
-                                <Tooltip title={"Map-View"}>
-                                    <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{color:mapButton}}
-                                        //add onClick
-                                        onClick={handleMapSelect}
-                                    >
-                                    <MapIcon/>
-                                    </IconButton>
-                                </Tooltip>
+            <Header heading="Assets" subheading="View All" />
+            <div>
+                <Grid container>
+                    {
+                        map ?
+                            <Grid item xs={8}>
+                                <SimpleMap data={selected} />
                             </Grid>
-                            <Grid item xs={1}>
-                            {/*    <Divider orientation="vertical" />*/}
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Tooltip title={"List-View"} >
-                                    <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:listButton}}
-                                    //add onClick
-                                    onClick={handleListSelect}
-                                    >
-                                        <ListAltIcon/>
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-                        </Grid>
+                            : null
+                    }
+                    <Grid item xs={map ? 4 : 12}>
+                        <CustomTable
+                            data={assets}
+                            selectedFields={selectedFields}
+                            selected={selected}
+                            setSelected={setSelected}
+                            setMapItems={(items) => {
 
-                            {/* Edit button */}
-                            <IconButton aria-label={"edit"} onClick={handleClick}>
-                                <EditIcon />
-                            </IconButton>
+                            }}
+                            filters={filters}
+                            setFilters={setFilters}
+                            count={assetCount}
+                            variant="asset"
+                            checkboxes={true}
+                            inactive="assembled">
 
-                            {/* Floating menu for bulk edit actions */}
-                            <Menu
-                                id="edit-menu"
-                                anchorEl={anchor}
-                                keepMounted
-                                open={Boolean(anchor)}
-                                onClose={handleClose}>
-                                <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
-                                <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
-                                <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
-                                <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
-                            </Menu>
-                        </>
-                        :
-                        <>
-                            {/* Creator button */}
-                            <Grid container direction='row' justify="left" xs={2}>
-                            <Grid item>
-                            <Tooltip title={"Create"}>
-                                <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
-                                    <AddIcon />
-                                </IconButton>
-                            </Tooltip>
-                            </Grid>
-                            </Grid>
+                            <TableToolbar
+                                title="All Assets"
+                                selected={selected}>
 
 
-                            {/* Table searchbar */}
-                            <Grid container  xs={12} className='searchBar' justify='flex-end'>
-                                <Grid item xs={8} >
+                                {/* Table toolbar icons and menus */}
+                                {/* Render main action if no items selected, edit actions if some are selected */}
+                                {selected.length > 0 ?
+                                    <>
+                                        <Grid container xs={12} justify='flex-end' alignItems='left'>
+                                            <Grid item xs={3}>
+                                                <Tooltip title={"Map View"}>
+                                                    <IconButton
+                                                        className={map ? classes.disabled : classes.enabled}
+                                                        aria-label={"Map-View"}
+                                                        onClick={() => toggleMap(true)}
+                                                        disabled={map}
+                                                    >
+                                                        <MapIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Grid>
+                                            <Grid item xs={3}>
+                                                <Tooltip title={"List View"} >
+                                                    <IconButton
+                                                        className={!map ? classes.disabled : classes.enabled}
+                                                        aria-label={"List-View"}
+                                                        onClick={() => toggleMap(false)}
+                                                        disabled={!map}
+                                                    >
+                                                        <ListAltIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Grid>
+                                        </Grid>
+
+                                        {/* Edit button */}
+                                        <IconButton aria-label={"edit"} onClick={handleClick}>
+                                            <EditIcon />
+                                        </IconButton>
+
+                                        {/* Floating menu for bulk edit actions */}
+                                        <Menu
+                                            id="edit-menu"
+                                            anchorEl={anchor}
+                                            keepMounted
+                                            open={Boolean(anchor)}
+                                            onClose={handleClose}>
+                                            <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
+                                            <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
+                                            <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
+                                            <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
+                                            <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
+                                        </Menu>
+                                    </>
+                                    :
+                                    <>
+                                        {/* Creator button */}
+                                        <Grid container direction='row' justify="left" xs={2}>
+                                            <Grid item>
+                                                <Tooltip title={"Create"}>
+                                                    <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid container xs={12} className='searchBar' justify='flex-end'>
+                                            {/* Table searchbar */}
+                                            {
+                                                !map ?
+                                                    <Grid item xs={8} >
+                                                        <TextField id="searchBox"
+                                                            variant="outlined"
+                                                            size="small"
+                                                            InputProps={{
+                                                                startAdornment: (
+                                                                    <InputAdornment position="start">
+                                                                        <SearchIcon />
+                                                                    </InputAdornment>
+                                                                )
+                                                            }}
+                                                            onKeyDown={handleKeyDown}
+                                                        />
+                                                    </Grid>
+                                                    : null
+                                            }
+
+                                            <Grid container xs={!map ? 3 : 12}>
+                                                {/*Map-View/List-View */}
+                                                <Grid item xs={5}>
+                                                    <Tooltip title={"Map View"}>
+                                                        <IconButton
+                                                            className={map ? classes.disabled : classes.enabled}
+                                                            aria-label={"Map-View"}
+                                                            onClick={() => toggleMap(true)}
+                                                            disabled={map}
+                                                        >
+                                                            <MapIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Grid>
+                                                <Grid item xs={1}>
+                                                    {/*    <Divider orientation="vertical" />*/}
+                                                </Grid>
+                                                <Grid item xs={1}>
+                                                    <Tooltip title={"List View"} >
+                                                        <IconButton
+                                                            className={!map ? classes.disabled : classes.enabled}
+                                                            aria-label={"List-View"}
+                                                            onClick={() => toggleMap(false)}
+                                                            disabled={!map}
+                                                        >
+                                                            <ListAltIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+
+                                        {/* Filter button */}
+                                        <Tooltip title={"Filter"}>
+                                            <IconButton aria-label={"filter"} onClick={() => setDialogs({ filter: true })}>
+                                                <FilterListIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </>
+                                }
+                            </TableToolbar>
+
+                            {
+                                map ?
                                     <TextField id="searchBox"
                                         variant="outlined"
                                         size="small"
@@ -312,128 +372,96 @@ const AllAssets = (props) => {
                                         }}
                                         onKeyDown={handleKeyDown}
                                     />
-                                </Grid>
-                                <Grid container xs={3}>
-                                    {/*Map-View/List-View */}
-                                    <Grid item xs={5}>
-                                        <Tooltip title={"Map-View"}>
-                                            <IconButton className="AssetMapButton"  aria-label={"Map-View"} style={{color:mapButton}}
-                                                //add onClick
-                                                onClick={handleMapSelect}
-                                            >
-                                                <MapIcon/>
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Grid>
-                                <Grid item xs={1}>
-                                {/*    <Divider orientation="vertical" />*/}
-                                </Grid>
-                                <Grid item xs={1}>
-                                    <Tooltip title={"List-View"} >
-                                        <IconButton className="AssetListButton" aria-label={"List-View"} style={{color:listButton}}
-                                            //add onClick
-                                            onClick={handleListSelect}
-                                        >
-                                            <ListAltIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                             </Grid>
-                            </Grid>
 
-                            {/* Filter button */}
-                            <Tooltip title={"Filter"}>
-                                <IconButton aria-label={"filter"} onClick={() => setDialogs({ filter: true })}>
-                                    <FilterListIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </>
-                    }
-                </TableToolbar>
+                                    : null
+                            }
 
-                {/* Chips representing all the active filters */}
-                <ChipBar
-                    activeFilters={activeFilters}
-                    setActiveFilters={setActiveFilters}
-                    setFilters={setFilters} />
+                            {/* Chips representing all the active filters */}
+                            <ChipBar
+                                activeFilters={activeFilters}
+                                setActiveFilters={setActiveFilters}
+                                setFilters={setFilters} />
 
-            </CustomTable>
+                        </CustomTable>
+                    </Grid>
+                </Grid>
 
+            </div>
+
+            {/* Put all the toolbar dialogs here */}
+            <AssetFilter
+                open={dialogs["filter"]}
+                setOpen={(isOpen) => setDialogs({ filter: isOpen })}
+                setActiveFilters={setActiveFilters}
+                override={override} />
+
+            <RetireAssetDialog
+                open={dialogs["retire"]}
+                setOpen={(isOpen) => setDialogs({ retire: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeGroupTagDialog
+                open={dialogs["groupTag"]}
+                setOpen={(isOpen) => setDialogs({ groupTag: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+            <ChangeAssignmentDialog
+                open={dialogs["assignee"]}
+                setOpen={(isOpen) => setDialogs({ assignee: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeOwnershipDialog
+                open={dialogs["owner"]}
+                setOpen={(isOpen) => setDialogs({ owner: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <ChangeAssignmentTypeDialog
+                open={dialogs["assignmentType"]}
+                setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })}
+                selected={selected}
+                onSuccess={onSuccess}
+                override={override} />
+
+            <CreateAssetDialog
+                open={dialogs["create"]}
+                setOpen={(isOpen) => setDialogs({ create: isOpen })}
+                onSuccess={onSuccess}
+                onSemiSuccess={onSemiSuccess} />
+
+            <InvalidSerialsDialog
+                open={dialogs["invalid"]}
+                setOpen={(isOpen) => setDialogs({ invalid: isOpen })}
+                items={invalidSerial} />
+
+            {/* Warning when asset is edited separately from its assembly */}
+            <AssetEditWarning
+                open={dialogs["assetEditWarning"]}
+                setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
+                items={childAssets}
+                handleOverride={() => {
+                    setOverride(true);
+                    setDialogs({ assetEditWarning: false })
+                    setDialogs({ [nextDialog]: true })
+                    setNext("")
+                    setChildAssets([])
+                }}
+            />
+
+            {/* Displays success or failure message */}
+            <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
+                <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
+                    {success.message}
+                </Alert>
+            </Snackbar>
         </div>
-
-        {/* Put all the toolbar dialogs here */}
-        <AssetFilter
-            open={dialogs["filter"]}
-            setOpen={(isOpen) => setDialogs({ filter: isOpen })}
-            setActiveFilters={setActiveFilters}
-            override={override} />
-
-        <RetireAssetDialog
-            open={dialogs["retire"]}
-            setOpen={(isOpen) => setDialogs({ retire: isOpen })}
-            selected={selected}
-            onSuccess={onSuccess}
-            override={override} />
-
-        <ChangeGroupTagDialog
-            open={dialogs["groupTag"]}
-            setOpen={(isOpen) => setDialogs({ groupTag: isOpen })}
-            selected={selected}
-            onSuccess={onSuccess}
-            override={override} />
-        <ChangeAssignmentDialog
-            open={dialogs["assignee"]}
-            setOpen={(isOpen) => setDialogs({ assignee: isOpen })}
-            selected={selected}
-            onSuccess={onSuccess}
-            override={override} />
-
-        <ChangeOwnershipDialog
-            open={dialogs["owner"]}
-            setOpen={(isOpen) => setDialogs({ owner: isOpen })}
-            selected={selected}
-            onSuccess={onSuccess}
-            override={override} />
-
-        <ChangeAssignmentTypeDialog
-            open={dialogs["assignmentType"]}
-            setOpen={(isOpen) => setDialogs({ assignmentType: isOpen })}
-            selected={selected}
-            onSuccess={onSuccess}
-            override={override} />
-
-        <CreateAssetDialog
-            open={dialogs["create"]}
-            setOpen={(isOpen) => setDialogs({ create: isOpen })}
-            onSuccess={onSuccess}
-            onSemiSuccess={onSemiSuccess} />
-
-        <InvalidSerialsDialog
-            open={dialogs["invalid"]}
-            setOpen={(isOpen) => setDialogs({ invalid: isOpen })}
-            items={invalidSerial} />
-
-        {/* Warning when asset is edited separately from its assembly */}
-        <AssetEditWarning
-            open={dialogs["assetEditWarning"]}
-            setOpen={(isOpen) => setDialogs({ assetEditWarning: isOpen })}
-            items={childAssets}
-            handleOverride={() => {
-                setOverride(true);
-                setDialogs({ assetEditWarning: false })
-                setDialogs({ [nextDialog]: true })
-                setNext("")
-                setChildAssets([])
-            }}
-        />
-
-        {/* Displays success or failure message */}
-        <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
-            <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
-                {success.message}
-            </Alert>
-        </Snackbar>
-    </div>
-    )}
+    )
+}
 
 export default AllAssets;
