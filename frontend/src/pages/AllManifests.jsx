@@ -47,57 +47,59 @@ const AllShipments = (props) => {
         if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
         }
+
+        console.log(filters);
     }
 
-    const handleClick = (event) => {
-        setAnchor(event.currentTarget);
-    }
+    // const handleClick = (event) => {
+    //     setAnchor(event.currentTarget);
+    // }
 
     const handleClose = () => {
         setAnchor(null);
     }
 
-    const handleMenuClick = (event) => {
-        setAnchor(null);
-        const children = [];
-        setNext(event.target.getAttribute("name"));
+    // const handleMenuClick = (event) => {
+    //     setAnchor(null);
+    //     const children = [];
+    //     setNext(event.target.getAttribute("name"));
 
-        Promise.all(
-            selected.map(key =>
-                fetch(`http://localhost:4000/shipments/${key}?project=parentId`)
-                    .then(resp => {
-                        if (resp.status < 300) {
-                            return resp.json()
-                        }
-                        return null;
-                    })
-            )
-        ).then(jsons => {
-            jsons.forEach((item, idx) => {
-                if (item) {
-                    if (!item.parentId) return;
-                    if (!selected.includes(item.parentId)) {
-                        children.push(selected[idx]);
-                    }
-                }
-                return;
-            })
+    //     Promise.all(
+    //         selected.map(key =>
+    //             fetch(`http://localhost:4000/shipments`)
+    //                 .then(resp => {
+    //                     if (resp.status < 300) {
+    //                         return resp.json()
+    //                     }
+    //                     return null;
+    //                 })
+    //         )
+    //     ).then(jsons => {
+    //         jsons.forEach((item, idx) => {
+    //             if (item) {
+    //                 if (!item.parentId) return;
+    //                 if (!selected.includes(item.parentId)) {
+    //                     children.push(selected[idx]);
+    //                 }
+    //             }
+    //             return;
+    //         })
            
-        });
+    //     });
 
-    }
+    // }
 
     
 
-    const onSuccess = (succeeded, message) => {
-        if (succeeded) {
-            setSelected([]);
-            setSuccess({ succeeded: succeeded, message: message });
-            setActiveFilters({ ...activeFilters });
-        } else {
-            setSuccess({ succeeded: succeeded, message: message });
-        }
-    };
+    // const onSuccess = (succeeded, message) => {
+    //     if (succeeded) {
+    //         setSelected([]);
+    //         setSuccess({ succeeded: succeeded, message: message });
+    //         setActiveFilters({ ...activeFilters });
+    //     } else {
+    //         setSuccess({ succeeded: succeeded, message: message });
+    //     }
+    // };
 
     
 
@@ -107,14 +109,14 @@ const AllShipments = (props) => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
             let url = "http://localhost:4000/shipments";
-            const keys = Object.keys(filters);
-            keys.forEach((key, idx) => {
-                if (idx === 0) {
-                    url = `${url}?${key}=${filters[key]}`;
-                } else {
-                    url = `${url}&${key}=${filters[key]}`;
-                }
-            });
+            // const keys = Object.keys(filters);
+            // keys.forEach((key, idx) => {
+            //     if (idx === 0) {
+            //         url = `${url}?${key}=${filters[key]}`;
+            //     } else {
+            //         url = `${url}&${key}=${filters[key]}`;
+            //     }
+            // });
 
             return url;
         };
@@ -156,7 +158,7 @@ const AllShipments = (props) => {
                     filters={filters}
                     setFilters={setFilters}
                     count={shipmentCount}
-                    variant="shipment"
+                    variant={"shipment", "asset"}
                     >
 
                     <TableToolbar
@@ -169,18 +171,18 @@ const AllShipments = (props) => {
                         {selected.length > 0 ?
                             <>
                                 
-                                {/* <Menu
+                                <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
+                                    {/* <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
-                                </Menu> */}
+                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> */}
+                                </Menu>
                             </>
                             :
                             <>
