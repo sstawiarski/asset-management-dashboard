@@ -183,7 +183,8 @@ const SimpleMap = ({ start, end, data, styling }) => {
                                             .map(([key, value]) => {
 
                                                 /* Remove the document keys that are not needed by end users */
-                                                const exclude = ["_id", "__v", "coordinates"];
+                                                const exclude = ["_id", "__v", "coordinates", "missingItems","parentId","retired","assignmentType","checkedOut",
+                                                                "groupTag","contractNumber","assetType"];
                                                 if (exclude.includes(key)) return null;
 
                                                 /* Break up key camelCase and capitalize the first letter for a nice label */
