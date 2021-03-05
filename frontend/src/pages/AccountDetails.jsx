@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AccountDetails = () => {
+const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) => {
     const classes = useStyles();
     const [username, setUsername] = useState("");
     const [local,] = useLocalStorage('user', {});
@@ -75,25 +75,81 @@ const AccountDetails = () => {
 
      /* Sign in text box change handler */
     const handleChange = (event) => {
-
+        setError("");
         setState({
             ...state,
             [event.target.name]: event.target.value,
             result: null
         });
 
-        if (state.password != state.confirmPassword) {
+        if ((state.password!==state.confirmPassword)) {
         	setError("Passwords do not match");
+        } else {
+            setError("");
         }
     };
+
+    const handleCancel = (event) => {
+        setEdit(false);
+        setError("");
+        setState({
+        username: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        visible: false,
+     });
+    }
 
      /* Submits updated account data */
     const handleSubmit = (event) => {
         event.preventDefault();
 
 
-        let body = {};
-        body.username = state.username;
+        let data = {};
+        if (state.username.length > 0) {
+        	data.username = state.username;
+        }
+
+        if (state.email.length > 0) {
+        	data.email = state.email;
+        }
+
+        if (state.password > 0) {
+        	data.password = state.password;
+        }
+
+        try {
+            const actualItems = submission.employee.map(entry => entry[0]);
+            
+            fetch("http://localhost:4000/employees/${employee.employeeId}", {
+                method: 'PATCH',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+                .then(json => {
+                    if (json) {
+                        onSuccess();
+                    } else {
+                        onFailure();
+                    }
+                    
+                })
+
+        } catch (e) {
+            console.log(e)
+        }
+        
 
         
     }
@@ -171,7 +227,7 @@ const AccountDetails = () => {
                                         : null
                                 }
                                 </Grid>
-
+                                
                                 </Grid> : null
                             }
                         </>
@@ -179,7 +235,7 @@ const AccountDetails = () => {
                 }
             </Paper>
 
-            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={() => setEdit(false)}>Cancel</Button> <Button variant="contained" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
+            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={handleCancel}>Cancel</Button> <Button variant="contained" type="submit" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
         </div>
 
     )
