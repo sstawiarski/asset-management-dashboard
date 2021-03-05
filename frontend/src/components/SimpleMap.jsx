@@ -14,6 +14,8 @@ import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destina
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
 import arrow from "leaflet-arrowheads"; //add arrowheads to line
+import ErrorIcon from '@material-ui/icons/Error'; //error icon for no coordinate value
+import {Grid} from '@material-ui/core';
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /**
@@ -224,7 +226,26 @@ const SimpleMap = (props) => {
                 position={asset.coordinates}
                  onclick={() => setAssetPopup(asset)}/>
             :
-            null)))
+            null
+            /* Spawns a pop-up showing which item does not have coordinates
+            <Popup
+            position={center}>
+                <Grid container direction='row' justify='space-evenly' xs={12} alignItems='center'>
+                    <Grid item xs={4}>
+                        <ErrorIcon style={{color: 'red', fontSize: '40'}}/>
+                    </Grid>
+                    <Grid container direction='column' justify='flex-start' xs={8} alignItems='center' spacing={1}>
+                        <Grid item>
+                            <b>Item: {asset.assetName}</b>
+                        </Grid>
+                        <Grid item>
+                            Error: No Location
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Popup>
+            */
+            )))
             :
             null    
             }
@@ -251,7 +272,7 @@ const SimpleMap = (props) => {
                     <h2>{assetPopup.assetName}</h2>
                     <p>Location: {assetPopup.deployedLocation}</p>
                     <p>Owner: {assetPopup.owner}</p>
-                    <p></p>
+                    <p>Serial: {assetPopup.serial}</p>
                 </div>
             </Popup>
             :
