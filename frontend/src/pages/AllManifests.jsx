@@ -36,19 +36,16 @@ const AllShipments = (props) => {
     const [shipmentCount, setShipmentCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
-    const [nextDialog, setNext] = useState("");
-    const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
-    //sample data
-    const sampleShipments = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
-
+   
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setFilters(s => ({ ...s, search: e.target.value }))
+            setFilters(s => ({ ...s, key: e.target.value }))
+            console.log(filters);
+
         }
 
-        console.log(filters);
     }
 
     // const handleClick = (event) => {
@@ -108,20 +105,21 @@ const AllShipments = (props) => {
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments";
-            // const keys = Object.keys(filters);
-            // keys.forEach((key, idx) => {
-            //     if (idx === 0) {
-            //         url = `${url}?${key}=${filters[key]}`;
-            //     } else {
-            //         url = `${url}&${key}=${filters[key]}`;
-            //     }
-            // });
+            let url = "http://localhost:4000/shipments/";
+            const keys = Object.keys(filters);
+            keys.forEach((key, idx) => {
+                if (idx === 0) {
+                    url = `${url}?${key}=${filters[key]}`;
+                } else {
+                    url = `${url}&${key}=${filters[key]}`;
+                }
+            });
 
             return url;
         };
 
         const urlToFetch = generateURL(filters);
+        
         fetch(urlToFetch)
             .then(response => {
                 if (response.status < 300) {
@@ -158,7 +156,7 @@ const AllShipments = (props) => {
                     filters={filters}
                     setFilters={setFilters}
                     count={shipmentCount}
-                    variant={"shipment", "asset"}
+                    variant="shipment"
                     >
 
                     <TableToolbar
@@ -224,8 +222,12 @@ const AllShipments = (props) => {
                 </CustomTable>
 
             </div>
-           { /*put shipment filter here*/}
-           <ShipmentFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} setActiveFilters={setActiveFilters} />
+            { /*put shipment filter here*/}
+            <ShipmentFilter 
+                open={dialogs["filter"]} 
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} 
+                setActiveFilters={setActiveFilters} 
+            />
            
             
             {/* Displays success or failure message */}
