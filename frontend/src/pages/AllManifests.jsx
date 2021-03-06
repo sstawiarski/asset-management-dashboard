@@ -41,7 +41,7 @@ const AllShipments = (props) => {
    
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setFilters(s => ({ ...s, key: e.target.value }))
+            setFilters(s => ({ ...s, search: e.target.value }))
             console.log(filters);
 
         }
@@ -105,7 +105,7 @@ const AllShipments = (props) => {
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments/";
+            let url = "http://localhost:4000/shipments";
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
                 if (idx === 0) {
