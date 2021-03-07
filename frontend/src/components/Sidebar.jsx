@@ -444,7 +444,7 @@ const Sidebar = ({ location }) => {
                                                                             <ListItemIcon
                                                                                 className={
                                                                                     isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
-                                                                                        ? classes.highlighted
+                                                                                        ? classes.moduleText
                                                                                         : classes.nonHighlighted}>
 
                                                                                 {
@@ -456,12 +456,12 @@ const Sidebar = ({ location }) => {
                                                                             <ListItemText
                                                                                 className={
                                                                                     isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
-                                                                                        ? classes.highlighted
+                                                                                        ? classes.moduleText
                                                                                         : classes.nonHighlighted
                                                                                 }
                                                                                 primary={item}
                                                                                 primaryTypographyProps={{ variant: "body2" }}
-                                                                                style={{ color: "#636363" }} />
+                                                                                />
 
                                                                         </ListItem>
                                                                     );
