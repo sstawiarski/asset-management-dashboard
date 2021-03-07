@@ -45,7 +45,7 @@ router.get('/:employeeId', async (req, res) => {
 });
 
 
-router.patch('/:employeeId',(req, res)=>{
+router.patch('/:employeeId', async (req, res)=>{
     var employeeId = req.params.employeeId;
     const employee = await Employee.findOne({ employeeId: employeeId });
     var body = _.pick(req.body, ['username', 'email', 'password']);
