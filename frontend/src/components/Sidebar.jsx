@@ -178,7 +178,7 @@ const isHighlighted = (location, link, open) => {
             return true;
         } else if (text === "/shipments/track" && link === "Track" && open) {
             return true;
-        } else if (text === "/shipments/create" && link === "Create" && open) {
+        } else if (text === "/shipments/create" && link === "Add New" && open) {
             return true;
         } else {
             return false;

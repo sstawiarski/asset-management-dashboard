@@ -185,7 +185,7 @@ const AllShipments = (props) => {
                             :
                             <>
                                 
-                                <Link to="/shipments/add-new" >
+                                <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>

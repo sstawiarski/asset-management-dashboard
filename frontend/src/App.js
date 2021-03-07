@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Switch, Route, Redirect } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { makeStyles } from '@material-ui/core/styles';
-import { Switch, Route, Redirect } from 'react-router-dom';
+
 import './App.css';
 import logo from "./logo.svg";
+
+import Sidebar from './components/Sidebar';
+
 import AssetDetails from './pages/AssetDetails';
-import CreateAssembly from './pages/CreateAssembly';
+import AssemblyManager from './pages/AssemblyManager';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
 import AllManifests from './pages/AllManifests';
 import SearchDetails from './pages/SearchDetails';
-import TestPage from './pages/TestPage';
 import LoginPage from './pages/Login';
-import Sidebar from './components/Sidebar';
+
 import AccountDetails from'./pages/AccountDetails';
 import ShipmentDetails from './pages/ShipmentDetails';
 import ShipmentCreator from './pages/ShipmentCreator';
+
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
-import MapPage from './pages/MapPage';
-import AllAssetsWithMap from './pages/AllAssetsWithMap';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,13 +85,13 @@ function App() {
                 <img src={logo} className="App-logo" title="Go to Dashboard" alt="logo" onClick={() => history.push('/')} />
                 <Switch>
                   <Route path="/" exact component={Dashboard} />
-                  <Route exact path="/test" component={TestPage} />
+                  <Route exact path="/test" component={null} />
                   <Route path="/search/:query" component={SearchDetails} />
                   <Route path="/shipments/view-all" component={AllManifests} />
-                  <Route path="/shipments/track" component={MapPage} />
+                  <Route path="/shipments/track" component={null} />
                   <Route exact path="/shipments/create" component={ShipmentCreator} />
                   <Route path="/shipments/:key" component={ShipmentDetails} />
-                  <Route exact path="/assets/assembly-manager" component={CreateAssembly} />
+                  <Route exact path="/assets/assembly-manager" component={AssemblyManager} />
                   <Route exact path="/assets/view-all" component={AllAssets} />
                   <Route path="/assets/:serial" component={AssetDetails} />
                   <Route exact path="/account" component={AccountDetails} />

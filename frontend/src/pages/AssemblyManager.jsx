@@ -95,7 +95,7 @@ const useStyles = makeStyles((theme) => ({
 //fields to select for the particular type of document going into the table
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 
-const CreateAssembly = () => {
+const AssemblyManager = () => {
     const classes = useStyles();
     const history = useHistory();
 
@@ -532,4 +532,4 @@ const CreateAssembly = () => {
     );
 }
 
-export default CreateAssembly;
+export default AssemblyManager;

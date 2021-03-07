@@ -143,9 +143,9 @@ const ShipmentCreator = () => {
                 let index = 0;
 
                 Object.keys(filters).forEach((key, idx) => {
-                        let concatenator = index === 0 ? "?" : "&";
-                        newURL += `${concatenator}${key}=${filters[key]}`;
-                        index++;
+                    let concatenator = index === 0 ? "?" : "&";
+                    newURL += `${concatenator}${key}=${filters[key]}`;
+                    index++;
                 });
 
                 return newURL;
@@ -491,24 +491,24 @@ const ShipmentCreator = () => {
 
             {
                 shipmentStarted ?
-                <>
-                    <Fab
-                        className={classes.unserializedFab}
-                        color="secondary"
-                        aria-label="add unserialized component"
-                        variant="extended"
-                        onClick={() => setUnserializedOpen(true)}>
+                    <>
+                        <Fab
+                            className={classes.unserializedFab}
+                            color="secondary"
+                            aria-label="add unserialized component"
+                            variant="extended"
+                            onClick={() => setUnserializedOpen(true)}>
 
-                        <AddIcon className={classes.unserializedAddIcon} />
+                            <AddIcon className={classes.unserializedAddIcon} />
                         Add Unserialized Item
                     </Fab>
-                    <div className="badge" value={cartItems.length}>
-                    <Fab
-                    color="primary"
-                    onClick={(event) => setAnchorEl(event.target)}>
-                        <ShoppingCartIcon />
-                    </Fab>
-                    </div>
+                        <div className="badge" value={cartItems.length}>
+                            <Fab
+                                color="primary"
+                                onClick={(event) => setAnchorEl(event.target)}>
+                                <ShoppingCartIcon />
+                            </Fab>
+                        </div>
                     </>
                     : null
             }
