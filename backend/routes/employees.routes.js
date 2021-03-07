@@ -44,4 +44,29 @@ router.get('/:employeeId', async (req, res) => {
     }
 });
 
+
+router.patch('/:employeeId', async (req, res)=>{
+    var employeeId = req.params.employeeId;
+    const employee = await Employee.findOne({ employeeId: employeeId });
+    var body = _.pick(req.body, ['username', 'email', 'password']);
+  
+    if(!ObjectID.isValid(employeeId)){
+      res.status(404).send();
+    }
+  
+    employee.findByIdAndUpdate(employeeId, {$set: body}, {new: true}).then(
+      (employee)=>{
+        if(!employee){
+          res.status(404).send();
+        }
+        res.send(employee);
+      },
+      (error) =>{
+        res.send(error);
+      }
+    ).catch((e)=>{
+      res.status(404).send();
+    });
+  });
+
 module.exports = router;
