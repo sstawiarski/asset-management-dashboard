@@ -20,6 +20,7 @@ import ShipmentDetails from './pages/ShipmentDetails';
 import ShipmentCreator from './pages/ShipmentCreator';
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 import MapPage from './pages/MapPage';
+import AllAssetsWithMap from './pages/AllAssetsWithMap';
 
 const useStyles = makeStyles((theme) => ({
   root: {

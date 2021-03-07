@@ -14,25 +14,10 @@ import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destina
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
 import arrow from "leaflet-arrowheads"; //add arrowheads to line
+
+//Helper Tools
+import { findCoordinateAverage } from '../utils/mapping.utils';
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
-
-/**
- * Finds the center (average) of 2 coordinates
- * 
- * @param {array} start array with the starting point latitude at the first index and longitude at the second
- * @param {array} end array with the ending point latitude at the first index and longitude at the second
- */
-const centerPoints = (start, end) => {
-    //if the arrays are undefined, default to [0, 0]
-    if (!start || !end) {
-        return [0, 0];
-    }
-
-    const newLat = (start[0] + end[0]) / 2;
-    const newLon = (start[1] + end[1]) / 2;
-
-    return [newLat, newLon];
-};
 
 /* Styles */
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +41,6 @@ const shipToMarkerIcon = new L.Icon({
     iconSize: [35, 30],
     iconAnchor: [18, 28],
     className: 'leaflet-marker-shipto'
-
 });
 
 /* Using SVG to make a custom marker icon for the source */
@@ -65,10 +49,9 @@ const shipFromMarkerIcon = new L.Icon({
     iconSize: [35, 30],
     iconAnchor: [18, 28],
     className: 'leaflet-marker-shipfrom'
-
 });
 
-const SimpleMap = ({ start, end }) => {
+const SimpleMap = ({ start, end, data, styling }) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
@@ -76,7 +59,7 @@ const SimpleMap = ({ start, end }) => {
     const featureRef = useRef(null);
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
-    const [center, setCenter] = useState([0, 0]); //center of the map
+    const [center, setCenter] = useState([51, -114]); //center of the map
     const [popupPosition, setPopupPosition] = useState(null); //the coordinates of the Marker popup
     const [curve, setCurve] = useState(null); //curve between the two points
     const [coords, setCoords] = useState(null); //the extracted start and end coordinates from the prop documents
@@ -86,6 +69,13 @@ const SimpleMap = ({ start, end }) => {
         setRefAcquired(true);
     }, [])
 
+    // TESTING printing out data
+    useEffect(() => {
+        if (data) {
+            console.log(data);
+        }
+    }, [data])
+
     /* Reset the map bounds to ensure both markers fit in the viewport */
     useEffect(() => {
         if (refAcquired) {
@@ -93,18 +83,18 @@ const SimpleMap = ({ start, end }) => {
                 mapRef.current.leafletElement.fitBounds(featureRef.current.leafletElement.getBounds());
             } catch (err) { }
         }
-    }, [refAcquired]);
+    }, [refAcquired, data]);
 
     /* Centers the popup when it is open, or re-center to fit the two markers when it is closed */
     useEffect(() => {
         if (refAcquired) {
             if (popupPosition) {
-                mapRef.current.leafletElement.setView(popupPosition.coords);
+                mapRef.current.leafletElement.setView(coords ? [popupPosition.coords[0]+5, popupPosition.coords[1]] : popupPosition.coords);
             } else {
                 mapRef.current.leafletElement.setView(center);
             }
         }
-    }, [center, popupPosition, refAcquired]);
+    }, [center, popupPosition, refAcquired, coords]);
 
     /* Extract the appropriate coordinates and perform line and centering calculations */
     useEffect(() => {
@@ -119,19 +109,40 @@ const SimpleMap = ({ start, end }) => {
             });
 
             //find geographic center
-            const centered = centerPoints(startCoords, endCoords);
+            const centered = findCoordinateAverage([startCoords, endCoords]);
             setCenter(centered);
 
             //calculate line path
             const line = helpers([startCoords, endCoords].map(item => [item[1], item[0]]));
             const curved = bezierSpline(line);
             setCurve(curved);
+        } else if (data) {
+            /* Calculate the center of all the points and set the center of the map */
+            if (data.length) {
+                const dataCoords = data.map((obj, idx) => {
+                    /* TODO: Using the index as coords until we can get assets set up with actual coordinates */
+                    if (!obj.hasOwnProperty("deployedLocation")) return [idx, idx];
+                    else if (typeof obj["deployedLocation"] === "string") return [idx, idx];
+                    else if (typeof obj["deployedLocation"] === "object" && !obj["deployedLocation"].hasOwnProperty("coordinates")) return [idx, idx];
+                    return Object.values(obj.deployedLocation.coordinates);
+                });
+                setCenter(findCoordinateAverage(dataCoords));
+            } else {
+                /* If no data is supplied or last item is deselected, set center back to its original coordinates */
+                setCenter([51, -114]);
+            }
+
+            /* Close the popup when the item it is for is deselected */
+            if (popupPosition !== null && popupPosition.hasOwnProperty("object")) {
+                const findPopup = data.filter(item => item.serial === popupPosition.object.serial);
+                if (!findPopup.length) setPopupPosition(null);
+            }
         }
 
-    }, [start, end]);
+    }, [start, end, data, popupPosition]);
 
     return (
-        <Map ref={mapRef} center={center} zoom={9}>
+        <Map style={styling ? styling : null} ref={mapRef} center={center} zoom={9}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -140,16 +151,20 @@ const SimpleMap = ({ start, end }) => {
             <FeatureGroup ref={featureRef}>
 
                 {/* Line between the two points */}
-                <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} />
+                { curve ? <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} /> : null }
 
                 {/* Conditionally render the markers */}
                 {
                     coords ?
                         <>
-                            <Marker icon={shipFromMarkerIcon} position={coords.start} onclick={() => setPopupPosition({ coords: coords.start, location: "start" })} />
-                            <Marker icon={shipToMarkerIcon} position={coords.end} onclick={() => setPopupPosition({ coords: coords.end, location: "end" })} />
+                            <Marker icon={shipFromMarkerIcon} position={coords.start} onclick={() => setPopupPosition({ coords: coords.start, title: "start" })} />
+                            <Marker icon={shipToMarkerIcon} position={coords.end} onclick={() => setPopupPosition({ coords: coords.end, title: "end" })} />
                         </>
-                        : null
+                        : data ?
+                            <>
+                                {data.map((item, idx) => <Marker position={item.hasOwnProperty("coordinates") ? item.coordinates : [idx, idx]} onclick={() => setPopupPosition({ coords: item.hasOwnProperty("coordinates") ? item.coordinates : [idx, idx], object: item })} />)}
+                            </>
+                            : null
                 }
 
             </FeatureGroup>
@@ -157,37 +172,40 @@ const SimpleMap = ({ start, end }) => {
             {/* Conditionally render popup based on state control set in Marker onClick functions */}
             {
                 popupPosition ?
-
                     <Popup className={classes.popup} position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
-                        <Typography variant="body1" style={{ marginBottom: "10px" }}><b>{popupPosition.location === "start" ? "Ship From" : "Ship To"}</b></Typography>
+                        <Typography variant="body1" style={{ marginBottom: "10px" }}><b>{popupPosition.title === "start" ? "Ship From" : popupPosition.title === "end" ? "Ship To" : popupPosition.title}</b></Typography>
 
-                        {/* Render out the Location document as the popup content in a clean and somewhat dynamic way */}
+                        {/* Render out the document as the popup content in a clean and dynamic way */}
                         {
-                            Object.entries(popupPosition.location === "start" ? start : end)
-                                .map(([key, value]) => {
+                                <>
+                                    {
+                                        Object.entries(popupPosition.hasOwnProperty("object") ? popupPosition.object : popupPosition.title === "start" ? start : end)
+                                            .map(([key, value]) => {
 
-                                    /* Remove the document keys that are not needed by end users */
-                                    const exclude = ["_id", "__v", "coordinates"];
-                                    if (exclude.includes(key)) return null;
+                                                /* Remove the document keys that are not needed by end users */
+                                                const exclude = ["_id", "__v", "coordinates", "missingItems","parentId","retired","assignmentType","checkedOut",
+                                                                "groupTag","contractNumber","assetType"];
+                                                if (exclude.includes(key)) return null;
 
-                                    /* Break up key camelCase and capitalize the first letter for a nice label */
-                                    const capitalizedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+                                                /* Break up key camelCase and capitalize the first letter for a nice label */
+                                                const capitalizedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 
-                                    /*
-                                     * Render each key-value pair as a row in the popup with the key on the left in bold and the value on the right unstyled
-                                     * If the key is "contactNumber", indicating a phone number in the Location document, render a telephone link, otherwise just display the value as normal
-                                     */
-                                    return (
-                                        <div key={key}>
-                                            <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
-                                            <Typography variant="body2" style={{ float: "right" }}>{key === "contactNumber" ? <a href={`tel:${value}`}>{value}</a> : value}</Typography>
-                                            <div style={{ clear: "both" }} />
-                                        </div>
-                                    );
-                                })
+                                                /*
+                                                 * Render each key-value pair as a row in the popup with the key on the left in bold and the value on the right unstyled
+                                                 * If the key is "contactNumber", indicating a phone number in the Location document, render a telephone link, otherwise just display the value as normal
+                                                 */
+                                                return (
+                                                    <div key={key}>
+                                                        <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
+                                                        <Typography variant="body2" style={{ float: "right" }}>{key === "contactNumber" ? <a href={`tel:${value}`}>{value}</a> : value}</Typography>
+                                                        <div style={{ clear: "both" }} />
+                                                    </div>
+                                                );
+                                            })
+                                    }
+                                </>
                         }
                     </Popup>
-                    
                     : null
             }
         </Map>
@@ -196,13 +214,21 @@ const SimpleMap = ({ start, end }) => {
 
 SimpleMap.propTypes = {
     /**
-     * A single shipment document
+     * Shipment document representing the location of the starting point, e.g. "shipFrom"
      */
     start: PropTypes.object,
     /**
-     * A single shipment document
+     * Shipment document representing the location of the end point, e.g. "shipTo"
      */
-    end: PropTypes.object
+    end: PropTypes.object,
+    /**
+     * Inline styles to apply directly to the map container
+     */
+    styling: PropTypes.object,
+    /**
+     * Array of asset objects to map as markers, each should contain a "deployedLocation" property holding a document with its coordinates where applicable
+     */
+    data: PropTypes.array
 }
 
 export default SimpleMap;
