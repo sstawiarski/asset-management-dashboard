@@ -13,15 +13,7 @@ import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
-import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
-import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
-import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
-import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
-import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
-import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
+
 import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
 
 import Snackbar from '@material-ui/core/Snackbar';
@@ -31,104 +23,84 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["createdBy", "created", "status", "shipmentType", "shipFrom", "shipTo"];
+const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
-const AllManifests = (props) => {
+const AllShipments = (props) => {
 
-    const [manifests, setManifests] = useState([]);
-    const [childManifests, setChildManifests] = useState([]);
+    const [shipments, setShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
-    const [invalidSerial, setInvalid] = useState([]);
-    const [manifestCount, setManifestCount] = useState(0);
+    const [shipmentCount, setShipmentCount] = useState(0);
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
-    const [nextDialog, setNext] = useState("");
-    const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
-    //sample data
-    const sampleManifests = [{"createdBy" : "John Doe", "created" : "2021-01-21", "status" : "completed" , "shipmentType" : "incoming", "shipTo" : "Houston", "shipFrom" : "Calgary"},{"createdBy" : "James Doe", "created" : "2021-01-28", "status" : "completed", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" },{"createdBy" : "Jane Doe", "created" : "2021-01-28", "status" : "staged", "shipmentType" : "outgoing", "shipTo" : "Calgary", "shipFrom" : "Houston" }];
-
+   
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
+            console.log(filters);
+
         }
+
     }
 
-    const handleClick = (event) => {
-        setAnchor(event.currentTarget);
-    }
+    // const handleClick = (event) => {
+    //     setAnchor(event.currentTarget);
+    // }
 
     const handleClose = () => {
         setAnchor(null);
     }
 
-    const handleMenuClick = (event) => {
-        setAnchor(null);
-        const children = [];
-        setNext(event.target.getAttribute("name"));
+    // const handleMenuClick = (event) => {
+    //     setAnchor(null);
+    //     const children = [];
+    //     setNext(event.target.getAttribute("name"));
 
-        Promise.all(
-            selected.map(serial =>
-                fetch(`http://localhost:4000/shipments/${serial}?project=parentId`)
-                    .then(resp => {
-                        if (resp.status < 300) {
-                            return resp.json()
-                        }
-                        return null;
-                    })
-            )
-        ).then(jsons => {
-            jsons.forEach((item, idx) => {
-                if (item) {
-                    if (!item.parentId) return;
-                    if (!selected.includes(item.parentId)) {
-                        children.push(selected[idx]);
-                    }
-                }
-                return;
-            })
-            setChildManifests(children)
-        });
+    //     Promise.all(
+    //         selected.map(key =>
+    //             fetch(`http://localhost:4000/shipments`)
+    //                 .then(resp => {
+    //                     if (resp.status < 300) {
+    //                         return resp.json()
+    //                     }
+    //                     return null;
+    //                 })
+    //         )
+    //     ).then(jsons => {
+    //         jsons.forEach((item, idx) => {
+    //             if (item) {
+    //                 if (!item.parentId) return;
+    //                 if (!selected.includes(item.parentId)) {
+    //                     children.push(selected[idx]);
+    //                 }
+    //             }
+    //             return;
+    //         })
+           
+    //     });
 
-    }
+    // }
 
-    useEffect(() => {
-        if (!nextDialog) return;
-        if (childManifests.length > 0) {
-            setDialogs({ assetEditWarning: true });
-        } else {
-            setDialogs({ [nextDialog]: true });
-        }
-    }, [childManifests, nextDialog]);
+    
 
-    const onSuccess = (succeeded, message) => {
-        if (succeeded) {
-            setSelected([]);
-            setSuccess({ succeeded: succeeded, message: message });
-            setActiveFilters({ ...activeFilters });
-        } else {
-            setSuccess({ succeeded: succeeded, message: message });
-        }
-    };
+    // const onSuccess = (succeeded, message) => {
+    //     if (succeeded) {
+    //         setSelected([]);
+    //         setSuccess({ succeeded: succeeded, message: message });
+    //         setActiveFilters({ ...activeFilters });
+    //     } else {
+    //         setSuccess({ succeeded: succeeded, message: message });
+    //     }
+    // };
 
-    //for use with creation of assets
-    const onSemiSuccess = (invalidSerials) => {
-        if (invalidSerials.length > 0) {
-            setInvalid(invalidSerials);
+    
 
-        }
-    }
-
-    useEffect(() => {
-        if (invalidSerial.length > 0) {
-            setDialogs({ invalid: true });
-        }
-    }, [invalidSerial])
+    
 
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
@@ -147,6 +119,7 @@ const AllManifests = (props) => {
         };
 
         const urlToFetch = generateURL(filters);
+
         fetch(urlToFetch)
             .then(response => {
                 if (response.status < 300) {
@@ -156,8 +129,8 @@ const AllManifests = (props) => {
                 }
             })
             .then(json => {
-                //setManifests(json.data);
-                //setManifestCount(json.count[0].count);
+                setShipments(json.data);
+                setShipmentCount(json.count[0].count);
             });
     }, [filters]);
 
@@ -173,21 +146,21 @@ const AllManifests = (props) => {
 
     return (
         <div>
-            <Header heading="Manifests" subheading="View All" />
+            <Header heading="Shipments" subheading="View All" />
             <div>
                 <CustomTable
-                    data={sampleManifests}
+                    data={shipments}
                     selectedFields={selectedFields}
                     selected={selected}
                     setSelected={setSelected}
                     filters={filters}
                     setFilters={setFilters}
-                    count={manifestCount}
+                    count={shipmentCount}
                     variant="shipment"
                     >
 
                     <TableToolbar
-                        title="All Manifests"
+                        title="All Shipments"
                         selected={selected}>
 
 
@@ -202,17 +175,17 @@ const AllManifests = (props) => {
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
+                                    {/* <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
                                     <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem>
+                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> */}
                                 </Menu>
                             </>
                             :
                             <>
                                 
-                                <Link to="/shipments/add-new" >
+                                <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>
@@ -249,8 +222,12 @@ const AllManifests = (props) => {
                 </CustomTable>
 
             </div>
-           { /*put manifest filter here*/}
-           <ShipmentFilter open={dialogs["filter"]} setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} setActiveFilters={setActiveFilters} />
+            { /*put shipment filter here*/}
+            <ShipmentFilter 
+                open={dialogs["filter"]} 
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} 
+                setActiveFilters={setActiveFilters} 
+            />
            
             
             {/* Displays success or failure message */}
@@ -263,4 +240,4 @@ const AllManifests = (props) => {
 
 }
 
-export default AllManifests;
+export default AllShipments;

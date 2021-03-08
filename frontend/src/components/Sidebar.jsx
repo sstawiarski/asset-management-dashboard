@@ -141,7 +141,7 @@ const getURL = (name, loggedInUser) => {
         case "Track":
                 return "/shipments/track"
         case "Add New":
-            return "/shipments/shipment-creator"
+            return "/shipments/create"
         case "Assembly Manager":
             return "/assets/assembly-manager"
         case "Assignments":
@@ -178,7 +178,7 @@ const isHighlighted = (location, link, open) => {
             return true;
         } else if (text === "/shipments/track" && link === "Track" && open) {
             return true;
-        } else if (text === "/shipments/create" && link === "Create" && open) {
+        } else if (text === "/shipments/create" && link === "Add New" && open) {
             return true;
         } else {
             return false;
@@ -444,7 +444,7 @@ const Sidebar = ({ location }) => {
                                                                             <ListItemIcon
                                                                                 className={
                                                                                     isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
-                                                                                        ? classes.highlighted
+                                                                                        ? classes.moduleText
                                                                                         : classes.nonHighlighted}>
 
                                                                                 {
@@ -456,12 +456,12 @@ const Sidebar = ({ location }) => {
                                                                             <ListItemText
                                                                                 className={
                                                                                     isHighlighted(location, item === "View All" ? item + " Shipments" : item, open)
-                                                                                        ? classes.highlighted
+                                                                                        ? classes.moduleText
                                                                                         : classes.nonHighlighted
                                                                                 }
                                                                                 primary={item}
                                                                                 primaryTypographyProps={{ variant: "body2" }}
-                                                                                style={{ color: "#636363" }} />
+                                                                                />
 
                                                                         </ListItem>
                                                                     );

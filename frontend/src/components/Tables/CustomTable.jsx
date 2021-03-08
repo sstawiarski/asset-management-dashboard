@@ -50,12 +50,12 @@ import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
-import { URLTypes as types } from '../../utils/constants.utils';
+import { dateOptions, URLTypes as types } from '../../utils/constants.utils';
 
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+
     },
     paper: {
         width: '98%',
@@ -118,6 +118,9 @@ const NewTable = (props) => {
     const setMoreInfo = moreInfo ? props.setMoreInfo : null;
     const lookup = moreInfo ? props.lookup : null;
     const Clickable = props.clickable || null;
+    const returnsObject = props.returnsObject || false;
+    const clearSelectedOnPageChange = props.clearSelectedOnPageChange || false;
+    const setMapItems = props.setMapItems || null;
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -143,23 +146,44 @@ const NewTable = (props) => {
     };
 
     const handleSelectAllClick = (event) => {
+        /* Deselect everything when the select all box is clicked on a different page */
+        if (event.target.getAttribute("data-indeterminate") === "true") {
+            if (setMapItems !== null) {
+                setMapItems([]);
+                setSelected([])
+            }
+            return;
+        }
+
         if (event.target.checked) {
+            /* Use props to exclude items already "in cart" from being added twice  */
             const onlyGood = data.filter((n) => {
-                const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
+                const isInCart = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === n[selectedFields[0]]) : compare.includes(n[selectedFields[0]]) : false;
                 return !isInCart;
             });
             const test = onlyGood.map(row => row[selectedFields[0]]);
             const test2 = selected.concat(test);
             const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
             setSelected(newSelecteds);
+
+            /* Maintain full objects even during pagination by adding selected objects to the parent state using the prop setter function */
+            if (setMapItems !== null) {
+                const mapItems = data.filter(obj => newSelecteds.includes(obj.serial));
+                setMapItems(mapItems);
+            }
             return;
         }
+
+        /* Remove all selections when select all is being unchecked */
+        const data2 = data.map(item => item.serial);
         setSelected(s => {
-            const data2 = data.map(item => item.serial);
             return s.filter(item => {
                 return !data2.includes(item);
             })
         });
+        if (setMapItems !== null) {
+            setMapItems([]);
+        }
     };
 
     //checkbox click handler
@@ -187,6 +211,21 @@ const NewTable = (props) => {
             }
         }
         setSelected(newSelected);
+
+        /*  
+            Use the existing items array to filter for only the items currently selected,
+            then use the current data loaded in the table to get the new selection data,
+            then get only the unique objects so they don't get added twice
+        */
+        if (setMapItems) {
+            setMapItems(m => {
+                const oldItems = m.filter(mapItem => newSelected.includes(mapItem[selectedFields[0]]));
+                const newItems = data.filter(obj => newSelected.includes(obj[selectedFields[0]]));
+                const unique = [...new Map([...oldItems, ...newItems].map(item => [item[selectedFields[0]], item])).values()];
+                return unique;
+            });
+        }
+
         if (moreInfo && additional) setMoreInfo(newAdditional);
     };
 
@@ -196,6 +235,10 @@ const NewTable = (props) => {
             page: newPage
         }));
         setPageSelected(selected.length);
+        if (clearSelectedOnPageChange) {
+            setSelected([]);
+            setMoreInfo([]);
+        }
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -205,6 +248,7 @@ const NewTable = (props) => {
             page: 0
         }));
         setSelected([]);
+        if (setMapItems) setMapItems([]);
         setPageSelected(0);
     };
 
@@ -248,7 +292,7 @@ const NewTable = (props) => {
                             {
                                 data.map((item, index) => {
                                     const isItemSelected = isSelected(item[selectedFields[0]]);
-                                    const isItemCompared = compare ? compare.includes(item[selectedFields[0]]) : false;
+                                    const isItemCompared = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === item[selectedFields[0]]) : compare.includes(item[selectedFields[0]]) : false;
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
@@ -271,7 +315,7 @@ const NewTable = (props) => {
                                             className={inactive === "parentId" ? item[inactive] ? classes.inactive : "row" : item[inactive] === false ? classes.inactive : "row"}
                                         >
                                             { /* TODO: Make inactivity consistent i.e. retired = true = inactive => active = false = inactive? */}
-                                            
+
                                             {checkboxes ?
                                                 <TableCell
                                                     padding="checkbox"
@@ -300,10 +344,16 @@ const NewTable = (props) => {
                                             {
                                                 selectedFields.map((arrayItem) => {
                                                     //translate raw dates and times into nice MM/DD/YYYY format
-                                                    if (arrayItem.includes("Time") || arrayItem.includes("date")) {
+                                                    if (arrayItem.includes("Time") || arrayItem.includes("date") || arrayItem === "created" || arrayItem === "updated") {
+                                                        const date = new Date(item[arrayItem]);
+                                                        const suffix = date.getHours() > 12 ? "PM" : "AM";
+                                                        const hoursInTwelve = ((date.getHours() + 11) % 12) + 1;
+                                                        const dateTime = `${hoursInTwelve}:${date.getMinutes()} ${suffix}`;
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
-                                                                {new Date(item[arrayItem]).toLocaleDateString('en-US')}
+                                                                {date.toLocaleDateString('en-US', dateOptions)}
+                                                                <br />
+                                                                <span style={{ color: "grey" }}>{dateTime}</span>
                                                             </TableCell>)
                                                     }
                                                     //check whether assemblies are incomplete using the 'incomplete' boolean
@@ -315,6 +365,14 @@ const NewTable = (props) => {
                                                                 <IncompletePopper assembly={item} />
                                                             </TableCell>
                                                         )
+                                                    } else if (arrayItem.includes("ship") && !arrayItem.includes("shipment")) {
+                                                        return (
+                                                            <TableCell key={arrayItem} align="left">
+                                                                {item[arrayItem].locationName}
+                                                                <br />
+                                                                <span style={{ color: "grey" }}>{item[arrayItem].locationType}</span>
+                                                            </TableCell>
+                                                        );
                                                     } else if (typeof item[arrayItem] === "boolean") {
                                                         return (<TableCell key={arrayItem} align="left">
                                                             {item[arrayItem] ? "Yes" : "No"}

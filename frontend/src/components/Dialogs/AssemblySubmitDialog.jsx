@@ -21,6 +21,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 //Icons
 import CloseIcon from '@material-ui/icons/Close';
 import DoneIcon from '@material-ui/icons/Done';
+import SearchIcon from '@material-ui/icons/Search';
 
 //Custom Components
 import SimpleList from '../Tables/SimpleList';
@@ -72,7 +73,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
         }
         setLoading(true);
         debounced.current(serial);
-    }, [serial])
+    }, [serial]);
 
     /* Handle serial change and full validity checks, including schema matching */
     //TODO: Update this with the same verification methods as the Create Asset dialog
@@ -162,6 +163,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
         } catch (e) {
             console.log(e)
         }
+
     }
 
 
@@ -194,12 +196,12 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                                     <InputLabel htmlFor="outlined-adornment"></InputLabel>
                                     <OutlinedInput
                                         id="outlined-adornment"
-                                        error={error}
+                                        error={Boolean(error)}
                                         value={serial}
                                         onChange={handleChange}
                                         endAdornment={
                                             <InputAdornment position="end">
-                                                {isLoading ? <CircularProgress style={{ width: "25px", height: "25px" }} /> : error ? <CloseIcon style={{ color: "red" }} /> : good ? <DoneIcon style={{ color: "#1b9e37" }} /> : null}
+                                                {isLoading ? <CircularProgress style={{ width: "25px", height: "25px" }} /> : error ? <CloseIcon style={{ color: "red" }} /> : good ? <DoneIcon style={{ color: "#1b9e37" }} /> : <SearchIcon style={{ color: "rgba(0,0,0,0.54)" }} />}
                                             </InputAdornment>
                                         }
                                         labelWidth={0}
