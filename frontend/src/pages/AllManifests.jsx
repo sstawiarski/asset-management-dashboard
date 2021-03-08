@@ -23,7 +23,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["createdBy", "created", "status", "shipmentType","key", "shipFrom", "shipTo"];
+const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
 
@@ -119,7 +119,7 @@ const AllShipments = (props) => {
         };
 
         const urlToFetch = generateURL(filters);
-        
+
         fetch(urlToFetch)
             .then(response => {
                 if (response.status < 300) {
@@ -185,7 +185,7 @@ const AllShipments = (props) => {
                             :
                             <>
                                 
-                                <Link to="/shipments/add-new" >
+                                <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>

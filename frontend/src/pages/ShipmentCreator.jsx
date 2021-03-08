@@ -14,29 +14,28 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import Fab from '@material-ui/core/Fab';
 
 //Icons
 import FilterListIcon from '@material-ui/icons/FilterList';
 import AddIcon from '@material-ui/icons/Add';
-import ExtensionIcon from '@material-ui/icons/Extension';
+import LocalShippingIcon from '@material-ui/icons/LocalShipping';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 //Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
-import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
-import AssemblySubmitDialog from '../components/Dialogs/AssemblySubmitDialog';
-import IncompleteAssemblyDialog from '../components/Dialogs/IncompleteAssemblyDialog';
+import CreateNewShipmentDialog from '../components/Dialogs/CreateNewShipmentDialog';
+import ShipmentSubmitDialog from '../components/Dialogs/ShipmentSubmitDialog';
 import QuickAssetView from '../components/Dialogs/QuickAssetView';
 import WarningDialog from '../components/Dialogs/WarningDialog';
+import AddUnserializedDialog from '../components/Dialogs/AddUnserializedDialog';
 
 //Custom Components
-import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
-
-//Tools
-import { compareSchema, getSchema } from '../utils/assembly.utils';
+import NewCart from '../components/NewCart';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -86,14 +85,22 @@ const useStyles = makeStyles((theme) => ({
     },
     spacer: {
         padding: "6px 8px"
+    },
+    unserializedFab: {
+        position: "absolute",
+        bottom: theme.spacing(6),
+        right: theme.spacing(15)
+    },
+    unserializedAddIcon: {
+        marginRight: theme.spacing(1)
     }
 }))
 
 //fields to select for the particular type of document going into the table
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
-const headCells = [{ label: "Serial" }];
 
-const CreateAssembly = () => {
+
+const ShipmentCreator = () => {
     const classes = useStyles();
     const history = useHistory();
 
@@ -101,23 +108,23 @@ const CreateAssembly = () => {
     const [state, setState] = useState({}); //main info about assembly, owner, etc
     const [assets, setAssets] = useState([]); //results list
     const [selected, setSelected] = useState([]);
-    const [schema, setSchema] = useState(null);
+    const [mapItems, setMapItems] = useState([]);
     const [assetCount, setAssetCount] = useState(0);
+    const [anchorEl, setAnchorEl] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [success, setSuccess] = useState(null);
-    const [incomplete, setIncomplete] = useState(false);
     const [override, toggleOverride] = useState(false);
-    const [missingItems, setMissingItems] = useState([]);
     const [submission, setSubmission] = useState({});
     const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
 
     /* Dialog state */
-    const [assemblyStarted, toggleAssembly] = useState(false);
+    const [shipmentStarted, toggleShipment] = useState(false);
     const [creatorOpen, setCreatorOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const [submitOpen, setSubmitOpen] = useState(false);
+    const [unserializedOpen, setUnserializedOpen] = useState(false);
     const [abandoned, setAbandoned] = useState(false);
 
     /* Filter state */
@@ -125,67 +132,29 @@ const CreateAssembly = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
+    const originalURL = `http://localhost:4000/assets`;
+    const [url, setURL] = useState(originalURL);
 
 
-    //TODO: Check whether all these useEffects are actually necessary
-
-    /* Initial setup if existing assembly is being modified */
+    /* Set url with supplied filters */
     useEffect(() => {
-        if (history.location.state) {
-            if (history.location.state.isAssemblyEdit) {
-                getSchema(history.location.state.assemblyType, true).then(response => {
-                    setSchema(response);
-                    toggleAssembly(true);
+        if (shipmentStarted) {
+            setURL(() => {
+                let newURL = originalURL;
+                let index = 0;
+
+                Object.keys(filters).forEach((key, idx) => {
+                    let concatenator = index === 0 ? "?" : "&";
+                    newURL += `${concatenator}${key}=${filters[key]}`;
+                    index++;
                 });
 
-                fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
-                    .then(res => res.json())
-                    .then(json => {
-                        const existingItems = json.data.map(item => item.serial);
-                        setCartItems(existingItems);
-                    });
-            }
+                return newURL;
+            });
         }
-    }, [history])
+    }, [filters, originalURL, shipmentStarted]);
 
-    /* get assets from database that don't belong to an assembly */
-    useEffect(() => {
-        if (assemblyStarted) {
-            if (schema) {
-                const assemblyType = encodeURI(schema.name);
-                try {
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`);
-                } catch {
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
-                }
-
-            }
-        }
-    }, [assemblyStarted, schema]);
-
-    /* Set url with applied filters */
-    useEffect(() => {
-        setURL(() => {
-            let originalURL = `http://localhost:4000/assets?parentId=null&assetType=Asset`;
-            if (schema) {
-                const assemblyType = encodeURI(schema.name);
-                try {
-                    originalURL += `&inAssembly=${assemblyType}${history.location.state.isAssemblyEdit ? "&isAssembly=true" : ""}`;
-                } catch {
-                    originalURL += `&inAssembly=${assemblyType}`;
-                }
-            }
-
-            Object.keys(filters).forEach(key => {
-                originalURL += `&${key}=${filters[key]}`;
-            })
-
-            return originalURL;
-        });
-    }, [schema, filters]);
-
-    /* Fetch asset list */
+    /* Fetch shipment list */
     useEffect(() => {
         fetch(url)
             .then(response => {
@@ -224,23 +193,30 @@ const CreateAssembly = () => {
 
     /* Set information from creator dialog upon submission */
     const handleCreate = (childState) => {
+
         setState(s => ({
             ...s,
-            ...childState
+            shipFrom: {
+                id: childState.shipFrom["_id"],
+                key: childState.shipFrom["key"],
+                name: childState.shipFrom["locationName"]
+            },
+            shipTo: {
+                id: childState.shipTo["_id"],
+                key: childState.shipTo["key"],
+                name: childState.shipTo["locationName"]
+            },
+            shipmentType: childState.shipmentType
         }));
-        getSchema(childState.assemblyType, true).then(response => {
-            setSchema(response);
-            setCreatorOpen(false);
-            toggleAssembly(true);
-        });
-
+        setCreatorOpen(false);
+        toggleShipment(true);
     }
 
     /* Handle cancel button on creator dialog */
     const handleCancel = () => {
         setCreatorOpen(false);
-        toggleAssembly(false);
-        setSchema(null);
+        toggleShipment(false);
+
         setState(s => {
             Object.keys(s).forEach(key => {
                 if (s[key] instanceof Array) {
@@ -254,9 +230,22 @@ const CreateAssembly = () => {
     }
 
     /* Check if selected items already have parent assemblies and then add to cart */
-    const handleAddToCart = (items) => {
+    const handleAddToCart = () => {
         const badSerials = [];
 
+        const newAdditions = mapItems.map(item => {
+            return {
+                serial: item.serial,
+                name: item.assetName
+            }
+        });
+
+        setCartItems(orig => [...orig, ...newAdditions]);
+        setSelected([]);
+        setMapItems([]);
+
+        /*
+         
         //check for existing parents
         items.forEach(item => {
             const fullInfo = assets.find(asset => asset.serial === item);
@@ -278,15 +267,8 @@ const CreateAssembly = () => {
         //set the cart items if no bad serials are found
         setCartItems(orig => ([...orig, ...items]));
         setSelected([]);
+        */
     }
-
-    /* Remove serial from cart on click of the 'Remove' button */
-    const handleRemoveFromCart = (serial) => {
-        const newCart = cartItems.filter(item => item !== serial);
-        setCartItems(newCart);
-        const newSelected = selected.filter(asset => newCart.includes(asset));
-        setSelected(newSelected);
-    };
 
     /** 
      * Compares schema saved in state from the helper tool with the assets currently in cart
@@ -294,40 +276,23 @@ const CreateAssembly = () => {
      * Sets the submission information depending on whether assembly is being modified or created for the first time
      */
     const handleSubmitCheck = () => {
-        compareSchema(schema, cartItems).then(result => {
 
-            let serialForReassembly = null;
-            let reassembling = false;
-            try {
-                if (history.location.state.isAssemblyEdit) {
-                    serialForReassembly = history.location.state.serial;
-                    reassembling = true;
-                }
-            } catch { }
+        setSubmission(s => ({
+            ...s,
+            shipmentType: state.shipmentType,
+            shipFrom: state.shipFrom,
+            shipTo: state.shipTo,
+            assets: cartItems.map(item => ({
+                serial: item.serial,
+                name: item.name ? item.name : item.assetName,
+                quantity: item.quantity ? item.quantity : undefined,
+                notes: item.notes ? item.notes : null
+            }))
+        }));
 
-            setSubmission(s => ({
-                ...s,
-                type: schema["name"],
-                assets: cartItems.reduce((arr, item, idx) => {
-                    arr.push([item, moreInfo[idx]]);
-                    return arr;
-                }, []),
-                owner: state.owner,
-                groupTag: state.groupTag,
-                serializationFormat: schema["serializationFormat"],
-                serial: serialForReassembly,
-                reassembling: reassembling
-            }));
+        setAnchorEl(null);
+        setSubmitOpen(true);
 
-            //if schema check failed then set the missing items and change state to open warning dialog
-            if (!result[0]) {
-                setMissingItems(result[1]);
-                setSubmission(s => ({ ...s, missingItems: result[1] }))
-                setIncomplete(true);
-            } else {
-                setSubmitOpen(true);
-            }
-        })
     };
 
 
@@ -335,22 +300,23 @@ const CreateAssembly = () => {
     const handleSubmitCancel = () => {
         toggleOverride(false);
         setSubmitOpen(false);
-        setIncomplete(false);
+        //setIncomplete(false);
     };
 
     /* Remove all state when assembly is abandoned */
     const handleAbandon = () => {
         toggleOverride(false);
         setCreatorOpen(false);
-        toggleAssembly(false);
-        setSchema(null);
+        toggleShipment(false);
+        //setSchema(null);
         setSubmitOpen(false);
         setAssets([]);
         setAssetCount(0);
-        setIncomplete(false);
-        setMissingItems([]);
+        //setIncomplete(false);
+        //setMissingItems([]);
         setMoreInfo([]);
         setSelected([]);
+        setMapItems([]);
         setSubmission({});
         setCartItems([]);
         setState({});
@@ -364,13 +330,13 @@ const CreateAssembly = () => {
             <Grid container spacing={2}>
 
                 <Grid item xs={12}>
-                    <Header heading="Assets" subheading="Assembly Manager" />
+                    <Header heading="Shipments" subheading="Shipment Creator" />
                 </Grid>
 
-                <Grid item xs={12} sm={12} md={assemblyStarted ? 8 : 12} lg={assemblyStarted ? 8 : 12}>
+                <Grid item xs={12}>
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
-                        assemblyStarted
+                        shipmentStarted
                             ? <CustomTable
                                 data={assets}
                                 selectedFields={selectedFields}
@@ -386,13 +352,15 @@ const CreateAssembly = () => {
                                 setMoreInfo={setMoreInfo}
                                 lookup="assetName"
                                 clickable={QuickAssetView}
-                                inactive="parentId">
+                                setMapItems={setMapItems}
+                                inactive="parentId"
+                                returnsObject>
 
-                                <TableToolbar title="Assembly Creator" selected={selected}>
+                                <TableToolbar title="Shipment Creator" selected={selected}>
                                     {
                                         selected.length > 0 ?
                                             <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={() => handleAddToCart(selected)}>
+                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -414,35 +382,39 @@ const CreateAssembly = () => {
 
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
-                                    <ExtensionIcon className={classes.puzzle} />
-                                    <Typography variant="h5">Welcome to the Assembly Manager!</Typography>
-                                    <Typography variant="h6" className={classes.item}>No Assembly In Progress</Typography>
+                                    <LocalShippingIcon className={classes.puzzle} />
+                                    <Typography variant="h5">Welcome to the Shipment Creator!</Typography>
+                                    <Typography variant="h6" className={classes.item}>No Shipment In Progress</Typography>
                                     <div style={{ flexBasis: "100%", height: "5rem" }} />
-                                    <Button color="primary" variant="contained" onClick={handleStart}>Start Assembly</Button>
+                                    <Button color="primary" variant="contained" onClick={handleStart}>Start Shipment</Button>
                                 </Box>
                             </Paper>
                     }
                 </Grid>
-
-                <Grid item xs={12} sm={12} md={4} lg={4}>
-                    {/* Render the cart whenever the assembly is started */}
-                    {
-                        assemblyStarted ?
-                            <>
-                                <CartTable
-                                    header={headCells}
-                                    rows={cartItems}
-                                    handleRemove={handleRemoveFromCart}
-                                    onSubmit={handleSubmitCheck}
-                                />
-                                <Button onClick={() => setAbandoned(true)} style={{ float: "right", color: "red" }}>Abandon</Button>
-                            </>
-                            : null
-                    }
-                </Grid>
             </Grid>
 
-            <CreateNewAssemblyDialog
+            <NewCart
+                cartItems={cartItems}
+                headers={["Serial", "Name", "Quantity"]}
+                onSubmit={handleSubmitCheck}
+                onRemove={(idObj) => {
+                    const [key, value] = Object.entries(idObj)[0];
+                    setCartItems(s => s.filter(item => item[key] !== value));
+                }}
+                onClickAway={() => setAnchorEl(null)}
+                anchorEl={anchorEl}
+                onNoteUpdate={(idObj) => {
+                    const index = cartItems.findIndex(item => item[idObj.idKey] === idObj[idObj.idKey]);
+                    let newCart = [...cartItems];
+                    if (idObj.notes === "" && newCart[index].notes) delete newCart[index].notes;
+                    else newCart[index].notes = idObj.notes;
+                    setCartItems(newCart);
+                }}
+                onClear={() => setCartItems([])}
+                notes
+                placement="top" />
+
+            <CreateNewShipmentDialog
                 creatorOpen={creatorOpen}
                 handleCreate={handleCreate}
                 handleCancel={handleCancel}
@@ -452,33 +424,25 @@ const CreateAssembly = () => {
                 open={filterOpen}
                 setOpen={(isOpen) => setFilterOpen(isOpen)}
                 setActiveFilters={setActiveFilters}
-                assetList={schema ? schema["name"] : null}
+                assetList={null}
             />
 
-            <AssemblySubmitDialog
+            <AddUnserializedDialog
+                open={unserializedOpen}
+                onClose={() => setUnserializedOpen(false)}
+                onSubmit={(obj) => {
+                    setCartItems(s => [...s, obj]);
+                    setUnserializedOpen(false);
+                }} />
+
+            <ShipmentSubmitDialog
                 open={submitOpen}
-                isComplete={!override}
                 onSuccess={() => setSuccess(true)}
                 onFailure={() => setSuccess(false)}
                 handleCancel={handleSubmitCancel}
                 submission={submission}
             />
 
-            <IncompleteAssemblyDialog
-                open={incomplete}
-                setOpen={setIncomplete}
-                handleOverride={() => {
-                    toggleOverride(true);
-                    setSubmission(s => ({
-                        ...s,
-                        override: true
-                    }))
-                    setIncomplete(false);
-                    setSubmitOpen(true);
-                }
-                }
-                missingItems={missingItems}
-            />
 
             <WarningDialog
                 open={hasParents}
@@ -507,7 +471,7 @@ const CreateAssembly = () => {
             {/* Resets all creator state upon success or leave intact for another try if the assembly fails to submit */}
             <Snackbar
                 open={success !== null}
-                onEnter={() => toggleAssembly(false)}
+                onEnter={() => toggleShipment(false)}
                 autoHideDuration={5000}
                 onClose={() => {
                     if (success) {
@@ -526,8 +490,36 @@ const CreateAssembly = () => {
                         : null
                 }
             </Snackbar>
+
+            {/* Floating action buttons for the shipment cart and the unserialized item creator */}
+            {
+                shipmentStarted ?
+                    <>
+                        <Fab
+                            className={classes.unserializedFab}
+                            color="secondary"
+                            aria-label="add unserialized component"
+                            variant="extended"
+                            onClick={() => setUnserializedOpen(true)}>
+
+                            <AddIcon className={classes.unserializedAddIcon} />
+                            <span>Add Unserialized Item</span>
+                        </Fab>
+
+                        <div className="badge" value={cartItems.length}>
+                            <Fab
+                                color="primary"
+                                onClick={(event) => setAnchorEl(event.target)}>
+                                <ShoppingCartIcon />
+                            </Fab>
+                        </div>
+
+                    </>
+                    : null
+            }
+
         </div>
     );
 }
 
-export default CreateAssembly;
+export default ShipmentCreator;

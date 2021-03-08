@@ -231,7 +231,7 @@ const AssetDetails = (props) => {
                                                             setWarning(true);
                                                         } else {
                                                             history.push({
-                                                                pathname: '/assets/create-assembly',
+                                                                pathname: '/assets/assembly-manager',
                                                                 state: {
                                                                     isAssemblyEdit: true,
                                                                     serial: asset.serial,
@@ -241,7 +241,7 @@ const AssetDetails = (props) => {
                                                         }
                                                     } catch {
                                                         history.push({
-                                                            pathname: '/assets/create-assembly',
+                                                            pathname: '/assets/assembly-manager',
                                                             state: {
                                                                 isAssemblyEdit: true,
                                                                 serial: asset.serial,
