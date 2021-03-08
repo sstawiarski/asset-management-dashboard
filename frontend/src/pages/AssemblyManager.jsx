@@ -31,7 +31,6 @@ import QuickAssetView from '../components/Dialogs/QuickAssetView';
 import WarningDialog from '../components/Dialogs/WarningDialog';
 
 //Custom Components
-import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
@@ -103,6 +102,7 @@ const AssemblyManager = () => {
     const [state, setState] = useState({}); //main info about assembly, owner, etc
     const [assets, setAssets] = useState([]); //results list
     const [selected, setSelected] = useState([]);
+    const [mapItems, setMapItems] = useState([]);
     const [schema, setSchema] = useState(null);
     const [assetCount, setAssetCount] = useState(0);
     const [cartItems, setCartItems] = useState([]);
@@ -251,25 +251,24 @@ const AssemblyManager = () => {
     }
 
     /* Check if selected items already have parent assemblies and then add to cart */
-    const handleAddToCart = (items) => {
+    const handleAddToCart = () => {
         const badSerials = [];
         const newItems = [];
 
         //check for existing parents
-        items.forEach(item => {
-            const fullInfo = assets.find(asset => asset.serial === item);
-            if (fullInfo.parentId) {
-                badSerials.push({ serial: fullInfo.serial, name: fullInfo.assetName });
+        mapItems.forEach(item => {
+            if (item.parentId) {
+                badSerials.push({ serial: item.serial, name: item.assetName });
             } else {
-                newItems.push({ serial: fullInfo.serial, name: fullInfo.assetName });
+                newItems.push({ serial: item.serial, name: item.assetName });
             }
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
         if (badSerials.length) {
-            console.log(badSerials)
             setCartItems(orig => ([...orig, ...newItems]));
             setSelected([]);
+            setMapItems([]);
             setHaveParents(badSerials);
             setHasParents(true);
             return;
@@ -278,6 +277,7 @@ const AssemblyManager = () => {
         //set the cart items if no bad serials are found
         setCartItems(orig => ([...orig, ...newItems]));
         setSelected([]);
+        setMapItems([]);
     }
     /** 
      * Compares schema saved in state from the helper tool with the assets currently in cart
@@ -364,6 +364,7 @@ const AssemblyManager = () => {
                                 selectedFields={selectedFields}
                                 selected={selected}
                                 setSelected={setSelected}
+                                setMapItems={setMapItems}
                                 filters={filters}
                                 setFilters={setFilters}
                                 count={assetCount}
@@ -376,13 +377,13 @@ const AssemblyManager = () => {
                                 clickable={QuickAssetView}
                                 inactive="parentId"
                                 returnsObject
-                                clearSelectedOnPageChange>
+                                >
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {
                                         selected.length > 0 ?
                                             <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={() => handleAddToCart(selected)}>
+                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>

@@ -108,6 +108,7 @@ const ShipmentCreator = () => {
     const [state, setState] = useState({}); //main info about assembly, owner, etc
     const [assets, setAssets] = useState([]); //results list
     const [selected, setSelected] = useState([]);
+    const [mapItems, setMapItems] = useState([]);
     const [assetCount, setAssetCount] = useState(0);
     const [anchorEl, setAnchorEl] = useState(null);
     const [cartItems, setCartItems] = useState([]);
@@ -229,19 +230,19 @@ const ShipmentCreator = () => {
     }
 
     /* Check if selected items already have parent assemblies and then add to cart */
-    const handleAddToCart = (items) => {
+    const handleAddToCart = () => {
         const badSerials = [];
 
-        const newAdditions = items.map(item => {
-            const newItem = assets.find(thing => thing.serial === item);
+        const newAdditions = mapItems.map(item => {
             return {
-                serial: newItem.serial,
-                name: newItem.assetName
+                serial: item.serial,
+                name: item.assetName
             }
         });
 
         setCartItems(orig => [...orig, ...newAdditions]);
         setSelected([]);
+        setMapItems([]);
 
         /*
          
@@ -315,6 +316,7 @@ const ShipmentCreator = () => {
         //setMissingItems([]);
         setMoreInfo([]);
         setSelected([]);
+        setMapItems([]);
         setSubmission({});
         setCartItems([]);
         setState({});
@@ -350,15 +352,15 @@ const ShipmentCreator = () => {
                                 setMoreInfo={setMoreInfo}
                                 lookup="assetName"
                                 clickable={QuickAssetView}
+                                setMapItems={setMapItems}
                                 inactive="parentId"
-                                returnsObject
-                                clearSelectedOnPageChange>
+                                returnsObject>
 
                                 <TableToolbar title="Shipment Creator" selected={selected}>
                                     {
                                         selected.length > 0 ?
                                             <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={() => handleAddToCart(selected)}>
+                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -489,6 +491,7 @@ const ShipmentCreator = () => {
                 }
             </Snackbar>
 
+            {/* Floating action buttons for the shipment cart and the unserialized item creator */}
             {
                 shipmentStarted ?
                     <>
@@ -500,8 +503,9 @@ const ShipmentCreator = () => {
                             onClick={() => setUnserializedOpen(true)}>
 
                             <AddIcon className={classes.unserializedAddIcon} />
-                        Add Unserialized Item
-                    </Fab>
+                            <span>Add Unserialized Item</span>
+                        </Fab>
+
                         <div className="badge" value={cartItems.length}>
                             <Fab
                                 color="primary"
@@ -509,6 +513,7 @@ const ShipmentCreator = () => {
                                 <ShoppingCartIcon />
                             </Fab>
                         </div>
+
                     </>
                     : null
             }

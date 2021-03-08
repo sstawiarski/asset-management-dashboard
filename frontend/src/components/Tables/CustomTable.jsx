@@ -158,7 +158,7 @@ const NewTable = (props) => {
         if (event.target.checked) {
             /* Use props to exclude items already "in cart" from being added twice  */
             const onlyGood = data.filter((n) => {
-                const isInCart = compare ? compare.includes(n[selectedFields[0]]) : false;
+                const isInCart = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === n[selectedFields[0]]) : compare.includes(n[selectedFields[0]]) : false;
                 return !isInCart;
             });
             const test = onlyGood.map(row => row[selectedFields[0]]);
