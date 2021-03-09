@@ -927,7 +927,7 @@ router.get("/:serial", async (req, res, err) => {
     }
   }
   try {
-    const asset = await Asset.find({ serial: serial }, projection);
+    const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
 
     if (asset.length) {
       res.status(200).json(asset[0]);
