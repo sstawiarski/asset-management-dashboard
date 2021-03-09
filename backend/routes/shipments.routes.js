@@ -263,8 +263,11 @@ router.get('/:key', async (req, res) => {
 });
 
 router.patch('/:key', async (req, res)=>{
+    console.log(req);
+    //console.log(res);
+
     var key = req.params.key;
-    const status = req.body;
+    const status = req.params.status;
     const shipment = await Shipment.findOne({ key: decodeURI(key) });
     //var body = req.body.status;
 
@@ -272,7 +275,7 @@ router.patch('/:key', async (req, res)=>{
     //   res.status(404).send();
     // }
   
-    Shipment.findByIdAndUpdate(key, {$set: status}, {new: true}).then(
+    Shipment.findByIdAndUpdate(shipment._id, req.body, {new: true}).then(
       (shipment)=>{
         if(!shipment){
           res.status(404).send();
