@@ -476,4 +476,42 @@ router.get('/:key', async (req, res) => {
     }
 });
 
+/**
+ * Create a new shipment
+ */
+router.post('/shipment', async (req, res, err) => {
+  try {
+    const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+    const newShipment= new Shipment({
+      createdBy: {username},
+      created: Date.now,
+      updated: null,
+      completed: null,
+      status: req.body.status,
+      shipmentType: req.body.shipmentType,
+      specialInstructions: req.body.specialInstructions,
+      contractID: req.body.contractID,
+      manifest: req.body.manifest,
+      shipFrom: req.body.shipFrom,
+      shipTo: req.body.shipTo,
+      shipFromOverride : null,
+      
+    });
+
+    await newShipment.save();
+
+   
+    
+ 
+
+  }
+  catch (err) {
+    console.log(err)
+    res.status(500).json({
+      message: "Error creating shipment",
+      interalCode: "shipment_creation_error"
+    })
+  }
+});
+
 module.exports = router;
