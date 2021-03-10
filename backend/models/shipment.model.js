@@ -27,7 +27,9 @@ const Shipment = new Schema({
     specialInstructions: { type: String, required: false, unique: false },
     contractId: { type: String, required: false, unique: false },
     confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false },
-    manifest: [manifest]
+    manifest: [manifest],
+    shipFromOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false },
+    shipToOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false }
 });
 
 Shipment.plugin(mongoose_fuzzy_searching, {

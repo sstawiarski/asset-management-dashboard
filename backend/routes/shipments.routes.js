@@ -67,6 +67,7 @@ router.get("/", async (req, res) => {
                     }
                 }
 
+                //add confidence score to determine best matches
                 const confidenceScore = {
                     $addFields: {
                         confidenceScore: { $meta: "textScore" }
@@ -88,6 +89,7 @@ router.get("/", async (req, res) => {
             }
 
         } else {
+            //match everything
             const match = {
                 $match: {
 
@@ -97,6 +99,7 @@ router.get("/", async (req, res) => {
             aggregateArray.push(match);
         }
 
+        /* Join locations collection with shipments to convert ObjectId reference to location to the actual location document */
         let fromLookup = {
             $lookup: {
                 'from': Location.collection.name,
@@ -143,6 +146,7 @@ router.get("/", async (req, res) => {
             }
         };
 
+        /* if a specific location is specified in the query, the $match (in next "if") will return an array of one document, so unwind it into just the object */
         const fromUnwind = {
             $unwind: {
                 path: "$shipFrom"
@@ -155,6 +159,7 @@ router.get("/", async (req, res) => {
             }
         };
 
+        /* if filtering for shipments with a specific location, modify $lookup to only match those locations */
         if (req.query.shipFrom || req.query.shipTo) {
             if (req.query.shipFrom) {
                 fromLookup = {
@@ -229,15 +234,63 @@ router.get("/", async (req, res) => {
 
         }
 
+        //only push these lookups if there wasn't a location filter applied since the ifs already take care of pushing it
         if (fromLookup !== null) aggregateArray.push(fromLookup);
         if (toLookup !== null) aggregateArray.push(toLookup);
+
         aggregateArray.push(fromUnwind);
         aggregateArray.push(toUnwind);
+
+        /* 
+         * If a shipment location's default information was overridden, 
+         * use the "shipFromOverride" or "shipToOverride" object to merge with each $lookup'd location document 
+         * and replace the modified fields prior to returning 
+         */
+        const shipFromOverride = {
+            $set: {
+                "shipFrom": {
+                        $cond: [
+                            { $ifNull:["$shipFromOverride", false] },
+                            {$mergeObjects: ["$shipFrom", "$shipFromOverride"]},
+                            "$shipFrom"
+                        ]
+                    }
+            }
+        };
+
+        const shipToOverride = {
+            $set: {
+                "shipTo": {
+                        $cond: [
+                            { $ifNull:["$shipToOverride", false] },
+                            {$mergeObjects: ["$shipTo", "$shipToOverride"]},
+                            "$shipTo"
+                        ]
+                    }
+            }
+        };
+
+        /* Remove the now-useless override fields from the final document */
+        const shipModificationProjection = {
+            $project: {
+                shipFromOverride: 0,
+                shipToOverride: 0
+            }
+        };
+
+        aggregateArray.push(shipFromOverride);
+        aggregateArray.push(shipToOverride);
+        aggregateArray.push(shipModificationProjection);
+
 
         if (req.query.sort_by) {
             //default ascending order
             const sortOrder = (req.query.order === 'desc' ? -1 : 1);
 
+            /*
+             * Sort by best match as primary sort and *then*  sort order value if there is a search,
+             * otherwise, sort by sort value
+             */
             if (req.query.search) {
                 const sort = {
                     $sort: {
@@ -256,6 +309,7 @@ router.get("/", async (req, res) => {
                 aggregateArray.push(sort);
             }
         } else {
+            /* if there is a search and no sort is specify, sort by best match, otherwise sort by shipment key */
             if (req.query.search) {
                 const sort = {
                     $sort: {
@@ -361,6 +415,9 @@ router.get("/", async (req, res) => {
     }
 });
 
+/**
+ * Load database with sample documents and default shipFrom and shipTo values
+ */
 router.put('/load', async (req, res) => {
     try {
         sampleShipment.forEach(async (item, idx) => {
@@ -381,11 +438,33 @@ router.put('/load', async (req, res) => {
     }
 });
 
+/**
+ * Get a single shipment based on its unique key
+ */
 router.get('/:key', async (req, res) => {
     try {
-        const key = req.params.key;
-        //const { key } = req.params;
-        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        const { key } = req.params;
+        let shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        shipment = shipment.toObject(); //convert Mongoose document to plain object to manipulate it
+
+        /* if there is a shipment override, update the location documents with the overrides and remove the override object */
+        if (shipment.shipFromOverride) {
+            shipment["shipFrom"] = {
+                ...shipment["shipFrom"],
+                ...shipment["shipFromOverride"]
+            };
+            delete shipment["shipFromOverride"];
+        }
+
+        if (shipment.shipToOverride) {
+            shipment["shipTo"] = {
+                ...shipment["shipTo"],
+                ...shipment["shipToOverride"]
+            };
+            delete shipment["shipToOverride"];
+        }
+
+        //return shipment as JSON document
         res.status(200).json(shipment)
     }
     catch (err) {
