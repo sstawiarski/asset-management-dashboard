@@ -445,6 +445,10 @@ router.get('/:key', async (req, res) => {
     try {
         const { key } = req.params;
         let shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        if (shipment === null) {
+            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
+            return;
+        }
         shipment = shipment.toObject(); //convert Mongoose document to plain object to manipulate it
 
         /* if there is a shipment override, update the location documents with the overrides and remove the override object */
