@@ -8,10 +8,9 @@ import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import DialogContent from '@material-ui/core/DialogContent';
-import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { DialogActions, InputLabel, TextField, Typography, FormControl } from '@material-ui/core';
 
-const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
     autocomplete: {
@@ -118,110 +117,37 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} className={classes.autocomplete}>
-                        <Grid container direction="column">
-                            <Grid item xs={12}>
-                                <Autocomplete
-                                    id="shipment-from-locator"
-                                    selectOnFocus
-                                    clearOnBlur
-                                    freeSolo
-                                    className={classes.autocomplete}
-                                    options={state.shipFromOptions}
-                                    getOptionLabel={(option) => {
-                                        if (option.inputValue) {
-                                            return option.inputValue;
-                                        } else {
-                                            if (option.key) {
-                                                return `${option.locationName} (${option.key})`;
-                                            } else {
-                                                return `${option.locationName}`;
-                                            }
-                                        }
-                                    }}
-                                    groupBy={(option) => option.locationType}
-                                    value={state.shipFrom}
-                                    onChange={(event, newValue) => {
-                                        if (newValue && newValue.inputValue) {
-                                            setState(s => ({ ...s, newFromOption: { locationName: newValue.inputValue, locationType: s.shipmentType === "Outgoing" ? "Staging Facility" : "" }, shipFrom: { locationName: newValue.inputValue } }))
-                                        } else {
-                                            setState(s => ({ ...s, shipFrom: newValue, newFromOption: null }));
-                                        }
-                                    }}
-                                    filterOptions={(options, params) => {
-                                        const filtered = filter(options, params);
-                                        if (params.inputValue !== '') {
-                                            filtered.push({
-                                                inputValue: params.inputValue,
-                                                locationName: `Add new location '${params.inputValue}'`,
-                                                locationType: "Add New"
-                                            })
-                                        }
-
-                                        return filtered;
-                                    }}
-                                    renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
-                                    renderOption={(option) => {
-                                        /* Render autocomplete list with subtitles that tell either the operator name, client name, or address */
-                                        return (
-                                            <div>
-                                                {option.locationName} { option.key ? `(${option.key})` : null}
-                                                <Typography className={classes.subtitle} variant="subtitle2">
-                                                    {
-                                                        option.operator ?
-                                                            option.operator
-                                                            : option.client ?
-                                                                option.client
-                                                                : option.address ?
-                                                                    option.address
-                                                                    : null
-                                                    }
-                                                </Typography>
-                                            </div>
-                                        )
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12}>
-                                {
-                                    state.newFromOption ?
-                                        <form className={classes.form}>
-                                            <TextField
-                                             fullWidth 
-                                             className={classes.formItem}
-                                             id="location-name" 
-                                             value={state.newFromOption["locationName"]} 
-                                             variant="outlined" 
-                                             size="small"
-                                             label="Location name" />
-
-                                            <TextField 
-                                            fullWidth 
-                                            size="small"
-                                            className={classes.formItem}
-                                            id="location-key" 
-                                            value={state.newFromOption["key"]} 
-                                            variant="outlined" 
-                                            label="Location key" />
-
-                                            <Select className={classes.formItem} fullWidth id="location-type" value={state.newFromOption["locationType"]} variant="outlined" label="Location type" disabled={state.shipmentType === "Outgoing"}>
+                        <Autocomplete
+                            id="shipment-from-locator"
+                            options={state.shipFromOptions}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
+                            value={state.shipFrom}
+                            fullWidth
+                            groupBy={(option) => option.locationType}
+                            onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
+                            className={classes.autocomplete}
+                            renderOption={(option) => {
+                                return (
+                                    <>
+                                        <div>
+                                            {option.locationName} {`(${option.key})`}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
                                                 {
-                                                    state.shipmentType === "Outgoing" ?
-                                                        <MenuItem value={"Staging Facility"}>Staging Facility</MenuItem>
-                                                        :
-                                                        <>
-                                                            <MenuItem value={"Staging Facility"}>Staging Facility</MenuItem>
-                                                            <MenuItem value={"Repair Facility"}>Repair Facility</MenuItem>
-                                                            <MenuItem value={"Rig"}>Rig</MenuItem>
-                                                        </>
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
                                                 }
-                                            </Select>
-
-                                        </form>
-                                        : null
-                                }
-                            </Grid>
-                        </Grid>
-
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
+                        />
                     </Grid>
                     <Grid item xs={6} className={classes.autocomplete}>
                         <Autocomplete
@@ -256,7 +182,6 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" />}
                         />
                     </Grid>
-
                 </Grid>
 
             </DialogContent>
