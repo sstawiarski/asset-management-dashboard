@@ -67,14 +67,7 @@ const SimpleMap = ({ start, end, data, styling }) => {
     /* Wait until render to allow use of map Refs */
     useEffect(() => {
         setRefAcquired(true);
-    }, [])
-
-    // TESTING printing out data
-    useEffect(() => {
-        if (data) {
-            console.log(data);
-        }
-    }, [data])
+    }, []);
 
     /* Reset the map bounds to ensure both markers fit in the viewport */
     useEffect(() => {
