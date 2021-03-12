@@ -929,6 +929,13 @@ router.get("/:serial", async (req, res, err) => {
   try {
     const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
 
+    //working code for values and bounds
+    if(asset.map && asset.bounds){
+
+    }else{
+
+    }
+
     if (asset.length) {
       res.status(200).json(asset[0]);
     } else {
