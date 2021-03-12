@@ -5,6 +5,7 @@ const Shipment = require('../models/shipment.model');
 const Location = require('../models/location.model');
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const dateFunctions = require("date-fns");
+const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
 
 router.get("/", async (req, res) => {
@@ -249,24 +250,24 @@ router.get("/", async (req, res) => {
         const shipFromOverride = {
             $set: {
                 "shipFrom": {
-                        $cond: [
-                            { $ifNull:["$shipFromOverride", false] },
-                            {$mergeObjects: ["$shipFrom", "$shipFromOverride"]},
-                            "$shipFrom"
-                        ]
-                    }
+                    $cond: [
+                        { $ifNull: ["$shipFromOverride", false] },
+                        { $mergeObjects: ["$shipFrom", "$shipFromOverride"] },
+                        "$shipFrom"
+                    ]
+                }
             }
         };
 
         const shipToOverride = {
             $set: {
                 "shipTo": {
-                        $cond: [
-                            { $ifNull:["$shipToOverride", false] },
-                            {$mergeObjects: ["$shipTo", "$shipToOverride"]},
-                            "$shipTo"
-                        ]
-                    }
+                    $cond: [
+                        { $ifNull: ["$shipToOverride", false] },
+                        { $mergeObjects: ["$shipTo", "$shipToOverride"] },
+                        "$shipTo"
+                    ]
+                }
             }
         };
 
@@ -416,6 +417,44 @@ router.get("/", async (req, res) => {
 });
 
 /**
+ * Create a new shipment
+ */
+ router.post('/', async (req, res, err) => {
+    try {
+        const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+        const shipment = {
+            createdBy: username.employeeId,
+            created: Date.now(),
+            updated: null,
+            completed: null,
+            status: req.body.status,
+            shipmentType: req.body.shipmentType,
+            specialInstructions: req.body.specialInstructions,
+            contractId: req.body.contractId,
+            manifest: req.body.manifest,
+            shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
+            shipTo: mongoose.Types.ObjectId(req.body.shipTo),
+            key: "TESTING-123"
+        };
+        if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
+        if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
+
+        const newShipment = new Shipment(shipment);
+
+        await newShipment.save();
+
+        res.status(200).json({ message: "Successfully created shipment" })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: "Error creating shipment",
+            interalCode: "shipment_creation_error"
+        })
+    }
+});
+
+/**
  * Load database with sample documents and default shipFrom and shipTo values
  */
 router.put('/load', async (req, res) => {
@@ -478,44 +517,6 @@ router.get('/:key', async (req, res) => {
             internal_code: "shipment_retrieval_error"
         })
     }
-});
-
-/**
- * Create a new shipment
- */
-router.post('/shipment', async (req, res, err) => {
-  try {
-    const username = JSON.parse(decrypt(req.body.user)); //get unique user info
-    const newShipment= new Shipment({
-      createdBy: {username},
-      created: Date.now,
-      updated: null,
-      completed: null,
-      status: req.body.status,
-      shipmentType: req.body.shipmentType,
-      specialInstructions: req.body.specialInstructions,
-      contractID: req.body.contractID,
-      manifest: req.body.manifest,
-      shipFrom: req.body.shipFrom,
-      shipTo: req.body.shipTo,
-      shipFromOverride : null,
-      
-    });
-
-    await newShipment.save();
-
-   
-    
- 
-
-  }
-  catch (err) {
-    console.log(err)
-    res.status(500).json({
-      message: "Error creating shipment",
-      interalCode: "shipment_creation_error"
-    })
-  }
 });
 
 module.exports = router;

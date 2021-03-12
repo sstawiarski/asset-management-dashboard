@@ -285,8 +285,9 @@ const ShipmentCreator = () => {
             assets: cartItems.map(item => ({
                 serial: item.serial,
                 name: item.name ? item.name : item.assetName,
-                quantity: item.quantity ? item.quantity : undefined,
-                notes: item.notes ? item.notes : null
+                quantity: item.quantity ? item.quantity : 1,
+                notes: item.notes ? item.notes : null,
+                serialized: item.serial !== "N/A" ? true : false
             }))
         }));
 

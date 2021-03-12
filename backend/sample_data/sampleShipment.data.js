@@ -4,27 +4,31 @@ const sampleShipment = [
         "created": Date.now(),
         "updated": Date.now(),
         "completed": Date.now(),
-        "status": "Staging",
+        "status": "Abandoned",
         "shipmentType": "Incoming",
         "specialInstructions": "seriously, don't lose this",
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false
             }
         ],
-        "key": "SHIP-100"
+        "key": "SHIP-100",
+        "shipFromOverride": {
+            "contactName": "Jason DeRulo",
+            "contactNumber": "1-800-867-5309"
+        }
     },
     {
         "createdBy": "Test 2",
@@ -37,42 +41,45 @@ const sampleShipment = [
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false
             }
         ],
-        "key": "SHIP-101"
+        "key": "SHIP-101",
+        "shipToOverride": {
+            "contactName": "TESTING 1 2 1 2"
+        }
     },
     {
         "createdBy": "Test 3",
         "created": Date.now(),
         "updated": Date.now(),
         "completed": Date.now(),
-        "status": "Staging",
+        "status": "Completed",
         "shipmentType": "Incoming",
         "specialInstructions": "seriously, don't lose this",
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false
@@ -91,15 +98,15 @@ const sampleShipment = [
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false
@@ -118,15 +125,15 @@ const sampleShipment = [
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false
@@ -145,15 +152,15 @@ const sampleShipment = [
         "contractId": "345678",
         "manifest": [
             {
-                "item": "X800-87650",
-                "type": "Crossover Sub",
+                "serial": "X800-87650",
+                "name": "Crossover Sub",
                 "quantity": 1,
                 "notes": "just testing this beast out!",
                 "serialized": true
             },
             {
-                "item": "box of boxes of batteries",
-                "type": "batteries",
+                "serial": "box of boxes of batteries",
+                "name": "batteries",
                 "quantity": 1500,
                 "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
                 "serialized": false

@@ -126,7 +126,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
             };
 
             // TODO: create shipment POST endpoint
-            console.log(submit);
+            console.log(JSON.stringify(submit.assets));
             /*
                         fetch("http://localhost:4000/shipments", {
                             method: 'POST',
