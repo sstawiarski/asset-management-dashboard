@@ -57,7 +57,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 
     /* Get available shipment locations */
     useEffect(() => {
-        fetch('http://localhost:4000/locations')
+        fetch(`${process.env.REACT_APP_API_URL}/locations`)
             .then(res => res.json())
             .then(json => {
                 setState(s => ({ ...s, allShippingOptions: json }));

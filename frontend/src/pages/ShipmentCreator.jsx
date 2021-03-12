@@ -132,7 +132,7 @@ const ShipmentCreator = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const originalURL = `http://localhost:4000/assets`;
+    const originalURL = `${process.env.REACT_APP_API_URL}/assets`;
     const [url, setURL] = useState(originalURL);
 
 
