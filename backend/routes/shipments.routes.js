@@ -422,6 +422,7 @@ router.get("/", async (req, res) => {
  router.post('/', async (req, res, err) => {
     try {
         const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+        const count = await Counter.findOneAndUpdate({ name: "shipments" }, { $inc: { next: 1 } }, { useFindAndModify: false });
         const shipment = {
             createdBy: username.employeeId,
             created: Date.now(),
@@ -434,7 +435,7 @@ router.get("/", async (req, res) => {
             manifest: req.body.manifest,
             shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
             shipTo: mongoose.Types.ObjectId(req.body.shipTo),
-            key: "TESTING-123"
+            key: count.next
         };
         if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
         if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
