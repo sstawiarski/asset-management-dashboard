@@ -42,7 +42,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
 
     const user = local.firstName + " " + local.lastName;
     const encodedID = base64url(JSON.stringify(local.uniqueId));
-    const url = `http://localhost:4000/auth/${encodedID}`;
+    const url = `${process.env.REACT_APP_API_URL}/auth/${encodedID}`;
 
     const [employee, setEmployee] = useState(null);
 
@@ -120,7 +120,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
         }
 
         try {
-            fetch(`http://localhost:4000/employees/${employee.employeeId}`, {
+            fetch(`${process.env.REACT_APP_API_URL}/employees/${employee.employeeId}`, {
                 method: 'PATCH',
                 mode: 'cors',
                 headers: {

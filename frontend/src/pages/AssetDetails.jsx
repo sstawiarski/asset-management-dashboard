@@ -96,7 +96,7 @@ const AssetDetails = (props) => {
 
     /* Fetch asset information and first events page */
     useEffect(() => {
-        fetch(`http://localhost:4000/assets/${serial}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets/${serial}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
@@ -108,7 +108,7 @@ const AssetDetails = (props) => {
                 setAsset(json);
             });
 
-        fetch(`http://localhost:4000/events/${serial}?limit=5&skip=${page}`)
+        fetch(`${process.env.REACT_APP_API_URL}/events/${serial}?limit=5&skip=${page}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();

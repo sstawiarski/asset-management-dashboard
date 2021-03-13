@@ -79,7 +79,7 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
                 {/* Mark assembly as disassembled in the database prior to redirecting to the assembly modification tool */}
                 <Button
                     onClick={() => {
-                        fetch("http://localhost:4000/assets", {
+                        fetch(`${process.env.REACT_APP_API_URL}/assets`, {
                             method: "PATCH",
                             mode: 'cors',
                             headers: {

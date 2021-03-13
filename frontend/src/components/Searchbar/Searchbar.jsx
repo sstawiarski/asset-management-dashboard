@@ -65,7 +65,7 @@ const Searchbar = () => {
     /* Fuzzy search assets using API call */
     useEffect(() => {
         const searchAssets = async (serial) => {
-            const result = await fetch(`http://localhost:4000/assets?search=${serial}&limit=3`);
+            const result = await fetch(`${process.env.REACT_APP_API_URL}/assets?search=${serial}&limit=3`);
             if (result.status < 300) {
                 const json = await result.json();
                 return json.data;
@@ -77,7 +77,7 @@ const Searchbar = () => {
         };
 
         const searchEvents = async (key) => {
-            const result = await fetch(`http://localhost:4000/events?search=${key}&limit=3`);
+            const result = await fetch(`${process.env.REACT_APP_API_URL}/events?search=${key}&limit=3`);
             if (result.status < 300) {
                 const json = await result.json();
                 return json.data;

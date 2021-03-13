@@ -37,7 +37,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
             // TODO: create shipment POST endpoint
             console.log(submit);
             /*
-                        fetch("http://localhost:4000/shipments", {
+                        fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
                             method: 'POST',
                             mode: 'cors',
                             headers: {

@@ -50,7 +50,7 @@ const QuickAssetView = (props) => {
     }
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets/${identifier}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets/${identifier}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
