@@ -48,6 +48,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import TableHead from './TableHead';
 import IncompletePopper from '../IncompletePopper';
+import IndicatorBar from '../Feedback/IndicatorBar';
 import Tooltip from '@material-ui/core/Tooltip';
 import CheckIcon from '@material-ui/icons/Check';
 import { dateOptions, URLTypes as types } from '../../utils/constants.utils';
@@ -121,6 +122,7 @@ const NewTable = (props) => {
     const returnsObject = props.returnsObject || false;
     const clearSelectedOnPageChange = props.clearSelectedOnPageChange || false;
     const setMapItems = props.setMapItems || null;
+    const validator = props.validator || null;
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -287,6 +289,7 @@ const NewTable = (props) => {
                             selectedFields={selectedFields}
                             checkboxes={checkboxes}
                             pageSelected={pageSelected}
+                            warningSpace={Boolean(validator)}
                         />
                         <TableBody>
                             {
@@ -391,6 +394,23 @@ const NewTable = (props) => {
                                                     return (<TableCell key={arrayItem} align="left">{item[arrayItem]}</TableCell>)
                                                 })
                                             }
+
+                                            {
+                                                validator ?
+                                                    <TableCell align="inherit">
+                                                        {
+                                                            (() => {
+                                                                const indicators = validator(item);
+                                                                if (indicators.warnings.length || indicators.errors.length) {
+                                                                    return <IndicatorBar { ...indicators } />
+                                                                }
+                                                                else return null;
+                                                            })()
+                                                        }
+                                                    </TableCell>
+                                                    : null
+                                            }
+
                                         </TableRow>
                                     );
                                 })}
@@ -430,7 +450,14 @@ NewTable.propTypes = {
     selectedFields: PropTypes.array.isRequired,
     compare: PropTypes.array,
     checkboxes: PropTypes.bool,
-    clickable: PropTypes.func
+    clickable: PropTypes.func,
+    /**
+     * Custom validation function to run on a data object that returns an object with keys "warnings" and "errors",
+     * which are arrays of strings indicating any validation fails
+     * 
+     * Used to display an IndicatorBar of errors and warnings to the user
+     */
+    validator: PropTypes.func
 
 }
 

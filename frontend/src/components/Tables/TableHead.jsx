@@ -22,7 +22,8 @@ const EnhancedTableHead = (props) => {
         onRequestSort,
         selectedFields,
         checkboxes,
-        pageSelected
+        pageSelected,
+        warningSpace
     } = props;
 
     const createSortHandler = (property) => (event) => {
@@ -75,6 +76,13 @@ const EnhancedTableHead = (props) => {
                         </TableSortLabel>
                     </TableCell>
                 ))}
+                {
+                    warningSpace ?
+                    <TableCell>
+
+                    </TableCell>
+                    : null
+                }
 
             </TableRow>
         </TableHead>

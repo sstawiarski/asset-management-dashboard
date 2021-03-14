@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         padding: "6px 8px"
     },
     unserializedFab: {
-        position: "absolute",
+        position: "fixed",
         bottom: theme.spacing(6),
         right: theme.spacing(15)
     },
@@ -354,8 +354,16 @@ const ShipmentCreator = () => {
                                 lookup="assetName"
                                 clickable={QuickAssetView}
                                 setMapItems={setMapItems}
-                                inactive="parentId"
-                                returnsObject>
+                                returnsObject
+                                validator={(asset) => {
+                                    const warnings = [];
+                                    const errors = [];
+                                    
+                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                    if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
+
+                                    return { warnings: warnings, errors: errors };
+                                }}>
 
                                 <TableToolbar title="Shipment Creator" selected={selected}>
                                     {
