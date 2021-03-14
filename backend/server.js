@@ -17,13 +17,13 @@ const shipmentRoutes = require('./routes/shipments.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 app.use(cors({
-    origin: "http://localhost:3000"
+    origin: process.env.CORS_URL
 }));
 app.use(bodyParser.json());
 
-mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore?retryWrites=true&w=majority", {
+mongoose.connect(process.env.DB_URL, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true

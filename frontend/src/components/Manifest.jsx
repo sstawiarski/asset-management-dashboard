@@ -31,7 +31,7 @@ const Manifest = ({ data }) => {
     const [items, setItems] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets?parentId=${data["serial"]}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets?parentId=${data["serial"]}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();

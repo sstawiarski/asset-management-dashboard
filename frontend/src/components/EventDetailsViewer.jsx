@@ -43,7 +43,7 @@ const EventDetailsViewer = ({ event, open, onClose }) => {
     useEffect(() => {
         try {
             if (event.initiatingUser) {
-                fetch(`http://localhost:4000/employees/${event.initiatingUser}`)
+                fetch(`${process.env.REACT_APP_API_URL}/employees/${event.initiatingUser}`)
                     .then(res => res.json())
                     .then(json => setUsername(json));
             }

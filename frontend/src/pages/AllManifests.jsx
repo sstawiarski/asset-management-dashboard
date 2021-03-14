@@ -63,7 +63,7 @@ const AllShipments = (props) => {
 
     //     Promise.all(
     //         selected.map(key =>
-    //             fetch(`http://localhost:4000/shipments`)
+    //             fetch(`${process.env.REACT_APP_API_URL}/shipments`)
     //                 .then(resp => {
     //                     if (resp.status < 300) {
     //                         return resp.json()
@@ -105,7 +105,7 @@ const AllShipments = (props) => {
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments";
+            let url = `${process.env.REACT_APP_API_URL}/shipments`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
                 if (idx === 0) {

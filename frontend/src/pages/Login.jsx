@@ -115,7 +115,7 @@ const LoginPage = (props) => {
         }
         body.password = state.password;
 
-        fetch('http://localhost:4000/auth/login', {
+        fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
