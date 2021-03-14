@@ -54,7 +54,8 @@ const useStyles = makeStyles(theme => ({
             paddingTop: "1px",
             paddingBottom: "1px",
             fontSize: "16px",
-            paddingRight: "5%"
+            paddingRight: "5%",
+            backgroundColor: "#FFFFFF"
         }
     },
     clearIcon: {
@@ -247,7 +248,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                                                                                     <TextField
                                                                                         className={classes.editField}
                                                                                         variant="outlined"
-                                                                                        value={tempShipFromOverrides[key] || shipFromOverrides[key] || shipFrom[key]}
+                                                                                        value={tempShipFromOverrides[key] || shipFromOverrides[key]}
                                                                                         onChange={(event) => handleValueChange(event, key, "shipFrom")} />
                                                                                 </>
                                                                                 : <Typography>{Object.keys(shipFromOverrides).includes(key) ? shipFromOverrides[key] : val}</Typography>
@@ -289,6 +290,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                                                                                                 delete s[key];
                                                                                                 return { ...s };
                                                                                             });
+                                                                                            setTempShipFromOverrides(t => ({ ...t, [key]: shipFrom[key] }));
                                                                                         }}>
                                                                                             <UndoIcon className={classes.icon} />
                                                                                         </IconButton>
@@ -407,7 +409,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                                                                                     <TextField
                                                                                         className={classes.editField}
                                                                                         variant="outlined"
-                                                                                        value={tempShipToOverrides[key] || shipToOverrides[key] || shipTo[key]}
+                                                                                        value={tempShipToOverrides[key] || shipToOverrides[key]}
                                                                                         onChange={(event) => handleValueChange(event, key, "shipTo")} />
                                                                                 </>
                                                                                 : <Typography>{Object.keys(shipToOverrides).includes(key) ? shipToOverrides[key] : val}</Typography>
@@ -434,6 +436,7 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                                                                                                 delete s[key];
                                                                                                 return { ...s };
                                                                                             });
+                                                                                            setTempShipToOverrides(t => ({ ...t, [key]: shipTo[key] }));
                                                                                         }}>
                                                                                             <UndoIcon className={classes.icon} />
                                                                                         </IconButton>
