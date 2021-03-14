@@ -118,6 +118,7 @@ const ShipmentCreator = () => {
     const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
+    const [cartBadge, setCartBadge] = useState("badge");
 
     /* Dialog state */
     const [shipmentStarted, toggleShipment] = useState(false);
@@ -184,7 +185,12 @@ const ShipmentCreator = () => {
     /* Reset page of table to the first when filters are changed */
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
+    }, [activeFilters]);
+
+    useEffect(() => {
+        setCartBadge("badge badge-reload");
+        setCartBadge("badge");
+    }, [cartItems])
 
     /* Initial blank page button handler to open creator dialog */
     const handleStart = () => {
@@ -515,7 +521,7 @@ const ShipmentCreator = () => {
                             <span>Add Unserialized Item</span>
                         </Fab>
 
-                        <div className="badge" value={cartItems.length}>
+                        <div className={cartBadge} value={cartItems.length}>
                             <Fab
                                 color="primary"
                                 onClick={(event) => setAnchorEl(event.target)}>
