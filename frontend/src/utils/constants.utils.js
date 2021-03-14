@@ -6,5 +6,5 @@ export const dateOptions = {
 
 export const URLTypes = {
     asset: "/assets/",
-    shipment: "/shipment/"
+    shipment: "/shipments/"
 };

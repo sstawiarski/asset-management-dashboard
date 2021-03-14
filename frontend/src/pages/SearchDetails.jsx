@@ -38,7 +38,7 @@ const SearchDetails = () => {
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (type, filters) => {
-            let url = `http://localhost:4000/${type}?search=${query}`;
+            let url = `${process.env.REACT_APP_API_URL}/${type}?search=${query}`;
             const keys = Object.keys(filters);
             keys.forEach((key) => {
                 let value = filters[key];

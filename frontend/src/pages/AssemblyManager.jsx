@@ -31,7 +31,6 @@ import QuickAssetView from '../components/Dialogs/QuickAssetView';
 import WarningDialog from '../components/Dialogs/WarningDialog';
 
 //Custom Components
-import CartTable from '../components/CartTable';
 import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
@@ -95,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 //fields to select for the particular type of document going into the table
 const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 
-const CreateAssembly = () => {
+const AssemblyManager = () => {
     const classes = useStyles();
     const history = useHistory();
 
@@ -103,6 +102,7 @@ const CreateAssembly = () => {
     const [state, setState] = useState({}); //main info about assembly, owner, etc
     const [assets, setAssets] = useState([]); //results list
     const [selected, setSelected] = useState([]);
+    const [mapItems, setMapItems] = useState([]);
     const [schema, setSchema] = useState(null);
     const [assetCount, setAssetCount] = useState(0);
     const [cartItems, setCartItems] = useState([]);
@@ -128,7 +128,7 @@ const CreateAssembly = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
+    const [url, setURL] = useState(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`);
 
     /* Initial setup if existing assembly is being modified */
     useEffect(() => {
@@ -137,10 +137,10 @@ const CreateAssembly = () => {
                 getSchema(history.location.state.assemblyType, true).then(response => {
                     setSchema(response);
                     toggleAssembly(true);
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
+                    setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
                 });
 
-                fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
+                fetch(`${process.env.REACT_APP_API_URL}/assets?parentId=${history.location.state.serial}`)
                     .then(res => res.json())
                     .then(json => {
                         const existingItems = json.data.map(item => ({ serial: item.serial, name: item.assetName }));
@@ -154,14 +154,14 @@ const CreateAssembly = () => {
     useEffect(() => {
         if (schema && !history.location.state) {
             const assemblyType = encodeURI(schema.name);
-            setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+            setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
         }
     }, [schema, history.location.state]);
 
     /* Set url with applied filters */
     useEffect(() => {
         setURL(u => {
-            let originalURL = "http://localhost:4000/assets?parentId=null&assetType=Asset";
+            let originalURL = `${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`;
             const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
             const necessaryParts = Object.keys(splitUpURL)
                 .filter(item => ["inAssembly", "isAssembly"].includes(item))
@@ -251,25 +251,24 @@ const CreateAssembly = () => {
     }
 
     /* Check if selected items already have parent assemblies and then add to cart */
-    const handleAddToCart = (items) => {
+    const handleAddToCart = () => {
         const badSerials = [];
         const newItems = [];
 
         //check for existing parents
-        items.forEach(item => {
-            const fullInfo = assets.find(asset => asset.serial === item);
-            if (fullInfo.parentId) {
-                badSerials.push({ serial: fullInfo.serial, name: fullInfo.assetName });
+        mapItems.forEach(item => {
+            if (item.parentId) {
+                badSerials.push({ serial: item.serial, name: item.assetName });
             } else {
-                newItems.push({ serial: fullInfo.serial, name: fullInfo.assetName });
+                newItems.push({ serial: item.serial, name: item.assetName });
             }
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
         if (badSerials.length) {
-            console.log(badSerials)
             setCartItems(orig => ([...orig, ...newItems]));
             setSelected([]);
+            setMapItems([]);
             setHaveParents(badSerials);
             setHasParents(true);
             return;
@@ -278,6 +277,7 @@ const CreateAssembly = () => {
         //set the cart items if no bad serials are found
         setCartItems(orig => ([...orig, ...newItems]));
         setSelected([]);
+        setMapItems([]);
     }
     /** 
      * Compares schema saved in state from the helper tool with the assets currently in cart
@@ -364,6 +364,7 @@ const CreateAssembly = () => {
                                 selectedFields={selectedFields}
                                 selected={selected}
                                 setSelected={setSelected}
+                                setMapItems={setMapItems}
                                 filters={filters}
                                 setFilters={setFilters}
                                 count={assetCount}
@@ -376,13 +377,13 @@ const CreateAssembly = () => {
                                 clickable={QuickAssetView}
                                 inactive="parentId"
                                 returnsObject
-                                clearSelectedOnPageChange>
+                                >
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {
                                         selected.length > 0 ?
                                             <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={() => handleAddToCart(selected)}>
+                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
                                                     <AddIcon />
                                                 </IconButton>
                                             </Tooltip>
@@ -532,4 +533,4 @@ const CreateAssembly = () => {
     );
 }
 
-export default CreateAssembly;
+export default AssemblyManager;

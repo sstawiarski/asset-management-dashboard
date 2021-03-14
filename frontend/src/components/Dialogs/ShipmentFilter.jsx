@@ -44,8 +44,8 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
     /* All filter state */
     const [state, setState] = useState({
         shipmentType: "all",
-        dateCreated: null,
-        dateUpdated: null,
+        created: null,
+        updated: null,
         completed: null,
         status: "all",
         shipFrom: null,
@@ -57,16 +57,15 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 
     /* Get available shipment locations */
     useEffect(() => {
-        fetch('http://localhost:4000/locations')
+        fetch(`${process.env.REACT_APP_API_URL}/locations`)
             .then(res => res.json())
             .then(json => {
                 setState(s => ({ ...s, allShippingOptions: json }));
             });
-    }, [])
+    }, []);
 
     /* Limit the locations selectable based on shipment type */
     useEffect(() => {
-
         if (state.shipmentType === "all") {
             setState(s => ({
                 ...s,
@@ -93,7 +92,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
             }));
         }
 
-    }, [state.shipmentType, state.allShippingOptions])
+    }, [state.shipmentType, state.allShippingOptions]);
 
     const handleClose = () => {
         setOpen(false);
@@ -107,7 +106,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
             .reduce((p, c) => {
                 if (!disallowed.includes(state[c])) {
                     if (c === "shipFrom" || c === "shipTo") {
-                        p[c] = state[c]._id;
+                        p[c] = { id: state[c]._id, name: state[c].key }
                     } else if (state[c] === "Yes") {
                         p[c] = true;
                     } else if (state[c] === "No") {
@@ -142,15 +141,14 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
     const handleReset = () => {
         setState(s => ({
             ...s,
-            shipmentType: "all",
-            dateCreated: null,
-            dateUpdated: null,
+            created: null,
+            updated: null,
             completed: null,
             status: "all",
             shipFrom: null,
             shipTo: null,
-            shipFromOptions: [],
-            shipToOptions: []
+            shipFromOptions: s.allShippingOptions,
+            shipToOptions: s.allShippingOptions
         }));
     }
 
@@ -272,11 +270,11 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                                     format="MM/dd/yyyy"
                                     margin="normal"
                                     id="date-picker-inline"
-                                    name="dateCreated"
+                                    name="created"
                                     inputVariant="outlined"
                                     label="Date Created"
-                                    value={state.dateCreated}
-                                    onChange={date => handleDateChange("dateCreated", date)}
+                                    value={state.created}
+                                    onChange={date => handleDateChange("updated", date)}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}
@@ -292,11 +290,11 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
                                     format="MM/dd/yyyy"
                                     margin="normal"
                                     id="date-picker-inline"
-                                    name="dateUpdated"
+                                    name="updated"
                                     label="Date Updated"
-                                    value={state.dateUpdated}
+                                    value={state.updated}
                                     inputVariant="outlined"
-                                    onChange={date => handleDateChange("dateUpdated", date)}
+                                    onChange={date => handleDateChange("updated", date)}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}

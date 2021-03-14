@@ -26,8 +26,10 @@ const ChipBar = (props) => {
             const newFilters = Object.keys(activeFilters)
                 .reduce((p, c) => {
                     //convert the Date objects send from the filter dialog into numbers for use in the URL
-                    if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime") {
+                    if (c === "dateCreated" || c === "dateUpdated" || c === "eventTime" || c === "created" || c === "updated" || c === "completed") {
                         p[c] = activeFilters[c].getTime();
+                    } else if ((c === "shipFrom" || c === "shipTo") && typeof activeFilters[c] === "object") {
+                        p[c] = activeFilters[c].id;
                     } else {
                         p[c] = activeFilters[c];
                     }
@@ -59,29 +61,29 @@ const ChipBar = (props) => {
                             const excludeArr = JSON.parse(decodeURI(activeFilters[label]));
                             return (
                                 <React.Fragment key={idx}>
-                                { excludeArr.map((exclude, index) => (
-                                    <Chip 
-                                    key={exclude}
-                                    className={classes.chip}
-                                    label={`${capitalized}: ${exclude}`}
-                                    color={((index+1) % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary"}
-                                    onDelete={() => {
-                                        setActiveFilters(s => {
-                                            let newFilters = { ...s };
-                                            const filters = JSON.parse(decodeURI(s[label]));
-                                            const withoutExclude = filters.filter(item => item !== exclude);
-                                            delete newFilters[label];
-                                            newFilters[label] = encodeURI(JSON.stringify(withoutExclude));
-                                            setFilters(f => {
-                                                delete f[label];
-                                                f[label] = encodeURI(JSON.stringify(withoutExclude));
-                                                return f;
-                                            });
-                                            return newFilters;
-                                        });
-                                    }}
-                                    />
-                                )) }
+                                    { excludeArr.map((exclude, index) => (
+                                        <Chip
+                                            key={exclude}
+                                            className={classes.chip}
+                                            label={`${capitalized}: ${exclude}`}
+                                            color={((index + 1) % 2 === 0) ? "secondary" : (iter % 3 === 0) ? "" : "primary"}
+                                            onDelete={() => {
+                                                setActiveFilters(s => {
+                                                    let newFilters = { ...s };
+                                                    const filters = JSON.parse(decodeURI(s[label]));
+                                                    const withoutExclude = filters.filter(item => item !== exclude);
+                                                    delete newFilters[label];
+                                                    newFilters[label] = encodeURI(JSON.stringify(withoutExclude));
+                                                    setFilters(f => {
+                                                        delete f[label];
+                                                        f[label] = encodeURI(JSON.stringify(withoutExclude));
+                                                        return f;
+                                                    });
+                                                    return newFilters;
+                                                });
+                                            }}
+                                        />
+                                    ))}
                                 </React.Fragment>
                             );
                         }
@@ -94,7 +96,9 @@ const ChipBar = (props) => {
                                 : typeof activeFilters[label] === "boolean" ?
                                     activeFilters[label] ? "Yes"
                                         : "No"
-                                    : null;
+                                    : typeof activeFilters[label] === "object" ?
+                                        activeFilters[label].name
+                                        : null;
 
 
 

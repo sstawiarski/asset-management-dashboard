@@ -111,7 +111,7 @@ const ManifestTable = (props) => {
 
         Promise.all(
             selected.map(serial =>
-                fetch(`http://localhost:4000/shipments/${serial}?project=parentId`)
+                fetch(`${process.env.REACT_APP_API_URL}/shipments/${serial}?project=parentId`)
                     .then(resp => {
                         if (resp.status < 300) {
                             return resp.json()
@@ -170,7 +170,7 @@ const ManifestTable = (props) => {
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments";
+            let url = `${process.env.REACT_APP_API_URL}/shipments`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
                 if (idx === 0) {

@@ -29,9 +29,9 @@ router.get("/", async (req, res, err) => {
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
           if (c === "dateCreated" || c === "lastUpdated") {
-
             const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
             const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
+            
             p["$and"] = [{
               [c]: {
                 $gte: beforeDate

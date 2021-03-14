@@ -4,7 +4,7 @@
  */
 export const getSchema = async (type, isAssembly) => {
     const name = encodeURI(type);
-    const response = await fetch(`http://localhost:4000/assets/assembly/schema?type=${name}&assembly=${isAssembly}`)
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/assets/assembly/schema?type=${name}&assembly=${isAssembly}`)
     if (response.status < 300) {
         const json = await response.json();
         return json;
@@ -56,7 +56,7 @@ export const compareSchema = async (schema, components) => {
  * @param field field to project from resulting object, usually assetName for assembly creation
  */
 export const getField = async (serial, field) => {
-    const response = await fetch(`http://localhost:4000/assets/${serial}?project=${field}`);
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/assets/${serial}?project=${field}`);
     if (response.status < 300) {
         const json = await response.json();
         return json;

@@ -23,7 +23,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
 //the object fields to get for the table we need, in this case shipments
-const selectedFields = ["createdBy", "created", "status", "shipmentType","key", "shipFrom", "shipTo"];
+const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
 
@@ -63,7 +63,7 @@ const AllShipments = (props) => {
 
     //     Promise.all(
     //         selected.map(key =>
-    //             fetch(`http://localhost:4000/shipments`)
+    //             fetch(`${process.env.REACT_APP_API_URL}/shipments`)
     //                 .then(resp => {
     //                     if (resp.status < 300) {
     //                         return resp.json()
@@ -105,7 +105,7 @@ const AllShipments = (props) => {
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = "http://localhost:4000/shipments";
+            let url = `${process.env.REACT_APP_API_URL}/shipments`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
                 if (idx === 0) {
@@ -119,7 +119,7 @@ const AllShipments = (props) => {
         };
 
         const urlToFetch = generateURL(filters);
-        
+
         fetch(urlToFetch)
             .then(response => {
                 if (response.status < 300) {
@@ -185,7 +185,7 @@ const AllShipments = (props) => {
                             :
                             <>
                                 
-                                <Link to="/shipments/add-new" >
+                                <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>
