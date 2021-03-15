@@ -48,59 +48,10 @@ const AllShipments = (props) => {
 
     }
 
-    // const handleClick = (event) => {
-    //     setAnchor(event.currentTarget);
-    // }
-
     const handleClose = () => {
         setAnchor(null);
     }
 
-    // const handleMenuClick = (event) => {
-    //     setAnchor(null);
-    //     const children = [];
-    //     setNext(event.target.getAttribute("name"));
-
-    //     Promise.all(
-    //         selected.map(key =>
-    //             fetch(`${process.env.REACT_APP_API_URL}/shipments`)
-    //                 .then(resp => {
-    //                     if (resp.status < 300) {
-    //                         return resp.json()
-    //                     }
-    //                     return null;
-    //                 })
-    //         )
-    //     ).then(jsons => {
-    //         jsons.forEach((item, idx) => {
-    //             if (item) {
-    //                 if (!item.parentId) return;
-    //                 if (!selected.includes(item.parentId)) {
-    //                     children.push(selected[idx]);
-    //                 }
-    //             }
-    //             return;
-    //         })
-           
-    //     });
-
-    // }
-
-    
-
-    // const onSuccess = (succeeded, message) => {
-    //     if (succeeded) {
-    //         setSelected([]);
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //         setActiveFilters({ ...activeFilters });
-    //     } else {
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //     }
-    // };
-
-    
-
-    
 
    useEffect(() => {
         //generate the fetch url based on active filters and their keys
@@ -175,11 +126,7 @@ const AllShipments = (props) => {
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    {/* <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> */}
+  
                                 </Menu>
                             </>
                             :

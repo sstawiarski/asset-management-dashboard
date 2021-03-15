@@ -23,6 +23,27 @@ import ShipmentCreator from './pages/ShipmentCreator';
 
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
+//Redis connection
+var client = redis.createClient('redis://127.0.0.1:6379');
+client.on("error", (err) => {
+    console.error(err);
+});
+
+var isCached = (req, res, next) => {
+    const { id } = req.params;
+    //First check in Redis
+    client.get(id, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        if (data) {
+            const reponse = JSON.parse(data);
+            return res.status(200).json(reponse);
+        }
+        next();
+    });
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',

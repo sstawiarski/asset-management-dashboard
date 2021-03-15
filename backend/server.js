@@ -39,11 +39,9 @@ mongoose.connect(process.env.DB_URL, {
     });
 });
 
-//Redis connection
-const client = redis.createClient('redis://127.0.0.1:6379');
-client.on("error", (err) => {
-    console.error(err);
-});
+
+
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 

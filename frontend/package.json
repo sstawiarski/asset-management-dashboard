@@ -27,6 +27,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
     "react-uuid": "^1.0.2",
+    "redis": "^3.0.2",
     "turf-linestring": "^1.0.2"
   },
   "scripts": {
