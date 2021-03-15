@@ -6,6 +6,22 @@ const Location = require('../models/location.model');
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const dateFunctions = require("date-fns");
 const sampleShipment = require('../sample_data/sampleShipment.data');
+const client = require('../redis_db');
+
+const isCached = (req, res, next) => {
+    const { id } = req.params;
+    //First check in Redis
+    client.get(id, (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        if (data) {
+            const reponse = JSON.parse(data);
+            return res.status(200).json(reponse);
+        }
+        next();
+    });
+}
 
 router.get("/", async (req, res) => {
     try {
@@ -381,7 +397,7 @@ router.put('/load', async (req, res) => {
     }
 });
 
-router.get('/:key', async (req, res) => {
+router.get('/:key', isCached, async (req, res) => {
     try {
         const key = req.params.key;
         //const { key } = req.params;
