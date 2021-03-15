@@ -60,7 +60,7 @@ const CreateNewAssemblyDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
 
     useEffect(() => {
         if (creatorOpen) {
-            fetch("http://localhost:4000/assets/assembly/schema?all=true&assembly=true")
+            fetch(`${process.env.REACT_APP_API_URL}/assets/assembly/schema?all=true&assembly=true`)
             .then(response => response.json())
             .then(json => setState(s => ({
                 ...s,

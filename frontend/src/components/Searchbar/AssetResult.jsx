@@ -60,7 +60,7 @@ const AssetResult = ({ data, divider }) => {
     /* Fetch events for the given data */
     useEffect(() => {
         const fetchEvents = async (id) => {
-            const result = await fetch(`http://localhost:4000/events/${id}?limit=3`);
+            const result = await fetch(`${process.env.REACT_APP_API_URL}/events/${id}?limit=3`);
             const json = await result.json();
             return json;
         };
@@ -83,7 +83,7 @@ const AssetResult = ({ data, divider }) => {
     /* Fetch information about parent assembly if applicable */
     useEffect(() => {
         const fetchParentInfo = async (id) => {
-            const result = await fetch(`http://localhost:4000/assets/${id}`);
+            const result = await fetch(`${process.env.REACT_APP_API_URL}/assets/${id}`);
             const json = await result.json();
             return json;
         };

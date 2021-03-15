@@ -35,7 +35,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
     const sendData = async (data) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
+        const result = await fetch(`${process.env.REACT_APP_API_URL}/assets`, {
             method: "PATCH",
             mode: 'cors',
             headers: {
