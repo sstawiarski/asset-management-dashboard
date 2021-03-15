@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
+const redis = require('redis');
+
 const assetRoutes = require('./routes/assets.routes')
 const eventRoutes = require('./routes/events.routes')
 const employeeRoutes = require('./routes/employees.routes')
@@ -35,6 +37,12 @@ mongoose.connect(process.env.DB_URL, {
         console.log("Server is running on Port: " + PORT);
         
     });
+});
+
+//Redis connection
+const client = redis.createClient('redis://127.0.0.1:6379');
+client.on("error", (err) => {
+    console.error(err);
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
