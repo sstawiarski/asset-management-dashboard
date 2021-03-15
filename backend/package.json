@@ -19,6 +19,7 @@
     "mongodb": "^3.6.2",
     "mongoose": "5.10.9",
     "mongoose-fuzzy-searching": "^2.0.0",
+    "redis": "^3.0.2",
     "swagger-ui-express": "^4.1.4"
   }
 }
