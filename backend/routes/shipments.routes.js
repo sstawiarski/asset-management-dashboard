@@ -329,7 +329,7 @@ router.get("/", async (req, res) => {
 
                 //if top match is an exact match, return only that one
                 if (result[0].data[0].key.toUpperCase() === req.query.search.toUpperCase()) {
-                    const exactMatch = [result[0].data[0]];
+                    const exactMatch = [result[0].data[0]].cache({ expire: 10});
                     res.status(200).json({
                         count: [{ count: 1 }],
                         data: exactMatch
@@ -338,7 +338,7 @@ router.get("/", async (req, res) => {
                 } else {
                     //if matches are extremely close then only return the close matches
                     if (result[0].data[0].confidenceScore > 10) {
-                        const closeMatches = result[0].data.filter(asset => asset.confidenceScore > 10);
+                        const closeMatches = result[0].data.filter(asset => asset.confidenceScore > 10).cache({ expire: 10});
                         res.status(200).json({
                             count: [{ count: closeMatches.length }],
                             data: [...closeMatches]
@@ -397,11 +397,11 @@ router.put('/load', async (req, res) => {
     }
 });
 
-router.get('/:key', isCached, async (req, res) => {
+router.get('/:key', async (req, res) => {
     try {
         const key = req.params.key;
         //const { key } = req.params;
-        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo').cache({ expire: 10 });
         res.status(200).json(shipment)
     }
     catch (err) {
