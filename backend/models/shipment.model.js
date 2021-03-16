@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const manifest = require('./manifest.model')
 const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
+const { getValue, setValue } = require("mongoose/lib/utils");
 
 const shipmentType = [
     'Incoming',
@@ -37,6 +38,25 @@ Shipment.plugin(mongoose_fuzzy_searching, {
             escapeSpecialCharacters: true
         }
     ]
+})
+
+Shipment.static({
+    getFullShipment(query) {
+        return this.findOne(query).populate('shipFrom').populate('shipTo');
+    },
+    hydratePopulated(json) {
+        let obj = this.hydrate(json);
+        for (const [key, val] of Object.entries(this.schema.obj)) {
+          const ref = val["ref"];
+          if (!ref) continue;
+          
+          const value = getValue(key, json);
+          if (value === null || value instanceof mongoose.Types.ObjectId) continue;
+          setValue(key, mongoose.model(ref).hydrate(value), obj);
+        }
+      
+        return obj;
+      }
 })
 
 const Shipments = mongoose.model('shipment', Shipment);

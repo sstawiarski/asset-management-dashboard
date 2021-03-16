@@ -45,9 +45,11 @@ mongoose.Query.prototype.exec = async function() {
   // return found cachedValue
   const doc = JSON.parse(cacheValue);
   console.log('Return data from Redis');
-  return Array.isArray(doc)
-    ? doc.map(d => new this.model(d))
-    : new this.model(doc);
+  if (Array.isArray(doc)) {
+    return doc.map(d => this.model.hydratePopulated(d));
+  } else {
+    return this.model.hydratePopulated(doc);
+  }
 };
 
 module.exports = {
