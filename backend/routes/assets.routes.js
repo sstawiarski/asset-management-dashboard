@@ -918,6 +918,11 @@ router.get("/assembly/schema", async (req, res) => {
  */
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
+  
+  //for mapping
+  const map = req.params.map;
+  const bounds = req.params.bounds;
+
   const { project } = req.query
   let projection = {};
   if (project) {
