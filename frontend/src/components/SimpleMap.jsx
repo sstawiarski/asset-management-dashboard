@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Components
-import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
+import { MapContainer , Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
 import L from 'leaflet';
 
@@ -142,7 +142,7 @@ const SimpleMap = ({ start, end, data, styling }) => {
     }, [start, end, data, popupPosition]);
 
     return (
-        <Map style={styling ? styling : null} ref={mapRef} center={center} zoom={9}>
+        <MapContainer style={styling ? styling : null} ref={mapRef} center={center} zoom={9}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -208,7 +208,7 @@ const SimpleMap = ({ start, end, data, styling }) => {
                     </Popup>
                     : null
             }
-        </Map>
+        </MapContainer>
     );
 };
 

@@ -157,6 +157,7 @@ const AllShipments = (props) => {
                     setFilters={setFilters}
                     count={shipmentCount}
                     variant="shipment"
+                    checkboxes={true}
                     >
 
                     <TableToolbar
@@ -168,7 +169,10 @@ const AllShipments = (props) => {
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
-                                
+                                {/* Edit button */}
+                                <IconButton aria-label={"edit"} >
+                                    <EditIcon />
+                                </IconButton>
                                 <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
