@@ -296,12 +296,13 @@ const NewTable = (props) => {
                                                                 <br />
                                                                 <span style={{ color: "grey" }}>{dateTime}</span>
                                                             </TableCell>)
-                                                    } else if (arrayItem.includes("ship") && !arrayItem.includes("shipment")) {
+                                                    } else if ((arrayItem.includes("ship") && !arrayItem.includes("shipment")) || arrayItem === "deployedLocation") {
+                                                        console.log(item[arrayItem])
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
-                                                                {item[arrayItem].locationName}
+                                                                {item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationName : item[arrayItem]}
                                                                 <br />
-                                                                <span style={{ color: "grey" }}>{item[arrayItem].locationType}</span>
+                                                                <span style={{ color: "grey" }}>{item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationType : null}</span>
                                                             </TableCell>
                                                         );
                                                     } else if (typeof item[arrayItem] === "boolean") {
