@@ -6,22 +6,23 @@ const Location = require('../models/location.model');
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const dateFunctions = require("date-fns");
 const sampleShipment = require('../sample_data/sampleShipment.data');
-const client = require('../redis_db');
 
-const isCached = (req, res, next) => {
-    const { id } = req.params;
-    //First check in Redis
-    client.get(id, (err, data) => {
-        if (err) {
-            console.log(err);
-        }
-        if (data) {
-            const reponse = JSON.parse(data);
-            return res.status(200).json(reponse);
-        }
-        next();
-    });
-}
+// const client = require('../redis_db');
+
+// const isCached = (req, res, next) => {
+//     const { id } = req.params;
+//     //First check in Redis
+//     client.get(id, (err, data) => {
+//         if (err) {
+//             console.log(err);
+//         }
+//         if (data) {
+//             const reponse = JSON.parse(data);
+//             return res.status(200).json(reponse);
+//         }
+//         next();
+//     });
+// }
 
 router.get("/", async (req, res) => {
     try {
@@ -319,7 +320,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray);
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000}); // caches for 5 seconds for testing (5 * 1000 milliseconds)
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -401,7 +402,7 @@ router.get('/:key', async (req, res) => {
     try {
         const key = req.params.key;
         //const { key } = req.params;
-        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo').cache({ expire: 10 });
+        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo').cache({ ttl: 2 * 1000}); // cache for 1 hour
         res.status(200).json(shipment)
     }
     catch (err) {
