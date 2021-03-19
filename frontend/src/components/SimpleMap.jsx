@@ -51,7 +51,7 @@ const shipFromMarkerIcon = new L.Icon({
     className: 'leaflet-marker-shipfrom'
 });
 
-const SimpleMap = ({ start, end, data, styling }) => {
+const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
@@ -134,8 +134,17 @@ const SimpleMap = ({ start, end, data, styling }) => {
 
     }, [start, end, data, popupPosition]);
 
+
+    const onViewChanged=() =>{
+        console.log("Zoom "+ mapRef.current.leafletElement.getZoom());
+        console.log(mapRef.current.leafletElement.getBounds());
+        if(mapRef.current.leafletElement.getZoom() > 10){
+            onBoundsChanged(mapRef.current.leafletElement.getBounds());
+        }
+    }
+
     return (
-        <Map style={styling ? styling : null} ref={mapRef} center={center} zoom={9}>
+        <Map style={styling ? styling : null} ref={mapRef} center={center} zoom={9} ondragend={onViewChanged} onzoomend={onViewChanged}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

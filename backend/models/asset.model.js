@@ -6,7 +6,7 @@ const Asset = new Schema({
     serial: { type: String, required: true, unique: true },
     assetName: { type: String, required: true, unique: false },
     assetType: { type: String, enum: ['Asset', 'Assembly'], required: true, unique: false },
-    deployedLocation: { type: String, required: false, unique: false },
+    deployedLocation: { type: mongoose.Schema.Types.ObjectId, ref:'location', required: false, unique: false },
     owner: { type: String, required: true, unique: false },
     parentId: { type: String, required: false, unique: false },
     dateCreated: { type: mongoose.Schema.Types.Date, required: true, unique: false },
@@ -22,9 +22,6 @@ const Asset = new Schema({
     incomplete: { type: mongoose.Schema.Types.Boolean, required: false, unique: false },
     missingItems: { type: mongoose.Schema.Types.Array, required: false, unique: false },
     assembled: { type: mongoose.Schema.Types.Boolean, required: false, unique: false },
-
-    //for testing, modify after location document population is finished
-    coordinates: {type: mongoose.Schema.Types.Array, required: false, unique: false}
 });
 
 Asset.plugin(mongoose_fuzzy_searching, {

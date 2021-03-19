@@ -918,6 +918,11 @@ router.get("/assembly/schema", async (req, res) => {
  */
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
+  
+  //for mapping
+  const map = req.params.map;
+  const bounds = req.params.bounds;
+
   const { project } = req.query
   let projection = {};
   if (project) {
@@ -927,7 +932,15 @@ router.get("/:serial", async (req, res, err) => {
     }
   }
   try {
-    const asset = await Asset.find({ serial: serial }, projection);
+
+    if(map==true){
+      
+    
+    }else{
+
+    const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
+
+   
 
     if (asset.length) {
       res.status(200).json(asset[0]);
@@ -937,6 +950,7 @@ router.get("/:serial", async (req, res, err) => {
         internalCode: "no_assets_found",
       });
     }
+  }
   } catch (err) {
     console.log(err);
     res.status(400).json({
