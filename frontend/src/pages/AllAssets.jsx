@@ -68,6 +68,7 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
     const [map, toggleMap] = useState(false);
     const [assetMarkers, setAssetMarkers] = useState([]);
+    const [mapBounds, setMapBounds] = useState();
 
 
 
@@ -209,6 +210,11 @@ const AllAssets = (props) => {
                             <Grid item xs={8} sm={12} md={8}>
                                 <SimpleMap 
                                 data={assetMarkers} 
+                                onBoundsChanged={(bounds)=>{
+                                    console.log("Bounds changed.");
+                                    console.log(bounds);
+                                    setMapBounds(bounds);
+                                }}
                                 styling={{ 
                                     borderRadius: "4px", 
                                     boxShadow: "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",

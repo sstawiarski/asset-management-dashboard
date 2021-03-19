@@ -932,6 +932,12 @@ router.get("/:serial", async (req, res, err) => {
     }
   }
   try {
+
+    if(map==true){
+      
+    
+    }else{
+
     const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
 
    
@@ -944,6 +950,7 @@ router.get("/:serial", async (req, res, err) => {
         internalCode: "no_assets_found",
       });
     }
+  }
   } catch (err) {
     console.log(err);
     res.status(400).json({
