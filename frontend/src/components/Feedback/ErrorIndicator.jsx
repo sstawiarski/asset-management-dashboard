@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const ErrorIndicator = ({ errors, label }) => {
+const ErrorIndicator = ({ errors, label, errorLength }) => {
     const classes = useStyles();
 
     return (
@@ -36,7 +36,7 @@ const ErrorIndicator = ({ errors, label }) => {
             title={
                 <React.Fragment>
                     {/* Render out the array of warning strings supplied as props into the tooltip */}
-                    <Typography variant="body2"><b>{errors.length} error{errors.length === 1 ? "" : "s"}</b></Typography>
+                    <Typography variant="body2"><b>{errorLength || errors.length} error{((errorLength && errorLength === 1) || errors.length === 1) ? "" : "s"}</b></Typography>
                     {
                         errors.map(warning => <Typography variant="body2">{warning}</Typography>)
                     }
@@ -50,7 +50,7 @@ const ErrorIndicator = ({ errors, label }) => {
                 </Grid>
                 <Grid item xs={5} md={4}>
                     <div style={{ display: "block", width: "100%" }}>
-                        <Typography variant="body2" className={classes.count} noWrap>{label ? label : errors ? errors.length : null}</Typography>
+                        <Typography variant="body2" className={classes.count} noWrap>{label ? label : errors ? (errorLength || errors.length) : null}</Typography>
                     </div>
 
                 </Grid>

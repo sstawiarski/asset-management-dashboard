@@ -115,7 +115,6 @@ const ShipmentCreator = () => {
     const [success, setSuccess] = useState(null);
     const [override, toggleOverride] = useState(false);
     const [submission, setSubmission] = useState({});
-    const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
     const [cartBadge, setCartBadge] = useState("badge");
@@ -314,7 +313,6 @@ const ShipmentCreator = () => {
         setAssetCount(0);
         //setIncomplete(false);
         //setMissingItems([]);
-        setMoreInfo([]);
         setSelected([]);
         setMapItems([]);
         setSubmission({});
@@ -338,23 +336,17 @@ const ShipmentCreator = () => {
                     {
                         shipmentStarted
                             ? <CustomTable
+                                variant="asset"
                                 data={assets}
                                 selectedFields={selectedFields}
                                 selected={selected}
-                                setSelected={setSelected}
                                 filters={filters}
-                                setFilters={setFilters}
                                 count={assetCount}
-                                variant="asset"
-                                checkboxes={true}
-                                compare={cartItems}
-                                moreInfo={moreInfo}
-                                setMoreInfo={setMoreInfo}
-                                lookup="assetName"
-                                clickable={QuickAssetView}
-                                setMapItems={setMapItems}
-                                returnsObject
-                                validator={(asset) => {
+                                checkboxes
+                                
+                                renderOnClick={QuickAssetView}
+                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                onValidate={(asset) => {
                                     const warnings = [];
                                     const errors = [];
 
@@ -362,7 +354,10 @@ const ShipmentCreator = () => {
                                     if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
 
                                     return { warnings: warnings, errors: errors };
-                                }}>
+                                }}
+                                onAdditionalSelect={setMapItems}
+                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                onSelectedChange={setSelected}>
 
                                 <TableToolbar title="Shipment Creator" selected={selected}>
                                     {

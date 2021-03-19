@@ -8,13 +8,13 @@ import Grid from '@material-ui/core/Grid';
 import WarningIndicator from './WarningIndicator';
 import ErrorIndicator from './ErrorIndicator';
 
-const IndicatorBar = ({ warnings, errors, errorLabel, warningLabel }) => {
+const IndicatorBar = ({ warnings, errors, errorLabel, warningLabel, errorLength }) => {
     return (
         <Grid container direction="row" spacing={2} justify="space-evenly">
             {
                 errors !== null && errors.length ?
                     <Grid item xs={12} md={(warnings !== null && warnings.length) ? 6 : 12}>
-                        <ErrorIndicator errors={errors} label={errorLabel} />
+                        <ErrorIndicator errors={errors} label={errorLabel} errorLength={errorLength} />
                     </Grid>
                     : null
             }
