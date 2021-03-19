@@ -37,7 +37,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     const sendData = async (data) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch(`${process.env.REACT_APP_API_URL}/assets`, {
+        const result = await fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
             method: "PATCH",
             mode: 'cors',
             headers: {
@@ -49,8 +49,38 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     }
 
     const handleSubmit = (event) => {
+
         event.preventDefault();
 
+        const data = {
+            shipments: selected,
+            update: {
+                status: status
+            },
+            override: override,
+            user: user.uniqueId
+        }
+
+        sendData(data)
+            .then(response => {
+
+                //assume anything less than 300 is a success
+                if (response.status < 300) {
+                    return response.json();
+                } else return null;
+            })
+            .then(json => {
+
+                //check if we got back null and send response to parent page for snackbar rendering
+                if (json) {
+                    const newStatus = status;
+                    handleClose();
+                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${newStatus}! Event Key: ${json.key}`)
+                } else {
+                    handleClose();
+                    onSuccess(false, `Failed to update asset owner...`);
+                }
+            })
     }
 
       //reset dialog to default state on close
@@ -58,6 +88,8 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
         setOpen(false);
         setStatus("");
     }
+
+    
 
   
 
