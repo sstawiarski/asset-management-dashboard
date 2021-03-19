@@ -75,15 +75,16 @@ const AllShipments = (props) => {
         
     }, [nextDialog]);
 
-    // const onSuccess = (succeeded, message) => {
-    //     if (succeeded) {
-    //         setSelected([]);
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //         setActiveFilters({ ...activeFilters });
-    //     } else {
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //     }
-    // };
+ /* Successful edit event */
+    const onSuccess = (succeeded, message) => {
+        if (succeeded) {
+            setSelected([]);
+            setSuccess({ succeeded: succeeded, message: message });
+            setActiveFilters({ ...activeFilters });
+        } else {
+            setSuccess({ succeeded: succeeded, message: message });
+        }
+    };
 
     
 
@@ -222,6 +223,7 @@ const AllShipments = (props) => {
                 open={dialogs["status"]}
                 setOpen={(isOpen) => setDialogs({ status: isOpen})}
                 selected={selected}
+                onSuccess={onSuccess}
              />
            
             
