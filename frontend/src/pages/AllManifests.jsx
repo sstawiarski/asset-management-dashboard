@@ -13,8 +13,9 @@ import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-
+//Dialogs
 import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
+import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -31,6 +32,7 @@ const AllShipments = (props) => {
     const [filters, setFilters] = useState({
         limit: 5
     });
+    const [nextDialog, setNext] = useState("");
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
     const [shipmentCount, setShipmentCount] = useState(0);
@@ -48,45 +50,30 @@ const AllShipments = (props) => {
 
     }
 
-    // const handleClick = (event) => {
-    //     setAnchor(event.currentTarget);
-    // }
+  /* Handle floating menu placement for toolbar */
+    const handleClick = (event) => {
+        setAnchor(event.currentTarget);
+    }
 
     const handleClose = () => {
         setAnchor(null);
     }
 
-    // const handleMenuClick = (event) => {
-    //     setAnchor(null);
-    //     const children = [];
-    //     setNext(event.target.getAttribute("name"));
+ /* Check selected items for existing parent */
+    const handleMenuClick = (event) => {
+        setAnchor(null);
+        setNext(event.target.getAttribute("name"));
+        
 
-    //     Promise.all(
-    //         selected.map(key =>
-    //             fetch(`${process.env.REACT_APP_API_URL}/shipments`)
-    //                 .then(resp => {
-    //                     if (resp.status < 300) {
-    //                         return resp.json()
-    //                     }
-    //                     return null;
-    //                 })
-    //         )
-    //     ).then(jsons => {
-    //         jsons.forEach((item, idx) => {
-    //             if (item) {
-    //                 if (!item.parentId) return;
-    //                 if (!selected.includes(item.parentId)) {
-    //                     children.push(selected[idx]);
-    //                 }
-    //             }
-    //             return;
-    //         })
-           
-    //     });
+    }
 
-    // }
-
-    
+        /* Handles stepping through warning dialog to the actual edit dialog */
+    useEffect(() => {
+        if (!nextDialog) return;
+      
+            setDialogs({ [nextDialog]: true });
+        
+    }, [nextDialog]);
 
     // const onSuccess = (succeeded, message) => {
     //     if (succeeded) {
@@ -170,20 +157,18 @@ const AllShipments = (props) => {
                         {selected.length > 0 ?
                             <>
                                 {/* Edit button */}
-                                <IconButton aria-label={"edit"} >
+                                <IconButton aria-label={"edit"} onClick={handleClick}>
                                     <EditIcon />
                                 </IconButton>
+
+                                {/* Floating menu for bulk edit actions */}
                                 <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    {/* <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> */}
+                                    <MenuItem onClick={handleMenuClick} name="status">Change Status</MenuItem>
                                 </Menu>
                             </>
                             :
@@ -232,6 +217,12 @@ const AllShipments = (props) => {
                 setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} 
                 setActiveFilters={setActiveFilters} 
             />
+
+            <ChangeStatusDialog
+                open={dialogs["status"]}
+                setOpen={(isOpen) => setDialogs({ status: isOpen})}
+                selected={selected}
+             />
            
             
             {/* Displays success or failure message */}
