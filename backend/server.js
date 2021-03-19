@@ -7,7 +7,7 @@ const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
 try{
-    const redis = require('redis').createClient('redis://127.0.0.1:6379');
+    const redis = require('redis').createClient(process.env.REDIS_CLIENT);
     const topcache = require('top-cache');
     topcache(mongoose, redis);
 } catch (error) {
