@@ -6,7 +6,14 @@ const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
-const redis = require('redis');
+try{
+    const redis = require('redis').createClient('redis://127.0.0.1:6379');
+    const topcache = require('top-cache');
+    topcache(mongoose, redis);
+} catch (error) {
+    console.error(error);
+}
+
 
 const assetRoutes = require('./routes/assets.routes')
 const eventRoutes = require('./routes/events.routes')
