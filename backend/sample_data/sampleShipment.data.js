@@ -28,7 +28,9 @@ const sampleShipment = [
         "shipFromOverride": {
             "contactName": "Jason DeRulo",
             "contactNumber": "1-800-867-5309"
-        }
+        },
+        "shipFrom": "",
+        "shipTo": ""
     },
     {
         "createdBy": "Test 2",
@@ -58,7 +60,9 @@ const sampleShipment = [
         "key": "SHIP-101",
         "shipToOverride": {
             "contactName": "TESTING 1 2 1 2"
-        }
+        },
+        "shipFrom": "",
+        "shipTo": ""
     },
     {
         "createdBy": "Test 3",
@@ -85,7 +89,9 @@ const sampleShipment = [
                 "serialized": false
             }
         ],
-        "key": "SHIP-102"
+        "key": "SHIP-102",
+        "shipFrom": "",
+        "shipTo": ""
     },
     { 
         "createdBy": "Test 4",
@@ -112,7 +118,9 @@ const sampleShipment = [
                 "serialized": false
             }
         ],
-        "key": "SHIP-103"
+        "key": "SHIP-103",
+        "shipFrom": "",
+        "shipTo": ""
     },
     {
         "createdBy": "Test 5",
@@ -139,7 +147,9 @@ const sampleShipment = [
                 "serialized": false
             }
         ],
-        "key": "SHIP-104"
+        "key": "SHIP-104",
+        "shipFrom": "",
+        "shipTo": ""
     },
     {
         "createdBy": "Test 6",
@@ -166,7 +176,9 @@ const sampleShipment = [
                 "serialized": false
             }
         ],
-        "key": "SHIP-105"
+        "key": "SHIP-105",
+        "shipFrom": "",
+        "shipTo": ""
     }
 
 ];

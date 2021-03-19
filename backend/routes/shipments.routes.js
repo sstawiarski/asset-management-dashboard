@@ -491,8 +491,8 @@ router.put('/load', async (req, res) => {
         sampleShipment.forEach(async (item, idx) => {
             const shipment = new Shipment({
                 ...item,
-                shipFrom: mongoose.Types.ObjectId("602b197047bcea2afc7025f3"),
-                shipTo: mongoose.Types.ObjectId("602b197047bcea2afc7025f9")
+                shipFrom: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipFrom"]) : null,
+                shipTo: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipTo"]) : null
             });
             await shipment.save();
         })
