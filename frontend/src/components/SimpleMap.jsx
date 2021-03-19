@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Components
-import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
+import { Map , Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
 import L from 'leaflet';
 

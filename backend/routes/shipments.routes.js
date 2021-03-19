@@ -531,4 +531,31 @@ router.get('/:key', async (req, res) => {
     }
 });
 
+router.patch('/:key', async (req, res) => {
+    /* destructure key from request URL params to find shipment and get status from request body */
+    const { key } = req.params;
+    const { status } = req.body; //can add more later if shipments need more bulk edits
+
+    try {
+        const shipment = await Shipment.updateOne({ key: decodeURI(key) }, { status: status });
+
+        /* Document with key not found */
+        if (!shipment.n) {
+            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
+
+            /* Document was not modified */
+        } else if (!shipment.nModified) {
+
+            res.status(404).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
+
+            /* Update was successful */
+        } else {
+            res.status(200).json({ message: "Shipment successfully updated" });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
+    }
+});
+
 module.exports = router;
