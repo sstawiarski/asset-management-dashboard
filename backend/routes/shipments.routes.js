@@ -10,6 +10,23 @@ const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
 const Assets = require('../models/asset.model');
 
+// const client = require('../redis_db');
+
+// const isCached = (req, res, next) => {
+//     const { id } = req.params;
+//     //First check in Redis
+//     client.get(id, (err, data) => {
+//         if (err) {
+//             console.log(err);
+//         }
+//         if (data) {
+//             const reponse = JSON.parse(data);
+//             return res.status(200).json(reponse);
+//         }
+//         next();
+//     });
+// }
+
 router.get("/", async (req, res) => {
     try {
         let aggregateArray = [];
@@ -360,7 +377,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray);
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000}); // caches for 5 seconds for testing (5 * 1000 milliseconds)
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -495,7 +512,7 @@ router.put('/load', async (req, res) => {
 router.get('/:key', async (req, res) => {
     try {
         const { key } = req.params;
-        let shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        let shipment = await Shipment.getFullShipment({ key: decodeURI(key) }).cache({ ttl: 30 * 1000 }); // cache for 30 seconds (30 * 1000 milliseconds)
         if (shipment === null) {
             res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
             return;
@@ -519,7 +536,6 @@ router.get('/:key', async (req, res) => {
             delete shipment["shipToOverride"];
         }
 
-        //return shipment as JSON document
         res.status(200).json(shipment)
     }
     catch (err) {
