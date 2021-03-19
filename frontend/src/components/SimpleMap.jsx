@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Components
-import { Map , Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
+import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
 import L from 'leaflet';
 
@@ -82,7 +82,7 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
     useEffect(() => {
         if (refAcquired) {
             if (popupPosition) {
-                mapRef.current.leafletElement.setView(coords ? [popupPosition.coords[0]+5, popupPosition.coords[1]] : popupPosition.coords);
+                mapRef.current.leafletElement.setView(coords ? [popupPosition.coords[0] + 5, popupPosition.coords[1]] : popupPosition.coords);
             } else {
                 mapRef.current.leafletElement.setView(center);
             }
@@ -94,19 +94,21 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
 
         if (start && end) {
             //extract coordinates
-            const startCoords = Object.values(start.coordinates);
-            const endCoords = Object.values(end.coordinates);
+            /* MongoDB stores coordinates in longitude-latitude order rather than the standard lat-lon, so reverse for Leaflet */
+            const startCoordsReversed = [...start.coordinates].reverse();
+            const endCoordsReversed = [...end.coordinates].reverse();
+
             setCoords({
-                start: startCoords,
-                end: endCoords
+                start: startCoordsReversed,
+                end: endCoordsReversed
             });
 
             //find geographic center
-            const centered = findCoordinateAverage([startCoords, endCoords]);
+            const centered = findCoordinateAverage([startCoordsReversed, endCoordsReversed]);
             setCenter(centered);
 
-            //calculate line path
-            const line = helpers([startCoords, endCoords].map(item => [item[1], item[0]]));
+            //line path uses GeoJSON, same as MongoDB, so we can use the non-reversed coordinates
+            const line = helpers([start.coordinates, end.coordinates]);
             const curved = bezierSpline(line);
             setCurve(curved);
         } else if (data) {
@@ -114,10 +116,10 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
             if (data.length) {
                 const dataCoords = data.map((obj, idx) => {
                     /* TODO: Using the index as coords until we can get assets set up with actual coordinates */
-                    if (!obj.hasOwnProperty("deployedLocation")) return [idx, idx];
-                    else if (typeof obj["deployedLocation"] === "string") return [idx, idx];
-                    else if (typeof obj["deployedLocation"] === "object" && !obj["deployedLocation"].hasOwnProperty("coordinates")) return [idx, idx];
-                    return Object.values(obj.deployedLocation.coordinates);
+                    if (!obj.hasOwnProperty("deployedLocation")) return [0, 0];
+                    else if (typeof obj["deployedLocation"] === "string") return [0, 0];
+                    else if (typeof obj["deployedLocation"] === "object" && !obj["deployedLocation"].hasOwnProperty("coordinates")) return [0, 0];
+                    return [...obj.deployedLocation.coordinates].reverse();
                 });
                 setCenter(findCoordinateAverage(dataCoords));
             } else {
@@ -135,10 +137,10 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
     }, [start, end, data, popupPosition]);
 
 
-    const onViewChanged=() =>{
-        console.log("Zoom "+ mapRef.current.leafletElement.getZoom());
+    const onViewChanged = () => {
+        console.log("Zoom " + mapRef.current.leafletElement.getZoom());
         console.log(mapRef.current.leafletElement.getBounds());
-        if(mapRef.current.leafletElement.getZoom() > 10){
+        if (mapRef.current.leafletElement.getZoom() > 10) {
             onBoundsChanged(mapRef.current.leafletElement.getBounds());
         }
     }
@@ -153,7 +155,7 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
             <FeatureGroup ref={featureRef}>
 
                 {/* Line between the two points */}
-                { curve ? <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} /> : null }
+                {curve ? <GeoJSON className={classes.line} data={curve} arrowheads={{ frequency: "endonly", size: "15%" }} /> : null}
 
                 {/* Conditionally render the markers */}
                 {
@@ -164,7 +166,18 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
                         </>
                         : data ?
                             <>
-                                {data.map((item, idx) => <Marker position={item.hasOwnProperty("coordinates") ? item.coordinates : [idx, idx]} onclick={() => setPopupPosition({ coords: item.hasOwnProperty("coordinates") ? item.coordinates : [idx, idx], object: item })} />)}
+                                {
+                                    data.map((item, idx) => {
+                                        return <Marker
+                                            key={item["serial"]}
+                                            position={
+                                                item["deployedLocation"] ?
+                                                    [...item["deployedLocation"].coordinates].reverse()
+                                                    : [idx, idx]
+                                            }
+                                            onclick={() => setPopupPosition({ coords: item["deployedLocation"] ? [...item["deployedLocation"].coordinates].reverse() : [idx, idx], object: item })} />
+                                    })
+                                }
                             </>
                             : null
                 }
@@ -174,38 +187,61 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
             {/* Conditionally render popup based on state control set in Marker onClick functions */}
             {
                 popupPosition ?
-                    <Popup className={classes.popup} position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
+                    <Popup autoPan={false} className={classes.popup} position={popupPosition.coords} onClose={() => setPopupPosition(null)}>
                         <Typography variant="body1" style={{ marginBottom: "10px" }}><b>{popupPosition.title === "start" ? "Ship From" : popupPosition.title === "end" ? "Ship To" : popupPosition.title}</b></Typography>
 
                         {/* Render out the document as the popup content in a clean and dynamic way */}
                         {
-                                <>
-                                    {
-                                        Object.entries(popupPosition.hasOwnProperty("object") ? popupPosition.object : popupPosition.title === "start" ? start : end)
-                                            .map(([key, value]) => {
+                            <>
+                                {
+                                    Object.entries(popupPosition.hasOwnProperty("object") ? popupPosition.object : popupPosition.title === "start" ? start : end)
+                                        .map(([key, value]) => {
 
-                                                /* Remove the document keys that are not needed by end users */
-                                                const exclude = ["_id", "__v", "coordinates", "missingItems","parentId","retired","assignmentType","checkedOut",
-                                                                "groupTag","contractNumber","assetType"];
-                                                if (exclude.includes(key)) return null;
+                                            /* Remove the document keys that are not needed by end users */
+                                            const exclude = ["_id", "__v", "coordinates", "missingItems", "parentId", "retired", "assignmentType", "checkedOut",
+                                                "groupTag", "contractNumber", "assetType"];
+                                            if (exclude.includes(key)) return null;
 
-                                                /* Break up key camelCase and capitalize the first letter for a nice label */
-                                                const capitalizedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+                                            /* Break up key camelCase and capitalize the first letter for a nice label */
+                                            const capitalizedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 
-                                                /*
-                                                 * Render each key-value pair as a row in the popup with the key on the left in bold and the value on the right unstyled
-                                                 * If the key is "contactNumber", indicating a phone number in the Location document, render a telephone link, otherwise just display the value as normal
-                                                 */
+                                            if (key === "deployedLocation") {
                                                 return (
                                                     <div key={key}>
                                                         <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
-                                                        <Typography variant="body2" style={{ float: "right" }}>{key === "contactNumber" ? <a href={`tel:${value}`}>{value}</a> : value}</Typography>
+                                                        <Typography variant="body2" style={{ float: "right" }}>{value["locationName"]}</Typography>
                                                         <div style={{ clear: "both" }} />
                                                     </div>
                                                 );
-                                            })
-                                    }
-                                </>
+                                            }
+
+                                            if (key === "dateCreated" || key === "lastUpdated") {
+                                                if (value) {
+                                                    return (
+                                                        <div key={key}>
+                                                            <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
+                                                            <Typography variant="body2" style={{ float: "right" }}>{new Date(value).toLocaleDateString("en-US")}</Typography>
+                                                            <div style={{ clear: "both" }} />
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            }
+
+                                            /*
+                                             * Render each key-value pair as a row in the popup with the key on the left in bold and the value on the right unstyled
+                                             * If the key is "contactNumber", indicating a phone number in the Location document, render a telephone link, otherwise just display the value as normal
+                                             */
+                                            return (
+                                                <div key={key}>
+                                                    <Typography variant="body2" style={{ float: "left" }}><b>{capitalizedKey}</b></Typography>
+                                                    <Typography variant="body2" style={{ float: "right" }}>{key === "contactNumber" ? <a href={`tel:${value}`}>{value}</a> : value}</Typography>
+                                                    <div style={{ clear: "both" }} />
+                                                </div>
+                                            );
+                                        })
+                                }
+                            </>
                         }
                     </Popup>
                     : null
