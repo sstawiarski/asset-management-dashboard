@@ -3,10 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Shipment = require('../models/shipment.model');
 const Location = require('../models/location.model');
+const Counter = require('../models/counter.model');
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const dateFunctions = require("date-fns");
 const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
+const Assets = require('../models/asset.model');
 
 router.get("/", async (req, res) => {
     try {
@@ -422,20 +424,29 @@ router.get("/", async (req, res) => {
  router.post('/', async (req, res, err) => {
     try {
         const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+
+        if (req.body.override) {
+            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
+            await Assets.updateMany({ serial: { $in: serials } }, { deployedLocation: mongoose.Types.ObjectId(req.body.shipTo), lastUpdated: Date.now() });
+        } else {
+            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
+            const alreadyDeployed = await Assets.find({ serial: { $in: serials } });
+        }
+        
         const count = await Counter.findOneAndUpdate({ name: "shipments" }, { $inc: { next: 1 } }, { useFindAndModify: false });
         const shipment = {
             createdBy: username.employeeId,
             created: Date.now(),
             updated: null,
             completed: null,
-            status: req.body.status,
+            status: "Staging",
             shipmentType: req.body.shipmentType,
             specialInstructions: req.body.specialInstructions,
-            contractId: req.body.contractId,
+            contractId: req.body.contractId || null,
             manifest: req.body.manifest,
             shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
             shipTo: mongoose.Types.ObjectId(req.body.shipTo),
-            key: count.next
+            key: `SHIP-${count.next}`
         };
         if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
         if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
