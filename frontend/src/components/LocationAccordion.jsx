@@ -173,7 +173,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                 <Grid item xs={5}>
                                                     <Grid container>
                                                         <Grid item xs={12}>
-                                                            <Typography>{Object.keys(overrides).includes(key) ? `[${overrides[key].latitude.toFixed(5)},${overrides[key].longitude.toFixed(5)}]` : JSON.stringify([val["latitude"], val["longitude"]])}</Typography>
+                                                            <Typography>{Object.keys(overrides).includes(key) ? JSON.stringify([overrides[key][1].toFixed(4), overrides[key][0].toFixed(4)]) : JSON.stringify([val[1].toFixed(4), val[0].toFixed(4)])}</Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -181,7 +181,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                     isEditingMap ?
                                                         <>
                                                             <Grid item xs={12} style={{ marginTop: "10px" }}>
-                                                                <Map center={Object.keys(overrides).includes(key) ? [overrides[key].latitude, overrides[key].longitude] : [val["latitude"], val["longitude"]]} zoom={10} onClick={(e) => setOverrideMarker(e.latlng)} style={{ height: "95%" }}>
+                                                                <Map center={Object.keys(overrides).includes(key) ? [...overrides[key]].reverse() : [...val].reverse()} zoom={10} onClick={(e) => setOverrideMarker([e.latlng["lat"], e.latlng["lng"]])} style={{ height: "95%" }}>
                                                                     <TileLayer
                                                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                                                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -189,8 +189,8 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                                     <FeatureGroup>
                                                                         {
                                                                             (overrideMarker || overrides["coordinates"]) ?
-                                                                                <Marker position={(overrideMarker || [overrides[key].latitude, overrides[key].longitude])} />
-                                                                                : <Marker position={[val["latitude"], val["longitude"]]} />
+                                                                                <Marker position={(overrideMarker || [...overrides[key]].reverse())} />
+                                                                                : <Marker position={[...val].reverse()} />
                                                                         }
                                                                     </FeatureGroup>
                                                                 </Map>
@@ -203,10 +203,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                                                 variant="outlined"
                                                                                 color="secondary"
                                                                                 onClick={() => {
-                                                                                    overrides["coordinates"] = {
-                                                                                        latitude: overrideMarker["lat"],
-                                                                                        longitude: overrideMarker["lng"]
-                                                                                    };
+                                                                                    overrides["coordinates"] = [...overrideMarker].reverse();
 
                                                                                     toggleIsEditingMap(false);
                                                                                     setOverrideMarker(null);
@@ -218,7 +215,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                                                 onClick={() => setOverrideMarker(null)}
                                                                                 style={{ marginLeft: "5px" }}
                                                                                 startIcon={<UndoIcon />}>Undo</Button>
-                                                                            <Typography><b>New coordinates:</b> {JSON.stringify([overrideMarker["lat"], overrideMarker["lng"]])}</Typography>
+                                                                            <Typography><b>New coordinates:</b> {JSON.stringify(overrideMarker)}</Typography>
                                                                         </>
                                                                         : <Button
                                                                             variant="outlined"
