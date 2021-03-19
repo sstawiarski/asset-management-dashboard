@@ -239,41 +239,34 @@ const ShipmentCreator = () => {
     const handleAddToCart = () => {
         const badSerials = [];
 
-        const newAdditions = mapItems.map(item => {
-            return {
+        const newAdditions = []
+
+        mapItems.forEach(item => {
+            if (item.deployedLocation || item.parentId) badSerials.push({
+                serial: item.serial,
+                name: item.assetName,
+                problem: item.deployedLocation ? "Deployed at another location" : "Part of an assembly"
+            });
+            else newAdditions.push({
                 serial: item.serial,
                 name: item.assetName
-            }
-        });
-
-        setCartItems(orig => [...orig, ...newAdditions]);
-        setSelected([]);
-        setMapItems([]);
-
-        /*
-         
-        //check for existing parents
-        items.forEach(item => {
-            const fullInfo = assets.find(asset => asset.serial === item);
-            if (fullInfo.parentId) {
-                badSerials.push(item);
-            }
+            })
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
         if (badSerials.length) {
-            const onlyGood = items.filter(item => !badSerials.includes(item));
-            setCartItems(orig => ([...orig, ...onlyGood]));
+            setCartItems(orig => ([...orig, ...newAdditions]));
             setSelected([]);
+            setMapItems([]);
             setHaveParents(badSerials);
             setHasParents(true);
             return;
         }
 
         //set the cart items if no bad serials are found
-        setCartItems(orig => ([...orig, ...items]));
+        setCartItems(orig => [...orig, ...newAdditions]);
         setSelected([]);
-        */
+        setMapItems([]);
     }
 
     /** 
@@ -364,7 +357,7 @@ const ShipmentCreator = () => {
                                 validator={(asset) => {
                                     const warnings = [];
                                     const errors = [];
-                                    
+
                                     if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
                                     if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
 
@@ -463,13 +456,15 @@ const ShipmentCreator = () => {
                 open={hasParents}
                 setOpen={setHasParents}
                 handleOverride={() => {
-                    setCartItems(c => [...c, ...haveParents]);
+                    const items = haveParents.map(item => ({ name: item.name, serial: item.serial }));
+                    setCartItems(c => [...c, ...items]);
                     setHasParents(false);
                     setHaveParents([]);
                 }}
                 text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
                 title="Asset Update Warning"
-                items={haveParents}
+                items={haveParents.map(item => [item.serial, item.name, item.problem])}
+                headers={["Serial", "Name", "Problem"]}
             />
 
             <WarningDialog
