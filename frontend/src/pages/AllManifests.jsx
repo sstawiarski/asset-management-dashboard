@@ -13,8 +13,9 @@ import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-
+//Dialogs
 import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
+import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -31,6 +32,7 @@ const AllShipments = (props) => {
     const [filters, setFilters] = useState({
         limit: 5
     });
+    const [nextDialog, setNext] = useState("");
     const [dialogs, setDialogs] = useState({});
     const [selected, setSelected] = useState([]);
     const [shipmentCount, setShipmentCount] = useState(0);
@@ -38,7 +40,7 @@ const AllShipments = (props) => {
     const [anchor, setAnchor] = useState(null);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
-   
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
@@ -48,14 +50,22 @@ const AllShipments = (props) => {
 
     }
 
-    // const handleClick = (event) => {
-    //     setAnchor(event.currentTarget);
-    // }
+  /* Handle floating menu placement for toolbar */
+    const handleClick = (event) => {
+        setAnchor(event.currentTarget);
+    }
 
     const handleClose = () => {
         setAnchor(null);
     }
 
+ /* Check selected items for existing parent */
+    const handleMenuClick = (event) => {
+        setAnchor(null);
+        setNext(event.target.getAttribute("name"));
+        
+
+    }
     // const handleMenuClick = (event) => {
     //     setAnchor(null);
     //     const children = [];
@@ -81,28 +91,37 @@ const AllShipments = (props) => {
     //             }
     //             return;
     //         })
-           
+
     //     });
 
     // }
 
-    
 
-    // const onSuccess = (succeeded, message) => {
-    //     if (succeeded) {
-    //         setSelected([]);
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //         setActiveFilters({ ...activeFilters });
-    //     } else {
-    //         setSuccess({ succeeded: succeeded, message: message });
-    //     }
-    // };
 
-    
+        /* Handles stepping through warning dialog to the actual edit dialog */
+    useEffect(() => {
+        if (!nextDialog) return;
+      
+            setDialogs({ [nextDialog]: true });
+        
+    }, [nextDialog]);
 
-    
+ /* Successful edit event */
+    const onSuccess = (succeeded, message) => {
+        if (succeeded) {
+            setSelected([]);
+            setSuccess({ succeeded: succeeded, message: message });
+            setActiveFilters({ ...activeFilters });
+        } else {
+            setSuccess({ succeeded: succeeded, message: message });
+        }
+    };
 
-   useEffect(() => {
+
+
+
+
+    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
             let url = `${process.env.REACT_APP_API_URL}/shipments`;
@@ -139,7 +158,7 @@ const AllShipments = (props) => {
         setFilters(s => ({ ...s, page: 0 }));
     }, [activeFilters])
 
-        
+
 
 
 
@@ -149,15 +168,16 @@ const AllShipments = (props) => {
             <Header heading="Shipments" subheading="View All" />
             <div>
                 <CustomTable
+                    variant="shipment"
                     data={shipments}
                     selectedFields={selectedFields}
                     selected={selected}
-                    setSelected={setSelected}
                     filters={filters}
-                    setFilters={setFilters}
                     count={shipmentCount}
-                    variant="shipment"
-                    >
+                    checkboxes={true}
+                    
+                    onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                    onSelectedChange={setSelected}>
 
                     <TableToolbar
                         title="All Shipments"
@@ -168,23 +188,24 @@ const AllShipments = (props) => {
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
                             <>
-                                
+                                {/* Edit button */}
+                                <IconButton aria-label={"edit"} onClick={handleClick}>
+                                    <EditIcon />
+                                </IconButton>
+
+                                {/* Floating menu for bulk edit actions */}
                                 <Menu
                                     id="edit-menu"
                                     anchorEl={anchor}
                                     keepMounted
                                     open={Boolean(anchor)}
                                     onClose={handleClose}>
-                                    {/* <MenuItem onClick={handleMenuClick} name="retire">Retire Assets</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="groupTag">Change Group Tag</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignee">Reassign</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="owner">Change Owner</MenuItem>
-                                    <MenuItem onClick={handleMenuClick} name="assignmentType">Change Assignment Type</MenuItem> */}
+                                    <MenuItem onClick={handleMenuClick} name="status">Change Status</MenuItem>
                                 </Menu>
                             </>
                             :
                             <>
-                                
+
                                 <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
@@ -206,9 +227,9 @@ const AllShipments = (props) => {
                                         />
                                     </div>
                                 </Container>
-                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true}))}>
-                                        <FilterListIcon />
-                                    </IconButton>
+                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
+                                    <FilterListIcon />
+                                </IconButton>
                             </>
                         }
                     </TableToolbar>
@@ -223,11 +244,18 @@ const AllShipments = (props) => {
 
             </div>
             { /*put shipment filter here*/}
-            <ShipmentFilter 
-                open={dialogs["filter"]} 
-                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} 
-                setActiveFilters={setActiveFilters} 
+            <ShipmentFilter
+                open={dialogs["filter"]}
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))}
+                setActiveFilters={setActiveFilters}
             />
+
+            <ChangeStatusDialog
+                open={dialogs["status"]}
+                setOpen={(isOpen) => setDialogs({ status: isOpen})}
+                selected={selected}
+                onSuccess={onSuccess}
+             />
            
             
             {/* Displays success or failure message */}

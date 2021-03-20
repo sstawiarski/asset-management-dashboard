@@ -160,7 +160,7 @@ const AllAssets = (props) => {
         if (invalidSerial.length > 0) {
             setDialogs({ invalid: true });
         }
-    }, [invalidSerial])
+    }, [invalidSerial]);
 
     /* Filter the results list */
     useEffect(() => {
@@ -225,20 +225,34 @@ const AllAssets = (props) => {
                             </Grid>
                             : null
                     }
-                    <Grid item xs={7} sm={10} md={map ? 4 : 12}>
+                    <Grid item xs={7} sm={12} md={map ? 4 : 12}>
                         <CustomTable
+                            variant="asset"
                             data={assets}
                             selectedFields={selectedFields}
                             selected={selected}
-                            setSelected={setSelected}
-                            setMapItems={setAssetMarkers}
-                            filters={filters}
-                            setFilters={setFilters}
                             count={assetCount}
-                            variant="asset"
-                            checkboxes={true}
-                            inactive="assembled"
-                            >
+                            checkboxes
+                            filters={filters}
+
+                            onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                            onSelectedChange={setSelected}
+                            onAdditionalSelect={setAssetMarkers}
+                            onValidate={(item) => {
+                                const warnings = [];
+                                const errors = [];
+
+                                if (item.assetType === "Assembly" && item.incomplete) {
+                                    errors.push(`Assembly is incomplete (missing ${item.missingItems && item.missingItems.length} assets):`);
+                                    item.missingItems && item.missingItems.map((missing, idx) => errors.push(<span key={idx}><b>{idx+1}) &nbsp;</b>{missing}</span>))
+                                }
+
+                                if (item.assetType === "Assembly" && !item.assembled) {
+                                    warnings.push("Assembly is marked 'disassembled'");
+                                }
+
+                                return { warnings: warnings, errors: errors, errorLength: errors.length - ((item.missingItems && item.missingItems.length) || 0) }
+                            }}>
 
                             <TableToolbar
                                 title="All Assets"
@@ -249,8 +263,8 @@ const AllAssets = (props) => {
                                 {/* Render main action if no items selected, edit actions if some are selected */}
                                 {selected.length > 0 ?
                                     <>
-                                        <Grid container xs={!map ? 9: 12} justify='flex-end' alignItems='flex-end' >
-                                            <Grid item xs={!map ? 1: 4}>
+                                        <Grid container xs={!map ? 9 : 12} justify='flex-end' alignItems='flex-end' >
+                                            <Grid item xs={!map ? 1 : 4}>
                                                 <Tooltip title={"Map View"}>
                                                     <span>
                                                         <IconButton
@@ -349,7 +363,7 @@ const AllAssets = (props) => {
                                                         </span>
                                                     </Tooltip>
                                                 </Grid>
-                                                
+
                                                 <Grid item xs={7}>
                                                     <Tooltip title={"List View"} >
                                                         <span>

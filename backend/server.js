@@ -6,6 +6,15 @@ const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
 require('dotenv').config();
 
+try{
+    const redis = require('redis').createClient(process.env.REDIS_CLIENT);
+    const topcache = require('top-cache');
+    topcache(mongoose, redis);
+} catch (error) {
+    console.error(error);
+}
+
+
 const assetRoutes = require('./routes/assets.routes')
 const eventRoutes = require('./routes/events.routes')
 const employeeRoutes = require('./routes/employees.routes')
@@ -36,6 +45,10 @@ mongoose.connect(process.env.DB_URL, {
         
     });
 });
+
+
+
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 

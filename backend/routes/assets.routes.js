@@ -6,6 +6,7 @@ const connection = mongoose.connection;
 const Asset = require("../models/asset.model");
 const Counter = require("../models/counter.model");
 const Event = require("../models/event.model");
+const Location = require('../models/location.model');
 const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
@@ -31,7 +32,7 @@ router.get("/", async (req, res, err) => {
           if (c === "dateCreated" || c === "lastUpdated") {
             const beforeDate = dateFunctions.startOfDay(new Date(parseInt(query[c])));
             const afterDate = dateFunctions.endOfDay(new Date(parseInt(query[c])));
-            
+
             p["$and"] = [{
               [c]: {
                 $gte: beforeDate
@@ -51,7 +52,7 @@ router.get("/", async (req, res, err) => {
               if (p["assetName"]) {
                 const prev = p["assetName"];
                 delete p["assetName"];
-  
+
                 if (p["$and"]) {
                   //find all assets that are not in the exclude array
                   p["$and"] = [...p["$and"], {
@@ -70,7 +71,7 @@ router.get("/", async (req, res, err) => {
                     }
                   ];
                 }
-  
+
               } else {
                 p["assetName"] = { $in: assemblySchema.components };
               }
@@ -181,34 +182,40 @@ router.get("/", async (req, res, err) => {
       aggregateArray.push(match);
     }
 
-    let deployedLookup = {
+    const lookupMatch = {
+      $match: {
+        $expr: {
+          $eq: ["$_id", "$$locId"],
+        }
+      }
+    }
+
+    const lookup = {
       $lookup: {
-          'from': Location.collection.name,
-          let: { deployedId: "$deployedLocation" },
-          pipeline: [
-              {
-                  $match: {
-                      $expr: {
-                          $eq: ["$_id", "$$deployedId"],
-                      }
-                  }
-
-              }, {
-                  $project: {
-                      _id: 0,
-                      __v: 0
-                  }
-              }
-          ],
-          'as': "deployedLocation"
+        'from': Location.collection.name,
+        let: { locId: "$deployedLocation" },
+        pipeline: [
+          lookupMatch,
+          {
+            $project: {
+              _id: 0,
+              __v: 0
+            }
+          }
+        ],
+        'as': "deployedLocation"
       }
-  };
+    };
 
-  const deployedUnwind = {
+    const locationUnwind = {
       $unwind: {
-          path: "$deployedLocation"
+        path: "$deployedLocation",
+        preserveNullAndEmptyArrays: true
       }
-  };
+    };
+
+    aggregateArray.push(lookup);
+    aggregateArray.push(locationUnwind);
 
     if (req.query.sort_by) {
       //default ascending order
@@ -277,7 +284,7 @@ router.get("/", async (req, res, err) => {
       }
     }
     aggregateArray.push(projection);
-    
+
     const result = await Asset.aggregate(aggregateArray);
 
     //filter results to determine better or even exact matches
@@ -713,10 +720,10 @@ router.post('/assembly', async (req, res, err) => {
     const parentSers = withParents.map(item => item.parentId);
     const assetNames = withParents.map(item => item.assetName);
 
-     //update all assets with the new parent
-     await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
+    //update all assets with the new parent
+    await Asset.updateMany({ serial: { $in: req.body.assets } }, { parentId: req.body.serial });
 
-     //update old parents to be missing the item and mark each as incomplete
+    //update old parents to be missing the item and mark each as incomplete
     let i = 0;
     for (const parent of parentSers) {
       await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true });
@@ -947,7 +954,7 @@ router.get("/assembly/schema", async (req, res) => {
  */
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
-  
+
   //for mapping
   const map = req.params.map;
   const bounds = req.params.bounds;
@@ -962,24 +969,24 @@ router.get("/:serial", async (req, res, err) => {
   }
   try {
 
-    if(map==true){
-      
-    
-    }else{
+    if (map == true) {
 
-    const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
 
-   
-
-    if (asset.length) {
-      res.status(200).json(asset[0]);
     } else {
-      res.status(404).json({
-        message: "No assets found for serial",
-        internalCode: "no_assets_found",
-      });
+
+      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
+
+
+
+      if (asset.length) {
+        res.status(200).json(asset[0]);
+      } else {
+        res.status(404).json({
+          message: "No assets found for serial",
+          internalCode: "no_assets_found",
+        });
+      }
     }
-  }
   } catch (err) {
     console.log(err);
     res.status(400).json({

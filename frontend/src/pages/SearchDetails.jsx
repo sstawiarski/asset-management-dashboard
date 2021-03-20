@@ -114,14 +114,14 @@ const SearchDetails = () => {
 
             <div>
                 <CustomTable
+                    variant="asset"
                     data={assets}
                     selectedFields={assetFields}
                     filters={assetFilters}
-                    setFilters={setAssetFilters}
                     count={assetCount}
-                    variant="asset"
                     selected={[]}
-                    checkboxes={false}>
+                    checkboxes={false}
+                    onFilterChange={(newFilters) => setAssetFilters(s => ({ ...s, ...newFilters }))}>
 
                     <TableToolbar
                         title="Asset Results"
@@ -143,20 +143,16 @@ const SearchDetails = () => {
             <div>
 
                 <CustomTable
+                    variant="event"
                     data={events}
                     selectedFields={eventFields}
                     filters={eventFilters}
-                    setFilters={setEventFilters}
-                    activeFilters={activeEventFilters}
-                    setActiveFilters={setActiveEventFilters}
                     count={eventCount}
-                    variant="event"
                     selected={[]}
                     checkboxes={false}
-                    clickable={({ isOpen, identifier, setOpen, ...rest }) => {
-                        return <EventDetailsViewer open={isOpen} event={identifier} onClose={() => setOpen(false)} {...rest} />
-                    }}
-                >
+                    renderOnClick={({ isOpen, identifier, setOpen, ...rest }) => <EventDetailsViewer open={isOpen} event={identifier} onClose={() => setOpen(false)} {...rest} />}
+                    onFilterChange={(newFilters) => setAssetFilters(s => ({ ...s, ...newFilters }))}>
+
                     <TableToolbar
                         title="Event Results"
                         selected={[]}>

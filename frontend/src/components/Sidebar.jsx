@@ -139,7 +139,7 @@ const getURL = (name, loggedInUser) => {
         case "View All Shipments":
             return "/shipments/view-all"
         case "Track":
-                return "/shipments/track"
+            return "/shipments/track"
         case "Add New":
             return "/shipments/create"
         case "Assembly Manager":
@@ -180,6 +180,8 @@ const isHighlighted = (location, link, open) => {
             return true;
         } else if (text === "/shipments/create" && link === "Add New" && open) {
             return true;
+        } else if (text === "/account" && link === "Account" && !open) {
+                return true; 
         } else {
             return false;
         }
@@ -244,7 +246,7 @@ const Sidebar = ({ location }) => {
 
                     {/* Account icon, name, and settings header section */}
                     <List className={classes.accountHeader}>
-                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null}>
+                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null} disableRipple={!open ? true : false} onClick={() => history.push('/account')}>
 
                             {/* Render account icon as one of 2 types of buttons for better styling open vs. closed */}
                             {
@@ -253,15 +255,21 @@ const Sidebar = ({ location }) => {
                                         size="small"
                                         disableRipple
                                         style={{ marginLeft: "20px", marginRight: "10px" }}
-                                        onClick={() => history.push('/account')}
                                     >
                                         <AccountCircleIcon />
                                     </IconButton>
                                     :
-                                    <ListItemIcon onClick={() => history.push('/account')}>
-                                        <AccountCircleIcon style={{ marginLeft: "24px" }} />
+                                    <ListItemIcon>
+                                        <AccountCircleIcon 
+                                        style={{ marginLeft: "24px" }} 
+                                        className={isHighlighted(location, "Account", open) ?
+                                            !open ? classes.highlighted : classes.moduleText
+                                            : classes.nonHighlighted}
+                                        />
                                     </ListItemIcon>
                             }
+
+
 
                             {/* Logged in user name */}
                             <ListItemText
@@ -275,7 +283,10 @@ const Sidebar = ({ location }) => {
                                 size="small"
                                 disableRipple
                                 style={!open ? { width: 0, visibility: "hidden" } : null}
-                                onClick={() => history.push('/settings')}
+                                onClick={(e) => { 
+                                    e.stopPropagation();
+                                    history.push('/settings');
+                                }}
                             >
                                 <SettingsIcon style={!open ? { width: 0, visibility: "hidden" } : null} />
                             </IconButton>
@@ -461,7 +472,7 @@ const Sidebar = ({ location }) => {
                                                                                 }
                                                                                 primary={item}
                                                                                 primaryTypographyProps={{ variant: "body2" }}
-                                                                                />
+                                                                            />
 
                                                                         </ListItem>
                                                                     );
