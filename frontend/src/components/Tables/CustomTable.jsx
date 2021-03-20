@@ -297,7 +297,6 @@ const NewTable = (props) => {
                                                                 <span style={{ color: "grey" }}>{dateTime}</span>
                                                             </TableCell>)
                                                     } else if ((arrayItem.includes("ship") && !arrayItem.includes("shipment")) || arrayItem === "deployedLocation") {
-                                                        console.log(item[arrayItem])
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
                                                                 {item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationName : item[arrayItem]}
