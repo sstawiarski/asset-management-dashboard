@@ -21,7 +21,7 @@ router.get("/", async (req, res, err) => {
       const query = req.query;
 
       //remove page, limit, search, and sorting params since they do not go in the $match
-      const disallowed = ["page", "limit", "search", "sort_by", "order"];
+      const disallowed = ["page", "limit", "search", "sort_by", "order","mapBounds","mapView"];
       const filters = await Object.keys(query)
         .reduce(async (pc, c) => {
           const p = await pc;
@@ -216,6 +216,14 @@ router.get("/", async (req, res, err) => {
 
     aggregateArray.push(lookup);
     aggregateArray.push(locationUnwind);
+
+    if(req.query.mapView==="true"){
+      const boundsArray=decodeURI(bounds).split(',');
+      const inBounds= Assets.find( {
+        $geoWithin: { $box: [boundsArray[0],boundsArray[1]]}
+      })
+      aggregateArray.push(inBounds);
+    }
 
     if (req.query.sort_by) {
       //default ascending order

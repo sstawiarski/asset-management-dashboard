@@ -211,9 +211,9 @@ const AllAssets = (props) => {
                                 <SimpleMap 
                                 data={assetMarkers} 
                                 onBoundsChanged={(bounds)=>{
-                                    console.log("Bounds changed.");
-                                    console.log(bounds);
-                                    setMapBounds(bounds);
+                                    const mapView="true";
+                                    const mapBounds=encodeURI(bounds);
+                                    setFilters(s => ({...s, mapBounds, mapView}))
                                 }}
                                 styling={{ 
                                     borderRadius: "4px", 
