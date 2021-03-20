@@ -143,8 +143,6 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
 
 
     const onViewChanged=() =>{
-        console.log("Zoom "+ mapRef.current.leafletElement.getZoom());
-        console.log(mapRef.current.leafletElement.getBounds());
         if(mapRef.current.leafletElement.getZoom() > 10){
             onBoundsChanged(mapRef.current.leafletElement.getBounds());
         }

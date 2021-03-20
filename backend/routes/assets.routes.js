@@ -181,6 +181,35 @@ router.get("/", async (req, res, err) => {
       aggregateArray.push(match);
     }
 
+    let deployedLookup = {
+      $lookup: {
+          'from': Location.collection.name,
+          let: { deployedId: "$deployedLocation" },
+          pipeline: [
+              {
+                  $match: {
+                      $expr: {
+                          $eq: ["$_id", "$$deployedId"],
+                      }
+                  }
+
+              }, {
+                  $project: {
+                      _id: 0,
+                      __v: 0
+                  }
+              }
+          ],
+          'as': "deployedLocation"
+      }
+  };
+
+  const deployedUnwind = {
+      $unwind: {
+          path: "$deployedLocation"
+      }
+  };
+
     if (req.query.sort_by) {
       //default ascending order
       const sortOrder = (req.query.order === 'desc' ? -1 : 1);
