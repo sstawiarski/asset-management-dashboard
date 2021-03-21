@@ -218,11 +218,27 @@ router.get("/", async (req, res, err) => {
     aggregateArray.push(locationUnwind);
 
     if(req.query.mapView==="true"){
-      const boundsArray=decodeURI(bounds).split(',');
-      const inBounds= Assets.find( {
-        $geoWithin: { $box: [boundsArray[0],boundsArray[1]]}
-      })
+      const boundsArray=(decodeURI(req.query.mapBounds).split(','));
+      const inBounds={
+         $match: {
+        "deployedLocation.coordinates":{
+          $geoWithin: {
+            //array comes in with [lat,long] but needs to be [long,lat]
+             $box: [[parseFloat(boundsArray[1]),parseFloat(boundsArray[0])],
+                    [parseFloat(boundsArray[3]),parseFloat(boundsArray[2])]]
+                  }
+                }
+              }
+            };
       aggregateArray.push(inBounds);
+    }else {
+      const match = {
+        $match: {
+
+        }
+      };
+
+      aggregateArray.push(match);
     }
 
     if (req.query.sort_by) {

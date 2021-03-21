@@ -213,6 +213,7 @@ const AllAssets = (props) => {
                                 onBoundsChanged={(bounds)=>{
                                     const mapView="true";
                                     const mapBounds=encodeURI(bounds);
+                                    console.log(bounds);
                                     setFilters(s => ({...s, mapBounds, mapView}))
                                 }}
                                 styling={{ 
@@ -270,7 +271,9 @@ const AllAssets = (props) => {
                                                         <IconButton
                                                             className={map ? classes.disabled : classes.enabled}
                                                             aria-label={"Map-View"}
-                                                            onClick={() => toggleMap(true)}
+                                                            onClick={() => {
+                                                                toggleMap(true)
+                                                             } }
                                                             disabled={map}
                                                         >
                                                             <MapIcon />
@@ -284,7 +287,11 @@ const AllAssets = (props) => {
                                                         <IconButton
                                                             className={!map ? classes.disabled : classes.enabled}
                                                             aria-label={"List-View"}
-                                                            onClick={() => toggleMap(false)}
+                                                            onClick={() => {
+                                                                 toggleMap(false)
+                                                                 const mapView="false"
+                                                                 setFilters(s => ({...s, mapView}))
+                                                            }}
                                                             disabled={!map}
                                                         >
                                                             <ListAltIcon />

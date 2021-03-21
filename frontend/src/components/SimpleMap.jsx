@@ -138,11 +138,12 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
 
 
     const onViewChanged = () => {
-        console.log("Zoom " + mapRef.current.leafletElement.getZoom());
-        console.log(mapRef.current.leafletElement.getBounds());
-        if (mapRef.current.leafletElement.getZoom() > 10) {
+        if (mapRef.current.leafletElement.getZoom() >= 10) {
             const bounds=mapRef.current.leafletElement.getBounds();
-            onBoundsChanged([bounds.getSouthWest().reverse(),bounds.getNorthEast().reverse()]);
+            const southWest=bounds.getSouthWest();
+            const northEast=bounds.getNorthEast();
+            console.log(mapRef.current.leafletElement.getZoom());
+            onBoundsChanged([southWest.lat,southWest.lng,northEast.lat,northEast.lng]);
         }
     }
 
