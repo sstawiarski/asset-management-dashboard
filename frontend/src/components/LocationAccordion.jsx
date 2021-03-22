@@ -22,6 +22,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
 import UndoIcon from '@material-ui/icons/Undo';
+import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles(theme => ({
     heading: {
@@ -170,10 +171,11 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                 <Grid item xs={6}>
                                                     <Typography><b>{capitalizedKey}:</b></Typography>
                                                 </Grid>
-                                                <Grid item xs={5}>
+                                                <Grid item xs={1} />
+                                                <Grid item xs={4}>
                                                     <Grid container>
                                                         <Grid item xs={12}>
-                                                            <Typography>{Object.keys(overrides).includes(key) ? JSON.stringify([overrides[key][1].toFixed(4), overrides[key][0].toFixed(4)]) : JSON.stringify([val[1].toFixed(4), val[0].toFixed(4)])}</Typography>
+                                                            <Typography>{Object.keys(overrides).includes(key) ? JSON.stringify([overrides[key][1].toFixed(4), overrides[key][0].toFixed(4)]) : val.length ? JSON.stringify([val[1].toFixed(4), val[0].toFixed(4)]) : "None"}</Typography>
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>
@@ -181,7 +183,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                     isEditingMap ?
                                                         <>
                                                             <Grid item xs={12} style={{ marginTop: "10px" }}>
-                                                                <Map center={Object.keys(overrides).includes(key) ? [...overrides[key]].reverse() : [...val].reverse()} zoom={10} onClick={(e) => setOverrideMarker([e.latlng["lat"], e.latlng["lng"]])} style={{ height: "95%" }}>
+                                                                <Map center={Object.keys(overrides).includes(key) ? [...overrides[key]].reverse() : val.length ? [...val].reverse() : [0,0]} zoom={val.length ? 10 : 5} onClick={(e) => setOverrideMarker([e.latlng["lat"], e.latlng["lng"]])} style={{ height: "95%" }}>
                                                                     <TileLayer
                                                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                                                         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -190,7 +192,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                                                         {
                                                                             (overrideMarker || overrides["coordinates"]) ?
                                                                                 <Marker position={(overrideMarker || [...overrides[key]].reverse())} />
-                                                                                : <Marker position={[...val].reverse()} />
+                                                                                : <Marker position={val.length ? [...val].reverse() : [0,0]} />
                                                                         }
                                                                     </FeatureGroup>
                                                                 </Map>
@@ -238,15 +240,22 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
 
                                                                     : null
                                                             }
-                                                            <Tooltip title={`View and Edit`} placement="top">
-                                                                <IconButton style={{ padding: "3px", marginRight: "-6px" }} onClick={() => {
-
-                                                                    /* Set editing key to null to revert from textbox to plain text */
-                                                                    toggleIsEditingMap(true);
-                                                                }}>
+                                                            {
+                                                                val.length || overrides[key] ? 
+                                                                <Tooltip title={`View and Edit`} placement="top">
+                                                                <IconButton style={{ padding: "3px", marginRight: "-6px" }} onClick={() => toggleIsEditingMap(true)}>
                                                                     <EditIcon className={classes.icon} />
                                                                 </IconButton>
                                                             </Tooltip>
+                                                                :
+                                                                <Tooltip title={`Add Coordinates`} placement="top">
+                                                                <IconButton style={{ padding: "3px", marginRight: "-6px" }} onClick={() => toggleIsEditingMap(true)}>
+                                                                    <AddIcon className={classes.icon} />
+                                                                </IconButton>
+                                                            </Tooltip>
+
+                                                            }
+                                                            
                                                         </>
                                                 }
                                             </Grid>
