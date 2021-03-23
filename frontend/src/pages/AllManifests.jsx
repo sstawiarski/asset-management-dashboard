@@ -7,6 +7,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
@@ -135,6 +137,7 @@ const AllShipments = (props) => {
     return (
         <div>
             <Header heading="Shipments" subheading="View All" />
+            
             <div>
                 <CustomTable
                     data={shipments}
@@ -147,12 +150,17 @@ const AllShipments = (props) => {
                     variant="shipment"
                     checkboxes={true}
                     >
+                    <Tabs  aria-label="simple tabs example">
+                      <Tab label="Staged"  />
+                      <Tab label="Abandoned"  />
+                      <Tab label="Completed"  />
+                    </Tabs>
 
                     <TableToolbar
                         title="All Shipments"
                         selected={selected}>
-
-
+                        
+                        <div>
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
@@ -200,7 +208,7 @@ const AllShipments = (props) => {
                                         <FilterListIcon />
                                     </IconButton>
                             </>
-                        }
+                        }</div>
                     </TableToolbar>
 
                     {/* Chips representing all the active filters */}
