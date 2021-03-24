@@ -4,11 +4,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
+const redis = require('redis').createClient(process.env.REDIS_CLIENT);
+const topcache = require('top-cache');
 require('dotenv').config();
 
-try{
-    const redis = require('redis').createClient(process.env.REDIS_CLIENT);
-    const topcache = require('top-cache');
+try {
     topcache(mongoose, redis);
 } catch (error) {
     console.error(error);
@@ -42,7 +42,7 @@ mongoose.connect(process.env.DB_URL, {
     console.log('MongoDB connected...')
     app.listen(PORT, function () {
         console.log("Server is running on Port: " + PORT);
-        
+
     });
 });
 

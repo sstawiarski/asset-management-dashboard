@@ -241,7 +241,10 @@ const NewTable = (props) => {
                                         <TableRow key={index}
                                             hover
                                             onClick={(event) => {
-                                                if (Clickable) {
+                                                if (variant === "event" && item.eventType && (item.eventType === "Incoming Shipment" || item.eventType === "Outgoing Shipment")) {
+                                                    event.stopPropagation();
+                                                    history.push(`/shipments/${item[selectedFields[0]]}`);
+                                                } else if (Clickable) {
                                                     setClicked(true);
                                                     if (variant === "asset") setIdentifier(item[selectedFields[0]]);
                                                     else setIdentifier(item);
