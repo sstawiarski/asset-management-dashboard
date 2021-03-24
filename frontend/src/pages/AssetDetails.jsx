@@ -168,7 +168,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Location</Typography>
-                                        <Typography variant="body1">{asset.deployedLocation ? asset.deployedLocation : "N/A"}</Typography>
+                                        <Typography variant="body1">{asset.deployedLocation ? typeof asset.deployedLocation === "object" ? asset["deployedLocation"].locationName : asset.deployedLocation : "N/A"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Owner</Typography>

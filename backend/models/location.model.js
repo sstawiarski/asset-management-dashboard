@@ -18,13 +18,7 @@ const Location = new Schema({
     city: { type: String, required: false, unique: false },
     state: { type: String, required: false, unique: false },
     zip: { type: String, required: false, unique: false },
-    coordinates: {
-        type: {
-            latitude: { type: Number, required: true, unique: false },
-            longitude: { type: Number, required: true, unique: false }
-        },
-        required: false
-    },
+    coordinates: { type: [Number], required: false, unique: false },
     contactName: { type: String, required: false, unique: false },
     contactNumber: { type: String, required: true, unique: false }
 });

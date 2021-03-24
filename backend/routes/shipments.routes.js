@@ -3,9 +3,29 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Shipment = require('../models/shipment.model');
 const Location = require('../models/location.model');
+const Counter = require('../models/counter.model');
 const { nGrams } = require('mongoose-fuzzy-searching/helpers');
 const dateFunctions = require("date-fns");
+const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
+const Assets = require('../models/asset.model');
+
+// const client = require('../redis_db');
+
+// const isCached = (req, res, next) => {
+//     const { id } = req.params;
+//     //First check in Redis
+//     client.get(id, (err, data) => {
+//         if (err) {
+//             console.log(err);
+//         }
+//         if (data) {
+//             const reponse = JSON.parse(data);
+//             return res.status(200).json(reponse);
+//         }
+//         next();
+//     });
+// }
 
 router.get("/", async (req, res) => {
     try {
@@ -67,6 +87,7 @@ router.get("/", async (req, res) => {
                     }
                 }
 
+                //add confidence score to determine best matches
                 const confidenceScore = {
                     $addFields: {
                         confidenceScore: { $meta: "textScore" }
@@ -88,6 +109,7 @@ router.get("/", async (req, res) => {
             }
 
         } else {
+            //match everything
             const match = {
                 $match: {
 
@@ -97,6 +119,7 @@ router.get("/", async (req, res) => {
             aggregateArray.push(match);
         }
 
+        /* Join locations collection with shipments to convert ObjectId reference to location to the actual location document */
         let fromLookup = {
             $lookup: {
                 'from': Location.collection.name,
@@ -143,6 +166,7 @@ router.get("/", async (req, res) => {
             }
         };
 
+        /* if a specific location is specified in the query, the $match (in next "if") will return an array of one document, so unwind it into just the object */
         const fromUnwind = {
             $unwind: {
                 path: "$shipFrom"
@@ -155,6 +179,7 @@ router.get("/", async (req, res) => {
             }
         };
 
+        /* if filtering for shipments with a specific location, modify $lookup to only match those locations */
         if (req.query.shipFrom || req.query.shipTo) {
             if (req.query.shipFrom) {
                 fromLookup = {
@@ -229,15 +254,63 @@ router.get("/", async (req, res) => {
 
         }
 
+        //only push these lookups if there wasn't a location filter applied since the ifs already take care of pushing it
         if (fromLookup !== null) aggregateArray.push(fromLookup);
         if (toLookup !== null) aggregateArray.push(toLookup);
+
         aggregateArray.push(fromUnwind);
         aggregateArray.push(toUnwind);
+
+        /* 
+         * If a shipment location's default information was overridden, 
+         * use the "shipFromOverride" or "shipToOverride" object to merge with each $lookup'd location document 
+         * and replace the modified fields prior to returning 
+         */
+        const shipFromOverride = {
+            $set: {
+                "shipFrom": {
+                    $cond: [
+                        { $ifNull: ["$shipFromOverride", false] },
+                        { $mergeObjects: ["$shipFrom", "$shipFromOverride"] },
+                        "$shipFrom"
+                    ]
+                }
+            }
+        };
+
+        const shipToOverride = {
+            $set: {
+                "shipTo": {
+                    $cond: [
+                        { $ifNull: ["$shipToOverride", false] },
+                        { $mergeObjects: ["$shipTo", "$shipToOverride"] },
+                        "$shipTo"
+                    ]
+                }
+            }
+        };
+
+        /* Remove the now-useless override fields from the final document */
+        const shipModificationProjection = {
+            $project: {
+                shipFromOverride: 0,
+                shipToOverride: 0
+            }
+        };
+
+        aggregateArray.push(shipFromOverride);
+        aggregateArray.push(shipToOverride);
+        aggregateArray.push(shipModificationProjection);
+
 
         if (req.query.sort_by) {
             //default ascending order
             const sortOrder = (req.query.order === 'desc' ? -1 : 1);
 
+            /*
+             * Sort by best match as primary sort and *then*  sort order value if there is a search,
+             * otherwise, sort by sort value
+             */
             if (req.query.search) {
                 const sort = {
                     $sort: {
@@ -256,6 +329,7 @@ router.get("/", async (req, res) => {
                 aggregateArray.push(sort);
             }
         } else {
+            /* if there is a search and no sort is specify, sort by best match, otherwise sort by shipment key */
             if (req.query.search) {
                 const sort = {
                     $sort: {
@@ -303,7 +377,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray);
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000}); // caches for 5 seconds for testing (5 * 1000 milliseconds)
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -361,13 +435,64 @@ router.get("/", async (req, res) => {
     }
 });
 
+/**
+ * Create a new shipment
+ */
+ router.post('/', async (req, res, err) => {
+    try {
+        const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+
+        if (req.body.override) {
+            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
+            await Assets.updateMany({ serial: { $in: serials } }, { deployedLocation: mongoose.Types.ObjectId(req.body.shipTo), lastUpdated: Date.now() });
+        } else {
+            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
+            const alreadyDeployed = await Assets.find({ serial: { $in: serials } });
+        }
+        
+        const count = await Counter.findOneAndUpdate({ name: "shipments" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+        const shipment = {
+            createdBy: username.employeeId,
+            created: Date.now(),
+            updated: null,
+            completed: null,
+            status: "Staging",
+            shipmentType: req.body.shipmentType,
+            specialInstructions: req.body.specialInstructions,
+            contractId: req.body.contractId || null,
+            manifest: req.body.manifest,
+            shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
+            shipTo: mongoose.Types.ObjectId(req.body.shipTo),
+            key: `SHIP-${count.next}`
+        };
+        if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
+        if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
+
+        const newShipment = new Shipment(shipment);
+
+        await newShipment.save();
+
+        res.status(200).json({ message: "Successfully created shipment" })
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: "Error creating shipment",
+            interalCode: "shipment_creation_error"
+        })
+    }
+});
+
+/**
+ * Load database with sample documents and default shipFrom and shipTo values
+ */
 router.put('/load', async (req, res) => {
     try {
         sampleShipment.forEach(async (item, idx) => {
             const shipment = new Shipment({
                 ...item,
-                shipFrom: mongoose.Types.ObjectId("602b197047bcea2afc7025f3"),
-                shipTo: mongoose.Types.ObjectId("602b197047bcea2afc7025f9")
+                shipFrom: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipFrom"]) : null,
+                shipTo: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipTo"]) : null
             });
             await shipment.save();
         })
@@ -381,11 +506,36 @@ router.put('/load', async (req, res) => {
     }
 });
 
+/**
+ * Get a single shipment based on its unique key
+ */
 router.get('/:key', async (req, res) => {
     try {
-        const key = req.params.key;
-        //const { key } = req.params;
-        const shipment = await Shipment.findOne({ key: decodeURI(key) }).populate('shipFrom').populate('shipTo');
+        const { key } = req.params;
+        let shipment = await Shipment.getFullShipment({ key: decodeURI(key) }).cache({ ttl: 30 * 1000 }); // cache for 30 seconds (30 * 1000 milliseconds)
+        if (shipment === null) {
+            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
+            return;
+        }
+        shipment = shipment.toObject(); //convert Mongoose document to plain object to manipulate it
+
+        /* if there is a shipment override, update the location documents with the overrides and remove the override object */
+        if (shipment.shipFromOverride) {
+            shipment["shipFrom"] = {
+                ...shipment["shipFrom"],
+                ...shipment["shipFromOverride"]
+            };
+            delete shipment["shipFromOverride"];
+        }
+
+        if (shipment.shipToOverride) {
+            shipment["shipTo"] = {
+                ...shipment["shipTo"],
+                ...shipment["shipToOverride"]
+            };
+            delete shipment["shipToOverride"];
+        }
+
         res.status(200).json(shipment)
     }
     catch (err) {

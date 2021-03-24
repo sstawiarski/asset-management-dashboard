@@ -111,7 +111,6 @@ const AssemblyManager = () => {
     const [override, toggleOverride] = useState(false);
     const [missingItems, setMissingItems] = useState([]);
     const [submission, setSubmission] = useState({});
-    const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -337,7 +336,6 @@ const AssemblyManager = () => {
         setAssetCount(0);
         setIncomplete(false);
         setMissingItems([]);
-        setMoreInfo([]);
         setSelected([]);
         setSubmission({});
         setCartItems([]);
@@ -360,24 +358,25 @@ const AssemblyManager = () => {
                     {
                         assemblyStarted
                             ? <CustomTable
+                                variant="asset"
                                 data={assets}
                                 selectedFields={selectedFields}
                                 selected={selected}
-                                setSelected={setSelected}
-                                setMapItems={setMapItems}
                                 filters={filters}
-                                setFilters={setFilters}
                                 count={assetCount}
-                                variant="asset"
-                                checkboxes={true}
-                                compare={cartItems}
-                                moreInfo={moreInfo}
-                                setMoreInfo={setMoreInfo}
-                                lookup="assetName"
-                                clickable={QuickAssetView}
-                                inactive="parentId"
-                                returnsObject
-                                >
+                                checkboxes
+
+                                renderOnClick={QuickAssetView}
+                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                onAdditionalSelect={setMapItems}
+                                onValidate={(asset) => {
+                                    const warnings = [];
+                                    const errors = [];
+                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                    return { warnings: warnings, errors: errors }
+                                }}
+                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                onSelectedChange={setSelected}>
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {
@@ -523,7 +522,7 @@ const AssemblyManager = () => {
                             color="primary"
                             onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}
                             disableRipple>
-                            <ShoppingCartIcon style={{ fontSize: "35px" }}/>
+                            <ShoppingCartIcon style={{ fontSize: "35px" }} />
                         </Fab>
                     </div>
                     : null

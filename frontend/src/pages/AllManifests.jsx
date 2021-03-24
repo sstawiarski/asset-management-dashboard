@@ -42,7 +42,7 @@ const AllShipments = (props) => {
     const [anchor, setAnchor] = useState(null);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
 
-   
+
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             setFilters(s => ({ ...s, search: e.target.value }))
@@ -68,6 +68,37 @@ const AllShipments = (props) => {
         
 
     }
+    // const handleMenuClick = (event) => {
+    //     setAnchor(null);
+    //     const children = [];
+    //     setNext(event.target.getAttribute("name"));
+
+    //     Promise.all(
+    //         selected.map(key =>
+    //             fetch(`${process.env.REACT_APP_API_URL}/shipments`)
+    //                 .then(resp => {
+    //                     if (resp.status < 300) {
+    //                         return resp.json()
+    //                     }
+    //                     return null;
+    //                 })
+    //         )
+    //     ).then(jsons => {
+    //         jsons.forEach((item, idx) => {
+    //             if (item) {
+    //                 if (!item.parentId) return;
+    //                 if (!selected.includes(item.parentId)) {
+    //                     children.push(selected[idx]);
+    //                 }
+    //             }
+    //             return;
+    //         })
+
+    //     });
+
+    // }
+
+
 
         /* Handles stepping through warning dialog to the actual edit dialog */
     useEffect(() => {
@@ -88,11 +119,11 @@ const AllShipments = (props) => {
         }
     };
 
-    
 
-    
 
-   useEffect(() => {
+
+
+    useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
             let url = `${process.env.REACT_APP_API_URL}/shipments`;
@@ -129,7 +160,7 @@ const AllShipments = (props) => {
         setFilters(s => ({ ...s, page: 0 }));
     }, [activeFilters])
 
-        
+
 
 
 
@@ -140,16 +171,17 @@ const AllShipments = (props) => {
             
             <div>
                 <CustomTable
+                    variant="shipment"
                     data={shipments}
                     selectedFields={selectedFields}
                     selected={selected}
-                    setSelected={setSelected}
                     filters={filters}
-                    setFilters={setFilters}
                     count={shipmentCount}
-                    variant="shipment"
                     checkboxes={true}
-                    >
+
+                    onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                    onSelectedChange={setSelected}>
+                        
                     <Tabs  aria-label="simple tabs example">
                       <Tab label="Staged"  />
                       <Tab label="Abandoned"  />
@@ -182,7 +214,7 @@ const AllShipments = (props) => {
                             </>
                             :
                             <>
-                                
+
                                 <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
@@ -204,9 +236,9 @@ const AllShipments = (props) => {
                                         />
                                     </div>
                                 </Container>
-                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true}))}>
-                                        <FilterListIcon />
-                                    </IconButton>
+                                <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
+                                    <FilterListIcon />
+                                </IconButton>
                             </>
                         }</div>
                     </TableToolbar>
@@ -221,10 +253,10 @@ const AllShipments = (props) => {
 
             </div>
             { /*put shipment filter here*/}
-            <ShipmentFilter 
-                open={dialogs["filter"]} 
-                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))} 
-                setActiveFilters={setActiveFilters} 
+            <ShipmentFilter
+                open={dialogs["filter"]}
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))}
+                setActiveFilters={setActiveFilters}
             />
 
             <ChangeStatusDialog
