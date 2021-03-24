@@ -26,6 +26,12 @@ router.get("/", async (req, res, err) => {
         .reduce(async (pc, c) => {
           const p = await pc;
 
+          /* Remove type checks when assembly chosen is Kit Box */
+          if (query["inAssembly"]) {
+            const val = decodeURI(query["inAssembly"]);
+            if (val === "Kit Box" && c === "assetType") return p;
+          }
+
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
           And get everything in between the start and end */
@@ -47,36 +53,37 @@ router.get("/", async (req, res, err) => {
 
             //inAssembly query param allows us to only show assets that are components of the inAssembly name
             const assemblyType = decodeURI(query[c]);
-            const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
-            if (Object.keys(assemblySchema).length > 0) {
-              if (p["assetName"]) {
-                const prev = p["assetName"];
-                delete p["assetName"];
+            if (assemblyType !== "Kit Box") {
+              const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
+              if (Object.keys(assemblySchema).length > 0) {
+                if (p["assetName"]) {
+                  const prev = p["assetName"];
+                  delete p["assetName"];
 
-                if (p["$and"]) {
-                  //find all assets that are not in the exclude array
-                  p["$and"] = [...p["$and"], {
-                    assetName: {
-                      $in: assemblySchema.components,
-                      ...prev
-                    }
-                  }];
-                } else {
-                  p["$and"] = [
-                    {
+                  if (p["$and"]) {
+                    //find all assets that are not in the exclude array
+                    p["$and"] = [...p["$and"], {
                       assetName: {
                         $in: assemblySchema.components,
                         ...prev
                       }
-                    }
-                  ];
-                }
+                    }];
+                  } else {
+                    p["$and"] = [
+                      {
+                        assetName: {
+                          $in: assemblySchema.components,
+                          ...prev
+                        }
+                      }
+                    ];
+                  }
 
-              } else {
-                p["assetName"] = { $in: assemblySchema.components };
+                } else {
+                  p["assetName"] = { $in: assemblySchema.components };
+                }
               }
             }
-
           } else if (c === "isAssembly") {
 
             //isAssembly query param limits results to only assets who do not have a parentId or whose parent assembly is marked disassembled

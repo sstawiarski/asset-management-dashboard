@@ -138,7 +138,6 @@ const ShipmentCreator = () => {
 
     /* Set url with supplied filters */
     useEffect(() => {
-        if (shipmentStarted) {
             setURL(() => {
                 let newURL = originalURL;
                 let index = 0;
@@ -151,7 +150,6 @@ const ShipmentCreator = () => {
 
                 return newURL;
             });
-        }
     }, [filters, originalURL, shipmentStarted]);
 
     /* Fetch shipment list */
@@ -198,7 +196,6 @@ const ShipmentCreator = () => {
 
     /* Set information from creator dialog upon submission */
     const handleCreate = (childState) => {
-
         setState(s => ({
             ...s,
             shipFrom: {
@@ -234,17 +231,19 @@ const ShipmentCreator = () => {
         })
     }
 
-    /* Check if selected items already have parent assemblies and then add to cart */
+    /* Check if selected items already have parent assemblies or are deployed elsewhere and then add to cart */
     const handleAddToCart = () => {
         const badSerials = [];
 
         const newAdditions = []
 
         mapItems.forEach(item => {
-            if (item.deployedLocation || item.parentId) badSerials.push({
+            if ((item.deployedLocation && (state.shipFrom["key"] && item.deployedLocation["key"] !== state.shipFrom["key"])) || item.parentId) badSerials.push({
                 serial: item.serial,
                 name: item.assetName,
-                problem: item.deployedLocation ? "Deployed at another location" : "Part of an assembly"
+                problem: item.deployedLocation ?
+                    `Deployed at non-matching location ${item.deployedLocation["key"]} (selected location: ${state.shipFrom["key"]})`
+                    : `Part of assembly ${item.parentId}`
             });
             else newAdditions.push({
                 serial: item.serial,
@@ -269,9 +268,7 @@ const ShipmentCreator = () => {
     }
 
     /** 
-     * Compares schema saved in state from the helper tool with the assets currently in cart
-     * 
-     * Sets the submission information depending on whether assembly is being modified or created for the first time
+     * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
 
@@ -299,7 +296,6 @@ const ShipmentCreator = () => {
     const handleSubmitCancel = () => {
         toggleOverride(false);
         setSubmitOpen(false);
-        //setIncomplete(false);
     };
 
     /* Remove all state when assembly is abandoned */
@@ -307,12 +303,9 @@ const ShipmentCreator = () => {
         toggleOverride(false);
         setCreatorOpen(false);
         toggleShipment(false);
-        //setSchema(null);
         setSubmitOpen(false);
         setAssets([]);
         setAssetCount(0);
-        //setIncomplete(false);
-        //setMissingItems([]);
         setSelected([]);
         setMapItems([]);
         setSubmission({});
@@ -335,7 +328,9 @@ const ShipmentCreator = () => {
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
                         shipmentStarted
-                            ? <CustomTable
+                            ? 
+                            <>
+                            <CustomTable
                                 variant="asset"
                                 data={assets}
                                 selectedFields={selectedFields}
@@ -343,7 +338,7 @@ const ShipmentCreator = () => {
                                 filters={filters}
                                 count={assetCount}
                                 checkboxes
-                                
+
                                 renderOnClick={QuickAssetView}
                                 onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                                 onValidate={(asset) => {
@@ -351,7 +346,12 @@ const ShipmentCreator = () => {
                                     const errors = [];
 
                                     if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
-                                    if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
+                                    if (asset.deployedLocation) {
+                                        if (state["shipFrom"] && state["shipFrom"].key !== asset.deployedLocation["key"]) {
+                                            warnings.push(<span>Asset is deployed at a non-matching location ({asset.deployedLocation["key"]})</span>);
+                                        }
+
+                                    }
 
                                     return { warnings: warnings, errors: errors };
                                 }}
@@ -382,7 +382,8 @@ const ShipmentCreator = () => {
                                     setFilters={setFilters} />
 
                             </CustomTable>
-
+                            <Button style={{ color: "red", float: "left", marginLeft: "20px" }} variant="text" onClick={() => setAbandoned(true)}>Abandon</Button>
+                            </>
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
                                     <LocalShippingIcon className={classes.puzzle} />
@@ -456,8 +457,13 @@ const ShipmentCreator = () => {
                     setHasParents(false);
                     setHaveParents([]);
                 }}
-                text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
-                title="Asset Update Warning"
+                text={
+                    <div style={{ textAlign: "center" }}>
+                        <span>Some selected assets have problems <br /> <br /></span>
+                        <span>Overriding this warning will force-update the assets upon shipment submission</span>
+                    </div>
+                }
+                title="Warning"
                 items={haveParents.map(item => [item.serial, item.name, item.problem])}
                 headers={["Serial", "Name", "Problem"]}
             />
@@ -466,8 +472,8 @@ const ShipmentCreator = () => {
                 open={abandoned}
                 setOpen={setAbandoned}
                 handleOverride={handleAbandon}
-                text="Abandoning this assembly will erase all current modifications"
-                title="Abandon Assembly?"
+                text="Abandoning this shipment will erase all current modifications"
+                title="Abandon Shipment?"
                 items={null}
             />
 
