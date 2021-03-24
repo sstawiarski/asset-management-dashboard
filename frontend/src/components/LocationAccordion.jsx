@@ -457,7 +457,7 @@ LocationAccordion.propTypes = {
     /**
      * The location document from which to render the key-value pairs
      */
-    location: PropTypes.object.isRequired,
+    location: PropTypes.object,
     /**
      * The object representing the saved key-value pair overrides for the particular location
      */
