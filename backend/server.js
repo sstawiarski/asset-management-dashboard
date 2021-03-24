@@ -4,7 +4,16 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
+const redis = require('redis').createClient(process.env.REDIS_CLIENT);
+const topcache = require('top-cache');
 require('dotenv').config();
+
+try {
+    topcache(mongoose, redis);
+} catch (error) {
+    console.error(error);
+}
+
 
 const assetRoutes = require('./routes/assets.routes')
 const eventRoutes = require('./routes/events.routes')
@@ -17,13 +26,13 @@ const shipmentRoutes = require('./routes/shipments.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 app.use(cors({
-    origin: "http://localhost:3000"
+    origin: process.env.CORS_URL
 }));
 app.use(bodyParser.json());
 
-mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore?retryWrites=true&w=majority", {
+mongoose.connect(process.env.DB_URL, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -33,9 +42,13 @@ mongoose.connect("mongodb+srv://ser401:ser401@cluster0.bjvvr.mongodb.net/Explore
     console.log('MongoDB connected...')
     app.listen(PORT, function () {
         console.log("Server is running on Port: " + PORT);
-        
+
     });
 });
+
+
+
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 

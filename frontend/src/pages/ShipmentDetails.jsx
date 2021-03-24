@@ -84,7 +84,7 @@ const ShipmentDetails = (props) => {
 
     /* Fetch shipment information */
     useEffect(() => {
-        fetch(`http://localhost:4000/shipments/${key}`)
+        fetch(`${process.env.REACT_APP_API_URL}/shipments/${key}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();

@@ -1,42 +1,11 @@
-/**
- * A generic and reusable table for lists of either assets or shipments
- * 
- * Accepted props:
- * 
- * data (required)              Array     
- *    The array of objects to display in the table.
- * 
- * filters (required)           Object
- *    State object from the parent component representing active filters for the API call
- * 
- * setFilters (required)        Function
- *    Function from the parent component that allows the table to communicate the new filters
- * 
- * count (required)             Number
- *    The length of the array of ALL objects returned from the API call, see "count" array in API results
- * 
- * variant (required)           String, either "asset" or "shipment"
- *    Determines which URL to link to when someone clicks on a table item
- * 
- * selected (required)          Array
- *    The array of selected items from the parent page
- * 
- * setSelected (required)       Function
- *    Function to allow table to update selections in the parent page
- * 
- * selectedFields (required)  Array
- *    The fields from the objects you expect to receive that you want displayed as columns.
- *    NOTES:
- *       1) Fields in this array must be written in the column order you want.
- *       2) Fields in this array must be written exactly the same as the fields appear in the database.
- * 
- */
-
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+
+//Library Tools
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
+//Material-UI Components
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -46,10 +15,16 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
-import TableHead from './TableHead';
-import IncompletePopper from '../IncompletePopper';
 import Tooltip from '@material-ui/core/Tooltip';
+
+//Custom Components
+import TableHead from './TableHead';
+import IndicatorBar from '../Feedback/IndicatorBar';
+
+//Icons
 import CheckIcon from '@material-ui/icons/Check';
+
+//Tools
 import { dateOptions, URLTypes as types } from '../../utils/constants.utils';
 
 
@@ -91,6 +66,7 @@ const useStyles = makeStyles((theme) => ({
 const NewTable = (props) => {
     const classes = useStyles();
     const history = useHistory();
+
     const [showClicked, setClicked] = useState(false);
     const [identifier, setIdentifier] = useState("");
     const [pageSelected, setPageSelected] = useState(0);
@@ -101,11 +77,11 @@ const NewTable = (props) => {
         variant,
         selectedFields,
         selected,
-        setSelected,
+        onSelectedChange,
         filters,
-        setFilters,
-        compare,
-        inactive
+        onFilterChange,
+        children,
+        onCompare
     } = props;
     const url = types[variant];
 
@@ -114,13 +90,10 @@ const NewTable = (props) => {
     const order = filters.order ? filters.order : 'asc';
     const orderBy = filters.sort_by ? filters.sort_by : 'serial';
     const checkboxes = props.checkboxes || false;
-    const moreInfo = props.moreInfo || null;
-    const setMoreInfo = moreInfo ? props.setMoreInfo : null;
-    const lookup = moreInfo ? props.lookup : null;
-    const Clickable = props.clickable || null;
-    const returnsObject = props.returnsObject || false;
+    const Clickable = props.renderOnClick || null;
     const clearSelectedOnPageChange = props.clearSelectedOnPageChange || false;
-    const setMapItems = props.setMapItems || null;
+    const onAdditionalSelect = props.onAdditionalSelect || null;
+    const onValidate = props.onValidate || null;
 
     //changes sorting selections
     const handleRequestSort = (event, property) => {
@@ -130,125 +103,99 @@ const NewTable = (props) => {
     };
 
     const setOrderBy = (ordering) => {
-        setFilters(s => ({
-            ...s,
-            sort_by: ordering
-        })
-        )
+        onFilterChange({ sort_by: ordering });
     };
 
     const setOrder = (order) => {
-        setFilters(s => ({
-            ...s,
-            order: order
-        })
-        )
+        onFilterChange({ order: order });
     };
 
     const handleSelectAllClick = (event) => {
         /* Deselect everything when the select all box is clicked on a different page */
         if (event.target.getAttribute("data-indeterminate") === "true") {
-            if (setMapItems !== null) {
-                setMapItems([]);
-                setSelected([])
+            if (onAdditionalSelect !== null) {
+                onAdditionalSelect([]);
+                onSelectedChange([])
             }
             return;
         }
 
         if (event.target.checked) {
             /* Use props to exclude items already "in cart" from being added twice  */
-            const onlyGood = data.filter((n) => {
-                const isInCart = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === n[selectedFields[0]]) : compare.includes(n[selectedFields[0]]) : false;
-                return !isInCart;
-            });
+            const onlyGood = data.filter((n) => !(onCompare && onCompare(n)));
+
             const test = onlyGood.map(row => row[selectedFields[0]]);
             const test2 = selected.concat(test);
             const newSelecteds = test2.filter((item, idx) => test2.indexOf(item) === idx);
-            setSelected(newSelecteds);
+            onSelectedChange(newSelecteds);
 
             /* Maintain full objects even during pagination by adding selected objects to the parent state using the prop setter function */
-            if (setMapItems !== null) {
+            if (onAdditionalSelect !== null) {
                 const mapItems = data.filter(obj => newSelecteds.includes(obj.serial));
-                setMapItems(mapItems);
+                onAdditionalSelect(mapItems);
             }
             return;
         }
 
         /* Remove all selections when select all is being unchecked */
         const data2 = data.map(item => item.serial);
-        setSelected(s => {
-            return s.filter(item => {
-                return !data2.includes(item);
-            })
-        });
-        if (setMapItems !== null) {
-            setMapItems([]);
+        onSelectedChange(s => s.filter(item => !data2.includes(item)));
+
+        if (onAdditionalSelect !== null) {
+            onAdditionalSelect([]);
         }
     };
 
     //checkbox click handler
-    const handleClick = (event, name, additional = null) => {
+    const handleClick = (event, name) => {
         const selectedIndex = selected.indexOf(name);
         let newSelected = [];
-        let newAdditional = [];
 
         if (selectedIndex === -1) {
             newSelected = newSelected.concat(selected, name);
-            if (moreInfo && additional) newAdditional = newAdditional.concat(moreInfo, additional);
         } else if (selectedIndex === 0) {
             newSelected = newSelected.concat(selected.slice(1));
-            if (moreInfo && additional) newAdditional = newAdditional.concat(moreInfo.slice(1));
         } else if (selectedIndex === selected.length - 1) {
             newSelected = newSelected.concat(selected.slice(0, -1));
-            if (moreInfo && additional) newAdditional = newAdditional.concat(moreInfo.slice(0, -1));
         } else if (selectedIndex > 0) {
             newSelected = newSelected.concat(
                 selected.slice(0, selectedIndex),
                 selected.slice(selectedIndex + 1),
             );
-            if (moreInfo && additional) {
-                newAdditional = newAdditional.concat(moreInfo.slice(0, selectedIndex), moreInfo.slice(selectedIndex + 1));
-            }
         }
-        setSelected(newSelected);
+        onSelectedChange(newSelected);
 
         /*  
             Use the existing items array to filter for only the items currently selected,
             then use the current data loaded in the table to get the new selection data,
             then get only the unique objects so they don't get added twice
         */
-        if (setMapItems) {
-            setMapItems(m => {
+        if (onAdditionalSelect) {
+            onAdditionalSelect(m => {
                 const oldItems = m.filter(mapItem => newSelected.includes(mapItem[selectedFields[0]]));
                 const newItems = data.filter(obj => newSelected.includes(obj[selectedFields[0]]));
                 const unique = [...new Map([...oldItems, ...newItems].map(item => [item[selectedFields[0]], item])).values()];
                 return unique;
             });
         }
-
-        if (moreInfo && additional) setMoreInfo(newAdditional);
     };
 
     const handleChangePage = (event, newPage) => {
-        setFilters(s => ({
-            ...s,
-            page: newPage
-        }));
+        onFilterChange({ page: newPage });
         setPageSelected(selected.length);
+
         if (clearSelectedOnPageChange) {
-            setSelected([]);
-            setMoreInfo([]);
+            onSelectedChange([]);
         }
+
     };
 
     const handleChangeRowsPerPage = (event) => {
-        setFilters(s => ({
-            ...s,
-            limit: parseInt(event.target.value, 10),
-            page: 0
-        }));
-        setSelected([]);
-        if (setMapItems) setMapItems([]);
+        onFilterChange({ limit: parseInt(event.target.value, 10), page: 0 });
+        onSelectedChange([]);
+
+        if (onAdditionalSelect) onAdditionalSelect([]);
+
         setPageSelected(0);
     };
 
@@ -260,21 +207,15 @@ const NewTable = (props) => {
         <div className={classes.root}>
             <Paper className={classes.paper}>
 
-                {/* TableToolbar and chips should be child */}
-                {props.children}
+                {/* Table toolbar and chips should be child */}
+                {children}
 
                 <TableContainer>
                     <Table
                         className={classes.table}
                         aria-labelledby={`${variant} table`}
                         size={'medium'}
-                        aria-label={`${variant} table`}
-                    >
-
-
-
-
-
+                        aria-label={`${variant} table`}>
 
                         <TableHead
                             classes={classes}
@@ -287,19 +228,23 @@ const NewTable = (props) => {
                             selectedFields={selectedFields}
                             checkboxes={checkboxes}
                             pageSelected={pageSelected}
+                            warningSpace={Boolean(onValidate)}
                         />
                         <TableBody>
                             {
                                 data.map((item, index) => {
                                     const isItemSelected = isSelected(item[selectedFields[0]]);
-                                    const isItemCompared = compare ? returnsObject ? compare.find(thing => thing[selectedFields[0]] === item[selectedFields[0]]) : compare.includes(item[selectedFields[0]]) : false;
+                                    const isItemCompared = onCompare ? onCompare(item) : false;
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow key={index}
                                             hover
                                             onClick={(event) => {
-                                                if (Clickable) {
+                                                if (variant === "event" && item.eventType && (item.eventType === "Incoming Shipment" || item.eventType === "Outgoing Shipment")) {
+                                                    event.stopPropagation();
+                                                    history.push(`/shipments/${item[selectedFields[0]]}`);
+                                                } else if (Clickable) {
                                                     setClicked(true);
                                                     if (variant === "asset") setIdentifier(item[selectedFields[0]]);
                                                     else setIdentifier(item);
@@ -312,34 +257,33 @@ const NewTable = (props) => {
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
                                             selected={isItemSelected}
-                                            className={inactive === "parentId" ? item[inactive] ? classes.inactive : "row" : item[inactive] === false ? classes.inactive : "row"}
-                                        >
-                                            { /* TODO: Make inactivity consistent i.e. retired = true = inactive => active = false = inactive? */}
+                                            className="row">
 
-                                            {checkboxes ?
-                                                <TableCell
-                                                    padding="checkbox"
-                                                    onClick={!isItemCompared ? (event) => {
-                                                        event.stopPropagation();
-                                                        const add = moreInfo ? item[lookup] : null;
-                                                        handleClick(event, item[selectedFields[0]], add);
-                                                    } : null}>
+                                            {
+                                                checkboxes ?
+                                                    <TableCell
+                                                        padding="checkbox"
+                                                        onClick={!isItemCompared ? (event) => {
+                                                            event.stopPropagation();
+                                                            handleClick(event, item[selectedFields[0]]);
+                                                        } : null
+                                                        }>
 
-                                                    {
-                                                        isItemCompared ?
-                                                            <Tooltip title="In Cart">
-                                                                <CheckIcon className={classes.check} onClick={(event) => event.stopPropagation()} />
-                                                            </Tooltip>
-                                                            :
-                                                            <Checkbox
-                                                                checked={isItemSelected}
-                                                                inputProps={{ 'aria-labelledby': labelId }}
-                                                            />
-                                                    }
+                                                        {
+                                                            isItemCompared ?
+                                                                <Tooltip title="In Cart">
+                                                                    <CheckIcon className={classes.check} onClick={(event) => event.stopPropagation()} />
+                                                                </Tooltip>
+                                                                :
+                                                                <Checkbox
+                                                                    checked={isItemSelected}
+                                                                    inputProps={{ 'aria-labelledby': labelId }} />
+                                                        }
 
 
-                                                </TableCell>
-                                                : null}
+                                                    </TableCell>
+                                                    : null
+                                            }
 
                                             {
                                                 selectedFields.map((arrayItem) => {
@@ -355,22 +299,12 @@ const NewTable = (props) => {
                                                                 <br />
                                                                 <span style={{ color: "grey" }}>{dateTime}</span>
                                                             </TableCell>)
-                                                    }
-                                                    //check whether assemblies are incomplete using the 'incomplete' boolean
-                                                    else if (arrayItem === "assetType" && item[arrayItem] === "Assembly" && item["incomplete"]) {
-                                                        return (
-                                                            <TableCell key={arrayItem} rowSpan={1} align="left">
-                                                                {item[arrayItem]}
-                                                                <br />
-                                                                <IncompletePopper assembly={item} />
-                                                            </TableCell>
-                                                        )
-                                                    } else if (arrayItem.includes("ship") && !arrayItem.includes("shipment")) {
+                                                    } else if ((arrayItem.includes("ship") && !arrayItem.includes("shipment")) || arrayItem === "deployedLocation") {
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
-                                                                {item[arrayItem].locationName}
+                                                                {item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationName : item[arrayItem]}
                                                                 <br />
-                                                                <span style={{ color: "grey" }}>{item[arrayItem].locationType}</span>
+                                                                <span style={{ color: "grey" }}>{item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationType : null}</span>
                                                             </TableCell>
                                                         );
                                                     } else if (typeof item[arrayItem] === "boolean") {
@@ -391,15 +325,35 @@ const NewTable = (props) => {
                                                     return (<TableCell key={arrayItem} align="left">{item[arrayItem]}</TableCell>)
                                                 })
                                             }
+
+                                            {
+                                                onValidate ?
+                                                    <TableCell align="inherit">
+                                                        {
+                                                            (() => {
+                                                                const indicators = onValidate(item);
+                                                                if (indicators.warnings.length || indicators.errors.length) {
+                                                                    return <IndicatorBar {...indicators} />
+                                                                }
+                                                                else return null;
+                                                            })()
+                                                        }
+                                                    </TableCell>
+                                                    : null
+                                            }
+
                                         </TableRow>
                                     );
                                 })}
 
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={selectedFields.length + 1} />
-                                </TableRow>
-                            )}
+                            {
+                                emptyRows > 0 &&
+                                (
+                                    <TableRow style={{ height: 53 * emptyRows }}>
+                                        <TableCell colSpan={selectedFields.length + 1} />
+                                    </TableRow>
+                                )
+                            }
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -422,15 +376,20 @@ const NewTable = (props) => {
 NewTable.propTypes = {
     data: PropTypes.array.isRequired,
     filters: PropTypes.object.isRequired,
-    setFilters: PropTypes.func.isRequired,
     count: PropTypes.number.isRequired,
     variant: PropTypes.oneOf(['asset', 'shipment']).isRequired,
     selected: PropTypes.array.isRequired,
-    setSelected: PropTypes.func.isRequired,
+    onSelectedChange: PropTypes.func.isRequired,
     selectedFields: PropTypes.array.isRequired,
-    compare: PropTypes.array,
     checkboxes: PropTypes.bool,
-    clickable: PropTypes.func
+    renderOnClick: PropTypes.func,
+    /**
+     * Custom validation function to run on a data object that returns an object with keys "warnings" and "errors",
+     * which are arrays of strings indicating any validation fails
+     * 
+     * Used to display an IndicatorBar of errors and warnings to the user
+     */
+    onValidate: PropTypes.func
 
 }
 

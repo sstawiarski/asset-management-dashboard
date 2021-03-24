@@ -8,7 +8,7 @@ const Customer = new Schema({
     lastName: { type: String, required: false, unique: false },
     companyName: { type: String, required: false, unique: false },
     addressLine1: { type: String, required: true, unique: false },
-    addressLine2: { type: String, required: false, unique: true },
+    addressLine2: { type: String, required: false, unique: false },
     city: { type: String, required: true, unique: false },
     state: { type: String, required: true, unique: false },
     zip: { type: String, required: true, unique: false },

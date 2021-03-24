@@ -96,7 +96,7 @@ const AssetDetails = (props) => {
 
     /* Fetch asset information and first events page */
     useEffect(() => {
-        fetch(`http://localhost:4000/assets/${serial}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets/${serial}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
@@ -108,7 +108,7 @@ const AssetDetails = (props) => {
                 setAsset(json);
             });
 
-        fetch(`http://localhost:4000/events/${serial}?limit=5&skip=${page}`)
+        fetch(`${process.env.REACT_APP_API_URL}/events/${serial}?limit=5&skip=${page}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
@@ -168,7 +168,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Location</Typography>
-                                        <Typography variant="body1">{asset.deployedLocation ? asset.deployedLocation : "N/A"}</Typography>
+                                        <Typography variant="body1">{asset.deployedLocation ? typeof asset.deployedLocation === "object" ? asset["deployedLocation"].locationName : asset.deployedLocation : "N/A"}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Owner</Typography>

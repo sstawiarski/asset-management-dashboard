@@ -36,7 +36,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
 
     /* Fetch names for all asset/assembly types in the database */
     useEffect(() => {
-        let url = assetList ? `http://localhost:4000/assets/assembly/schema?type=${assetList}` : 'http://localhost:4000/assets/assembly/schema?all=true';
+        let url = assetList ? `${process.env.REACT_APP_API_URL}/assets/assembly/schema?type=${assetList}` : `${process.env.REACT_APP_API_URL}/assets/assembly/schema?all=true`;
         fetch(url)
             .then(res => res.json())
             .then(json => {

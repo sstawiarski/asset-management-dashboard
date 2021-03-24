@@ -87,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         padding: "6px 8px"
     },
     unserializedFab: {
-        position: "absolute",
+        position: "fixed",
         bottom: theme.spacing(6),
         right: theme.spacing(15)
     },
@@ -115,9 +115,9 @@ const ShipmentCreator = () => {
     const [success, setSuccess] = useState(null);
     const [override, toggleOverride] = useState(false);
     const [submission, setSubmission] = useState({});
-    const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
+    const [cartBadge, setCartBadge] = useState("badge");
 
     /* Dialog state */
     const [shipmentStarted, toggleShipment] = useState(false);
@@ -132,7 +132,7 @@ const ShipmentCreator = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const originalURL = `http://localhost:4000/assets`;
+    const originalURL = `${process.env.REACT_APP_API_URL}/assets`;
     const [url, setURL] = useState(originalURL);
 
 
@@ -184,7 +184,12 @@ const ShipmentCreator = () => {
     /* Reset page of table to the first when filters are changed */
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
+    }, [activeFilters]);
+
+    useEffect(() => {
+        setCartBadge("badge badge-reload");
+        setCartBadge("badge");
+    }, [cartItems])
 
     /* Initial blank page button handler to open creator dialog */
     const handleStart = () => {
@@ -233,41 +238,34 @@ const ShipmentCreator = () => {
     const handleAddToCart = () => {
         const badSerials = [];
 
-        const newAdditions = mapItems.map(item => {
-            return {
+        const newAdditions = []
+
+        mapItems.forEach(item => {
+            if (item.deployedLocation || item.parentId) badSerials.push({
+                serial: item.serial,
+                name: item.assetName,
+                problem: item.deployedLocation ? "Deployed at another location" : "Part of an assembly"
+            });
+            else newAdditions.push({
                 serial: item.serial,
                 name: item.assetName
-            }
-        });
-
-        setCartItems(orig => [...orig, ...newAdditions]);
-        setSelected([]);
-        setMapItems([]);
-
-        /*
-         
-        //check for existing parents
-        items.forEach(item => {
-            const fullInfo = assets.find(asset => asset.serial === item);
-            if (fullInfo.parentId) {
-                badSerials.push(item);
-            }
+            })
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
         if (badSerials.length) {
-            const onlyGood = items.filter(item => !badSerials.includes(item));
-            setCartItems(orig => ([...orig, ...onlyGood]));
+            setCartItems(orig => ([...orig, ...newAdditions]));
             setSelected([]);
+            setMapItems([]);
             setHaveParents(badSerials);
             setHasParents(true);
             return;
         }
 
         //set the cart items if no bad serials are found
-        setCartItems(orig => ([...orig, ...items]));
+        setCartItems(orig => [...orig, ...newAdditions]);
         setSelected([]);
-        */
+        setMapItems([]);
     }
 
     /** 
@@ -285,8 +283,9 @@ const ShipmentCreator = () => {
             assets: cartItems.map(item => ({
                 serial: item.serial,
                 name: item.name ? item.name : item.assetName,
-                quantity: item.quantity ? item.quantity : undefined,
-                notes: item.notes ? item.notes : null
+                quantity: item.quantity ? item.quantity : 1,
+                notes: item.notes ? item.notes : null,
+                serialized: item.serial !== "N/A" ? true : false
             }))
         }));
 
@@ -314,7 +313,6 @@ const ShipmentCreator = () => {
         setAssetCount(0);
         //setIncomplete(false);
         //setMissingItems([]);
-        setMoreInfo([]);
         setSelected([]);
         setMapItems([]);
         setSubmission({});
@@ -338,23 +336,28 @@ const ShipmentCreator = () => {
                     {
                         shipmentStarted
                             ? <CustomTable
+                                variant="asset"
                                 data={assets}
                                 selectedFields={selectedFields}
                                 selected={selected}
-                                setSelected={setSelected}
                                 filters={filters}
-                                setFilters={setFilters}
                                 count={assetCount}
-                                variant="asset"
-                                checkboxes={true}
-                                compare={cartItems}
-                                moreInfo={moreInfo}
-                                setMoreInfo={setMoreInfo}
-                                lookup="assetName"
-                                clickable={QuickAssetView}
-                                setMapItems={setMapItems}
-                                inactive="parentId"
-                                returnsObject>
+                                checkboxes
+                                
+                                renderOnClick={QuickAssetView}
+                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                onValidate={(asset) => {
+                                    const warnings = [];
+                                    const errors = [];
+
+                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                    if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
+
+                                    return { warnings: warnings, errors: errors };
+                                }}
+                                onAdditionalSelect={setMapItems}
+                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                onSelectedChange={setSelected}>
 
                                 <TableToolbar title="Shipment Creator" selected={selected}>
                                     {
@@ -448,13 +451,15 @@ const ShipmentCreator = () => {
                 open={hasParents}
                 setOpen={setHasParents}
                 handleOverride={() => {
-                    setCartItems(c => [...c, ...haveParents]);
+                    const items = haveParents.map(item => ({ name: item.name, serial: item.serial }));
+                    setCartItems(c => [...c, ...items]);
                     setHasParents(false);
                     setHaveParents([]);
                 }}
                 text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
                 title="Asset Update Warning"
-                items={haveParents}
+                items={haveParents.map(item => [item.serial, item.name, item.problem])}
+                headers={["Serial", "Name", "Problem"]}
             />
 
             <WarningDialog
@@ -506,7 +511,7 @@ const ShipmentCreator = () => {
                             <span>Add Unserialized Item</span>
                         </Fab>
 
-                        <div className="badge" value={cartItems.length}>
+                        <div className={cartBadge} value={cartItems.length}>
                             <Fab
                                 color="primary"
                                 onClick={(event) => setAnchorEl(event.target)}>

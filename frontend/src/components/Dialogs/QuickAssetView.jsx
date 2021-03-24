@@ -50,7 +50,7 @@ const QuickAssetView = (props) => {
     }
 
     useEffect(() => {
-        fetch(`http://localhost:4000/assets/${identifier}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets/${identifier}`)
             .then(response => {
                 if (response.status < 300) {
                     return response.json();
@@ -104,7 +104,7 @@ const QuickAssetView = (props) => {
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Location</Typography>
-                        <Typography variant="body1">{asset.deployedLocation ? asset.deployedLocation : "N/A"}</Typography>
+                        <Typography variant="body1">{asset.deployedLocation && typeof asset.deployedLocation === "object" ? asset.deployedLocation["locationName"] : "N/A"}</Typography>
                     </Grid>
                     <Grid item xs={3} className={classes.item}>
                         <Typography variant="subtitle1" className={classes.break}>Owner</Typography>

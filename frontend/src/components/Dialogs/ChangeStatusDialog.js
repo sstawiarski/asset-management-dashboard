@@ -25,19 +25,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [owner, setOwner] = useState("");
-    const [dropdown, setDropdown] = useState([]);
+    const [status, setStatus] = useState("");
+    const selectedFields = ['completed', 'staging', 'abandoned'];
     const [user, ] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch(`${process.env.REACT_APP_API_URL}/assets`, {
+        const result = await fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
             method: "PATCH",
             mode: 'cors',
             headers: {
@@ -49,13 +49,13 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     }
 
     const handleSubmit = (event) => {
+
         event.preventDefault();
 
-        //setup data object to send based on API docs and required parameters
         const data = {
-            assets: selected,
+            shipments: selected,
             update: {
-                owner: owner
+                status: status
             },
             override: override,
             user: user.uniqueId
@@ -73,9 +73,9 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    const newOwner = owner;
+                    const newStatus = status;
                     handleClose();
-                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}! Event Key: ${json.key}`)
+                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${newStatus}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
                     onSuccess(false, `Failed to update asset owner...`);
@@ -83,41 +83,33 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
             })
     }
 
-    //reset dialog to default state on close
+      //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setOwner("");
+        setStatus("");
     }
 
-    useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/customers`)
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return [];
-            }
-        })
-        .then(json => setDropdown(json));
-    }, [])
+    
+
+  
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-status-dialog-title">
 
-            <DialogTitle id="change-owner-dialog-title">Change Owner</DialogTitle>
+            <DialogTitle id="change-status-dialog-title">Change Status</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing the Owner of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing Status of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
                     <Autocomplete
-                        id="owner-dropdown"
-                        options={dropdown.map(customer => customer.companyName)}
+                        id="status-dropdown"
+                        options={selectedFields}
                         autoHighlight
-                        onChange={(event, newValue) => setOwner(newValue)}
-                        renderInput={(params) => <TextField {...params} label="Owners" variant="outlined" />}
+                        onChange={(event, newValue) => setStatus(newValue)}
+                        renderInput={(selectedFields) => <TextField {...selectedFields} label="Status" variant="outlined" />}
                     />
                 </div>
             </DialogContent>
@@ -135,4 +127,4 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     );
 };
 
-export default ChangeOwnershipDialog;
+export default ChangeStatusDialog;

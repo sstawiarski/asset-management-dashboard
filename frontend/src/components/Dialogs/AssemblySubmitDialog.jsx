@@ -40,7 +40,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
 
     /* Debounced serial checker to avoid spamming the server */
     const debounced = useRef(debounce((ser) => {
-        fetch(`http://localhost:4000/assets/${ser}`)
+        fetch(`${process.env.REACT_APP_API_URL}/assets/${ser}`)
             .then(response => {
                 if (ser.length === 0) {
                     setLoading(false);
@@ -135,7 +135,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                     serial: serial,
                     user: user.uniqueId
                 }
-            fetch("http://localhost:4000/assets/assembly", {
+            fetch(`${process.env.REACT_APP_API_URL}/assets/assembly`, {
                 method: submission.reassembling ? 'PATCH' : 'POST',
                 mode: 'cors',
                 headers: {

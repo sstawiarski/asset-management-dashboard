@@ -111,7 +111,6 @@ const AssemblyManager = () => {
     const [override, toggleOverride] = useState(false);
     const [missingItems, setMissingItems] = useState([]);
     const [submission, setSubmission] = useState({});
-    const [moreInfo, setMoreInfo] = useState([]);
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -128,7 +127,7 @@ const AssemblyManager = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const [url, setURL] = useState(`http://localhost:4000/assets?parentId=null&assetType=Asset`);
+    const [url, setURL] = useState(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`);
 
     /* Initial setup if existing assembly is being modified */
     useEffect(() => {
@@ -137,10 +136,10 @@ const AssemblyManager = () => {
                 getSchema(history.location.state.assemblyType, true).then(response => {
                     setSchema(response);
                     toggleAssembly(true);
-                    setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
+                    setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
                 });
 
-                fetch(`http://localhost:4000/assets?parentId=${history.location.state.serial}`)
+                fetch(`${process.env.REACT_APP_API_URL}/assets?parentId=${history.location.state.serial}`)
                     .then(res => res.json())
                     .then(json => {
                         const existingItems = json.data.map(item => ({ serial: item.serial, name: item.assetName }));
@@ -154,14 +153,14 @@ const AssemblyManager = () => {
     useEffect(() => {
         if (schema && !history.location.state) {
             const assemblyType = encodeURI(schema.name);
-            setURL(`http://localhost:4000/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+            setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
         }
     }, [schema, history.location.state]);
 
     /* Set url with applied filters */
     useEffect(() => {
         setURL(u => {
-            let originalURL = "http://localhost:4000/assets?parentId=null&assetType=Asset";
+            let originalURL = `${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`;
             const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
             const necessaryParts = Object.keys(splitUpURL)
                 .filter(item => ["inAssembly", "isAssembly"].includes(item))
@@ -337,7 +336,6 @@ const AssemblyManager = () => {
         setAssetCount(0);
         setIncomplete(false);
         setMissingItems([]);
-        setMoreInfo([]);
         setSelected([]);
         setSubmission({});
         setCartItems([]);
@@ -360,24 +358,25 @@ const AssemblyManager = () => {
                     {
                         assemblyStarted
                             ? <CustomTable
+                                variant="asset"
                                 data={assets}
                                 selectedFields={selectedFields}
                                 selected={selected}
-                                setSelected={setSelected}
-                                setMapItems={setMapItems}
                                 filters={filters}
-                                setFilters={setFilters}
                                 count={assetCount}
-                                variant="asset"
-                                checkboxes={true}
-                                compare={cartItems}
-                                moreInfo={moreInfo}
-                                setMoreInfo={setMoreInfo}
-                                lookup="assetName"
-                                clickable={QuickAssetView}
-                                inactive="parentId"
-                                returnsObject
-                                >
+                                checkboxes
+
+                                renderOnClick={QuickAssetView}
+                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                onAdditionalSelect={setMapItems}
+                                onValidate={(asset) => {
+                                    const warnings = [];
+                                    const errors = [];
+                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                    return { warnings: warnings, errors: errors }
+                                }}
+                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                onSelectedChange={setSelected}>
 
                                 <TableToolbar title="Assembly Creator" selected={selected}>
                                     {
@@ -523,7 +522,7 @@ const AssemblyManager = () => {
                             color="primary"
                             onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}
                             disableRipple>
-                            <ShoppingCartIcon style={{ fontSize: "35px" }}/>
+                            <ShoppingCartIcon style={{ fontSize: "35px" }} />
                         </Fab>
                     </div>
                     : null

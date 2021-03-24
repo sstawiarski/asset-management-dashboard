@@ -67,7 +67,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
     /* Fetches list of asset types for dropdown */
     useEffect(() => {
-        fetch('http://localhost:4000/assets/schemas')
+        fetch(`${process.env.REACT_APP_API_URL}/assets/schemas`)
             .then(res => res.json())
             .then(json => setOptions(json));
     }, [])
@@ -184,7 +184,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
     const sendData = async (data) => {
         //uses POST endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch("http://localhost:4000/assets", {
+        const result = await fetch(`${process.env.REACT_APP_API_URL}/assets`, {
             method: "POST",
             mode: 'cors',
             headers: {
