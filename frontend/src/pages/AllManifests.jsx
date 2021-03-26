@@ -4,7 +4,6 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tabs from '@material-ui/core/Tabs';
@@ -21,7 +20,7 @@ import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
+import { Container, InputAdornment, TextField} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
@@ -52,7 +51,7 @@ const AllShipments = (props) => {
 
     }
 
-  /* Handle floating menu placement for toolbar */
+    /* Handle floating menu placement for toolbar */
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
     }
@@ -61,7 +60,7 @@ const AllShipments = (props) => {
         setAnchor(null);
     }
 
- /* Check selected items for existing parent */
+    /* Check selected items for existing parent */
     const handleMenuClick = (event) => {
         setAnchor(null);
         setNext(event.target.getAttribute("name"));
@@ -69,7 +68,7 @@ const AllShipments = (props) => {
 
     }
 
-        /* Handles stepping through warning dialog to the actual edit dialog */
+    /* Handles stepping through warning dialog to the actual edit dialog */
     useEffect(() => {
         if (!nextDialog) return;
       
@@ -130,9 +129,6 @@ const AllShipments = (props) => {
     }, [activeFilters])
 
         
-
-
-
 
     return (
         <div>
