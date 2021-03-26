@@ -64,7 +64,7 @@ router.patch('/:employeeId', async (req, res) => {
       {
         ...req.body
       }
-    );
+    ).clearCache();
 
     /* Check if a document was modified */
     if (!employee.nModified) {

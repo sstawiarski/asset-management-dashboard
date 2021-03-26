@@ -553,7 +553,7 @@ router.patch('/:key', async (req, res) => {
     const { status } = req.body; //can add more later if shipments need more bulk edits
 
     try {
-        const shipment = await Shipment.updateOne({ key: decodeURI(key) }, { status: status });
+        const shipment = await Shipment.updateOne({ key: decodeURI(key) }, { status: status }).clearCache();
 
         /* Document with key not found */
         if (!shipment.n) {

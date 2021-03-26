@@ -771,12 +771,12 @@ router.patch('/assembly', async (req, res) => {
       assembled: true,
       incomplete: missing.length > 0 ? true : false,
       lastUpdated: Date.now()
-    });
+    }).clearCache();
 
     const findChildren = await Asset.find({ parentId: serial });
     const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
 
-    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() });
+    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() }).clearCache();
 
     //find all new children that already have parents
     const withParents = await Asset.find({
