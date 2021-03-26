@@ -7,7 +7,7 @@ const Assembly = require("../models/assembly.model");
 //TODO: deal with the duplication of this functionality in assets.routes.js
 router.get('/types', async (req, res) => {
     try {
-        const types = await Assembly.find({}).select({ name: 1, _id: 0 });
+        const types = await Assembly.find({}).select({ name: 1, _id: 0 }).cache({ ttl: 60 * 60 * 1000});
         const newTypes = types.map(item => item["name"]);
         res.status(200).json(newTypes);
     }

@@ -285,7 +285,7 @@ router.get("/", async (req, res, err) => {
     }
     aggregateArray.push(projection);
 
-    const result = await Asset.aggregate(aggregateArray);
+    const result = await Asset.aggregate(aggregateArray).cache({ ttl: 60 * 60 * 1000});
 
     //filter results to determine better or even exact matches
     if (req.query.search) {
@@ -653,7 +653,7 @@ router.patch("/", async (req, res) => {
  */
 router.get('/schemas', async (req, res) => {
   try {
-    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
+    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 }).cache({ ttl: 60 * 60 * 1000});
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -925,12 +925,12 @@ router.get("/assembly/schema", async (req, res) => {
         _id: 0,
         __v: 0,
         components: 0
-      });
+      }).cache({ ttl: 60 * 60 * 1000});
     } else {
       schema = await AssemblySchema.findOne(query).select({
         _id: 0,
         __v: 0
-      });
+      }).cache({ ttl: 60 * 60 * 1000});
     }
     if ((isAll && schema.length > 0) || (schema instanceof Object && Object.keys(schema).length > 0)) {
       res.status(200).json(schema);
@@ -974,7 +974,7 @@ router.get("/:serial", async (req, res, err) => {
 
     } else {
 
-      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
+      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation').cache({ ttl: 60 * 60 * 1000});
 
 
 
