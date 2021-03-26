@@ -80,7 +80,7 @@ const ShipmentDetails = (props) => {
     const [shipment, setShipment] = useState(null);
     const [headers, setHeaders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [hasLocations, setHasLocations] = useState(true);
+    const [hasLocations, setHasLocations] = useState(false);
 
     /* Fetch shipment information */
     useEffect(() => {
@@ -103,7 +103,8 @@ const ShipmentDetails = (props) => {
                     }));
                     const head = Object.keys(json.manifest[0]);
                     try {
-                        if (Object.keys(json.shipTo.coordinates).length > 0 && Object.keys(json.shipFrom.coordinates).length > 0) {
+                        console.log(json)
+                        if (json.shipTo["coordinates"].length > 0 && json.shipFrom["coordinates"].length > 0) {
                             setHasLocations(true);
                         }
                     } catch {

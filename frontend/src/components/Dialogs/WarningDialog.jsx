@@ -38,7 +38,7 @@ const useStyles = makeStyles({
 })
 
 
-const WarningDialog = ({ open, setOpen, items, handleOverride, text, title }) => {
+const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, headers }) => {
     const classes = useStyles();
     const handleClose = () => {
         setOpen(false);
@@ -58,7 +58,7 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title }) =>
                     </Grid>
                     {items ?
                         <Grid item xs={12} className={classes.container}>
-                            <SimpleList data={items} label="items" headers={["Serial"]} />
+                            <SimpleList data={items} label="items" headers={headers ? headers : ["Serial"]} />
                         </Grid>
                         : null}
 

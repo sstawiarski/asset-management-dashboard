@@ -14,6 +14,7 @@ const sampleLocations = [
         "locationType": "Rig",
         "client": "Blackhawk Energy",
         "operator": "Nabors Drilling",
+        "coordinates": [-74.005974, 40.712776],
         "contactName": "Joe Momma",
         "contactNumber": "502-349-2016"
     },
@@ -43,10 +44,7 @@ const sampleLocations = [
         "city": "Houston",
         "state": "TX",
         "zip": "77077",
-        "coordinates": {
-            "latitude": 29.760427,
-            "longitude": -95.369804
-        },
+        "coordinates": [-95.369804, 29.760427],
         "contactName": "Jose Altuve",
         "contactNumber": "346-665-8976"
     },
@@ -58,10 +56,7 @@ const sampleLocations = [
         "city": "Calgary",
         "state": "Ontario",
         "zip": "77077-987",
-        "coordinates": {
-            "latitude": 51.048615,
-            "longitude": -114.070847
-        },
+        "coordinates": [-114.070847, 51.048615],
         "contactName": "",
         "contactNumber": "923-287-2981"
     },
@@ -99,10 +94,7 @@ const sampleLocations = [
         "locationType": "Staging Facility",
         "operator": "Spots, Inc",
         "rigName": "SLB-12",
-        "coordinates": {
-            "latitude": 40.712776,
-            "longitude": -74.005974
-        },
+        "coordinates": [-74.005974, 40.712776],
         "contactName": "Ginger O'Hare",
         "contactNumber": "558-925-1274"
     }

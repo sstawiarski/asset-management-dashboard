@@ -9,12 +9,20 @@ import Grid from '@material-ui/core/Grid';
 import MenuItem from '@material-ui/core/MenuItem';
 import DialogContent from '@material-ui/core/DialogContent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { DialogActions, InputLabel, TextField, Typography, FormControl, Input } from '@material-ui/core';
+import { DialogActions, InputLabel, TextField, Typography, FormControl } from '@material-ui/core';
+
 
 const useStyles = makeStyles((theme) => ({
     autocomplete: {
         marginTop: "15px",
         padding: "0px 5px 0px 0px"
+    },
+    form: {
+        marginTop: theme.spacing(2),
+        width: "98%"
+    },
+    formItem: {
+        marginTop: theme.spacing(1)
     }
 }))
 
@@ -26,7 +34,9 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
         shipmentType: "",
         shipFromOptions: [],
         shipToOptions: [],
-        allShippingOptions: []
+        allShippingOptions: [],
+        newFromOption: null,
+        newToOption: null
     })
 
     useEffect(() => {
@@ -77,7 +87,9 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
         setState({
             shipFrom: null,
             shipTo: null,
-            shipmentType: ""
+            shipmentType: "",
+            newFromOption: null,
+            newToOption: null
         })
     }
 
@@ -89,33 +101,32 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                 <Grid container direction="row">
                     <Grid item xs={12}>
                         <FormControl variant="outlined" style={{ width: "50%", display: "block", marginLeft: "auto", marginRight: "auto" }}>
-                        <InputLabel id="type-label">Shipment Type</InputLabel>
-                        <Select
-                            labelId="type-label"
-                            id="type"
-                            name="shipmentType"
-                            fullWidth
-                            labelWidth={110}
-                            value={state.shipmentType}
-                            onChange={handleChange}>
+                            <InputLabel id="type-label">Shipment Type</InputLabel>
+                            <Select
+                                labelId="type-label"
+                                id="type"
+                                name="shipmentType"
+                                fullWidth
+                                labelWidth={110}
+                                value={state.shipmentType}
+                                onChange={handleChange}>
 
-                            <MenuItem value="Incoming">Incoming</MenuItem>
-                            <MenuItem value="Outgoing">Outgoing</MenuItem>
-                        </Select>
+                                <MenuItem value="Incoming">Incoming</MenuItem>
+                                <MenuItem value="Outgoing">Outgoing</MenuItem>
+                            </Select>
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} className={classes.autocomplete}>
                         <Autocomplete
                             id="shipment-from-locator"
-                            className={classes.autocomplete}
                             options={state.shipFromOptions}
                             getOptionLabel={(option) => `${option.locationName} (${option.key})`}
-                            groupBy={(option) => option.locationType}
                             value={state.shipFrom}
+                            fullWidth
+                            groupBy={(option) => option.locationType}
                             onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
-                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
+                            className={classes.autocomplete}
                             renderOption={(option) => {
-                                /* Render autocomplete list with subtitles that tell either the operator name, client name, or address */
                                 return (
                                     <>
                                         <div>
@@ -135,6 +146,7 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                                     </>
                                 )
                             }}
+                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" />}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.autocomplete}>
@@ -170,12 +182,20 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" />}
                         />
                     </Grid>
-
                 </Grid>
 
             </DialogContent>
             <DialogActions>
-                <Button className={classes.button} onClick={handleCancel}>Cancel</Button>
+                <Button className={classes.button} onClick={() => {
+                    handleCancel();
+                    setState({
+                        shipFrom: null,
+                        shipTo: null,
+                        shipmentType: "",
+                        newFromOption: null,
+                        newToOption: null
+                    });
+                }}>Cancel</Button>
                 <Button className={classes.button} onClick={handleSubmit}>Create</Button>
             </DialogActions>
         </Dialog>

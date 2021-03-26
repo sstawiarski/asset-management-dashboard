@@ -153,8 +153,8 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
                                                 const hasQuantity = Object.keys(item).includes("quantity");
 
                                                 return (
-                                                    <>
-                                                        <TableRow key={item.serial !== "N/A" ? item.serial : idx}>
+                                                    <React.Fragment key={item.serial !== "N/A" ? item.serial : idx}>
+                                                        <TableRow>
                                                             {
                                                                 Object.entries(item).map(([key, val]) => {
                                                                     //ignore irrelevant keys
@@ -219,7 +219,7 @@ const NewCart = ({ title = "Cart", anchorEl, cartItems, headers, notes = false, 
                                                                         </TableRow>
                                                                 : null
                                                         }
-                                                    </>
+                                                    </React.Fragment>
                                                 );
                                             }
                                             )
