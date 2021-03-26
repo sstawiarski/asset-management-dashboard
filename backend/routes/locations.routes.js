@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
         if (!type) {
 
             const result = await Location.find({}, { contactName: 0, contactNumber: 0, __v: 0 })
-                .sort({ locationType: 1, locationName: 1 });
+                .sort({ locationType: 1, locationName: 1 }).cache({ ttl: 60 * 60 * 1000 });
 
             res.status(200).json(result);
         } else {
@@ -59,7 +59,7 @@ router.put("/load", async (req, res) => {
 router.get("/:location", async (req, res) => {
     try {
         const getLocation = req.params.location;
-        const location = await Location.findOne({ key: getLocation });
+        const location = await Location.findOne({ key: getLocation }).cache({ ttl: 60 * 60 * 1000 });
         if (location) res.status(200).json(location);
         else res.status(404).json({ message: "No location found for key", internalCode: "location_not_found" });
     } catch (err) {
