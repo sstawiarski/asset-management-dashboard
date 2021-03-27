@@ -471,7 +471,7 @@ router.patch("/", async (req, res) => {
     //object from client representing fields to update
     //should really only be one
     const field = req.body.update;
-    console.log(field);
+
     const fieldName = Object.getOwnPropertyNames(field)[0];
 
     //get all parent assembly documents so we can get their serial and update children
