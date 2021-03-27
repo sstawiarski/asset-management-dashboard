@@ -20,7 +20,7 @@ import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import { Container, InputAdornment, TextField } from '@material-ui/core';
+import { InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
@@ -28,6 +28,7 @@ import { Link } from 'react-router-dom';
 const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
+    const isWarning = false; // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
 
     const [shipments, setShipments] = useState([]);
     const [filters, setFilters] = useState({
@@ -60,13 +61,16 @@ const AllShipments = (props) => {
         setAnchor(null);
     }
 
-    /* Check selected items for existing parent */
+
     const handleMenuClick = (event) => {
         setAnchor(null);
-        setNext(event.target.getAttribute("name"));
+        const name = event.target.getAttribute("name");
 
-
+        // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
+        if (isWarning) setNext(name);
+        else setDialogs(d => ({ ...d, [name]: true }));
     }
+
     // const handleMenuClick = (event) => {
     //     setAnchor(null);
     //     const children = [];
@@ -254,7 +258,7 @@ const AllShipments = (props) => {
 
             <ChangeStatusDialog
                 open={dialogs["status"]}
-                setOpen={(isOpen) => setDialogs({ status: isOpen })}
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, status: isOpen }))}
                 selected={selected}
                 onSuccess={onSuccess}
             />
