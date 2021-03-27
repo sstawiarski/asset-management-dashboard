@@ -20,7 +20,7 @@ import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import { Container, InputAdornment, TextField} from '@material-ui/core';
+import { Container, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from 'react-router-dom';
 
@@ -40,15 +40,15 @@ const AllShipments = (props) => {
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
+    const [search, setSearch] = useState("");
 
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setFilters(s => ({ ...s, search: e.target.value }))
-            console.log(filters);
-
+            const { value } = e.target;
+            setFilters(s => ({ ...s, search: value }));
+            setSearch(value);
         }
-
     }
 
     /* Handle floating menu placement for toolbar */
@@ -64,7 +64,7 @@ const AllShipments = (props) => {
     const handleMenuClick = (event) => {
         setAnchor(null);
         setNext(event.target.getAttribute("name"));
-        
+
 
     }
     // const handleMenuClick = (event) => {
@@ -102,12 +102,12 @@ const AllShipments = (props) => {
     /* Handles stepping through warning dialog to the actual edit dialog */
     useEffect(() => {
         if (!nextDialog) return;
-      
-            setDialogs({ [nextDialog]: true });
-        
+
+        setDialogs({ [nextDialog]: true });
+
     }, [nextDialog]);
 
- /* Successful edit event */
+    /* Successful edit event */
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
             setSelected([]);
@@ -164,7 +164,7 @@ const AllShipments = (props) => {
     return (
         <div>
             <Header heading="Shipments" subheading="View All" />
-            
+
             <div>
                 <CustomTable
                     variant="shipment"
@@ -177,18 +177,10 @@ const AllShipments = (props) => {
 
                     onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                     onSelectedChange={setSelected}>
-                        
-                    <Tabs  aria-label="simple tabs example">
-                      <Tab label="Staged"  />
-                      <Tab label="Abandoned"  />
-                      <Tab label="Completed"  />
-                    </Tabs>
 
-                    <TableToolbar
-                        title="All Shipments"
-                        selected={selected}>
-                        
-                        <div>
+                    <TableToolbar selected={selected}>
+
+
                         {/* Table toolbar icons and menus */}
                         {/* Render main action if no items selected, edit actions if some are selected */}
                         {selected.length > 0 ?
@@ -209,34 +201,39 @@ const AllShipments = (props) => {
                                 </Menu>
                             </>
                             :
-                            <>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
 
                                 <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>
                                 </Link>
-                                <Container className='searchBar' align='right'>
-                                    <div >
-                                        <TextField id="searchBox"
-                                            variant="outlined"
-                                            size="small"
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <SearchIcon />
-                                                    </InputAdornment>
-                                                )
-                                            }}
-                                            onKeyDown={handleKeyDown}
-                                        />
-                                    </div>
-                                </Container>
+                                <Tabs aria-label="shipment status tabs" value="Staging" style={{ width: "100%", marginLeft: "20%" }}>
+                                    <Tab label="Staging" value="Staging" />
+                                    <Tab label="Completed" value="Completed" />
+                                    <Tab label="Abandoned" value="Abandoned" />
+                                </Tabs>
+                                <div style={{ width: "60%" }}>
+                                    <TextField id="searchBox"
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        value={search}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <SearchIcon />
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
                                 </IconButton>
-                            </>
-                        }</div>
+                            </div>
+                        }
                     </TableToolbar>
 
                     {/* Chips representing all the active filters */}
@@ -257,12 +254,12 @@ const AllShipments = (props) => {
 
             <ChangeStatusDialog
                 open={dialogs["status"]}
-                setOpen={(isOpen) => setDialogs({ status: isOpen})}
+                setOpen={(isOpen) => setDialogs({ status: isOpen })}
                 selected={selected}
                 onSuccess={onSuccess}
-             />
-           
-            
+            />
+
+
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
                 <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
