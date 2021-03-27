@@ -9,6 +9,7 @@ const dateFunctions = require("date-fns");
 const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
 const Assets = require('../models/asset.model');
+const Event = require("../models/event.model");
 
 // const client = require('../redis_db');
 
@@ -377,7 +378,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000}); // caches for 5 seconds for testing (5 * 1000 milliseconds)
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000 }); // caches for 5 seconds for testing (5 * 1000 milliseconds)
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -438,7 +439,7 @@ router.get("/", async (req, res) => {
 /**
  * Create a new shipment
  */
- router.post('/', async (req, res, err) => {
+router.post('/', async (req, res, err) => {
     try {
         const username = JSON.parse(decrypt(req.body.user)); //get unique user info
 
@@ -449,7 +450,7 @@ router.get("/", async (req, res) => {
             const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
             const alreadyDeployed = await Assets.find({ serial: { $in: serials } });
         }
-        
+
         const count = await Counter.findOneAndUpdate({ name: "shipments" }, { $inc: { next: 1 } }, { useFindAndModify: false });
         const shipment = {
             createdBy: username.employeeId,
@@ -480,6 +481,70 @@ router.get("/", async (req, res) => {
             message: "Error creating shipment",
             interalCode: "shipment_creation_error"
         })
+    }
+});
+
+
+router.patch('/', async (req, res) => {
+    /* Destructure key from request URL params to find shipment and get status from request body */
+    const { shipments, user } = req.body;
+    const username = JSON.parse(decrypt(req.body.user));
+
+    /* Ensure only valid updates are applied (can add more later) */
+    const allowedUpdates = ['status'];
+    const updateObject = Object.entries(req.body["update"]).reduce((acc, [key, val]) => {
+        if (!allowedUpdates.includes(key)) return acc;
+        acc[key] = val
+        return acc;
+    }, {});
+
+    try {
+     
+        const foundShipments = await Shipment.find({ key: { $in: shipments } });
+        const updatedShipments = await Shipment.updateMany({ key: { $in: shipments } }, updateObject);
+
+        if (!updatedShipments.n) {
+            /* Document(s) with key not found */
+            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
+        } else {
+            /* Update was successful */
+            for (let i = 0; i < foundShipments.length; i++) {
+                const assetUpdateObject = {};
+                const updateDescriptions = [];
+                const serials = foundShipments[i]["manifest"].reduce((acc, asset) => asset.serialized ? [...acc, asset.serial] : acc, []);
+
+                if (updateObject["status"]) {
+                    if (foundShipments[i]["status"] === "Staging" && updateObject["status"] === "Completed") {
+                        assetUpdateObject["deployedLocation"] = foundShipments[i]["shipTo"];
+                    } else if (foundShipments[i]["status"] === "Completed" && updateObject["status"] === "Staging") {
+                        assetUpdateObject["deployedLocation"] = foundShipments[i]["shipFrom"];
+                    }
+                    updateDescriptions.push(`Shipment marked '${updateObject["status"]}' from '${foundShipments[i]["status"]}.'`);
+                }
+
+                const updatedAssets = await Assets.updateMany({ serial: { $in: serials } }, assetUpdateObject);
+                if (updatedAssets.nModified) updateDescriptions.push(`Updated ${updatedAssets.nModified} asset(s) ${Object.keys(updateObject).join(", ")}.`)
+
+                const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+                const locationChange = new Event({
+                    eventType: "Change of Location",
+                    eventTime: Date.now(),
+                    key: `LOC-${count.next}`,
+                    productIds: serials,
+                    initiatingUser: username.employeeId,
+                    eventData: {
+                        details: updateDescriptions.join(" ")
+                    }
+                });
+    
+                await locationChange.save();
+            }
+
+            res.status(200).json({ message: "Shipment(s) successfully updated" });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
     }
 });
 
@@ -544,33 +609,6 @@ router.get('/:key', async (req, res) => {
             message: "Could not get shipment",
             internal_code: "shipment_retrieval_error"
         })
-    }
-});
-
-router.patch('/:key', async (req, res) => {
-    /* destructure key from request URL params to find shipment and get status from request body */
-    const { key } = req.params;
-    const { status } = req.body; //can add more later if shipments need more bulk edits
-
-    try {
-        const shipment = await Shipment.updateOne({ key: decodeURI(key) }, { status: status });
-
-        /* Document with key not found */
-        if (!shipment.n) {
-            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
-
-            /* Document was not modified */
-        } else if (!shipment.nModified) {
-
-            res.status(404).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
-
-            /* Update was successful */
-        } else {
-            res.status(200).json({ message: "Shipment successfully updated" });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
     }
 });
 
