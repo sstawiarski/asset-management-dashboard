@@ -484,11 +484,10 @@ router.post('/', async (req, res, err) => {
     }
 });
 
-
 router.patch('/', async (req, res) => {
     /* Destructure key from request URL params to find shipment and get status from request body */
     const { shipments, user } = req.body;
-    const username = JSON.parse(decrypt(req.body.user));
+    const username = JSON.parse(decrypt(user));
 
     /* Ensure only valid updates are applied (can add more later) */
     const allowedUpdates = ['status'];
@@ -499,7 +498,6 @@ router.patch('/', async (req, res) => {
     }, {});
 
     try {
-     
         const foundShipments = await Shipment.find({ key: { $in: shipments } });
         const updatedShipments = await Shipment.updateMany({ key: { $in: shipments } }, updateObject);
 
@@ -507,24 +505,67 @@ router.patch('/', async (req, res) => {
             /* Document(s) with key not found */
             res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
         } else {
+
             /* Update was successful */
             for (let i = 0; i < foundShipments.length; i++) {
+
+                /* Dynamically create the update query and description for the event document */
                 const assetUpdateObject = {};
                 const updateDescriptions = [];
+
+                /* Only act on assets in the manifest marked as serialized (i.e. have valid serials, not an unserialized item) */
                 const serials = foundShipments[i]["manifest"].reduce((acc, asset) => asset.serialized ? [...acc, asset.serial] : acc, []);
 
+                /** 
+                 * Status update handler (TODO: Add more handling for abandoned?)
+                 * 
+                 * Updates assets' deployedLocation to the shipment's "shipTo" if the shipment is being moved from "Staging" to "Completed", indicating the asset is now at its destination
+                 * Updates assets' deployedLocation to the shipment's "shipFrom" if the shipment is being moved from "Completed" back to "Staging", indicating the asset is back at its source
+                 * Updates or removes assets' deployedLocationOverride as needed
+                 */
                 if (updateObject["status"]) {
+                    /* Store new location ID to lookup later for the event details */
+                    let location = null;
+
                     if (foundShipments[i]["status"] === "Staging" && updateObject["status"] === "Completed") {
                         assetUpdateObject["deployedLocation"] = foundShipments[i]["shipTo"];
+                        location = foundShipments[i]["shipTo"];
+
+                        /* Set overrides as needed */
+                        if (foundShipments[i]["shipToOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipToOverride"];
+                        else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
+
                     } else if (foundShipments[i]["status"] === "Completed" && updateObject["status"] === "Staging") {
                         assetUpdateObject["deployedLocation"] = foundShipments[i]["shipFrom"];
+                        location = foundShipments[i]["shipFrom"];
+
+                        if (foundShipments[i]["shipFromOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipFromOverride"];
+                        else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
                     }
-                    updateDescriptions.push(`Shipment marked '${updateObject["status"]}' from '${foundShipments[i]["status"]}.'`);
+
+                    /* Document event details */
+                    updateDescriptions.push(`Shipment ${foundShipments[i]["key"]} marked '${updateObject["status"]}' from '${foundShipments[i]["status"]}'.`);
+                    const foundLocation = await Location.findById({ _id: location });
+                    updateDescriptions.push(`Location changed to ${foundLocation["locationName"]}.`);
                 }
 
+                /* Perform actual updates on all the assets in the shipment */
                 const updatedAssets = await Assets.updateMany({ serial: { $in: serials } }, assetUpdateObject);
                 if (updatedAssets.nModified) updateDescriptions.push(`Updated ${updatedAssets.nModified} asset(s) ${Object.keys(updateObject).join(", ")}.`)
 
+                /* Perform updates on child assets */
+                const parentAssemblies = await Assets.find({ serial: { $in: serials }, assetType: "Assembly" });
+                if (parentAssemblies.length) {
+                    const parentSerials = parentAssemblies.map(asm => asm.serial);
+                    const findChildren = await Assets.find({ parentId: { $in: parentSerials } }).select({ serial: 1 });
+                    if (findChildren.length) {
+                        const updateChildren = await Assets.updateMany({ parentId: { $in: parentSerials } }, assetUpdateObject);
+                        if (updateChildren.nModified) updateDescriptions.push(`${updateChildren.nModified} asset(s) were children of assemblies in the shipment and were updated accordingly.`);
+                        serials.push(...findChildren.map(child => child.serial));
+                    }
+                }
+
+                /* Generate event document for the asset update */
                 const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
                 const locationChange = new Event({
                     eventType: "Change of Location",
@@ -537,7 +578,7 @@ router.patch('/', async (req, res) => {
                     }
                 });
     
-                await locationChange.save();
+                await locationChange.save(); //save event document
             }
 
             res.status(200).json({ message: "Shipment(s) successfully updated" });

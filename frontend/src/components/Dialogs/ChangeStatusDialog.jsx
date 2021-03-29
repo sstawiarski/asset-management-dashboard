@@ -73,7 +73,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${status}! Event Key: ${json.key}`)
+                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${status}!`);
                     handleClose();
                 } else {
                     handleClose();
