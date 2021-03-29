@@ -266,9 +266,13 @@ const AllShipments = (props) => {
 
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
-                <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
-                    {success.message}
-                </Alert>
+                {
+                    success.succeeded !== null ?
+                        <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
+                            {success.message}
+                        </Alert>
+                        : null
+                }
             </Snackbar>
         </div>);
 
