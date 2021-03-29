@@ -217,6 +217,29 @@ router.get("/", async (req, res, err) => {
     aggregateArray.push(lookup);
     aggregateArray.push(locationUnwind);
 
+    /* Add location overrides if applicable */
+    const deployedLocationOverride = {
+      $set: {
+        "deployedLocation": {
+          $cond: [
+            { $ifNull: ["$deployedLocationOverride", false] },
+            { $mergeObjects: ["$deployedLocation", "$deployedLocationOverride"] },
+            "$deployedLocation"
+          ]
+        }
+      }
+    };
+
+    /* Remove the now-useless override fields from the final document */
+    const locationModificationProjection = {
+      $project: {
+        deployedLocationOverride: 0
+      }
+    };
+
+    aggregateArray.push(deployedLocationOverride);
+    aggregateArray.push(locationModificationProjection);
+
     if (req.query.sort_by) {
       //default ascending order
       const sortOrder = (req.query.order === 'desc' ? -1 : 1);
@@ -471,7 +494,7 @@ router.patch("/", async (req, res) => {
     //object from client representing fields to update
     //should really only be one
     const field = req.body.update;
-    console.log(field);
+
     const fieldName = Object.getOwnPropertyNames(field)[0];
 
     //get all parent assembly documents so we can get their serial and update children
@@ -953,45 +976,39 @@ router.get("/assembly/schema", async (req, res) => {
  * Retreive a single asset document
  */
 router.get("/:serial", async (req, res, err) => {
-  const serial = req.params.serial;
-
-  //for mapping
-  const map = req.params.map;
-  const bounds = req.params.bounds;
-
+  const { serial } = req.params;
   const { project } = req.query
-  let projection = {};
-  if (project) {
-    projection = {
-      [project]: 1,
-      _id: 0
-    }
-  }
+
+  const projection = project ? { [project]: 1, _id: 0 } : {};
+
   try {
+    let asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation');
 
-    if (map == true) {
-
-
-    } else {
-
-      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
-
-
-
-      if (asset.length) {
-        res.status(200).json(asset[0]);
-      } else {
-        res.status(404).json({
-          message: "No assets found for serial",
-          internalCode: "no_assets_found",
-        });
-      }
+    /* if there is a location override, update the deployedLocation with the overrides and remove the override object */
+    if (asset["deployedLocationOverride"] && asset["deployedLocation"]) {
+      asset = asset.toObject();
+      asset["deployedLocation"] = {
+        ...asset["deployedLocation"],
+        ...asset["deployedLocationOverride"]
+      };
+      delete asset["deployedLocationOverride"];
     }
+
+    /* Return asset document if found, otherwise, return error */
+    if (asset) {
+      res.status(200).json(asset);
+    } else {
+      res.status(404).json({
+        message: "No assets found for serial",
+        internalCode: "no_assets_found",
+      });
+    }
+
   } catch (err) {
     console.log(err);
-    res.status(400).json({
-      message: "serial is missing",
-      interalCode: "missing_parameters",
+    res.status(500).json({
+      message: "Internal server error",
+      interalCode: "internal_server_error",
     });
   }
 

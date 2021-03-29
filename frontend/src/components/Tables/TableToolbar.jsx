@@ -62,9 +62,9 @@ const EnhancedTableToolbar = (props) => {
             ) : (
                 <>
                 {children.props.children[0]}
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
+                    {(title && <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
                         {title}
-                    </Typography>
+                    </Typography>)}
                     </>
                 )}
 

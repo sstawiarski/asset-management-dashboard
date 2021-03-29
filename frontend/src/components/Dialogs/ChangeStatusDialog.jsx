@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
 
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
@@ -30,7 +30,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
-    const selectedFields = ['completed', 'staging', 'abandoned'];
+    const selectedFields = ['Staging', 'Completed', 'Abandoned'];
     const [user, ] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
@@ -73,12 +73,11 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    const newStatus = status;
+                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${status}!`);
                     handleClose();
-                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${newStatus}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
-                    onSuccess(false, `Failed to update asset owner...`);
+                    onSuccess(false, `Failed to update shipment status...`);
                 }
             })
     }
@@ -89,18 +88,14 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
         setStatus("");
     }
 
-    
-
-  
-
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="change-status-dialog-title">
 
-            <DialogTitle id="change-status-dialog-title">Change Status</DialogTitle>
+            <DialogTitle id="change-status-dialog-title">Change Shipment Status</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing Status of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing status of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
@@ -109,7 +104,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
                         options={selectedFields}
                         autoHighlight
                         onChange={(event, newValue) => setStatus(newValue)}
-                        renderInput={(selectedFields) => <TextField {...selectedFields} label="Status" variant="outlined" />}
+                        renderInput={(params) => <TextField {...params} label="Status" variant="outlined" />}
                     />
                 </div>
             </DialogContent>

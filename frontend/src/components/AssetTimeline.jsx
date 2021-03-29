@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles'
@@ -29,6 +30,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment'; //assignment type
 import DynamicFeedIcon from '@material-ui/icons/DynamicFeed'; //group tag
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'; //incoming AND outgoing shipments
 import CancelIcon from '@material-ui/icons/Cancel'; //removal of child assets
+import LocationOnIcon from '@material-ui/icons/LocationOn'; //location change
 
 const dateOptions = {
     month: "long",
@@ -106,6 +108,8 @@ const getIcon = (eventType) => {
             return (<AddIcon style={classes.icon} />);
         case "ABM":
             return (<ExtensionIcon style={classes.icon} />);
+        case "LOC":
+            return (<LocationOnIcon style={classes.icon} />);
         default:
             return null;
     }
@@ -113,6 +117,8 @@ const getIcon = (eventType) => {
 
 const AssetTimeline = ({ data, onMore, empty }) => {
     const classes = useStyles();
+    const history = useHistory();
+
     const [event, setEvent] = useState(null);
 
     return (
@@ -145,7 +151,7 @@ const AssetTimeline = ({ data, onMore, empty }) => {
                                 <TimelineContent>
                                     {/* Add event info if it is a regular event, link to shipment if it is a shipment */}
                                     <Tooltip disableHoverListener={isShipment} title="View event details" arrow>
-                                        <Paper className={classes.eventTag} onClick={() => {
+                                        <Paper className={isShipment ? "shipment-event" : classes.eventTag} onClick={() => {
                                             if (!isShipment) setEvent(item);
                                         }}>
                                             <div style={{ padding: "10px" }}>
@@ -154,7 +160,7 @@ const AssetTimeline = ({ data, onMore, empty }) => {
                                                 <Typography variant="body1">{item.eventType}</Typography>
                                                 {
                                                     isShipment ?
-                                                        <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }}>View shipment</Button>
+                                                        <Button style={{ fontSize: "0.7rem", color: "#3CB3E6" }} onClick={() => history.push(`/shipments/${item.key}`)}>View shipment</Button>
                                                         : null
                                                 }
                                             </div>
