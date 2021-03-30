@@ -138,18 +138,18 @@ const ShipmentCreator = () => {
 
     /* Set url with supplied filters */
     useEffect(() => {
-            setURL(() => {
-                let newURL = originalURL;
-                let index = 0;
+        setURL(() => {
+            let newURL = originalURL;
+            let index = 0;
 
-                Object.keys(filters).forEach((key, idx) => {
-                    let concatenator = index === 0 ? "?" : "&";
-                    newURL += `${concatenator}${key}=${filters[key]}`;
-                    index++;
-                });
-
-                return newURL;
+            Object.keys(filters).forEach((key, idx) => {
+                let concatenator = index === 0 ? "?" : "&";
+                newURL += `${concatenator}${key}=${filters[key]}`;
+                index++;
             });
+
+            return newURL;
+        });
     }, [filters, originalURL, shipmentStarted]);
 
     /* Fetch shipment list */
@@ -238,17 +238,40 @@ const ShipmentCreator = () => {
         const newAdditions = []
 
         mapItems.forEach(item => {
-            if ((item.deployedLocation && (state.shipFrom["key"] && item.deployedLocation["key"] !== state.shipFrom["key"])) || item.parentId) badSerials.push({
-                serial: item.serial,
-                name: item.assetName,
-                problem: item.deployedLocation ?
-                    `Deployed at non-matching location ${item.deployedLocation["key"]} (selected location: ${state.shipFrom["key"]})`
-                    : `Part of assembly ${item.parentId}`
-            });
-            else newAdditions.push({
+
+            const isDeployed = item.deployedLocation && (state.shipFrom["key"] && item.deployedLocation["key"] !== state.shipFrom["key"]);
+            const hasParent = Boolean(item.parentId);
+            const isCheckedOut = Boolean(item.checkedOut);
+
+            const warning = {
                 serial: item.serial,
                 name: item.assetName
-            })
+            };
+
+            const problems = []
+            if (isDeployed) {
+                problems.push(<><span>Deployed at non-matching location {item.deployedLocation["key"]} (selected location: {state.shipFrom["key"]})</span><br /></>);
+            }
+
+            if (hasParent) {
+                problems.push(<><span>Asset is a child of assembly {item.parentId}</span><br /></>);
+            }
+
+            if (isCheckedOut) {
+                problems.push(<><span>Asset is already checked out</span><br /></>);
+            }
+
+            if (problems.length) {
+                warning["problem"] = <div>{problems}</div>
+                badSerials.push(warning);
+            }
+
+            if (!isDeployed && !hasParent && !isCheckedOut) {
+                newAdditions.push({
+                    serial: item.serial,
+                    name: item.assetName
+                });
+            }
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
@@ -283,7 +306,8 @@ const ShipmentCreator = () => {
                 quantity: item.quantity ? item.quantity : 1,
                 notes: item.notes ? item.notes : null,
                 serialized: item.serial !== "N/A" ? true : false
-            }))
+            })),
+            override: state.override || false
         }));
 
         setAnchorEl(null);
@@ -328,61 +352,63 @@ const ShipmentCreator = () => {
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
                         shipmentStarted
-                            ? 
+                            ?
                             <>
-                            <CustomTable
-                                variant="asset"
-                                data={assets}
-                                selectedFields={selectedFields}
-                                selected={selected}
-                                filters={filters}
-                                count={assetCount}
-                                checkboxes
+                                <CustomTable
+                                    variant="asset"
+                                    data={assets}
+                                    selectedFields={selectedFields}
+                                    selected={selected}
+                                    filters={filters}
+                                    count={assetCount}
+                                    checkboxes
 
-                                renderOnClick={QuickAssetView}
-                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
-                                onValidate={(asset) => {
-                                    const warnings = [];
-                                    const errors = [];
+                                    renderOnClick={QuickAssetView}
+                                    onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                    onValidate={(asset) => {
+                                        const warnings = [];
+                                        const errors = [];
 
-                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
-                                    if (asset.deployedLocation) {
-                                        if (state["shipFrom"] && state["shipFrom"].key !== asset.deployedLocation["key"]) {
-                                            warnings.push(<span>Asset is deployed at a non-matching location ({asset.deployedLocation["key"]})</span>);
+                                        if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                        if (asset.deployedLocation) {
+                                            if (state["shipFrom"] && state["shipFrom"].key !== asset.deployedLocation["key"]) {
+                                                warnings.push(<span>Asset is deployed at a non-matching location ({asset.deployedLocation["key"]})</span>);
+                                            }
+                                        }
+                                        if (asset.checkedOut) {
+                                            warnings.push("Asset is marked as being checked out");
                                         }
 
-                                    }
+                                        return { warnings: warnings, errors: errors };
+                                    }}
+                                    onAdditionalSelect={setMapItems}
+                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onSelectedChange={setSelected}>
 
-                                    return { warnings: warnings, errors: errors };
-                                }}
-                                onAdditionalSelect={setMapItems}
-                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
-                                onSelectedChange={setSelected}>
+                                    <TableToolbar title="Shipment Creator" selected={selected}>
+                                        {
+                                            selected.length > 0 ?
+                                                <Tooltip title={"Add"}>
+                                                    <IconButton aria-label={"add"} onClick={handleAddToCart}>
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                :
+                                                <Tooltip title={"Filter"}>
+                                                    <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
+                                                        <FilterListIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                        }
+                                    </TableToolbar>
 
-                                <TableToolbar title="Shipment Creator" selected={selected}>
-                                    {
-                                        selected.length > 0 ?
-                                            <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            :
-                                            <Tooltip title={"Filter"}>
-                                                <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
-                                                    <FilterListIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                    }
-                                </TableToolbar>
+                                    <ChipBar
+                                        activeFilters={activeFilters}
+                                        setActiveFilters={setActiveFilters}
+                                        setFilters={setFilters} />
 
-                                <ChipBar
-                                    activeFilters={activeFilters}
-                                    setActiveFilters={setActiveFilters}
-                                    setFilters={setFilters} />
-
-                            </CustomTable>
-                            <Button style={{ color: "red", float: "left", marginLeft: "20px" }} variant="text" onClick={() => setAbandoned(true)}>Abandon</Button>
+                                </CustomTable>
+                                <Button style={{ color: "red", float: "left", marginLeft: "20px" }} variant="text" onClick={() => setAbandoned(true)}>Abandon</Button>
                             </>
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
@@ -456,6 +482,7 @@ const ShipmentCreator = () => {
                     setCartItems(c => [...c, ...items]);
                     setHasParents(false);
                     setHaveParents([]);
+                    setState(s => ({ ...s, override: true }));
                 }}
                 text={
                     <div style={{ textAlign: "center" }}>

@@ -30,12 +30,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 
 /**
- * Runs the toolbar which displays selected count and changes menubar based on whether any rows are selected
- * 
- * Props:
- *      title (String)                          The table title to display 
- *      selected (Array)                        The array of selected table rows
- *      children                                The components in between TableToolbar in the parent page, used for rendering additional toolbar icons/menus
+ * Toolbar which displays selected count and changes menubar based on whether any rows are selected
  */
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
