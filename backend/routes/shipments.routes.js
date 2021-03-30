@@ -377,7 +377,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000}); // caches for 5 seconds for testing (5 * 1000 milliseconds)
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000 }); // caches for 5 seconds for testing (5 * 1000 milliseconds)
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -438,19 +438,163 @@ router.get("/", async (req, res) => {
 /**
  * Create a new shipment
  */
- router.post('/', async (req, res, err) => {
+router.post('/', async (req, res, err) => {
     try {
         const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+        const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
 
+        let updatedSerials = []; //stores all serials successfully updated for use with the event document later
+
+        /* Mark assets as checked out when they are added to a shipment */
+        const assetUpdateQuery = {
+            checkedOut: true,
+            lastUpdated: Date.now()
+        };
+
+        /* Find all assets who are in an assembly and whose parent assembly is not also being shipped */
+        const inAssembly = await Assets.find({
+            serial: {
+                $in: serials
+            },
+            $and: [
+                {
+                    parentId: {
+                        $exists: true
+                    }
+                },
+                {
+                    parentId: {
+                        $nin: serials
+                    }
+                }
+            ]
+        });
+
+        /* If override is present, just ship all the supplied assets with no checks */
         if (req.body.override) {
-            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
-            await Assets.updateMany({ serial: { $in: serials } }, { deployedLocation: mongoose.Types.ObjectId(req.body.shipTo), lastUpdated: Date.now() });
+            await Assets.updateMany({ serial: { $in: serials } }, assetUpdateQuery);
+            updatedSerials = serials;
         } else {
-            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
-            const alreadyDeployed = await Assets.find({ serial: { $in: serials } });
+            /* If no override is present, only update those assets who are not checked out and either not in an assembly or whose parent is being shipped */
+            const alreadyCheckedOut = await Assets.find({
+                serial: { $in: serials },
+                $and: [
+                    {
+                        $or: [
+                            { checkedOut: { $eq: false } },
+                            { checkedOut: { $exists: false } }
+                        ]
+                    },
+                    {
+                        $or: [
+                            {
+                                parentId: {
+                                    $eq: null
+                                }
+                            },
+                            {
+                                parentId: {
+                                    $exists: false
+                                }
+                            },
+                            {
+                                parentId: {
+                                    $in: serials
+                                }
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            const checkedOutSerials = alreadyCheckedOut.map(asset => asset.serial);
+
+            /* Update the assets that are not checked out */
+            if (alreadyCheckedOut.length) {
+                const updateSerials = serials.filter(ser => !checkedOutSerials.includes(ser));
+                await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery);
+                updatedSerials = updateSerials;
+            }
+
+            /* Update assets without parent or whose parent is being shipped */
+            if (inAssembly.length) {
+                const assemblySerials = inAssembly.map(asset => asset.serial);
+                const updateSerials = serials.filter(ser => !assemblySerials.includes(ser) && !checkedOutSerials.includes(ser));
+                await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery);
+                updatedSerials = [...updatedSerials, ...updateSerials];
+            }
         }
-        
-        const count = await Counter.findOneAndUpdate({ name: "shipments" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+
+        /* If no assets were found, return 404 and don't create shipment */
+        if (updatedSerials.length === 0) {
+            res.status(400).json({ message: "No assets were added to the shipment", internalCode: "shipment_no_override" });
+            return;
+        }
+
+        /* When overriding and some assets were in assemblies, update the assemblies to remove child assets and mark them incomplete */
+        if (req.body.override && inAssembly.length) {
+
+                /* Essentially a "GROUPBY" to only update each parent once */
+                const parents = inAssembly.reduce((p, c) => {
+                    if (p.hasOwnProperty(c["parentId"])) {
+                        p[c["parentId"]].push({ serial: c["serial"], name: c["assetName"] });
+                    } else {
+                        p[c["parentId"]] = [].push({ serial: c["serial"], name: c["assetName"] });
+                    }
+
+                    return p;
+                }, {});
+
+                /* Add missing items to each assembly's missing items array */
+                for (const key of Object.keys(parents)) {
+                    const childrenNames = parents[key].map(item => item["name"]);
+                    const childrenSerials = parents[key].map(item => item["serial"]);
+                    await Assets.updateOne(
+                        { serial: key },
+                        {
+                            incomplete: true,
+                            $push: {
+                                missingItems: {
+                                    $each: childrenNames
+                                }
+                            }
+                        }
+                    );
+
+                    /* Generate event document for the assembly showing the removal of its children */
+                    const number = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+                    const assemblyChange = new Event({
+                        eventType: 'Assembly Modification',
+                        eventTime: Date.now(),
+                        key: `ASM-${number}`,
+                        productIds: [key],
+                        initiatingUser: username.employeeId,
+                        eventData: {
+                            details: `${childrenNames.length} assets removed from parent assembly ${key} as a result of being added to a new shipment separate from the parent. Removed children: ${childrenSerials.join(", ")}.`
+                        }
+                    });
+                    await assemblyChange.save(); //save event document
+
+                }
+
+
+        }
+
+        /* Generate event document for the asset update and shipment */
+        const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+        const newKey = `SHIP-${count.next}`; //shipment doc and event doc are in separate collections so they can have the same key
+
+        const assetChange = new Event({
+            eventType: `${shipment.shipmentType} Shipment`,
+            eventTime: Date.now(),
+            key: newKey,
+            productIds: updatedSerials,
+            initiatingUser: username.employeeId,
+            eventData: {}
+        });
+
+        await assetChange.save(); //save event document
+
         const shipment = {
             createdBy: username.employeeId,
             created: Date.now(),
@@ -463,7 +607,7 @@ router.get("/", async (req, res) => {
             manifest: req.body.manifest,
             shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
             shipTo: mongoose.Types.ObjectId(req.body.shipTo),
-            key: `SHIP-${count.next}`
+            key: newKey
         };
         if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
         if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
