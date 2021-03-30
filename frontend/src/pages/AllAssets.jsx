@@ -247,7 +247,7 @@ const AllAssets = (props) => {
                                     item.missingItems && item.missingItems.map((missing, idx) => errors.push(<span key={idx}><b>{idx+1}) &nbsp;</b>{missing}</span>))
                                 }
 
-                                if (item.assetType === "Assembly" && !item.assembled) {
+                                if (item.assetType === "Assembly" && item.assembled === false) {
                                     warnings.push("Assembly is marked 'disassembled'");
                                 }
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 //Library Tools
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
+import uuid from 'react-uuid';
 
 //Material-UI Components
 import Typography from '@material-ui/core/Typography';
@@ -248,17 +249,33 @@ const ShipmentCreator = () => {
                 name: item.assetName
             };
 
+            /* Generate 'problem' descriptor elements for the warning/override dialog */
             const problems = []
             if (isDeployed) {
-                problems.push(<><span>Deployed at non-matching location {item.deployedLocation["key"]} (selected location: {state.shipFrom["key"]})</span><br /></>);
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Deployed at non-matching location {item.deployedLocation["key"]} (selected location: {state.shipFrom["key"]})</span>
+                        <br />
+                    </React.Fragment>
+                );
             }
 
             if (hasParent) {
-                problems.push(<><span>Asset is a child of assembly {item.parentId}</span><br /></>);
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Asset is a child of assembly {item.parentId}</span>
+                        <br />
+                    </React.Fragment>
+                );
             }
 
             if (isCheckedOut) {
-                problems.push(<><span>Asset is already checked out</span><br /></>);
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Asset is already checked out</span>
+                        <br />
+                    </React.Fragment>
+                );
             }
 
             if (problems.length) {
@@ -266,6 +283,7 @@ const ShipmentCreator = () => {
                 badSerials.push(warning);
             }
 
+            /* If no warning, just add it to the items to be added to the cart */
             if (!isDeployed && !hasParent && !isCheckedOut) {
                 newAdditions.push({
                     serial: item.serial,
