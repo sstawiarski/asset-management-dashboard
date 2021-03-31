@@ -1,34 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import FilterListIcon from '@material-ui/icons/FilterList';
-import EditIcon from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
+import { Link } from 'react-router-dom';
+
+//Library Tools
+import { makeStyles } from '@material-ui/core/styles';
+
+//Material-UI Components
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
 
+//Custom Components
+import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
+import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-//Dialogs
-import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
-import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
-
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
-import { InputAdornment, TextField } from '@material-ui/core';
+//Icons
 import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+
+const useStyles = makeStyles((theme) => ({
+    tabBar: {
+        width: "100%",
+        marginLeft: "10%"
+    },
+    searchbarContainer: {
+        width: "60%",
+        marginRight: "10px"
+    }
+}));
 
 //the object fields to get for the table we need, in this case shipments
 const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
+    const classes = useStyles();
+
     const isWarning = false; // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
-    const [currentTab, setCurrentTab] = useState("Staging");
+    const [currentTab, setCurrentTab] = useState("All");
     const [shipments, setShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
@@ -57,40 +76,21 @@ const AllShipments = (props) => {
     }
 
     /* handle change of tab view */
-    const handleChange = (event) => {
-        const name = event.currentTarget.getAttribute("name");
+    const handleTabChange = (event, newValue) => { 
 
-        //update shipments displayed based on tab selected
-        const generateURL = (filters) => {
-            let url = `${process.env.REACT_APP_API_URL}/shipments?status=${name}`;
-            const keys = Object.keys(filters);
-            keys.forEach((key, idx) => {
-               
-                url = `${url}&${key}=${filters[key]}`;
-                
+        /* Remove the filter if all shipment types are selected */
+        if (newValue === "All") {
+            setFilters(f => {
+                const newFilters = { ...f };
+                delete newFilters["status"];
+                return newFilters;
             });
-
-            return url;
-        };
-
-        const urlToFetch = generateURL(filters);
-
-        fetch(urlToFetch)
-            .then(response => {
-                if (response.status < 300) {
-                    return response.json();
-                } else {
-                    return { data: [], count: [{ count: 0 }] };
-                }
-            })
-            .then(json => {
-                setShipments(json.data);
-                setShipmentCount(json.count[0].count);
-            });
-            setCurrentTab(name);
-
-
-    }
+        } else {
+            setFilters(f => ({ ...f, status: newValue }));
+        }
+        
+        setCurrentTab(newValue);
+    };
 
     const handleClose = () => {
         setAnchor(null);
@@ -160,10 +160,10 @@ const AllShipments = (props) => {
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = `${process.env.REACT_APP_API_URL}/shipments?status=${currentTab}`;
+            let url = `${process.env.REACT_APP_API_URL}/shipments`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
-               
+                if (idx === 0) url = `${url}?`
                 url = `${url}&${key}=${filters[key]}`;
                 
             });
@@ -185,13 +185,14 @@ const AllShipments = (props) => {
                 setShipments(json.data);
                 setShipmentCount(json.count[0].count);
             });
+
     }, [filters]);
 
 
 
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
+    }, [activeFilters]);
 
 
 
@@ -244,13 +245,16 @@ const AllShipments = (props) => {
                                         <AddIcon />
                                     </IconButton>
                                 </Link>
-                                <Tabs aria-label="shipment status tabs" value={currentTab} style={{ width: "100%", marginLeft: "20%" }}  >
-                                    <Tab label="Staging" value="Staging" name="Staging" onClick={handleChange} />
-                                    <Tab label="Completed" value="Completed" name="Completed" onClick={handleChange} />
-                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" onClick={handleChange} />
 
+                                {/* Shipment Status tabs */}
+                                <Tabs className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+                                    <Tab label="All" value="All" name="All" />
+                                    <Tab label="Staging" value="Staging" name="Staging" />
+                                    <Tab label="Completed" value="Completed" name="Completed" />
+                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
                                 </Tabs>
-                                <div style={{ width: "60%" }}>
+
+                                <div className={classes.searchbarContainer}>
                                     <TextField id="searchBox"
                                         variant="outlined"
                                         size="small"
@@ -287,6 +291,7 @@ const AllShipments = (props) => {
                 open={dialogs["filter"]}
                 setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))}
                 setActiveFilters={setActiveFilters}
+                disableStatusFilter={true}
             />
 
             <ChangeStatusDialog
