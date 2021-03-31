@@ -58,8 +58,38 @@ const AllShipments = (props) => {
 
     /* handle change of tab view */
     const handleChange = (event) => {
-        const value  = event.currentTarget;
-        setCurrentTab(value);
+        const name = event.currentTarget.getAttribute("name");
+
+        //update shipments displayed based on tab selected
+        const generateURL = (filters) => {
+            let url = `${process.env.REACT_APP_API_URL}/shipments?status=${name}`;
+            const keys = Object.keys(filters);
+            keys.forEach((key, idx) => {
+               
+                url = `${url}&${key}=${filters[key]}`;
+                
+            });
+
+            return url;
+        };
+
+        const urlToFetch = generateURL(filters);
+
+        fetch(urlToFetch)
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return { data: [], count: [{ count: 0 }] };
+                }
+            })
+            .then(json => {
+                setShipments(json.data);
+                setShipmentCount(json.count[0].count);
+            });
+            setCurrentTab(name);
+
+
     }
 
     const handleClose = () => {
@@ -158,6 +188,7 @@ const AllShipments = (props) => {
     }, [filters]);
 
 
+
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
     }, [activeFilters])
@@ -177,9 +208,11 @@ const AllShipments = (props) => {
                     filters={filters}
                     count={shipmentCount}
                     checkboxes={true}
+                    setCurrentTab= {setCurrentTab}
 
                     onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                     onSelectedChange={setSelected}>
+
 
                     <TableToolbar selected={selected}>
 
@@ -211,10 +244,11 @@ const AllShipments = (props) => {
                                         <AddIcon />
                                     </IconButton>
                                 </Link>
-                                <Tabs aria-label="shipment status tabs" value={currentTab} style={{ width: "100%", marginLeft: "20%" }} >
-                                    <Tab label="Staging" value="Staging" onClick={() => setCurrentTab("Staging")} />
-                                    <Tab label="Completed" value="Completed" onClick={() => setCurrentTab("Completed")} />
-                                    <Tab label="Abandoned" value="Abandoned" onClick={() => setCurrentTab("Abandoned")} />
+                                <Tabs aria-label="shipment status tabs" value={currentTab} style={{ width: "100%", marginLeft: "20%" }}  >
+                                    <Tab label="Staging" value="Staging" name="Staging" onClick={handleChange} />
+                                    <Tab label="Completed" value="Completed" name="Completed" onClick={handleChange} />
+                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" onClick={handleChange} />
+
                                 </Tabs>
                                 <div style={{ width: "60%" }}>
                                     <TextField id="searchBox"
