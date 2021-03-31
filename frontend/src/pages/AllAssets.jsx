@@ -211,9 +211,10 @@ const AllAssets = (props) => {
                                 <SimpleMap 
                                 data={assetMarkers} 
                                 onBoundsChanged={(bounds)=>{
-                                    console.log("Bounds changed.");
+                                    const mapView="true";
+                                    const mapBounds=encodeURI(bounds);
                                     console.log(bounds);
-                                    setMapBounds(bounds);
+                                    setFilters(s => ({...s, mapBounds, mapView}))
                                 }}
                                 styling={{ 
                                     borderRadius: "4px", 
@@ -270,7 +271,9 @@ const AllAssets = (props) => {
                                                         <IconButton
                                                             className={map ? classes.disabled : classes.enabled}
                                                             aria-label={"Map-View"}
-                                                            onClick={() => toggleMap(true)}
+                                                            onClick={() => {
+                                                                toggleMap(true)
+                                                             } }
                                                             disabled={map}
                                                         >
                                                             <MapIcon />
@@ -284,7 +287,11 @@ const AllAssets = (props) => {
                                                         <IconButton
                                                             className={!map ? classes.disabled : classes.enabled}
                                                             aria-label={"List-View"}
-                                                            onClick={() => toggleMap(false)}
+                                                            onClick={() => {
+                                                                 toggleMap(false)
+                                                                 const mapView="false"
+                                                                 setFilters(s => ({...s, mapView}))
+                                                            }}
                                                             disabled={!map}
                                                         >
                                                             <ListAltIcon />
