@@ -8,6 +8,10 @@ const redis = require('redis').createClient(process.env.REDIS_CLIENT);
 const topcache = require('top-cache');
 require('dotenv').config();
 
+/**
+ * Binds Mongoose and Redis, to allow ".cache()" and ".clearCache()" to invoke key/value
+ * pair caching in Redis of data returned from Mongoose queries.
+ */
 try {
     topcache(mongoose, redis);
 } catch (error) {

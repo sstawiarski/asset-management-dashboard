@@ -10,23 +10,10 @@ const decrypt = require('../auth.utils').decrypt;
 const sampleShipment = require('../sample_data/sampleShipment.data');
 const Assets = require('../models/asset.model');
 
-// const client = require('../redis_db');
 
-// const isCached = (req, res, next) => {
-//     const { id } = req.params;
-//     //First check in Redis
-//     client.get(id, (err, data) => {
-//         if (err) {
-//             console.log(err);
-//         }
-//         if (data) {
-//             const reponse = JSON.parse(data);
-//             return res.status(200).json(reponse);
-//         }
-//         next();
-//     });
-// }
-
+/**
+ * Pulls all shipment info from Mongo
+ */
 router.get("/", async (req, res) => {
     try {
         let aggregateArray = [];
