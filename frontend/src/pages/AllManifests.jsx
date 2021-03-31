@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,7 +28,7 @@ const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "
 
 const AllShipments = (props) => {
     const isWarning = false; // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
-
+    const [currentTab, setCurrentTab] = useState("Staging");
     const [shipments, setShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
@@ -55,6 +54,12 @@ const AllShipments = (props) => {
     /* Handle floating menu placement for toolbar */
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
+    }
+
+    /* handle change of tab view */
+    const handleChange = (event) => {
+        const value  = event.currentTarget;
+        setCurrentTab(value);
     }
 
     const handleClose = () => {
@@ -122,21 +127,15 @@ const AllShipments = (props) => {
         }
     };
 
-
-
-
-
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
-            let url = `${process.env.REACT_APP_API_URL}/shipments`;
+            let url = `${process.env.REACT_APP_API_URL}/shipments?status=${currentTab}`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
-                if (idx === 0) {
-                    url = `${url}?${key}=${filters[key]}`;
-                } else {
-                    url = `${url}&${key}=${filters[key]}`;
-                }
+               
+                url = `${url}&${key}=${filters[key]}`;
+                
             });
 
             return url;
@@ -212,10 +211,10 @@ const AllShipments = (props) => {
                                         <AddIcon />
                                     </IconButton>
                                 </Link>
-                                <Tabs aria-label="shipment status tabs" value="Staging" style={{ width: "100%", marginLeft: "20%" }}>
-                                    <Tab label="Staging" value="Staging" />
-                                    <Tab label="Completed" value="Completed" />
-                                    <Tab label="Abandoned" value="Abandoned" />
+                                <Tabs aria-label="shipment status tabs" value={currentTab} style={{ width: "100%", marginLeft: "20%" }} >
+                                    <Tab label="Staging" value="Staging" onClick={() => setCurrentTab("Staging")} />
+                                    <Tab label="Completed" value="Completed" onClick={() => setCurrentTab("Completed")} />
+                                    <Tab label="Abandoned" value="Abandoned" onClick={() => setCurrentTab("Abandoned")} />
                                 </Tabs>
                                 <div style={{ width: "60%" }}>
                                     <TextField id="searchBox"
