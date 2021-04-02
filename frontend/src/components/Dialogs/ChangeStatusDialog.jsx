@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
+//Material-UI Components
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -10,6 +10,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+
+//Tools
 import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +33,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     /* Store state of select dropdown */
     const [status, setStatus] = useState("");
     const selectedFields = ['Staging', 'Completed', 'Abandoned'];
-    const [user, ] = useLocalStorage('user', {});
+    const [user,] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -82,7 +84,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
             })
     }
 
-      //reset dialog to default state on close
+    //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
         setStatus("");
@@ -95,7 +97,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing status of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing status of {selected.length} shipment{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>

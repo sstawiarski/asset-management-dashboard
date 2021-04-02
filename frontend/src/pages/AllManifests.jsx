@@ -83,10 +83,11 @@ const AllShipments = (props) => {
             setFilters(f => {
                 const newFilters = { ...f };
                 delete newFilters["status"];
+                newFilters["page"] = 0;
                 return newFilters;
             });
         } else {
-            setFilters(f => ({ ...f, status: newValue }));
+            setFilters(f => ({ ...f, status: newValue, page: 0 }));
         }
         
         setCurrentTab(newValue);
