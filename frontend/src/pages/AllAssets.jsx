@@ -7,6 +7,7 @@ import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 import SimpleMap from '../components/SimpleMap';
+import TableSearchbar from '../components/Tables/TableSearchbar';
 
 //Dialogs
 import AssetFilter from '../components/Dialogs/AssetFilter'
@@ -21,35 +22,33 @@ import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
 
 //Material-UI Imports
 import FilterListIcon from '@material-ui/icons/FilterList';
-import EditIcon from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search'
-import MapIcon from '@material-ui/icons/Map';
-import ListAltIcon from '@material-ui/icons/ListAlt';
 import Grid from '@material-ui/core/Grid';
 
+//Icons
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+import MapIcon from '@material-ui/icons/Map';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 
 //the object fields to get for the table we need, in this case assets
 const selectedFields = ["serial", "assetName", 'deployedLocation', "assetType", "owner", "checkedOut", "groupTag"];
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     enabled: {
         color: "black"
     },
     disabled: {
         color: "rgba(0,0,0, 0.26) !important"
     }
-}))
+});
 
-const AllAssets = (props) => {
+const AllAssets = () => {
     const classes = useStyles();
 
     const [assets, setAssets] = useState([]);
@@ -68,9 +67,9 @@ const AllAssets = (props) => {
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
     const [map, toggleMap] = useState(false);
     const [assetMarkers, setAssetMarkers] = useState([]);
-    const [mapBounds, setMapBounds] = useState();
-
-
+    const [filteredMarkers, setFilteredMarkers] = useState(null);
+    const [storedAssets, setStoredAssets] = useState(null);
+    const [search, setSearch] = useState("");
 
     /* Handles searchbar when enter key is pressed */
     const handleKeyDown = (e) => {
@@ -118,18 +117,7 @@ const AllAssets = (props) => {
             })
             setChildAssets(children)
         });
-
     }
-
-    /* Handles stepping through warning dialog to the actual edit dialog */
-    useEffect(() => {
-        if (!nextDialog) return;
-        if (childAssets.length > 0) {
-            setDialogs({ assetEditWarning: true });
-        } else {
-            setDialogs({ [nextDialog]: true });
-        }
-    }, [childAssets, nextDialog]);
 
     /* Successful edit event */
     const onSuccess = (succeeded, message) => {
@@ -151,9 +139,18 @@ const AllAssets = (props) => {
     const onSemiSuccess = (invalidSerials) => {
         if (invalidSerials.length > 0) {
             setInvalid(invalidSerials);
-
         }
     }
+
+    /* Handles stepping through warning dialog to the actual edit dialog */
+    useEffect(() => {
+        if (!nextDialog) return;
+        if (childAssets.length > 0) {
+            setDialogs({ assetEditWarning: true });
+        } else {
+            setDialogs({ [nextDialog]: true });
+        }
+    }, [childAssets, nextDialog]);
 
     /* Opens the invalid serials dialog whenever some serials could not be provisioned */
     useEffect(() => {
@@ -189,8 +186,26 @@ const AllAssets = (props) => {
                 }
             })
             .then(json => {
+                const keys = Object.keys(filters);
                 setAssets(json.data);
                 setAssetCount(json.count[0].count);
+
+                if (keys.includes("mapBounds") && keys.includes("mapView")) {
+                    /* Store original found assets to restore the markers when last element is deselected */
+                    setStoredAssets(json.data);
+
+                    /* Sets markers to be displayed to the assets found if there are any */
+                    setAssetMarkers(json.data);
+
+                    /* Deselect any selected assets if they are no longer found in the new map viewport */
+                    setSelected(s => {
+                        const assetSerials = json.data.map(item => item.serial);
+                        return s.filter(select => assetSerials.includes(select));
+                    })
+                } else {
+                    setStoredAssets(null);
+                    setAssetMarkers([]);
+                }
             });
     }, [filters]);
 
@@ -198,35 +213,47 @@ const AllAssets = (props) => {
     /* Reset results page to the first one whenever filters are changed */
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
+    }, [activeFilters]);
+
+    /* Displays only the selected markers on the map if there are any, otherwise will display all assets found */
+    useEffect(() => {
+        if (selected.length && assetMarkers.length && map) {
+            setFilteredMarkers(assetMarkers.filter((item) => selected.includes(item.serial)));
+        } else if (!selected.length && map) {
+            setFilteredMarkers(null);
+        }
+    }, [assetMarkers, map, selected]);
 
     return (
         <div>
             <Header heading="Assets" subheading="View All" />
             <div>
-                <Grid container spacing={1}>
+                <Grid container justify="space-between" spacing={2}>
                     {
-                        map ?
-                            <Grid item xs={8} sm={12} md={8}>
-                                <SimpleMap 
-                                data={assetMarkers} 
-                                onBoundsChanged={(bounds)=>{
-                                    const mapView="true";
-                                    const mapBounds=encodeURI(bounds);
-                                    console.log(bounds);
-                                    setFilters(s => ({...s, mapBounds, mapView}))
+                        map &&
+                        (<Grid item xs={12} sm={12} md={8}>
+                            <SimpleMap
+                                data={filteredMarkers || storedAssets}
+                                onBoundsChanged={(bounds) => {
+                                    const mapView = "true";
+                                    const mapBounds = encodeURI(bounds.join(","));
+                                    setFilters(s => ({ ...s, mapBounds: mapBounds, mapView: mapView, page: 0 }));
                                 }}
-                                styling={{ 
-                                    borderRadius: "4px", 
+                                variant="search"
+                                styling={{
                                     boxShadow: "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
-                                    minHeight: "50vh",
-                                    width: "98%",
-                                    maxWidth: "85vw"
-                                    }} />
-                            </Grid>
-                            : null
+                                    width: "100%",
+                                    maxWidth: "85vw",
+                                    height: "100%",
+                                    minHeight: "70vh",
+                                    marginLeft: "2%",
+                                    position: "relative",
+                                    borderRadius: "5px",
+                                    zIndex: 500
+                                }} />
+                        </Grid>)
                     }
-                    <Grid item xs={7} sm={12} md={map ? 4 : 12}>
+                    <Grid item xs={7} sm={11} md={map ? 4 : 12}>
                         <CustomTable
                             variant="asset"
                             data={assets}
@@ -239,68 +266,15 @@ const AllAssets = (props) => {
                             onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                             onSelectedChange={setSelected}
                             onAdditionalSelect={setAssetMarkers}
-                            onValidate={(item) => {
-                                const warnings = [];
-                                const errors = [];
+                            onValidate={validateAsset}> {/* function declaration at bottom of file */}
 
-                                if (item.assetType === "Assembly" && item.incomplete) {
-                                    errors.push(`Assembly is incomplete (missing ${item.missingItems && item.missingItems.length} assets):`);
-                                    item.missingItems && item.missingItems.map((missing, idx) => errors.push(<span key={idx}><b>{idx+1}) &nbsp;</b>{missing}</span>))
-                                }
-
-                                if (item.assetType === "Assembly" && !item.assembled) {
-                                    warnings.push("Assembly is marked 'disassembled'");
-                                }
-
-                                return { warnings: warnings, errors: errors, errorLength: errors.length - ((item.missingItems && item.missingItems.length) || 0) }
-                            }}>
-
-                            <TableToolbar
-                                title="All Assets"
-                                selected={selected}>
+                            <TableToolbar selected={selected}>
 
 
                                 {/* Table toolbar icons and menus */}
                                 {/* Render main action if no items selected, edit actions if some are selected */}
                                 {selected.length > 0 ?
                                     <>
-                                        <Grid container xs={!map ? 9 : 12} justify='flex-end' alignItems='flex-end' >
-                                            <Grid item xs={!map ? 1 : 4}>
-                                                <Tooltip title={"Map View"}>
-                                                    <span>
-                                                        <IconButton
-                                                            className={map ? classes.disabled : classes.enabled}
-                                                            aria-label={"Map-View"}
-                                                            onClick={() => {
-                                                                toggleMap(true)
-                                                             } }
-                                                            disabled={map}
-                                                        >
-                                                            <MapIcon />
-                                                        </IconButton>
-                                                    </span>
-                                                </Tooltip>
-                                            </Grid>
-                                            <Grid item xs={!map ? 2 : 6}>
-                                                <Tooltip title={"List View"} >
-                                                    <span>
-                                                        <IconButton
-                                                            className={!map ? classes.disabled : classes.enabled}
-                                                            aria-label={"List-View"}
-                                                            onClick={() => {
-                                                                 toggleMap(false)
-                                                                 const mapView="false"
-                                                                 setFilters(s => ({...s, mapView}))
-                                                            }}
-                                                            disabled={!map}
-                                                        >
-                                                            <ListAltIcon />
-                                                        </IconButton>
-                                                    </span>
-                                                </Tooltip>
-                                            </Grid>
-                                        </Grid>
-
                                         {/* Edit button */}
                                         <IconButton aria-label={"edit"} onClick={handleClick}>
                                             <EditIcon />
@@ -323,68 +297,73 @@ const AllAssets = (props) => {
                                     :
                                     <>
                                         {/* Creator button */}
-                                        <Grid container direction='row' justify="left" xs={2}>
-                                            <Grid item>
+                                        <Grid container direction='row' justify="space-evenly">
+                                            <Grid item xs={1}>
                                                 <Tooltip title={"Create"}>
                                                     <IconButton aria-label={"create"} onClick={() => setDialogs({ create: true })}>
                                                         <AddIcon />
                                                     </IconButton>
                                                 </Tooltip>
                                             </Grid>
-                                        </Grid>
-
-                                        <Grid container xs={12} className='searchBar' justify='flex-end'>
                                             {/* Table searchbar */}
                                             {
-                                                !map ?
-                                                    <Grid item xs={8} >
-                                                        <TextField id="searchBox"
-                                                            variant="outlined"
-                                                            size="small"
-                                                            InputProps={{
-                                                                startAdornment: (
-                                                                    <InputAdornment position="start">
-                                                                        <SearchIcon />
-                                                                    </InputAdornment>
-                                                                )
-                                                            }}
-                                                            onKeyDown={handleKeyDown}
-                                                        />
-                                                    </Grid>
-                                                    : null
+                                                !map &&
+                                                (<Grid item xs={8} >
+                                                    <TableSearchbar
+                                                        searchValue={search}
+                                                        onInputChange={(e) => setSearch(e.target.value)}
+                                                        onSearch={handleKeyDown}
+                                                        onClear={() => {
+                                                            setSearch("");
+                                                            setFilters(f => {
+                                                                const newFilters = { ...f };
+                                                                delete newFilters["search"];
+                                                                return newFilters;
+                                                            })
+                                                        }}
+                                                    />
+                                                </Grid>)
                                             }
 
-                                            <Grid container xs={!map ? 3 : 12} justify='flex-end' alignItems='flex-end'>
-                                                {/*Map-View/List-View */}
-                                                <Grid item xs={!map ? 5 : 4}>
-                                                    <Tooltip title={"Map View"}>
-                                                        <span>
-                                                            <IconButton
-                                                                className={map ? classes.disabled : classes.enabled}
-                                                                aria-label={"Map-View"}
-                                                                onClick={() => toggleMap(true)}
-                                                                disabled={map}
-                                                            >
-                                                                <MapIcon />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                </Grid>
 
-                                                <Grid item xs={7}>
-                                                    <Tooltip title={"List View"} >
-                                                        <span>
-                                                            <IconButton
-                                                                className={!map ? classes.disabled : classes.enabled}
-                                                                aria-label={"List-View"}
-                                                                onClick={() => toggleMap(false)}
-                                                                disabled={!map}
-                                                            >
-                                                                <ListAltIcon />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                </Grid>
+
+                                            {/* Map and List view buttons */}
+                                            <Grid item xs={!map ? 1 : 4}>
+                                                <Tooltip title={"Map View"}>
+                                                    <div>
+                                                        <IconButton
+                                                            className={map ? classes.disabled : classes.enabled}
+                                                            aria-label={"Map view button"}
+                                                            onClick={() => toggleMap(true)}
+                                                            disabled={map}
+                                                        >
+                                                            <MapIcon />
+                                                        </IconButton>
+                                                    </div>
+                                                </Tooltip>
+                                            </Grid>
+
+                                            <Grid item xs={2}>
+                                                <Tooltip title={"List View"}>
+                                                    <div>
+                                                        <IconButton
+                                                            className={!map ? classes.disabled : classes.enabled}
+                                                            aria-label={"List view button"}
+                                                            onClick={() => {
+                                                                toggleMap(false);
+                                                                setFilters(f => {
+                                                                    const newFilters = { ...f };
+                                                                    delete newFilters["mapView"];
+                                                                    delete newFilters["mapBounds"];
+                                                                    return newFilters;
+                                                                });
+                                                            }}
+                                                            disabled={!map}
+                                                        >
+                                                            <ListAltIcon />
+                                                        </IconButton>
+                                                    </div>
+                                                </Tooltip>
                                             </Grid>
                                         </Grid>
 
@@ -399,21 +378,21 @@ const AllAssets = (props) => {
                             </TableToolbar>
 
                             {
-                                map ?
-                                    <TextField id="searchBox"
-                                        variant="outlined"
-                                        size="small"
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon />
-                                                </InputAdornment>
-                                            )
-                                        }}
-                                        onKeyDown={handleKeyDown}
-                                    />
-
-                                    : null
+                                map &&
+                                (<TableSearchbar
+                                    searchValue={search}
+                                    onInputChange={(e) => setSearch(e.target.value)}
+                                    onSearch={handleKeyDown}
+                                    onClear={() => {
+                                        setSearch("");
+                                        setFilters(f => {
+                                            const newFilters = { ...f };
+                                            delete newFilters["search"];
+                                            return newFilters;
+                                        })
+                                    }}
+                                    disabled={selected.length > 0}
+                                />)
                             }
 
                             {/* Chips representing all the active filters */}
@@ -502,6 +481,28 @@ const AllAssets = (props) => {
             </Snackbar>
         </div>
     )
+}
+
+/**
+ * Performs validation on an Asset to determine its displayed warnings and errors
+ * 
+ * @param {Object} item as Asset document to validate
+ * @returns object containing arrays of the warnings and errors generated
+ */
+function validateAsset(item) {
+    const warnings = [];
+    const errors = [];
+
+    if (item.assetType === "Assembly" && item.incomplete) {
+        errors.push(`Assembly is incomplete (missing ${item.missingItems && item.missingItems.length} assets):`);
+        item.missingItems && item.missingItems.map((missing, idx) => errors.push(<span key={idx}><b>{idx + 1}) &nbsp;</b>{missing}</span>))
+    }
+
+    if (item.assetType === "Assembly" && !item.assembled) {
+        warnings.push("Assembly is marked 'disassembled'");
+    }
+
+    return { warnings: warnings, errors: errors, errorLength: errors.length - ((item.missingItems && item.missingItems.length) || 0) }
 }
 
 export default AllAssets;

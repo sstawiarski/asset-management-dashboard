@@ -21,7 +21,7 @@ router.get("/", async (req, res, err) => {
       const query = req.query;
 
       //remove page, limit, search, and sorting params since they do not go in the $match
-      const disallowed = ["page", "limit", "search", "sort_by", "order","mapBounds","mapView"];
+      const disallowed = ["page", "limit", "search", "sort_by", "order", "mapBounds", "mapView"];
       const filters = await Object.keys(query)
         .reduce(async (pc, c) => {
           const p = await pc;
@@ -217,28 +217,22 @@ router.get("/", async (req, res, err) => {
     aggregateArray.push(lookup);
     aggregateArray.push(locationUnwind);
 
-    if(req.query.mapView==="true"){
-      const boundsArray=(decodeURI(req.query.mapBounds).split(','));
-      const inBounds={
-         $match: {
-        "deployedLocation.coordinates":{
-          $geoWithin: {
-            //array comes in with [lat,long] but needs to be [long,lat]
-             $box: [[parseFloat(boundsArray[1]),parseFloat(boundsArray[0])],
-                    [parseFloat(boundsArray[3]),parseFloat(boundsArray[2])]]
-                  }
-                }
-              }
-            };
-      aggregateArray.push(inBounds);
-    }else {
-      const match = {
+    if (req.query.mapView === "true") {
+      const boundsArray = (decodeURI(req.query.mapBounds).split(','));
+      const inBounds = {
         $match: {
-
+          "deployedLocation.coordinates": {
+            $geoWithin: {
+              //array comes in with [lat,long] but needs to be [long,lat]
+              $box: [
+                [parseFloat(boundsArray[1]), parseFloat(boundsArray[0])],
+                [parseFloat(boundsArray[3]), parseFloat(boundsArray[2])]
+              ]
+            }
+          }
         }
       };
-
-      aggregateArray.push(match);
+      aggregateArray.push(inBounds);
     }
 
     if (req.query.sort_by) {
@@ -287,7 +281,7 @@ router.get("/", async (req, res, err) => {
 
     //limit to 5 results -- modify later based on pagination
     const limit = {
-      $limit: req.query.limit ? parseInt(req.query.limit) : 5
+      $limit: req.query.limit ? parseInt(req.query.limit) : req.query.mapView === "true" ? 25 : 5
     };
 
     const group = {
@@ -979,38 +973,22 @@ router.get("/assembly/schema", async (req, res) => {
 router.get("/:serial", async (req, res, err) => {
   const serial = req.params.serial;
 
-  //for mapping
-  const map = req.params.map;
-  const bounds = req.params.bounds;
-
   const { project } = req.query
-  let projection = {};
-  if (project) {
-    projection = {
-      [project]: 1,
-      _id: 0
-    }
-  }
+  const projection = project ? { [project]: 1, _id: 0 } : {};
+
   try {
 
-    if (map == true) {
+    const asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation');
 
-
+    if (asset) {
+      res.status(200).json(asset);
     } else {
-
-      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation');
-
-
-
-      if (asset.length) {
-        res.status(200).json(asset[0]);
-      } else {
-        res.status(404).json({
-          message: "No assets found for serial",
-          internalCode: "no_assets_found",
-        });
-      }
+      res.status(404).json({
+        message: "No assets found for serial",
+        internalCode: "no_assets_found",
+      });
     }
+
   } catch (err) {
     console.log(err);
     res.status(400).json({
