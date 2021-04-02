@@ -105,7 +105,6 @@ const ShipmentDetails = (props) => {
                     }));
                     const head = Object.keys(json.manifest[0]);
                     try {
-                        console.log(json)
                         if (json.shipTo["coordinates"].length > 0 && json.shipFrom["coordinates"].length > 0) {
                             setHasLocations(true);
                         }
