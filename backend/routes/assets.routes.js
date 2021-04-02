@@ -21,7 +21,7 @@ router.get("/", async (req, res, err) => {
       const query = req.query;
 
       //remove page, limit, search, and sorting params since they do not go in the $match
-      const disallowed = ["page", "limit", "search", "sort_by", "order"];
+      const disallowed = ["page", "limit", "search", "sort_by", "order", "mapBounds", "mapView"];
       const filters = await Object.keys(query)
         .reduce(async (pc, c) => {
           const p = await pc;
@@ -239,6 +239,24 @@ router.get("/", async (req, res, err) => {
 
     aggregateArray.push(deployedLocationOverride);
     aggregateArray.push(locationModificationProjection);
+    
+    if (req.query.mapView === "true") {
+      const boundsArray = (decodeURI(req.query.mapBounds).split(','));
+      const inBounds = {
+        $match: {
+          "deployedLocation.coordinates": {
+            $geoWithin: {
+              //array comes in with [lat,long] but needs to be [long,lat]
+              $box: [
+                [parseFloat(boundsArray[1]), parseFloat(boundsArray[0])],
+                [parseFloat(boundsArray[3]), parseFloat(boundsArray[2])]
+              ]
+            }
+          }
+        }
+      };
+      aggregateArray.push(inBounds);
+    }
 
     if (req.query.sort_by) {
       //default ascending order
@@ -286,7 +304,7 @@ router.get("/", async (req, res, err) => {
 
     //limit to 5 results -- modify later based on pagination
     const limit = {
-      $limit: req.query.limit ? parseInt(req.query.limit) : 5
+      $limit: req.query.limit ? parseInt(req.query.limit) : req.query.mapView === "true" ? 25 : 5
     };
 
     const group = {

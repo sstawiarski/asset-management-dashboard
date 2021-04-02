@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { Map, Marker, TileLayer, FeatureGroup, GeoJSON, Popup } from 'react-leaflet';
 import Typography from '@material-ui/core/Typography';
 import L from 'leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 //Icons
 import ShipFromIcon from './Icons/ShipFromIcon.svg'; //blue icon represents source
@@ -13,6 +14,7 @@ import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destina
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 import bezierSpline from '@turf/bezier-spline'; //for drawing line between the two points
+// eslint-disable-next-line no-unused-vars
 import arrow from "leaflet-arrowheads"; //add arrowheads to line
 
 //Helper Tools
@@ -51,12 +53,14 @@ const shipFromMarkerIcon = new L.Icon({
     className: 'leaflet-marker-shipfrom'
 });
 
-const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
+const SimpleMap = ({ start, end, data, styling, onBoundsChanged = null, variant = null }) => {
     const classes = useStyles();
 
     /* Refs to the map components, used to set bounds and make the two markers fit */
     const mapRef = useRef(null);
     const featureRef = useRef(null);
+
+    const boundsInitialLoadCallback = useRef((bounds) => onBoundsChanged ? onBoundsChanged(bounds) : null); //runs on map mounting so asset list is properly updated
 
     const [refAcquired, setRefAcquired] = useState(false); //true when map components are rendered and refs can be used
     const [center, setCenter] = useState([51, -114]); //center of the map
@@ -69,6 +73,14 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
         setRefAcquired(true);
     }, []);
 
+    /* onBoundsChanged only runs when the map moves, so run it when the map first loads too */
+    useEffect(() => {
+        const bounds = mapRef.current.leafletElement.getBounds();
+        const southWest = bounds.getSouthWest();
+        const northEast = bounds.getNorthEast();
+        boundsInitialLoadCallback.current([southWest.lat, southWest.lng, northEast.lat, northEast.lng]);
+    }, [mapRef, boundsInitialLoadCallback]);
+
     /* Reset the map bounds to ensure both markers fit in the viewport */
     useEffect(() => {
         if (refAcquired) {
@@ -76,18 +88,18 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
                 mapRef.current.leafletElement.fitBounds(featureRef.current.leafletElement.getBounds());
             } catch (err) { }
         }
-    }, [refAcquired, data]);
+    }, [refAcquired]);
 
     /* Centers the popup when it is open, or re-center to fit the two markers when it is closed */
     useEffect(() => {
         if (refAcquired) {
             if (popupPosition) {
                 mapRef.current.leafletElement.setView(coords ? [popupPosition.coords[0] + 5, popupPosition.coords[1]] : popupPosition.coords);
-            } else {
+            } else if (variant !== "search") {
                 mapRef.current.leafletElement.setView(center);
             }
         }
-    }, [center, popupPosition, refAcquired, coords]);
+    }, [center, popupPosition, refAcquired, coords, variant]);
 
     /* Extract the appropriate coordinates and perform line and centering calculations */
     useEffect(() => {
@@ -115,16 +127,16 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
             /* Calculate the center of all the points and set the center of the map */
             if (data.length) {
                 const dataCoords = data.map((obj, idx) => {
-                    /* TODO: Using the index as coords until we can get assets set up with actual coordinates */
                     if (!obj.hasOwnProperty("deployedLocation")) return [0, 0];
                     else if (typeof obj["deployedLocation"] === "string") return [0, 0];
                     else if (typeof obj["deployedLocation"] === "object" && !obj["deployedLocation"].hasOwnProperty("coordinates")) return [0, 0];
                     return [...obj.deployedLocation.coordinates].reverse();
                 });
-                setCenter(findCoordinateAverage(dataCoords));
+
+                if (variant !== "search") setCenter(findCoordinateAverage(dataCoords));
             } else {
                 /* If no data is supplied or last item is deselected, set center back to its original coordinates */
-                setCenter([51, -114]);
+                if (variant !== "search") setCenter([51, -114]);
             }
 
             /* Close the popup when the item it is for is deselected */
@@ -134,15 +146,19 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
             }
         }
 
-    }, [start, end, data, popupPosition]);
+    }, [start, end, data, popupPosition, variant]);
 
-
+    /**
+     * Helper function to return the map bounds using the onBoundsChanged prop function
+     * 
+     * @returns an array of the coordinates of the lower left and upper right bounds of the map view
+     */
     const onViewChanged = () => {
-        console.log("Zoom " + mapRef.current.leafletElement.getZoom());
-        console.log(mapRef.current.leafletElement.getBounds());
-        if (mapRef.current.leafletElement.getZoom() > 10) {
-            onBoundsChanged(mapRef.current.leafletElement.getBounds());
-        }
+        if (!onBoundsChanged) return;
+        const bounds = mapRef.current.leafletElement.getBounds();
+        const southWest = bounds.getSouthWest();
+        const northEast = bounds.getNorthEast();
+        onBoundsChanged([southWest.lat, southWest.lng, northEast.lat, northEast.lng]);
     }
 
     return (
@@ -166,18 +182,20 @@ const SimpleMap = ({ start, end, data, styling, onBoundsChanged }) => {
                         </>
                         : data ?
                             <>
-                                {
-                                    data.map((item, idx) => {
-                                        return <Marker
-                                            key={item["serial"]}
-                                            position={
-                                                item["deployedLocation"] ?
-                                                    [...item["deployedLocation"].coordinates].reverse()
-                                                    : [idx, idx]
-                                            }
-                                            onclick={() => setPopupPosition({ coords: item["deployedLocation"] ? [...item["deployedLocation"].coordinates].reverse() : [idx, idx], object: item })} />
-                                    })
-                                }
+                                <MarkerClusterGroup>
+                                    {
+                                        data.map((item, idx) => {
+                                            return <Marker
+                                                key={item["serial"]}
+                                                position={
+                                                    item["deployedLocation"] ?
+                                                        [...item["deployedLocation"].coordinates].reverse()
+                                                        : [idx, idx]
+                                                }
+                                                onclick={() => setPopupPosition({ coords: item["deployedLocation"] ? [...item["deployedLocation"].coordinates].reverse() : [idx, idx], object: item })} />
+                                        })
+                                    }
+                                </MarkerClusterGroup>
                             </>
                             : null
                 }
@@ -266,7 +284,12 @@ SimpleMap.propTypes = {
     /**
      * Array of asset objects to map as markers, each should contain a "deployedLocation" property holding a document with its coordinates where applicable
      */
-    data: PropTypes.array
+    data: PropTypes.array,
+    /**
+     * If variant is not "search" then the map is centered with all markers in view
+     * Setting "search" means the user can drag the map around without it being centered as soon as a marker is found (defeating the purpose of drag-to-search)
+     */
+    variant: PropTypes.string
 }
 
 export default SimpleMap;
