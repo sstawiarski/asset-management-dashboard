@@ -40,7 +40,7 @@ const WarningIndicator = ({ warnings, label }) => {
                     {/* Render out the array of warning strings supplied as props into the tooltip */}
                     <Typography variant="body2"><b>{warnings.length} warning{warnings.length === 1 ? "" : "s"}</b></Typography>
                     {
-                        warnings.map(warning => <Typography variant="body2">{warning}</Typography>)
+                        warnings.map((warning, idx) => <Typography key={idx} variant="body2">{warning}</Typography>)
                     }
                 </React.Fragment>
             }>
