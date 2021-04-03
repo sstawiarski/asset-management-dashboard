@@ -24,6 +24,7 @@
     "react-geocode": "^0.2.3",
     "react-leaflet": "^2.8.0",
     "react-leaflet-curve": "^2.0.1",
+    "react-leaflet-markercluster": "^2.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
     "react-uuid": "^1.0.2",

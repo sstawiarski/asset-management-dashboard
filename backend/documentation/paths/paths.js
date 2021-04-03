@@ -4,7 +4,8 @@ const customerPaths = require('./customers.paths')
 const employeePaths = require('./employees.paths')
 const locationPaths = require('./locations.paths')
 const authPaths = require('./auth.paths');
-const shipmentPaths = require ('./shipments.paths');
+const shipmentPaths = require('./shipments.paths');
+
 const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
@@ -12,6 +13,8 @@ const paths = {
     '/assets/:searchFilter': assetsPaths.findByFilter,
     '/assets/assembly/schema': assetsPaths["assembly/schema"],
     '/assets/assembly': assetsPaths["assembly"],
+
+    '/shipments': shipmentPaths.root,
     
     '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,

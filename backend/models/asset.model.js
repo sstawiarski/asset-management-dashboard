@@ -7,6 +7,7 @@ const Asset = new Schema({
     assetName: { type: String, required: true, unique: false },
     assetType: { type: String, enum: ['Asset', 'Assembly'], required: true, unique: false },
     deployedLocation: { type: mongoose.Schema.Types.ObjectId, ref:'location', required: false, unique: false },
+    deployedLocationOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false },
     owner: { type: String, required: true, unique: false },
     parentId: { type: String, required: false, unique: false },
     dateCreated: { type: mongoose.Schema.Types.Date, required: true, unique: false },

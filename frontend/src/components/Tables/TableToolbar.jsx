@@ -49,21 +49,25 @@ const EnhancedTableToolbar = (props) => {
                 [classes.highlight]: numSelected > 0,
             })}
         >
-            
+
             {numSelected > 0 ? (
                 <Typography className={classes.title} color="inherit" variant="subtitle1" component="div" align='right'>
                     {numSelected} selected
                 </Typography>
             ) : (
                 <>
-                {children.props.children[0]}
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
-                        {title}
-                    </Typography>
-                    </>
-                )}
+                    {children.props.children[0]}
+                    {
+                        title && (
+                            <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
+                                {title}
+                            </Typography>
+                        )
+                    }
+                </>
+            )}
 
-            { numSelected > 0 ? children : children.props.children.length > 1 ? children.props.children.slice(1) : children.props.children }
+            { numSelected > 0 ? children : children.props.children.length > 1 ? children.props.children.slice(1) : children.props.children}
 
 
         </Toolbar>
