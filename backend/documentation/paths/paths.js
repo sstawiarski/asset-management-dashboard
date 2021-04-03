@@ -4,6 +4,7 @@ const customerPaths = require('./customers.paths')
 const employeePaths = require('./employees.paths')
 const locationPaths = require('./locations.paths')
 const authPaths = require('./auth.paths');
+const shipmentPaths = require ('./shipments.paths');
 const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
@@ -27,7 +28,11 @@ const paths = {
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,
 
-    '/auth/login': authPaths.login
+    '/auth/login': authPaths.login,
+
+    '/shipments': shipmentPaths.root,
+    '/shipments/load': shipmentPaths.load,
+    '/shipments/:key': shipmentPaths.findByKey,
 }
 
 module.exports = paths;
