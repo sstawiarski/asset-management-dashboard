@@ -11,6 +11,7 @@ import Divider from '@material-ui/core/Typography';
 import Header from '../components/Header'
 import Button from '@material-ui/core/Button';
 import Skeleton from '@material-ui/lab/Skeleton';
+import Tooltip from '@material-ui/core/Tooltip';
 
 //Icons
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
@@ -21,6 +22,7 @@ import SimpleMap from '../components/SimpleMap';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';
+import { prettyStringify } from '../utils/mapping.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,7 +105,6 @@ const ShipmentDetails = (props) => {
                     }));
                     const head = Object.keys(json.manifest[0]);
                     try {
-                        console.log(json)
                         if (json.shipTo["coordinates"].length > 0 && json.shipFrom["coordinates"].length > 0) {
                             setHasLocations(true);
                         }
@@ -174,7 +175,13 @@ const ShipmentDetails = (props) => {
                                         {
                                             loading ?
                                                 <Skeleton variant="text" />
-                                                : <Typography variant="body1">{shipment.shipFrom.locationName}</Typography>
+                                                : <Tooltip title={
+                                                    <div>
+                                                        {prettyStringify(shipment.shipFrom, ["_id", "__v"])}
+                                                    </div>
+                                                }>
+                                                    <Typography variant="body1">{shipment.shipFrom.locationName}</Typography>
+                                                </Tooltip>
                                         }
 
                                     </Grid>
@@ -183,7 +190,13 @@ const ShipmentDetails = (props) => {
                                         {
                                             loading ?
                                                 <Skeleton variant="text" />
-                                                : <Typography variant="body1">{shipment.shipTo.locationName}</Typography>
+                                                : <Tooltip title={
+                                                    <div>
+                                                        {prettyStringify(shipment.shipTo, ["_id", "__v"])}
+                                                    </div>
+                                                }>
+                                                    <Typography variant="body1">{shipment.shipTo.locationName}</Typography>
+                                                </Tooltip>
                                         }
 
                                     </Grid>

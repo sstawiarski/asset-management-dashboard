@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 //Library Tools
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
+import uuid from 'react-uuid';
 
 //Material-UI Components
 import Typography from '@material-ui/core/Typography';
@@ -138,20 +139,18 @@ const ShipmentCreator = () => {
 
     /* Set url with supplied filters */
     useEffect(() => {
-        if (shipmentStarted) {
-            setURL(() => {
-                let newURL = originalURL;
-                let index = 0;
+        setURL(() => {
+            let newURL = originalURL;
+            let index = 0;
 
-                Object.keys(filters).forEach((key, idx) => {
-                    let concatenator = index === 0 ? "?" : "&";
-                    newURL += `${concatenator}${key}=${filters[key]}`;
-                    index++;
-                });
-
-                return newURL;
+            Object.keys(filters).forEach((key, idx) => {
+                let concatenator = index === 0 ? "?" : "&";
+                newURL += `${concatenator}${key}=${filters[key]}`;
+                index++;
             });
-        }
+
+            return newURL;
+        });
     }, [filters, originalURL, shipmentStarted]);
 
     /* Fetch shipment list */
@@ -198,7 +197,6 @@ const ShipmentCreator = () => {
 
     /* Set information from creator dialog upon submission */
     const handleCreate = (childState) => {
-
         setState(s => ({
             ...s,
             shipFrom: {
@@ -234,22 +232,64 @@ const ShipmentCreator = () => {
         })
     }
 
-    /* Check if selected items already have parent assemblies and then add to cart */
+    /* Check if selected items already have parent assemblies or are deployed elsewhere and then add to cart */
     const handleAddToCart = () => {
         const badSerials = [];
 
         const newAdditions = []
 
         mapItems.forEach(item => {
-            if (item.deployedLocation || item.parentId) badSerials.push({
-                serial: item.serial,
-                name: item.assetName,
-                problem: item.deployedLocation ? "Deployed at another location" : "Part of an assembly"
-            });
-            else newAdditions.push({
+
+            const isDeployed = item.deployedLocation && (state.shipFrom["key"] && item.deployedLocation["key"] !== state.shipFrom["key"]);
+            const hasParent = Boolean(item.parentId);
+            const isCheckedOut = Boolean(item.checkedOut);
+
+            const warning = {
                 serial: item.serial,
                 name: item.assetName
-            })
+            };
+
+            /* Generate 'problem' descriptor elements for the warning/override dialog */
+            const problems = []
+            if (isDeployed) {
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Deployed at non-matching location {item.deployedLocation["key"]} (selected location: {state.shipFrom["key"]})</span>
+                        <br />
+                    </React.Fragment>
+                );
+            }
+
+            if (hasParent) {
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Asset is a child of assembly {item.parentId}</span>
+                        <br />
+                    </React.Fragment>
+                );
+            }
+
+            if (isCheckedOut) {
+                problems.push(
+                    <React.Fragment key={uuid()}>
+                        <span>Asset is already checked out</span>
+                        <br />
+                    </React.Fragment>
+                );
+            }
+
+            if (problems.length) {
+                warning["problem"] = <div>{problems}</div>
+                badSerials.push(warning);
+            }
+
+            /* If no warning, just add it to the items to be added to the cart */
+            if (!isDeployed && !hasParent && !isCheckedOut) {
+                newAdditions.push({
+                    serial: item.serial,
+                    name: item.assetName
+                });
+            }
         });
 
         //add the good serials to the cart and trigger warning dialog for the serials with parents
@@ -269,9 +309,7 @@ const ShipmentCreator = () => {
     }
 
     /** 
-     * Compares schema saved in state from the helper tool with the assets currently in cart
-     * 
-     * Sets the submission information depending on whether assembly is being modified or created for the first time
+     * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
 
@@ -286,7 +324,8 @@ const ShipmentCreator = () => {
                 quantity: item.quantity ? item.quantity : 1,
                 notes: item.notes ? item.notes : null,
                 serialized: item.serial !== "N/A" ? true : false
-            }))
+            })),
+            override: state.override || false
         }));
 
         setAnchorEl(null);
@@ -299,7 +338,6 @@ const ShipmentCreator = () => {
     const handleSubmitCancel = () => {
         toggleOverride(false);
         setSubmitOpen(false);
-        //setIncomplete(false);
     };
 
     /* Remove all state when assembly is abandoned */
@@ -307,12 +345,9 @@ const ShipmentCreator = () => {
         toggleOverride(false);
         setCreatorOpen(false);
         toggleShipment(false);
-        //setSchema(null);
         setSubmitOpen(false);
         setAssets([]);
         setAssetCount(0);
-        //setIncomplete(false);
-        //setMissingItems([]);
         setSelected([]);
         setMapItems([]);
         setSubmission({});
@@ -335,54 +370,64 @@ const ShipmentCreator = () => {
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
                         shipmentStarted
-                            ? <CustomTable
-                                variant="asset"
-                                data={assets}
-                                selectedFields={selectedFields}
-                                selected={selected}
-                                filters={filters}
-                                count={assetCount}
-                                checkboxes
-                                
-                                renderOnClick={QuickAssetView}
-                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
-                                onValidate={(asset) => {
-                                    const warnings = [];
-                                    const errors = [];
+                            ?
+                            <>
+                                <CustomTable
+                                    variant="asset"
+                                    data={assets}
+                                    selectedFields={selectedFields}
+                                    selected={selected}
+                                    filters={filters}
+                                    count={assetCount}
+                                    checkboxes
 
-                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
-                                    if (asset.deployedLocation) warnings.push("Asset is deployed at a location");
+                                    renderOnClick={QuickAssetView}
+                                    onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                    onValidate={(asset) => {
+                                        const warnings = [];
+                                        const errors = [];
 
-                                    return { warnings: warnings, errors: errors };
-                                }}
-                                onAdditionalSelect={setMapItems}
-                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
-                                onSelectedChange={setSelected}>
+                                        if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                        if (asset.deployedLocation) {
+                                            if (state["shipFrom"] && state["shipFrom"].key !== asset.deployedLocation["key"]) {
+                                                warnings.push(<span>Asset is deployed at a non-matching location ({asset.deployedLocation["key"]})</span>);
+                                            }
+                                        }
+                                        if (asset.checkedOut) {
+                                            warnings.push("Asset is marked as being checked out");
+                                        }
 
-                                <TableToolbar title="Shipment Creator" selected={selected}>
-                                    {
-                                        selected.length > 0 ?
-                                            <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            :
-                                            <Tooltip title={"Filter"}>
-                                                <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
-                                                    <FilterListIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                    }
-                                </TableToolbar>
+                                        return { warnings: warnings, errors: errors };
+                                    }}
+                                    onAdditionalSelect={setMapItems}
+                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onSelectedChange={setSelected}>
 
-                                <ChipBar
-                                    activeFilters={activeFilters}
-                                    setActiveFilters={setActiveFilters}
-                                    setFilters={setFilters} />
+                                    <TableToolbar title="Shipment Creator" selected={selected}>
+                                        {
+                                            selected.length > 0 ?
+                                                <Tooltip title={"Add"}>
+                                                    <IconButton aria-label={"add"} onClick={handleAddToCart}>
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                :
+                                                <Tooltip title={"Filter"}>
+                                                    <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
+                                                        <FilterListIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                        }
+                                    </TableToolbar>
 
-                            </CustomTable>
+                                    <ChipBar
+                                        activeFilters={activeFilters}
+                                        setActiveFilters={setActiveFilters}
+                                        setFilters={setFilters} />
 
+                                </CustomTable>
+                                <Button style={{ color: "red", float: "left", marginLeft: "20px" }} variant="text" onClick={() => setAbandoned(true)}>Abandon</Button>
+                            </>
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
                                     <LocalShippingIcon className={classes.puzzle} />
@@ -455,9 +500,15 @@ const ShipmentCreator = () => {
                     setCartItems(c => [...c, ...items]);
                     setHasParents(false);
                     setHaveParents([]);
+                    setState(s => ({ ...s, override: true }));
                 }}
-                text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
-                title="Asset Update Warning"
+                text={
+                    <div style={{ textAlign: "center" }}>
+                        <span>Some selected assets have problems <br /> <br /></span>
+                        <span>Overriding this warning will force-update the assets upon shipment submission</span>
+                    </div>
+                }
+                title="Warning"
                 items={haveParents.map(item => [item.serial, item.name, item.problem])}
                 headers={["Serial", "Name", "Problem"]}
             />
@@ -466,8 +517,8 @@ const ShipmentCreator = () => {
                 open={abandoned}
                 setOpen={setAbandoned}
                 handleOverride={handleAbandon}
-                text="Abandoning this assembly will erase all current modifications"
-                title="Abandon Assembly?"
+                text="Abandoning this shipment will erase all current modifications"
+                title="Abandon Shipment?"
                 items={null}
             />
 

@@ -30,12 +30,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 
 /**
- * Runs the toolbar which displays selected count and changes menubar based on whether any rows are selected
- * 
- * Props:
- *      title (String)                          The table title to display 
- *      selected (Array)                        The array of selected table rows
- *      children                                The components in between TableToolbar in the parent page, used for rendering additional toolbar icons/menus
+ * Toolbar which displays selected count and changes menubar based on whether any rows are selected
  */
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
@@ -54,21 +49,25 @@ const EnhancedTableToolbar = (props) => {
                 [classes.highlight]: numSelected > 0,
             })}
         >
-            
+
             {numSelected > 0 ? (
                 <Typography className={classes.title} color="inherit" variant="subtitle1" component="div" align='right'>
                     {numSelected} selected
                 </Typography>
             ) : (
                 <>
-                {children.props.children[0]}
-                    <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
-                        {title}
-                    </Typography>
-                    </>
-                )}
+                    {children.props.children[0]}
+                    {
+                        title && (
+                            <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align='right'>
+                                {title}
+                            </Typography>
+                        )
+                    }
+                </>
+            )}
 
-            { numSelected > 0 ? children : children.props.children.length > 1 ? children.props.children.slice(1) : children.props.children }
+            { numSelected > 0 ? children : children.props.children.length > 1 ? children.props.children.slice(1) : children.props.children}
 
 
         </Toolbar>

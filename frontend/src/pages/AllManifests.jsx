@@ -1,33 +1,53 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-import FilterListIcon from '@material-ui/icons/FilterList';
-import EditIcon from '@material-ui/icons/Edit';
-import AddIcon from '@material-ui/icons/Add';
+//Library Tools
+import { makeStyles } from '@material-ui/core/styles';
+
+//Material-UI Components
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
 
+//Custom Components
+import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
+import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
 import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
 
-//Dialogs
-import ShipmentFilter from '../components/Dialogs/ShipmentFilter';
-import ChangeStatusDialog from '../components/Dialogs/ChangeStatusDialog';
-
-import Snackbar from '@material-ui/core/Snackbar';
-import Alert from '@material-ui/lab/Alert';
-import { Button, Container, InputAdornment, TextField, Grid } from '@material-ui/core';
+//Icons
 import SearchIcon from '@material-ui/icons/Search';
-import { Link } from 'react-router-dom';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from '@material-ui/icons/Add';
+
+const useStyles = makeStyles((theme) => ({
+    tabBar: {
+        width: "100%",
+        marginLeft: "10%"
+    },
+    searchbarContainer: {
+        width: "60%",
+        marginRight: "10px"
+    }
+}));
 
 //the object fields to get for the table we need, in this case shipments
 const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
+    const classes = useStyles();
 
+    const isWarning = false; // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
+    const [currentTab, setCurrentTab] = useState("All");
     const [shipments, setShipments] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
@@ -39,33 +59,54 @@ const AllShipments = (props) => {
     const [activeFilters, setActiveFilters] = useState({});
     const [anchor, setAnchor] = useState(null);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
+    const [search, setSearch] = useState("");
 
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setFilters(s => ({ ...s, search: e.target.value }))
-            console.log(filters);
-
+            const { value } = e.target;
+            setFilters(s => ({ ...s, search: value }));
+            setSearch(value);
         }
-
     }
 
-  /* Handle floating menu placement for toolbar */
+    /* Handle floating menu placement for toolbar */
     const handleClick = (event) => {
         setAnchor(event.currentTarget);
     }
+
+    /* handle change of tab view */
+    const handleTabChange = (event, newValue) => { 
+
+        /* Remove the filter if all shipment types are selected */
+        if (newValue === "All") {
+            setFilters(f => {
+                const newFilters = { ...f };
+                delete newFilters["status"];
+                newFilters["page"] = 0;
+                return newFilters;
+            });
+        } else {
+            setFilters(f => ({ ...f, status: newValue, page: 0 }));
+        }
+        
+        setCurrentTab(newValue);
+    };
 
     const handleClose = () => {
         setAnchor(null);
     }
 
- /* Check selected items for existing parent */
+
     const handleMenuClick = (event) => {
         setAnchor(null);
-        setNext(event.target.getAttribute("name"));
-        
+        const name = event.target.getAttribute("name");
 
+        // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
+        if (isWarning) setNext(name);
+        else setDialogs(d => ({ ...d, [name]: true }));
     }
+
     // const handleMenuClick = (event) => {
     //     setAnchor(null);
     //     const children = [];
@@ -98,15 +139,15 @@ const AllShipments = (props) => {
 
 
 
-        /* Handles stepping through warning dialog to the actual edit dialog */
+    /* Handles stepping through warning dialog to the actual edit dialog */
     useEffect(() => {
         if (!nextDialog) return;
-      
-            setDialogs({ [nextDialog]: true });
-        
+
+        setDialogs({ [nextDialog]: true });
+
     }, [nextDialog]);
 
- /* Successful edit event */
+    /* Successful edit event */
     const onSuccess = (succeeded, message) => {
         if (succeeded) {
             setSelected([]);
@@ -117,21 +158,15 @@ const AllShipments = (props) => {
         }
     };
 
-
-
-
-
     useEffect(() => {
         //generate the fetch url based on active filters and their keys
         const generateURL = (filters) => {
             let url = `${process.env.REACT_APP_API_URL}/shipments`;
             const keys = Object.keys(filters);
             keys.forEach((key, idx) => {
-                if (idx === 0) {
-                    url = `${url}?${key}=${filters[key]}`;
-                } else {
-                    url = `${url}&${key}=${filters[key]}`;
-                }
+                if (idx === 0) url = `${url}?`
+                url = `${url}&${key}=${filters[key]}`;
+                
             });
 
             return url;
@@ -151,21 +186,21 @@ const AllShipments = (props) => {
                 setShipments(json.data);
                 setShipmentCount(json.count[0].count);
             });
+
     }, [filters]);
+
 
 
     useEffect(() => {
         setFilters(s => ({ ...s, page: 0 }));
-    }, [activeFilters])
-
-
-
+    }, [activeFilters]);
 
 
 
     return (
         <div>
             <Header heading="Shipments" subheading="View All" />
+
             <div>
                 <CustomTable
                     variant="shipment"
@@ -175,13 +210,13 @@ const AllShipments = (props) => {
                     filters={filters}
                     count={shipmentCount}
                     checkboxes={true}
-                    
+                    setCurrentTab= {setCurrentTab}
+
                     onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                     onSelectedChange={setSelected}>
 
-                    <TableToolbar
-                        title="All Shipments"
-                        selected={selected}>
+
+                    <TableToolbar selected={selected}>
 
 
                         {/* Table toolbar icons and menus */}
@@ -204,33 +239,42 @@ const AllShipments = (props) => {
                                 </Menu>
                             </>
                             :
-                            <>
+                            <div style={{ display: "flex", justifyContent: "space-between" }}>
 
                                 <Link to="/shipments/create" >
                                     <IconButton >
                                         <AddIcon />
                                     </IconButton>
                                 </Link>
-                                <Container className='searchBar' align='right'>
-                                    <div >
-                                        <TextField id="searchBox"
-                                            variant="outlined"
-                                            size="small"
-                                            InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        <SearchIcon />
-                                                    </InputAdornment>
-                                                )
-                                            }}
-                                            onKeyDown={handleKeyDown}
-                                        />
-                                    </div>
-                                </Container>
+
+                                {/* Shipment Status tabs */}
+                                <Tabs className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+                                    <Tab label="All" value="All" name="All" />
+                                    <Tab label="Staging" value="Staging" name="Staging" />
+                                    <Tab label="Completed" value="Completed" name="Completed" />
+                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
+                                </Tabs>
+
+                                <div className={classes.searchbarContainer}>
+                                    <TextField id="searchBox"
+                                        variant="outlined"
+                                        size="small"
+                                        fullWidth
+                                        value={search}
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <SearchIcon />
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                        onKeyDown={handleKeyDown}
+                                    />
+                                </div>
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
                                 </IconButton>
-                            </>
+                            </div>
                         }
                     </TableToolbar>
 
@@ -248,21 +292,26 @@ const AllShipments = (props) => {
                 open={dialogs["filter"]}
                 setOpen={(isOpen) => setDialogs(d => ({ ...d, filter: isOpen }))}
                 setActiveFilters={setActiveFilters}
+                disableStatusFilter={true}
             />
 
             <ChangeStatusDialog
                 open={dialogs["status"]}
-                setOpen={(isOpen) => setDialogs({ status: isOpen})}
+                setOpen={(isOpen) => setDialogs(d => ({ ...d, status: isOpen }))}
                 selected={selected}
                 onSuccess={onSuccess}
-             />
-           
-            
+            />
+
+
             {/* Displays success or failure message */}
             <Snackbar open={success.succeeded !== null} autoHideDuration={5000} onClose={() => setSuccess({ succeeded: null, message: '' })} anchorOrigin={{ vertical: "top", horizontal: "center" }} style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
-                <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
-                    {success.message}
-                </Alert>
+                {
+                    success.succeeded !== null ?
+                        <Alert onClose={() => setSuccess({ succeeded: null, message: '' })} severity={success.succeeded ? "success" : "error"}>
+                            {success.message}
+                        </Alert>
+                        : null
+                }
             </Snackbar>
         </div>);
 
