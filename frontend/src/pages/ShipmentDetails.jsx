@@ -18,7 +18,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 //Custom Components
 import SimpleList from '../components/Tables/SimpleList';
-import SimpleMap from '../components/SimpleMap';
+import SimpleMap from '../components/Map';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';

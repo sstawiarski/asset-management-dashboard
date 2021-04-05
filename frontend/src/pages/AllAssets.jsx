@@ -6,7 +6,7 @@ import Header from '../components/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
-import SimpleMap from '../components/SimpleMap';
+import SimpleMap from '../components/Map';
 import TableSearchbar from '../components/Tables/TableSearchbar';
 
 //Dialogs
