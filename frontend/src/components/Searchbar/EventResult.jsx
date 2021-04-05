@@ -12,7 +12,7 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 
 //Custom Components
-import EventDetailsViewer from '../Dialogs/EventDetailsViewer';
+import EventDetailsViewer from '../Dialogs/GeneralDialogs/EventDetailsViewer';
 
 //Icons
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';

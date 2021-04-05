@@ -28,15 +28,15 @@ import AssetFilter from '../components/Dialogs/AssetDialogs/AssetFilter'
 import CreateNewShipmentDialog from '../components/Dialogs/ShipmentDialogs/CreateNewShipmentDialog';
 import ShipmentSubmitDialog from '../components/Dialogs/ShipmentDialogs/ShipmentSubmitDialog';
 import QuickAssetView from '../components/Dialogs/AssetDialogs/QuickAssetView';
-import WarningDialog from '../components/Dialogs/WarningDialog';
+import WarningDialog from '../components/Dialogs/GeneralDialogs/WarningDialog';
 import AddUnserializedDialog from '../components/Dialogs/AssetDialogs/AddUnserializedDialog';
 
 //Custom Components
-import Header from '../components/Header'
+import Header from '../components/PageComponents/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
-import NewCart from '../components/Cart';
+import NewCart from '../components/PageComponents/Cart';
 
 const useStyles = makeStyles((theme) => ({
     root: {

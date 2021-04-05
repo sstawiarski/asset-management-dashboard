@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
-import Header from '../components/Header'
+import Header from '../components/PageComponents/Header'
 import Button from '@material-ui/core/Button';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -18,7 +18,7 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 //Custom Components
 import SimpleList from '../components/Tables/SimpleList';
-import SimpleMap from '../components/Map';
+import SimpleMap from '../components/PageComponents/Map';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';

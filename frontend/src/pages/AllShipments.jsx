@@ -18,7 +18,7 @@ import TextField from '@material-ui/core/TextField';
 //Custom Components
 import ShipmentFilter from '../components/Dialogs/ShipmentDialogs/ShipmentFilter';
 import ChangeStatusDialog from '../components/Dialogs/AssetDialogs/ChangeStatusDialog';
-import Header from '../components/Header'
+import Header from '../components/PageComponents/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';

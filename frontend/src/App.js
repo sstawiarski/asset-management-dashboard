@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import './App.css';
 import logo from "./logo.svg";
 
-import Sidebar from './components/Sidebar';
+import Sidebar from './components/PageComponents/Sidebar';
 
 import AssetDetails from './pages/AssetDetails';
 import AssemblyManager from './pages/AssemblyManager';

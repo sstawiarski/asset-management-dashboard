@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 //Internal Components
-import Header from '../components/Header'
+import Header from '../components/PageComponents/Header'
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
-import SimpleMap from '../components/Map';
+import SimpleMap from '../components/PageComponents/Map';
 import TableSearchbar from '../components/Tables/TableSearchbar';
 
 //Dialogs

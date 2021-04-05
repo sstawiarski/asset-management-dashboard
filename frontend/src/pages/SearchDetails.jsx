@@ -7,12 +7,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import IconButton from '@material-ui/core/IconButton';
 import AssetFilter from '../components/Dialogs/AssetDialogs/AssetFilter';
-import EventFilter from '../components/Dialogs/EventFilter';
-import Header from '../components/Header';
+import EventFilter from '../components/Dialogs/GeneralDialogs/EventFilter';
+import Header from '../components/PageComponents/Header';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
-import EventDetailsViewer from '../components/Dialogs/EventDetailsViewer';
+import EventDetailsViewer from '../components/Dialogs/GeneralDialogs/EventDetailsViewer';
 
 const assetFields = ["serial", "assetName", "assetType", "owner", "checkedOut", "groupTag"];
 const eventFields = ["key", "eventTime", "eventType"];

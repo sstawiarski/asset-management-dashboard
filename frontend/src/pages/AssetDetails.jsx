@@ -9,9 +9,9 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
-import Header from '../components/Header'
-import AssetTimeline from '../components/AssetTimeline'
-import Manifest from '../components/Manifest';
+import Header from '../components/PageComponents/Header'
+import AssetTimeline from '../components/PageComponents/AssetTimeline'
+import Manifest from '../components/PageComponents/Manifest';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';

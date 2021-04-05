@@ -28,14 +28,14 @@ import CreateNewAssemblyDialog from '../components/Dialogs/AssetDialogs/CreateNe
 import AssemblySubmitDialog from '../components/Dialogs/AssetDialogs/AssemblySubmitDialog';
 import IncompleteAssemblyDialog from '../components/Dialogs/AssetDialogs/IncompleteAssemblyDialog';
 import QuickAssetView from '../components/Dialogs/AssetDialogs/QuickAssetView';
-import WarningDialog from '../components/Dialogs/WarningDialog';
+import WarningDialog from '../components/Dialogs/GeneralDialogs/WarningDialog';
 
 //Custom Components
-import Header from '../components/Header'
+import Header from '../components/PageComponents/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
-import NewCart from '../components/Cart';
+import NewCart from '../components/PageComponents/Cart';
 
 //Tools
 import { compareSchema, getSchema } from '../utils/assembly.utils';
