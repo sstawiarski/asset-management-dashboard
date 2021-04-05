@@ -13,7 +13,7 @@ import AssetDetails from './pages/AssetDetails';
 import AssemblyManager from './pages/AssemblyManager';
 import Dashboard from './pages/Dashboard';
 import AllAssets from './pages/AllAssets';
-import AllManifests from './pages/AllManifests';
+import AllManifests from './pages/AllShipments';
 import SearchDetails from './pages/SearchDetails';
 import LoginPage from './pages/Login';
 

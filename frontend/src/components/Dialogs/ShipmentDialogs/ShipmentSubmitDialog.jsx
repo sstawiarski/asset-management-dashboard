@@ -12,11 +12,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 
 //Custom Components
-import SimpleList from '../Tables/SimpleList';
-import LocationAccordion from '../LocationAccordion';
+import SimpleList from '../../Tables/SimpleList';
+import LocationAccordion from '../../LocationAccordion';
 
 //Tools
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCancel }) => {
     const [shipmentNotes, setShipmentNotes] = useState("");

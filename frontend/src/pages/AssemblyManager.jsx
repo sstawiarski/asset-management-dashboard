@@ -23,11 +23,11 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 //Dialogs
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import CreateNewAssemblyDialog from '../components/Dialogs/CreateNewAssemblyDialog';
-import AssemblySubmitDialog from '../components/Dialogs/AssemblySubmitDialog';
-import IncompleteAssemblyDialog from '../components/Dialogs/IncompleteAssemblyDialog';
-import QuickAssetView from '../components/Dialogs/QuickAssetView';
+import AssetFilter from '../components/Dialogs/AssetDialogs/AssetFilter'
+import CreateNewAssemblyDialog from '../components/Dialogs/AssetDialogs/CreateNewAssemblyDialog';
+import AssemblySubmitDialog from '../components/Dialogs/AssetDialogs/AssemblySubmitDialog';
+import IncompleteAssemblyDialog from '../components/Dialogs/AssetDialogs/IncompleteAssemblyDialog';
+import QuickAssetView from '../components/Dialogs/AssetDialogs/QuickAssetView';
 import WarningDialog from '../components/Dialogs/WarningDialog';
 
 //Custom Components
@@ -35,7 +35,7 @@ import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
-import NewCart from '../components/NewCart';
+import NewCart from '../components/Cart';
 
 //Tools
 import { compareSchema, getSchema } from '../utils/assembly.utils';

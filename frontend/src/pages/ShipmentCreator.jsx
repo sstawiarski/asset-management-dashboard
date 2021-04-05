@@ -24,19 +24,19 @@ import LocalShippingIcon from '@material-ui/icons/LocalShipping';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 
 //Dialogs
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import CreateNewShipmentDialog from '../components/Dialogs/CreateNewShipmentDialog';
-import ShipmentSubmitDialog from '../components/Dialogs/ShipmentSubmitDialog';
-import QuickAssetView from '../components/Dialogs/QuickAssetView';
+import AssetFilter from '../components/Dialogs/AssetDialogs/AssetFilter'
+import CreateNewShipmentDialog from '../components/Dialogs/ShipmentDialogs/CreateNewShipmentDialog';
+import ShipmentSubmitDialog from '../components/Dialogs/ShipmentDialogs/ShipmentSubmitDialog';
+import QuickAssetView from '../components/Dialogs/AssetDialogs/QuickAssetView';
 import WarningDialog from '../components/Dialogs/WarningDialog';
-import AddUnserializedDialog from '../components/Dialogs/AddUnserializedDialog';
+import AddUnserializedDialog from '../components/Dialogs/AssetDialogs/AddUnserializedDialog';
 
 //Custom Components
 import Header from '../components/Header'
 import ChipBar from '../components/Tables/ChipBar';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
-import NewCart from '../components/NewCart';
+import NewCart from '../components/Cart';
 
 const useStyles = makeStyles((theme) => ({
     root: {

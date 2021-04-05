@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 
 //Dialogs
-import EventDetailsViewer from './EventDetailsViewer';
+import EventDetailsViewer from './Dialogs/EventDetailsViewer';
 
 //Icons
 import AddIcon from '@material-ui/icons/Add'; //creation

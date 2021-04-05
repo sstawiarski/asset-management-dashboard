@@ -20,7 +20,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 
 //Dialogs
-import AssemblyModificationWarning from '../components/Dialogs/AssemblyModificationWarning';
+import AssemblyModificationWarning from '../components/Dialogs/AssetDialogs/AssemblyModificationWarning';
 
 //Tools
 import { dateOptions } from '../utils/constants.utils';

@@ -10,7 +10,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -25,11 +25,11 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
     /* Store state of select dropdown */
-    const [owner, setOwner] = useState("");
+    const [assignment, setAssignment] = useState("");
     const [dropdown, setDropdown] = useState([]);
     const [user, ] = useLocalStorage('user', {});
 
@@ -55,7 +55,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
         const data = {
             assets: selected,
             update: {
-                owner: owner
+                assignee: assignment
             },
             override: override,
             user: user.uniqueId
@@ -63,7 +63,6 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
 
         sendData(data)
             .then(response => {
-
                 //assume anything less than 300 is a success
                 if (response.status < 300) {
                     return response.json();
@@ -73,12 +72,12 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    const newOwner = owner;
+                    const assign = assignment;
                     handleClose();
-                    onSuccess(true, `Successfully updated ${selected.length} asset(s) owner to ${newOwner}! Event Key: ${json.key}`)
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignee to ${assign}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
-                    onSuccess(false, `Failed to update asset owner...`);
+                    onSuccess(false, `Failed to update assignee...`);
                 }
             })
     }
@@ -86,38 +85,39 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setOwner("");
+        setAssignment("");
+
     }
 
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/customers`)
-        .then(response => {
-            if (response.status < 300) {
-                return response.json();
-            } else {
-                return [];
-            }
-        })
-        .then(json => setDropdown(json));
+            .then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return [];
+                }
+            })
+            .then(json => setDropdown(json));
     }, [])
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
 
-            <DialogTitle id="change-owner-dialog-title">Change Owner</DialogTitle>
+            <DialogTitle id="change-assignee-dialog-title">Change Assignee</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing the Owner of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing the Assignee of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
                     <Autocomplete
-                        id="owner-dropdown"
+                        id="assignment-dropdown"
                         options={dropdown.map(customer => customer.companyName)}
                         autoHighlight
-                        onChange={(event, newValue) => setOwner(newValue)}
-                        renderInput={(params) => <TextField {...params} label="Owners" variant="outlined" />}
+                        onChange={(event, newValue) => setAssignment(newValue)}
+                        renderInput={(params) => <TextField {...params} label="Customers" variant="outlined" />}
                     />
                 </div>
             </DialogContent>
@@ -135,4 +135,4 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     );
 };
 
-export default ChangeOwnershipDialog;
+export default ChangeAssignmentDialog;
