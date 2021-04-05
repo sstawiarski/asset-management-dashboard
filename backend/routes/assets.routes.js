@@ -21,10 +21,16 @@ router.get("/", async (req, res, err) => {
       const query = req.query;
 
       //remove page, limit, search, and sorting params since they do not go in the $match
-      const disallowed = ["page", "limit", "search", "sort_by", "order"];
+      const disallowed = ["page", "limit", "search", "sort_by", "order", "mapBounds", "mapView"];
       const filters = await Object.keys(query)
         .reduce(async (pc, c) => {
           const p = await pc;
+
+          /* Remove type checks when assembly chosen is Kit Box */
+          if (query["inAssembly"]) {
+            const val = decodeURI(query["inAssembly"]);
+            if (val === "Kit Box" && c === "assetType") return p;
+          }
 
           /* MongoDB compares exact dates and times
           If we want to see an entire 24 hours, we much get the start and end times of the given day
@@ -47,36 +53,37 @@ router.get("/", async (req, res, err) => {
 
             //inAssembly query param allows us to only show assets that are components of the inAssembly name
             const assemblyType = decodeURI(query[c]);
-            const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
-            if (Object.keys(assemblySchema).length > 0) {
-              if (p["assetName"]) {
-                const prev = p["assetName"];
-                delete p["assetName"];
+            if (assemblyType !== "Kit Box") {
+              const assemblySchema = await AssemblySchema.findOne({ name: assemblyType });
+              if (Object.keys(assemblySchema).length > 0) {
+                if (p["assetName"]) {
+                  const prev = p["assetName"];
+                  delete p["assetName"];
 
-                if (p["$and"]) {
-                  //find all assets that are not in the exclude array
-                  p["$and"] = [...p["$and"], {
-                    assetName: {
-                      $in: assemblySchema.components,
-                      ...prev
-                    }
-                  }];
-                } else {
-                  p["$and"] = [
-                    {
+                  if (p["$and"]) {
+                    //find all assets that are not in the exclude array
+                    p["$and"] = [...p["$and"], {
                       assetName: {
                         $in: assemblySchema.components,
                         ...prev
                       }
-                    }
-                  ];
-                }
+                    }];
+                  } else {
+                    p["$and"] = [
+                      {
+                        assetName: {
+                          $in: assemblySchema.components,
+                          ...prev
+                        }
+                      }
+                    ];
+                  }
 
-              } else {
-                p["assetName"] = { $in: assemblySchema.components };
+                } else {
+                  p["assetName"] = { $in: assemblySchema.components };
+                }
               }
             }
-
           } else if (c === "isAssembly") {
 
             //isAssembly query param limits results to only assets who do not have a parentId or whose parent assembly is marked disassembled
@@ -217,6 +224,47 @@ router.get("/", async (req, res, err) => {
     aggregateArray.push(lookup);
     aggregateArray.push(locationUnwind);
 
+    /* Add location overrides if applicable */
+    const deployedLocationOverride = {
+      $set: {
+        "deployedLocation": {
+          $cond: [
+            { $ifNull: ["$deployedLocationOverride", false] },
+            { $mergeObjects: ["$deployedLocation", "$deployedLocationOverride"] },
+            "$deployedLocation"
+          ]
+        }
+      }
+    };
+
+    /* Remove the now-useless override fields from the final document */
+    const locationModificationProjection = {
+      $project: {
+        deployedLocationOverride: 0
+      }
+    };
+
+    aggregateArray.push(deployedLocationOverride);
+    aggregateArray.push(locationModificationProjection);
+    
+    if (req.query.mapView === "true") {
+      const boundsArray = (decodeURI(req.query.mapBounds).split(','));
+      const inBounds = {
+        $match: {
+          "deployedLocation.coordinates": {
+            $geoWithin: {
+              //array comes in with [lat,long] but needs to be [long,lat]
+              $box: [
+                [parseFloat(boundsArray[1]), parseFloat(boundsArray[0])],
+                [parseFloat(boundsArray[3]), parseFloat(boundsArray[2])]
+              ]
+            }
+          }
+        }
+      };
+      aggregateArray.push(inBounds);
+    }
+
     if (req.query.sort_by) {
       //default ascending order
       const sortOrder = (req.query.order === 'desc' ? -1 : 1);
@@ -263,7 +311,7 @@ router.get("/", async (req, res, err) => {
 
     //limit to 5 results -- modify later based on pagination
     const limit = {
-      $limit: req.query.limit ? parseInt(req.query.limit) : 5
+      $limit: req.query.limit ? parseInt(req.query.limit) : req.query.mapView === "true" ? 25 : 5
     };
 
     const group = {
@@ -471,7 +519,7 @@ router.patch("/", async (req, res) => {
     //object from client representing fields to update
     //should really only be one
     const field = req.body.update;
-    console.log(field);
+
     const fieldName = Object.getOwnPropertyNames(field)[0];
 
     //get all parent assembly documents so we can get their serial and update children
@@ -953,45 +1001,39 @@ router.get("/assembly/schema", async (req, res) => {
  * Retreive a single asset document
  */
 router.get("/:serial", async (req, res, err) => {
-  const serial = req.params.serial;
-
-  //for mapping
-  const map = req.params.map;
-  const bounds = req.params.bounds;
-
+  const { serial } = req.params;
   const { project } = req.query
-  let projection = {};
-  if (project) {
-    projection = {
-      [project]: 1,
-      _id: 0
-    }
-  }
+
+  const projection = project ? { [project]: 1, _id: 0 } : {};
+
   try {
+    let asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation').cache({ ttl: 60 * 60 * 1000});
 
-    if (map == true) {
-
-
-    } else {
-
-      const asset = await Asset.find({ serial: serial }, projection).populate('deployedLocation').cache({ ttl: 60 * 60 * 1000});
-
-
-
-      if (asset.length) {
-        res.status(200).json(asset[0]);
-      } else {
-        res.status(404).json({
-          message: "No assets found for serial",
-          internalCode: "no_assets_found",
-        });
-      }
+    /* if there is a location override, update the deployedLocation with the overrides and remove the override object */
+    if (asset["deployedLocationOverride"] && asset["deployedLocation"]) {
+      asset = asset.toObject();
+      asset["deployedLocation"] = {
+        ...asset["deployedLocation"],
+        ...asset["deployedLocationOverride"]
+      };
+      delete asset["deployedLocationOverride"];
     }
+
+    /* Return asset document if found, otherwise, return error */
+    if (asset) {
+      res.status(200).json(asset);
+    } else {
+      res.status(404).json({
+        message: "No assets found for serial",
+        internalCode: "no_assets_found",
+      });
+    }
+
   } catch (err) {
     console.log(err);
-    res.status(400).json({
-      message: "serial is missing",
-      interalCode: "missing_parameters",
+    res.status(500).json({
+      message: "Internal server error",
+      interalCode: "internal_server_error",
     });
   }
 

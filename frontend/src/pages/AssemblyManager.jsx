@@ -127,7 +127,7 @@ const AssemblyManager = () => {
         limit: 5
     });
     const [activeFilters, setActiveFilters] = useState({});
-    const [url, setURL] = useState(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`);
+    const [url, setURL] = useState(`${process.env.REACT_APP_API_URL}/assets?assetType=Asset`);
 
     /* Initial setup if existing assembly is being modified */
     useEffect(() => {
@@ -136,7 +136,7 @@ const AssemblyManager = () => {
                 getSchema(history.location.state.assemblyType, true).then(response => {
                     setSchema(response);
                     toggleAssembly(true);
-                    setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${response.name}&isAssembly=true`);
+                    setURL(`${process.env.REACT_APP_API_URL}/assets?assetType=Asset&inAssembly=${response.name}`);
                 });
 
                 fetch(`${process.env.REACT_APP_API_URL}/assets?parentId=${history.location.state.serial}`)
@@ -153,14 +153,14 @@ const AssemblyManager = () => {
     useEffect(() => {
         if (schema && !history.location.state) {
             const assemblyType = encodeURI(schema.name);
-            setURL(`${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset&inAssembly=${assemblyType}`);
+            setURL(`${process.env.REACT_APP_API_URL}/assets?assetType=Asset&inAssembly=${assemblyType}`);
         }
     }, [schema, history.location.state]);
 
     /* Set url with applied filters */
     useEffect(() => {
         setURL(u => {
-            let originalURL = `${process.env.REACT_APP_API_URL}/assets?parentId=null&assetType=Asset`;
+            let originalURL = `${process.env.REACT_APP_API_URL}/assets?assetType=Asset`;
             const splitUpURL = JSON.parse('{"' + decodeURI(u).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
             const necessaryParts = Object.keys(splitUpURL)
                 .filter(item => ["inAssembly", "isAssembly"].includes(item))
@@ -257,7 +257,11 @@ const AssemblyManager = () => {
         //check for existing parents
         mapItems.forEach(item => {
             if (item.parentId) {
-                badSerials.push({ serial: item.serial, name: item.assetName });
+                badSerials.push({
+                    serial: item.serial,
+                    name: item.assetName,
+                    problem: `Child of assembly ${item.parentId}`
+                });
             } else {
                 newItems.push({ serial: item.serial, name: item.assetName });
             }
@@ -357,51 +361,54 @@ const AssemblyManager = () => {
                     {/* Render placeholder box if assembly is not started or the actual results table if it is */}
                     {
                         assemblyStarted
-                            ? <CustomTable
-                                variant="asset"
-                                data={assets}
-                                selectedFields={selectedFields}
-                                selected={selected}
-                                filters={filters}
-                                count={assetCount}
-                                checkboxes
+                            ?
+                            <>
+                                <CustomTable
+                                    variant="asset"
+                                    data={assets}
+                                    selectedFields={selectedFields}
+                                    selected={selected}
+                                    filters={filters}
+                                    count={assetCount}
+                                    checkboxes
 
-                                renderOnClick={QuickAssetView}
-                                onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
-                                onAdditionalSelect={setMapItems}
-                                onValidate={(asset) => {
-                                    const warnings = [];
-                                    const errors = [];
-                                    if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
-                                    return { warnings: warnings, errors: errors }
-                                }}
-                                onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
-                                onSelectedChange={setSelected}>
+                                    renderOnClick={QuickAssetView}
+                                    onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
+                                    onAdditionalSelect={setMapItems}
+                                    onValidate={(asset) => {
+                                        const warnings = [];
+                                        const errors = [];
+                                        if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                        return { warnings: warnings, errors: errors }
+                                    }}
+                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onSelectedChange={setSelected}>
 
-                                <TableToolbar title="Assembly Creator" selected={selected}>
-                                    {
-                                        selected.length > 0 ?
-                                            <Tooltip title={"Add"}>
-                                                <IconButton aria-label={"add"} onClick={handleAddToCart}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                            :
-                                            <Tooltip title={"Filter"}>
-                                                <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
-                                                    <FilterListIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                    }
-                                </TableToolbar>
+                                    <TableToolbar title="Assembly Creator" selected={selected}>
+                                        {
+                                            selected.length > 0 ?
+                                                <Tooltip title={"Add"}>
+                                                    <IconButton aria-label={"add"} onClick={handleAddToCart}>
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                :
+                                                <Tooltip title={"Filter"}>
+                                                    <IconButton aria-label={"filter"} onClick={() => setFilterOpen(true)}>
+                                                        <FilterListIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                        }
+                                    </TableToolbar>
 
-                                <ChipBar
-                                    activeFilters={activeFilters}
-                                    setActiveFilters={setActiveFilters}
-                                    setFilters={setFilters} />
+                                    <ChipBar
+                                        activeFilters={activeFilters}
+                                        setActiveFilters={setActiveFilters}
+                                        setFilters={setFilters} />
 
-                            </CustomTable>
-
+                                </CustomTable>
+                                <Button style={{ color: "red", float: "left", marginLeft: "20px" }} variant="text" onClick={() => setAbandoned(true)}>Abandon</Button>
+                            </>
                             : <Paper className={classes.paper}>
                                 <Box m="auto">
                                     <ExtensionIcon className={classes.puzzle} />
@@ -471,13 +478,20 @@ const AssemblyManager = () => {
                 open={hasParents}
                 setOpen={setHasParents}
                 handleOverride={() => {
-                    setCartItems(c => [...c, ...haveParents]);
+                    const items = haveParents.map(item => ({ name: item.name, serial: item.serial }));
+                    setCartItems(c => [...c, ...items]);
                     setHasParents(false);
                     setHaveParents([]);
                 }}
-                text="Some assets already have parent assemblies; adding them will remove them from their previous parent."
-                title="Asset Update Warning"
-                items={haveParents.map(item => item.serial)}
+                text={
+                    <div style={{ textAlign: "center" }}>
+                        <span>Some selected assets have existing parents! <br /></span>
+                        <span style={{ fontSize: "16px" }}>Overriding this warning will disassemble the parents and force-remove the assets upon submission<br /></span>
+                    </div>
+                }
+                title="Warning"
+                items={haveParents.map(item => [item.serial, item.name, item.problem])}
+                headers={["Serial", "Name", "Problem"]}
             />
 
             <WarningDialog

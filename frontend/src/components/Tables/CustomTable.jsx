@@ -350,7 +350,7 @@ const NewTable = (props) => {
                                 emptyRows > 0 &&
                                 (
                                     <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={selectedFields.length + 1} />
+                                        <TableCell colSpan={selectedFields.length + 2} />
                                     </TableRow>
                                 )
                             }

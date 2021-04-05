@@ -24,7 +24,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 
 const useStyles = makeStyles((theme) => ({
     filterList: {
-        paddingLeft: "20%"
+        paddingLeft: "5%"
     },
     autocomplete: {
         marginBottom: "40px",
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
+const ShipmentFilter = ({ open, setOpen, setActiveFilters, disableStatusFilter }) => {
     const classes = useStyles();
 
     /* All filter state */
@@ -164,10 +164,10 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>{"Filter Shipments"}</DialogTitle>
             <DialogContent>
-                <Grid className={classes.filterList} container justify="space-between">
+                <Grid className={classes.filterList} container justify="space-evenly">
 
                     {/* Filter incoming vs. outgoing shipments */}
-                    <Grid item xs={6}>
+                    <Grid item xs={disableStatusFilter ? 12 : 6}>
                         <FormControl component="fieldset">
                             <span>Shipment Type</span>
                             <RadioGroup aria-label="shipment type" name="shipmentType" value={state.shipmentType} onChange={handleChange}>
@@ -179,18 +179,24 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 
                     </Grid>
 
+
+
                     {/* Filter by current shipment status */}
-                    <Grid item xs={6}>
-                        <FormControl component="fieldset">
-                            <span>Status</span>
-                            <RadioGroup aria-label="status" name="status" value={state.status} onChange={handleChange}>
-                                <FormControlLabel value="all" control={<Radio />} label="Show All" />
-                                <FormControlLabel value="Staging" control={<Radio />} label="Staging" />
-                                <FormControlLabel value="Completed" control={<Radio />} label="Completed" />
-                                <FormControlLabel value="Abandoned" control={<Radio />} label="Abandoned" />
-                            </RadioGroup>
-                        </FormControl>
-                    </Grid>
+                    {
+                        !disableStatusFilter &&
+                        <Grid item xs={6}>
+                            <FormControl component="fieldset">
+                                <span>Status</span>
+                                <RadioGroup aria-label="status" name="status" value={state.status} onChange={handleChange}>
+                                    <FormControlLabel value="all" control={<Radio />} label="Show All" />
+                                    <FormControlLabel value="Staging" control={<Radio />} label="Staging" />
+                                    <FormControlLabel value="Completed" control={<Radio />} label="Completed" />
+                                    <FormControlLabel value="Abandoned" control={<Radio />} label="Abandoned" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+                    }
+
                 </Grid>
 
                 {/* Shipment location filters with autocomplete and grouping by location type */}
@@ -339,7 +345,8 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters }) => {
 ShipmentFilter.propTypes = {
     open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
-    setActiveFilters: PropTypes.func.isRequired
+    setActiveFilters: PropTypes.func.isRequired,
+    disableStatusFilter: PropTypes.bool
 };
 
 export default ShipmentFilter;

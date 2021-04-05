@@ -59,7 +59,8 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                 shipFrom: submission.shipFrom.id,
                 shipTo: submission.shipTo.id,
                 user: user.uniqueId,
-                specialInstructions: shipmentNotes
+                specialInstructions: shipmentNotes,
+                override: submission.override || false
             };
             if (Object.keys(shipFromOverrides).length) submit["shipFromOverrides"] = shipFromOverrides;
             if (Object.keys(shipToOverrides).length) submit["shipToOverrides"] = shipToOverrides;

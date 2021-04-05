@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 import TextField from "@material-ui/core/TextField";
+
 const useStyles = makeStyles((theme) => ({
     root: {
         marginLeft: "10px",
@@ -37,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
 
 const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) => {
     const classes = useStyles();
-    const [username, setUsername] = useState("");
     const [local,] = useLocalStorage('user', {});
 
     const user = local.firstName + " " + local.lastName;
@@ -89,6 +89,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
         }
     };
 
+     /* reset edited fields */
     const handleCancel = (event) => {
         setEdit(false);
         setError("");
@@ -174,7 +175,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
                                    
-                                    {edit==false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" name="username" label={employee.username} variant="outlined" value={state.username}
+                                    {edit===false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" name="username" label={employee.username} variant="outlined" value={state.username}
                                         onChange={handleChange} /></form>
                                     }
                                 </Grid>
@@ -187,7 +188,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                                     <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    {edit==false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" name ="email" value={state.email} onChange={handleChange} /></form>}
+                                    {edit===false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" name ="email" value={state.email} onChange={handleChange} /></form>}
                                 </Grid>
 
                             </Grid>
@@ -195,15 +196,15 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                             <Grid container className={classes.break}>
 
                                 <Grid item xs={6} className={classes.item}>
-                                    {edit==false ? <Typography variant="subtitle1" className={classes.break}>Password:</Typography> : <Typography variant="subtitle1" className={classes.break}>New Password:</Typography> }
+                                    {edit===false ? <Typography variant="subtitle1" className={classes.break}>Password:</Typography> : <Typography variant="subtitle1" className={classes.break}>New Password:</Typography> }
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
 
-                                    {edit==false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" name="password" value={state.password} onChange={handleChange} /></form>}
+                                    {edit===false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" name="password" value={state.password} onChange={handleChange} /></form>}
                                 </Grid>
                             
                             </Grid>
-                            {edit==true ? 
+                            {edit===true ? 
                                 <Grid container className={classes.break}>
 	                                <Grid item xs={6} className={classes.item}>
 	                                    <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
@@ -230,7 +231,7 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                 }
             </Paper>
 
-            {edit==false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={handleCancel}>Cancel</Button> <Button variant="contained" type="submit" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
+            {edit===false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={handleCancel}>Cancel</Button> <Button variant="contained" type="submit" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
         </div>
 
     )

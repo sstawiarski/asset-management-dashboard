@@ -127,14 +127,16 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                 missingItems: submission.missingItems,
                 user: user.uniqueId
             } : {
-                    assets: actualItems,
-                    type: submission.type,
-                    missingItems: submission.missingItems,
-                    owner: submission.owner,
-                    groupTag: submission.groupTag,
-                    serial: serial,
-                    user: user.uniqueId
-                }
+                assets: actualItems,
+                type: submission.type,
+                missingItems: submission.missingItems,
+                owner: submission.owner,
+                groupTag: submission.groupTag,
+                serial: serial,
+                user: user.uniqueId
+            };
+
+
             fetch(`${process.env.REACT_APP_API_URL}/assets/assembly`, {
                 method: submission.reassembling ? 'PATCH' : 'POST',
                 mode: 'cors',
@@ -158,7 +160,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                     }
                     setSerial("");
                     handleCancel();
-                })
+                });
 
         } catch (e) {
             console.log(e)
@@ -166,10 +168,8 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
 
     }
 
-
-
     return (
-        <Dialog open={open} onClose={() => {handleCancel(); setSerial("");}} aria-labelledby="form-dialog-title">
+        <Dialog open={open} onClose={() => { handleCancel(); setSerial(""); }} aria-labelledby="form-dialog-title">
 
             <DialogTitle>Submit Assembly</DialogTitle>
 
@@ -245,14 +245,14 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => { handleCancel(); setSerial("");}} color="primary">
+                <Button onClick={() => { handleCancel(); setSerial(""); }} color="primary">
                     Cancel
           </Button>
                 <Button onClick={handleSubmit} type="submit" color="primary">
                     Submit
           </Button>
             </DialogActions>
-            
+
             {/* Override confirmation message */}
             {
                 !isComplete ?
