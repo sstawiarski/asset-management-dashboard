@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 //Library Tools
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 import uuid from 'react-uuid';
 
@@ -103,7 +102,6 @@ const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut
 
 const ShipmentCreator = () => {
     const classes = useStyles();
-    const history = useHistory();
 
     /* Data state */
     const [state, setState] = useState({}); //main info about assembly, owner, etc
