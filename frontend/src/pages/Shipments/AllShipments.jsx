@@ -16,12 +16,12 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import TextField from '@material-ui/core/TextField';
 
 //Custom Components
-import ShipmentFilter from '../components/Dialogs/ShipmentDialogs/ShipmentFilter';
-import ChangeStatusDialog from '../components/Dialogs/AssetDialogs/ChangeStatusDialog';
-import Header from '../components/PageComponents/Header'
-import CustomTable from '../components/Tables/CustomTable'
-import TableToolbar from '../components/Tables/TableToolbar';
-import ChipBar from '../components/Tables/ChipBar';
+import ShipmentFilter from '../../components/Dialogs/ShipmentDialogs/ShipmentFilter';
+import ChangeStatusDialog from '../../components/Dialogs/AssetDialogs/ChangeStatusDialog';
+import Header from '../../components/General/Header'
+import CustomTable from '../../components/Tables/CustomTable'
+import TableToolbar from '../../components/Tables/TableToolbar';
+import ChipBar from '../../components/Tables/ChipBar';
 
 //Icons
 import SearchIcon from '@material-ui/icons/Search';

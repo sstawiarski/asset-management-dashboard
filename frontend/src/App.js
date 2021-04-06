@@ -7,19 +7,21 @@ import { makeStyles } from '@material-ui/core/styles';
 import './App.css';
 import logo from "./logo.svg";
 
-import Sidebar from './components/PageComponents/Sidebar';
-
-import AssetDetails from './pages/AssetDetails';
-import AssemblyManager from './pages/AssemblyManager';
-import Dashboard from './pages/Dashboard';
-import AllAssets from './pages/AllAssets';
-import AllManifests from './pages/AllShipments';
-import SearchDetails from './pages/SearchDetails';
 import LoginPage from './pages/Login';
-
+import Sidebar from './components/General/Sidebar';
+import Dashboard from './pages/Dashboard';
+import SearchDetails from './pages/SearchDetails';
 import AccountDetails from'./pages/AccountDetails';
-import ShipmentDetails from './pages/ShipmentDetails';
-import ShipmentCreator from './pages/ShipmentCreator';
+
+//Assets
+import AllAssets from './pages/Assets/AllAssets';
+import AssetDetails from './pages/Assets/AssetDetails';
+import AssemblyManager from './pages/Assets/AssemblyManager';
+
+//Shipments
+import AllShipments from './pages/Shipments/AllShipments';
+import ShipmentDetails from './pages/Shipments/ShipmentDetails';
+import ShipmentCreator from './pages/Shipments/ShipmentCreator';
 
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
@@ -87,7 +89,7 @@ function App() {
                   <Route path="/" exact component={Dashboard} />
                   <Route exact path="/test" component={null} />
                   <Route path="/search/:query" component={SearchDetails} />
-                  <Route path="/shipments/view-all" component={AllManifests} />
+                  <Route path="/shipments/view-all" component={AllShipments} />
                   <Route path="/shipments/track" component={null} />
                   <Route exact path="/shipments/create" component={ShipmentCreator} />
                   <Route path="/shipments/:key" component={ShipmentDetails} />

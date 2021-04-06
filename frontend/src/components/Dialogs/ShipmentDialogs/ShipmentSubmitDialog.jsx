@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 
 //Custom Components
 import SimpleList from '../../Tables/SimpleList';
-import LocationAccordion from '../../PageComponents/LocationAccordion';
+import LocationAccordion from '../../General/LocationAccordion';
 
 //Tools
 import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';

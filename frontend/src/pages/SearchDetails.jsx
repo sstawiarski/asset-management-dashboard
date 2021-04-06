@@ -8,7 +8,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import IconButton from '@material-ui/core/IconButton';
 import AssetFilter from '../components/Dialogs/AssetDialogs/AssetFilter';
 import EventFilter from '../components/Dialogs/GeneralDialogs/EventFilter';
-import Header from '../components/PageComponents/Header';
+import Header from '../components/General/Header';
 import CustomTable from '../components/Tables/CustomTable'
 import TableToolbar from '../components/Tables/TableToolbar';
 import ChipBar from '../components/Tables/ChipBar';
