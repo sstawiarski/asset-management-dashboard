@@ -17,7 +17,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import { Typography } from '@material-ui/core';
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {

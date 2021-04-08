@@ -8,8 +8,8 @@ import L from 'leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 //Icons
-import ShipFromIcon from './Icons/ShipFromIcon.svg'; //blue icon represents source
-import ShipToIcon from './Icons/ShipToIcon.svg'; //green icon represents destination
+import ShipFromIcon from '../Icons/ShipFromIcon.svg'; //blue icon represents source
+import ShipToIcon from '../Icons/ShipToIcon.svg'; //green icon represents destination
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,7 +18,7 @@ import bezierSpline from '@turf/bezier-spline'; //for drawing line between the t
 import arrow from "leaflet-arrowheads"; //add arrowheads to line
 
 //Helper Tools
-import { findCoordinateAverage } from '../utils/mapping.utils';
+import { findCoordinateAverage } from '../../utils/mapping.utils';
 const helpers = require('@turf/helpers').lineString; //needed to actually draw the curve with GeoJSON
 
 /* Styles */

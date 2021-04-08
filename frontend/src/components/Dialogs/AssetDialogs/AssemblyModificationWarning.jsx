@@ -17,7 +17,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import WarningIcon from '@material-ui/icons/Warning';
 
 //Tools
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook'
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook'
 
 const useStyles = makeStyles({
     warning: {

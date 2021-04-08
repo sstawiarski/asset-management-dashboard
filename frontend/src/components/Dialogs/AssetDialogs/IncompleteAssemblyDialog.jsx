@@ -6,7 +6,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
-import SimpleList from '../Tables/SimpleList';
+import SimpleList from '../../Tables/SimpleList';
 
 import WarningIcon from '@material-ui/icons/Warning';
 
@@ -33,12 +33,12 @@ const useStyles = makeStyles({
         flexGrow: 1
     },
     root: {
-        padding: "0px 25px 0px 25px"
+        padding: "0px 100px 0px 100px"
     }
 })
 
 
-const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, headers }) => {
+const IncompleteAssemblyDialog = ({ open, setOpen, missingItems, handleOverride }) => {
     const classes = useStyles();
     const handleClose = () => {
         setOpen(false);
@@ -46,7 +46,7 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, head
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>Assembly Incomplete</DialogTitle>
 
             <DialogContent className={classes.root}>
                 <Grid container justify="center" alignItems="center" direction="column">
@@ -54,16 +54,13 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, head
                         <WarningIcon className={classes.warning} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="h6">{text}</Typography>
+                        <Typography variant="h5">Missing {missingItems.length} items</Typography>
                     </Grid>
-                    {items ?
-                        <Grid item xs={12} className={classes.container}>
-                            <SimpleList data={items} label="items" headers={headers ? headers : ["Serial"]} />
-                        </Grid>
-                        : null}
-
+                    <Grid item xs={12} className={classes.container}>
+                        <SimpleList data={missingItems} label="missing-items" headers={["Name"]} />
+                    </Grid>
                     <Grid item xs={12} className={classes.confirm}>
-                        <Typography variant="body1">Do you wish to continue?</Typography>
+                        <Typography variant="body1">Do you wish to override this warning?</Typography>
                     </Grid>
                 </Grid>
 
@@ -80,4 +77,4 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, head
     )
 }
 
-export default WarningDialog;
+export default IncompleteAssemblyDialog;

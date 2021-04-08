@@ -34,7 +34,7 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 
 //Tools
-import useLocalStorage from '../utils/auth/useLocalStorage.hook';
+import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
 
 const drawerWidth = 240;
 

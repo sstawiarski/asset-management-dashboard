@@ -8,11 +8,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import TextField from '@material-ui/core/TextField';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -27,13 +24,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
-    const [user, ] = useLocalStorage('user', {});
-
     /* Store state of select dropdown */
-    const [type, setType] = useState("");
+    const [groupTag, setGroupTag] = useState("");
+    const [user, ] = useLocalStorage('user', {});
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
@@ -57,7 +53,7 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
         const data = {
             assets: selected,
             update: {
-                assignmentType: type
+                groupTag: groupTag
             },
             override: override,
             user: user.uniqueId
@@ -75,12 +71,12 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    const assignType = type;
+                    const tag = groupTag;
                     handleClose();
-                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}! Event Key: ${json.key}`)
+                    onSuccess(true, `Successfully changed ${selected.length} asset(s) group tag to ${tag}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
-                    onSuccess(false, `Failed to update assignment type...`);
+                    onSuccess(false, `Failed to change group tag...`)
                 }
             })
     }
@@ -88,36 +84,29 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
     //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setType("");
+        setGroupTag("");
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignment-type-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-grouptag-dialog-title">
 
-            <DialogTitle id="change-assignment-type-dialog-title">Change Assignment Type</DialogTitle>
+            <DialogTitle id="change-grouptag-dialog-title">Change Group Tag</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing the assignment type of {selected.length} product{selected.length > 1 ? "s" : ""}
+                    Changing the group tag of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <FormControl variant="outlined" className={classes.formControl}>
-                        <InputLabel id="product-status-label">Assignment Type</InputLabel>
-                        {/* Controlled select, get value from state and changes state when it changes */}
-                        <Select
-                            labelId="assignment-type-label"
-                            labelWidth={105}
-                            id="assignment-type-select"
-                            value={type}
-                            onChange={(event) => setType(event.target.value)}
-                        >
-
-                            <MenuItem value={"Owned"}>Owned</MenuItem>
-                            <MenuItem value={"Rental"}>Rental</MenuItem>
-
-                        </Select>
-                    </FormControl>
+                    <form>
+                        {/* Controlled input, get value from state and changes state when it changes */}
+                        <TextField
+                            id="group-tag-editor"
+                            label="Group Tag"
+                            variant="outlined"
+                            value={groupTag}
+                            onChange={(event) => setGroupTag(event.target.value)} />
+                    </form>
                 </div>
             </DialogContent>
 
@@ -134,4 +123,4 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
     );
 };
 
-export default AssignmentTypeDialog;
+export default ChangeGroupTagDialog;

@@ -2,23 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 //Internal Components
-import Header from '../components/Header'
-import CustomTable from '../components/Tables/CustomTable'
-import TableToolbar from '../components/Tables/TableToolbar';
-import ChipBar from '../components/Tables/ChipBar';
-import SimpleMap from '../components/SimpleMap';
-import TableSearchbar from '../components/Tables/TableSearchbar';
+import Header from '../../components/General/Header'
+import CustomTable from '../../components/Tables/CustomTable'
+import TableToolbar from '../../components/Tables/TableToolbar';
+import ChipBar from '../../components/Tables/ChipBar';
+import SimpleMap from '../../components/General/Map';
+import TableSearchbar from '../../components/Tables/TableSearchbar';
 
 //Dialogs
-import AssetFilter from '../components/Dialogs/AssetFilter'
-import RetireAssetDialog from '../components/Dialogs/RetireAssetDialog';
-import ChangeGroupTagDialog from '../components/Dialogs/ChangeGroupTagDialog';
-import ChangeAssignmentDialog from '../components/Dialogs/ChangeAssignmentDialog';
-import ChangeOwnershipDialog from '../components/Dialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../components/Dialogs/AssignmentTypeDialogue';
-import AssetEditWarning from '../components/Dialogs/AssetEditWarning';
-import CreateAssetDialog from '../components/Dialogs/CreateAssetDialog';
-import InvalidSerialsDialog from '../components/Dialogs/InvalidSerialsDialog'
+import AssetFilter from '../../components/Dialogs/AssetDialogs/AssetFilter'
+import RetireAssetDialog from '../../components/Dialogs/AssetDialogs/RetireAssetDialog';
+import ChangeGroupTagDialog from '../../components/Dialogs/AssetDialogs/ChangeGroupTagDialog';
+import ChangeAssignmentDialog from '../../components/Dialogs/AssetDialogs/ChangeAssignmentDialog';
+import ChangeOwnershipDialog from '../../components/Dialogs/AssetDialogs/ChangeOwnershipDialog';
+import ChangeAssignmentTypeDialog from '../../components/Dialogs/AssetDialogs/AssignmentTypeDialogue';
+import AssetEditWarning from '../../components/Dialogs/AssetDialogs/AssetEditWarning';
+import CreateAssetDialog from '../../components/Dialogs/AssetDialogs/CreateAssetDialog';
+import InvalidSerialsDialog from '../../components/Dialogs/AssetDialogs/InvalidSerialsDialog'
 
 //Material-UI Imports
 import FilterListIcon from '@material-ui/icons/FilterList';
