@@ -365,7 +365,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 5 * 1000 }); // caches for 5 seconds for testing (5 * 1000 milliseconds)
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 60 * 60 * 1000}); 
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -749,7 +749,7 @@ router.put('/load', async (req, res) => {
 router.get('/:key', async (req, res) => {
     try {
         const { key } = req.params;
-        let shipment = await Shipment.getFullShipment({ key: decodeURI(key) }).cache({ ttl: 30 * 1000 }); // cache for 30 seconds (30 * 1000 milliseconds)
+        let shipment = await Shipment.getFullShipment({ key: decodeURI(key) }).cache({ ttl: 60 * 60 * 1000 }); // cache for 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
         if (shipment === null) {
             res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
             return;

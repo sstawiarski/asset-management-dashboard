@@ -162,7 +162,7 @@ router.get('/', async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Event.aggregate(aggregateArray);
+        const result = await Event.aggregate(aggregateArray).cache({ ttl: 60 * 60 * 1000 });
 
         if (req.query.search) {
 
@@ -252,7 +252,7 @@ router.get('/:serial', async (req, res) => {
             productIds: {
                 $in: serial
             }
-        }).sort({ eventTime: -1 });
+        }).sort({ eventTime: -1 }).cache({ ttl: 60 * 60 * 1000 });
 
         if (req.query) {
             if (limit && (skip >= 0)) {

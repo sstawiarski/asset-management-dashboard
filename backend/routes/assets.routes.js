@@ -333,7 +333,7 @@ router.get("/", async (req, res, err) => {
     }
     aggregateArray.push(projection);
 
-    const result = await Asset.aggregate(aggregateArray);
+    const result = await Asset.aggregate(aggregateArray).cache({ ttl: 60 * 60 * 1000});
 
     //filter results to determine better or even exact matches
     if (req.query.search) {
@@ -701,7 +701,7 @@ router.patch("/", async (req, res) => {
  */
 router.get('/schemas', async (req, res) => {
   try {
-    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
+    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 }).cache({ ttl: 60 * 60 * 1000});
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -819,12 +819,12 @@ router.patch('/assembly', async (req, res) => {
       assembled: true,
       incomplete: missing.length > 0 ? true : false,
       lastUpdated: Date.now()
-    });
+    }).clearCache();
 
     const findChildren = await Asset.find({ parentId: serial });
     const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
 
-    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() });
+    await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() }).clearCache();
 
     //find all new children that already have parents
     const withParents = await Asset.find({
@@ -973,12 +973,12 @@ router.get("/assembly/schema", async (req, res) => {
         _id: 0,
         __v: 0,
         components: 0
-      });
+      }).cache({ ttl: 60 * 60 * 1000});
     } else {
       schema = await AssemblySchema.findOne(query).select({
         _id: 0,
         __v: 0
-      });
+      }).cache({ ttl: 60 * 60 * 1000});
     }
     if ((isAll && schema.length > 0) || (schema instanceof Object && Object.keys(schema).length > 0)) {
       res.status(200).json(schema);
@@ -1007,7 +1007,7 @@ router.get("/:serial", async (req, res, err) => {
   const projection = project ? { [project]: 1, _id: 0 } : {};
 
   try {
-    let asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation');
+    let asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation').cache({ ttl: 60 * 60 * 1000});
 
     /* if there is a location override, update the deployedLocation with the overrides and remove the override object */
     if (asset["deployedLocationOverride"] && asset["deployedLocation"]) {

@@ -7,7 +7,7 @@ const sampleCustomers = require('../sample_data/sampleCustomer.data')
 
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find({}).select({companyName: 1});
+        const customers = await Customer.find({}).select({companyName: 1}).cache({ ttl: 60 * 60 * 1000 });
         res.status(200).json(customers)
     }
     catch (err) {
@@ -29,7 +29,7 @@ router.get('/search', async (req, res) => {
             customers = await Customer.fuzzySearch(searchTerm).select({
                 _id: 0,
                 __v: 0
-            });
+            }).cache({ ttl: 60 * 60 * 1000 });
 
             if (customers.length > 0) {
                 if (customers[0].confidenceScore > 10) {
@@ -48,7 +48,7 @@ router.get('/search', async (req, res) => {
             customers = await Customer.find({}).select({
                 _id: 0,
                 __v: 0
-            });
+            }).cache({ ttl: 60 * 60 * 1000 });
         }
 
         if (customers.length > 0) {

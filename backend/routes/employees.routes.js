@@ -25,7 +25,7 @@ router.put('/load', async (req, res) => {
 router.get('/:employeeId', async (req, res) => {
   try {
     const id = parseInt(req.params.employeeId);
-    const employee = await Employee.findOne({ employeeId: id });
+    const employee = await Employee.findOne({ employeeId: id }).cache({ ttl: 60 * 60 * 1000 });
     if (employee) {
       const name = employee.firstName + " " + employee.lastName;
       const toSend = {
@@ -62,7 +62,7 @@ router.patch('/:employeeId', async (req, res) => {
       {
         ...req.body
       }
-    );
+    ).clearCache();
 
     /* Check if a document was modified */
     if (!employee.nModified) {
