@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Employee = require('../models/employee.model');
 const sampleEmployees = require('../sample_data/sampleEmployee.data')
+const { cacheTime } = require('../cache');
 
 router.put('/load', async (req, res) => {
   try {
@@ -11,7 +13,10 @@ router.put('/load', async (req, res) => {
         birthDate: new Date(`07/${idx + 1}/${1975 + idx}`)
       });
       await employee.save();
-    })
+    });
+
+    await mongoose.clearCache({ collection: 'employees' }, true);
+
     res.status(200).json({ message: "success" })
   }
   catch (err) {
@@ -25,7 +30,7 @@ router.put('/load', async (req, res) => {
 router.get('/:employeeId', async (req, res) => {
   try {
     const id = parseInt(req.params.employeeId);
-    const employee = await Employee.findOne({ employeeId: id }).cache({ ttl: 60 * 60 * 1000 });
+    const employee = await Employee.findOne({ employeeId: id }).cache({ ttl: cacheTime });
     if (employee) {
       const name = employee.firstName + " " + employee.lastName;
       const toSend = {
@@ -41,7 +46,6 @@ router.get('/:employeeId', async (req, res) => {
     res.status(500).json({ message: 'Error retreiving employee', internalCode: "employee_retreival_error" })
   }
 });
-
 
 router.patch('/:employeeId', async (req, res) => {
   const employeeId = parseInt(req.params.employeeId);
@@ -62,7 +66,7 @@ router.patch('/:employeeId', async (req, res) => {
       {
         ...req.body
       }
-    ).clearCache();
+    );
 
     /* Check if a document was modified */
     if (!employee.nModified) {
@@ -75,15 +79,13 @@ router.patch('/:employeeId', async (req, res) => {
       }
     } else if (employee.nModified === 1) {
       /* Successfully updated employee information */
+      await mongoose.clearCache({ collection: 'employees' }, true);
       res.status(200).json({ message: "Successfully updated employee information" });
     }
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Error updating employee information", internalCode: "employee_update_error" });
   }
-
-
-
 });
 
 module.exports = router;

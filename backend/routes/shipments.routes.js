@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+
 const Shipment = require('../models/shipment.model');
 const Location = require('../models/location.model');
 const Counter = require('../models/counter.model');
-const { nGrams } = require('mongoose-fuzzy-searching/helpers');
-const dateFunctions = require("date-fns");
-const decrypt = require('../auth.utils').decrypt;
-const sampleShipment = require('../sample_data/sampleShipment.data');
 const Assets = require('../models/asset.model');
 const Event = require("../models/event.model");
 
+const { nGrams } = require('mongoose-fuzzy-searching/helpers');
+const dateFunctions = require("date-fns");
+const decrypt = require('../auth.utils').decrypt;
+
+const { cacheTime } = require('../cache');
+const sampleShipment = require('../sample_data/sampleShipment.data');
 
 /**
  * Pulls all shipment info from Mongo
@@ -365,7 +368,7 @@ router.get("/", async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: 60 * 60 * 1000}); 
+        const result = await Shipment.aggregate(aggregateArray).cache({ ttl: cacheTime });
 
         //filter results to determine better or even exact matches
         if (req.query.search) {
@@ -522,48 +525,48 @@ router.post('/', async (req, res, err) => {
         /* When overriding and some assets were in assemblies, update the assemblies to remove child assets and mark them incomplete */
         if (req.body.override && inAssembly.length) {
 
-                /* Essentially a "GROUPBY" to only update each parent once */
-                const parents = inAssembly.reduce((p, c) => {
-                    if (p.hasOwnProperty(c["parentId"])) {
-                        p[c["parentId"]].push({ serial: c["serial"], name: c["assetName"] });
-                    } else {
-                        p[c["parentId"]] = [].push({ serial: c["serial"], name: c["assetName"] });
-                    }
+            /* Essentially a "GROUPBY" to only update each parent once */
+            const parents = inAssembly.reduce((p, c) => {
+                if (p.hasOwnProperty(c["parentId"])) {
+                    p[c["parentId"]].push({ serial: c["serial"], name: c["assetName"] });
+                } else {
+                    p[c["parentId"]] = [].push({ serial: c["serial"], name: c["assetName"] });
+                }
 
-                    return p;
-                }, {});
+                return p;
+            }, {});
 
-                /* Add missing items to each assembly's missing items array */
-                for (const key of Object.keys(parents)) {
-                    const childrenNames = parents[key].map(item => item["name"]);
-                    const childrenSerials = parents[key].map(item => item["serial"]);
-                    await Assets.updateOne(
-                        { serial: key },
-                        {
-                            incomplete: true,
-                            $push: {
-                                missingItems: {
-                                    $each: childrenNames
-                                }
+            /* Add missing items to each assembly's missing items array */
+            for (const key of Object.keys(parents)) {
+                const childrenNames = parents[key].map(item => item["name"]);
+                const childrenSerials = parents[key].map(item => item["serial"]);
+                await Assets.updateOne(
+                    { serial: key },
+                    {
+                        incomplete: true,
+                        $push: {
+                            missingItems: {
+                                $each: childrenNames
                             }
                         }
-                    );
+                    }
+                );
 
-                    /* Generate event document for the assembly showing the removal of its children */
-                    const number = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
-                    const assemblyChange = new Event({
-                        eventType: 'Assembly Modification',
-                        eventTime: Date.now(),
-                        key: `ASM-${number}`,
-                        productIds: [key],
-                        initiatingUser: username.employeeId,
-                        eventData: {
-                            details: `${childrenNames.length} assets removed from parent assembly ${key} as a result of being added to a new shipment separate from the parent. Removed children: ${childrenSerials.join(", ")}.`
-                        }
-                    });
-                    await assemblyChange.save(); //save event document
+                /* Generate event document for the assembly showing the removal of its children */
+                const number = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
+                const assemblyChange = new Event({
+                    eventType: 'Assembly Modification',
+                    eventTime: Date.now(),
+                    key: `ASM-${number}`,
+                    productIds: [key],
+                    initiatingUser: username.employeeId,
+                    eventData: {
+                        details: `${childrenNames.length} assets removed from parent assembly ${key} as a result of being added to a new shipment separate from the parent. Removed children: ${childrenSerials.join(", ")}.`
+                    }
+                });
+                await assemblyChange.save(); //save event document
 
-                }
+            }
 
 
         }
@@ -603,6 +606,8 @@ router.post('/', async (req, res, err) => {
         const newShipment = new Shipment(shipment);
 
         await newShipment.save();
+
+        await mongoose.clearCache({ collection: ['assets', 'events', 'shipments'] }, true);
 
         res.status(200).json({ message: "Successfully created shipment" })
     }
@@ -708,9 +713,11 @@ router.patch('/', async (req, res) => {
                         details: updateDescriptions.join(" ")
                     }
                 });
-    
+
                 await locationChange.save(); //save event document
             }
+
+            await mongoose.clearCache({ collection: ['assets', 'events', 'shipments'] }, true);
 
             res.status(200).json({ message: "Shipment(s) successfully updated" });
         }
@@ -732,7 +739,10 @@ router.put('/load', async (req, res) => {
                 shipTo: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipTo"]) : null
             });
             await shipment.save();
-        })
+        });
+
+        await mongoose.clearCache({ collection: 'shipments' }, true);
+
         res.status(200).json({ message: "success" })
     }
     catch (err) {
@@ -749,7 +759,11 @@ router.put('/load', async (req, res) => {
 router.get('/:key', async (req, res) => {
     try {
         const { key } = req.params;
-        let shipment = await Shipment.getFullShipment({ key: decodeURI(key) }).cache({ ttl: 60 * 60 * 1000 }); // cache for 1 hour (60 minutes * 60 seconds * 1000 milliseconds)
+
+        let shipment = await Shipment
+            .getFullShipment({ key: decodeURI(key) })
+            .cache({ ttl: cacheTime });
+
         if (shipment === null) {
             res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
             return;

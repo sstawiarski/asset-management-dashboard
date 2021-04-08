@@ -3,11 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const connection = mongoose.connection;
 const Customer = require('../models/customer.model');
-const sampleCustomers = require('../sample_data/sampleCustomer.data')
+const sampleCustomers = require('../sample_data/sampleCustomer.data');
+const { cacheTime } = require('../cache');
 
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find({}).select({companyName: 1}).cache({ ttl: 60 * 60 * 1000 });
+        const customers = await Customer.find({}).select({companyName: 1}).cache({ ttl: cacheTime });
         res.status(200).json(customers)
     }
     catch (err) {
@@ -29,7 +30,7 @@ router.get('/search', async (req, res) => {
             customers = await Customer.fuzzySearch(searchTerm).select({
                 _id: 0,
                 __v: 0
-            }).cache({ ttl: 60 * 60 * 1000 });
+            }).cache({ ttl: cacheTime });
 
             if (customers.length > 0) {
                 if (customers[0].confidenceScore > 10) {
@@ -48,7 +49,7 @@ router.get('/search', async (req, res) => {
             customers = await Customer.find({}).select({
                 _id: 0,
                 __v: 0
-            }).cache({ ttl: 60 * 60 * 1000 });
+            }).cache({ ttl: cacheTime });
         }
 
         if (customers.length > 0) {
@@ -76,7 +77,9 @@ router.put('/load', async (req, res) => {
             });
             await customer.save();
         })
-        res.status(200).json({ message: "success" })
+
+        await mongoose.clearCache({ collection: 'customers' }, true);
+        res.status(200).json({ message: "success" });
     }
     catch (err) {
         res.status(500).json({

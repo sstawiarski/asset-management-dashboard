@@ -21,7 +21,6 @@
     "mongoose-fuzzy-searching": "^2.0.0",
     "redis": "^3.0.2",
     "redis-server": "^1.2.2",
-    "swagger-ui-express": "^4.1.4",
-    "top-cache": "^1.0.0"
+    "swagger-ui-express": "^4.1.4"
   }
 }
