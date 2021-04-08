@@ -27,6 +27,7 @@ const locationRoutes = require('./routes/locations.routes')
 const assemblyRoutes = require('./routes/assemblies.routes')
 const authRoutes = require('./routes/auth.routes')
 const shipmentRoutes = require('./routes/shipments.routes')
+const attachmentRoutes = require('./routes/attachments.routes')
 
 const swaggerConfig = require('./documentation/swagger.config');
 
@@ -64,4 +65,5 @@ app.use('/locations', locationRoutes);
 app.use('/assemblies', assemblyRoutes);
 app.use('/auth', authRoutes);
 app.use('/shipments', shipmentRoutes);
+app.use('/attachments', attachmentRoutes);
 
