@@ -28,6 +28,7 @@ import UploadFileDialog from "../../components/Dialogs/GeneralDialogs/UploadFile
 //Tools
 import { dateOptions } from "../../utils/constants.utils";
 import useLocalStorage from "../../utils/auth/useLocalStorage.hook";
+import { downloadAsZip } from "../../utils/downloads.utils";
 
 //Types
 import { Attachment, AlertInfo, Manifest, Shipment } from "../../types";
@@ -112,7 +113,7 @@ const ShipmentDetails = () => {
     const [alertOpen, setAlertOpen] = useState<boolean>(false);
     const [alertInfo, setAlertInfo] = useState<AlertInfo>({
         type: "",
-        message: ""
+        message: "",
     });
 
     /* Fetch shipment information */
@@ -371,6 +372,36 @@ const ShipmentDetails = () => {
                                         <Typography variant="subtitle1" className={classes.break}>
                                             Attachments
                                         </Typography>
+                                        
+                                        {attach.length > 0 && (
+                                            <Button
+                                                style={{
+                                                    float: "right",
+                                                    marginTop: "-30px",
+                                                }}
+                                                size="small"
+                                                color="secondary"
+                                                onClick={() =>
+                                                    downloadAsZip(attach, `[${key}] Attachments`).then((result) => {
+                                                        if (result) {
+                                                            setAlertInfo({
+                                                                type: "success",
+                                                                message: "Successfully downloaded attachments",
+                                                            });
+                                                            setAlertOpen(true);
+                                                        } else {
+                                                            setAlertInfo({
+                                                                type: "error",
+                                                                message: "Could not generate zip file!",
+                                                            });
+                                                            setAlertOpen(true);
+                                                        }
+                                                    })
+                                                }>
+                                                Download All
+                                            </Button>
+                                        )}
+
                                         <AttachmentTable
                                             attachments={attach}
                                             isLoading={attachmentsLoading}

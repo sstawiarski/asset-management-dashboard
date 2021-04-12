@@ -16,6 +16,7 @@
     "base64url": "^3.0.1",
     "classnames": "^2.2.6",
     "date-fns": "^2.16.1",
+    "jszip": "^2.5.0",
     "leaflet": "^1.7.1",
     "leaflet-arrowheads": "^1.2.2",
     "lodash": "^4.17.20",
@@ -57,6 +58,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jszip": "^3.4.1",
     "@types/react-router-dom": "^5.1.7",
     "coveralls": "^3.1.0"
   }
