@@ -21,12 +21,15 @@
     "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-dropzone": "^11.3.1",
+    "react-file-viewer": "^1.2.1",
     "react-geocode": "^0.2.3",
     "react-leaflet": "^2.8.0",
     "react-leaflet-curve": "^2.0.1",
     "react-leaflet-markercluster": "^2.0.0",
+    "react-pdf": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.0",
+    "react-scripts": "4.0.1",
     "react-uuid": "^1.0.2",
     "redis": "^3.0.2",
     "turf-linestring": "^1.0.2"
@@ -54,6 +57,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.1.7",
     "coveralls": "^3.1.0"
   }
 }
