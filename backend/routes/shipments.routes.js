@@ -427,100 +427,103 @@ router.get("/", async (req, res) => {
  * Create a new shipment
  */
 router.post('/', async (req, res, err) => {
+    const session = await mongoose.startSession();
     try {
-        const username = JSON.parse(decrypt(req.body.user)); //get unique user info
-        const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
+        await session.withTransaction(async () => {
 
-        let updatedSerials = []; //stores all serials successfully updated for use with the event document later
+            const username = JSON.parse(decrypt(req.body.user)); //get unique user info
+            const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
 
-        /* Mark assets as checked out when they are added to a shipment */
-        const assetUpdateQuery = {
-            checkedOut: true,
-            lastUpdated: Date.now()
-        };
+            let updatedSerials = []; //stores all serials successfully updated for use with the event document later
 
-        /* Find all assets who are in an assembly and whose parent assembly is not also being shipped */
-        const inAssembly = await Assets.find({
-            serial: {
-                $in: serials
-            },
-            $and: [
-                {
-                    parentId: {
-                        $exists: true
-                    }
+            /* Mark assets as checked out when they are added to a shipment */
+            const assetUpdateQuery = {
+                checkedOut: true,
+                lastUpdated: Date.now()
+            };
+
+            /* Find all assets who are in an assembly and whose parent assembly is not also being shipped */
+            const inAssembly = await Assets.find({
+                serial: {
+                    $in: serials
                 },
-                {
-                    parentId: {
-                        $nin: serials
-                    }
-                }
-            ]
-        });
-
-        /* If override is present, just ship all the supplied assets with no checks */
-        if (req.body.override) {
-            await Assets.updateMany({ serial: { $in: serials } }, assetUpdateQuery);
-            updatedSerials = serials;
-        } else {
-            /* If no override is present, only update those assets who are not checked out and either not in an assembly or whose parent is being shipped */
-            const alreadyCheckedOut = await Assets.find({
-                serial: { $in: serials },
                 $and: [
                     {
-                        $or: [
-                            { checkedOut: { $eq: false } },
-                            { checkedOut: { $exists: false } }
-                        ]
+                        parentId: {
+                            $exists: true
+                        }
                     },
                     {
-                        $or: [
-                            {
-                                parentId: {
-                                    $eq: null
-                                }
-                            },
-                            {
-                                parentId: {
-                                    $exists: false
-                                }
-                            },
-                            {
-                                parentId: {
-                                    $in: serials
-                                }
-                            }
-                        ]
+                        parentId: {
+                            $nin: serials
+                        }
                     }
                 ]
             });
 
-            const checkedOutSerials = alreadyCheckedOut.map(asset => asset.serial);
+            /* If override is present, just ship all the supplied assets with no checks */
+            if (req.body.override) {
+                await Assets.updateMany({ serial: { $in: serials } }, assetUpdateQuery).session(session);
+                updatedSerials = serials;
+            } else {
+                /* If no override is present, only update those assets who are not checked out and either not in an assembly or whose parent is being shipped */
+                const alreadyCheckedOut = await Assets.find({
+                    serial: { $in: serials },
+                    $and: [
+                        {
+                            $or: [
+                                { checkedOut: { $eq: false } },
+                                { checkedOut: { $exists: false } }
+                            ]
+                        },
+                        {
+                            $or: [
+                                {
+                                    parentId: {
+                                        $eq: null
+                                    }
+                                },
+                                {
+                                    parentId: {
+                                        $exists: false
+                                    }
+                                },
+                                {
+                                    parentId: {
+                                        $in: serials
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                });
 
-            /* Update the assets that are not checked out */
-            if (alreadyCheckedOut.length) {
-                const updateSerials = serials.filter(ser => !checkedOutSerials.includes(ser));
-                await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery);
-                updatedSerials = updateSerials;
+                const checkedOutSerials = alreadyCheckedOut.map(asset => asset.serial);
+
+                /* Update the assets that are not checked out */
+                if (alreadyCheckedOut.length) {
+                    const updateSerials = serials.filter(ser => !checkedOutSerials.includes(ser));
+                    await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery).session(session);
+                    updatedSerials = updateSerials;
+                }
+
+                /* Update assets without parent or whose parent is being shipped */
+                if (inAssembly.length) {
+                    const assemblySerials = inAssembly.map(asset => asset.serial);
+                    const updateSerials = serials.filter(ser => !assemblySerials.includes(ser) && !checkedOutSerials.includes(ser));
+                    await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery).session(session);
+                    updatedSerials = [...updatedSerials, ...updateSerials];
+                }
             }
 
-            /* Update assets without parent or whose parent is being shipped */
-            if (inAssembly.length) {
-                const assemblySerials = inAssembly.map(asset => asset.serial);
-                const updateSerials = serials.filter(ser => !assemblySerials.includes(ser) && !checkedOutSerials.includes(ser));
-                await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery);
-                updatedSerials = [...updatedSerials, ...updateSerials];
+            /* If no assets were found, return 404 and don't create shipment */
+            if (updatedSerials.length === 0) {
+                res.status(400).json({ message: "No assets were added to the shipment", internalCode: "shipment_no_override" });
+                return;
             }
-        }
 
-        /* If no assets were found, return 404 and don't create shipment */
-        if (updatedSerials.length === 0) {
-            res.status(400).json({ message: "No assets were added to the shipment", internalCode: "shipment_no_override" });
-            return;
-        }
-
-        /* When overriding and some assets were in assemblies, update the assemblies to remove child assets and mark them incomplete */
-        if (req.body.override && inAssembly.length) {
+            /* When overriding and some assets were in assemblies, update the assemblies to remove child assets and mark them incomplete */
+            if (req.body.override && inAssembly.length) {
 
                 /* Essentially a "GROUPBY" to only update each parent once */
                 const parents = inAssembly.reduce((p, c) => {
@@ -547,11 +550,12 @@ router.post('/', async (req, res, err) => {
                                 }
                             }
                         }
-                    );
+                    ).session(session);
 
                     /* Generate event document for the assembly showing the removal of its children */
-                    const number = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
-                    const assemblyChange = new Event({
+                    const number = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
+
+                    await Event.create([{
                         eventType: 'Assembly Modification',
                         eventTime: Date.now(),
                         key: `ASM-${number}`,
@@ -560,51 +564,48 @@ router.post('/', async (req, res, err) => {
                         eventData: {
                             details: `${childrenNames.length} assets removed from parent assembly ${key} as a result of being added to a new shipment separate from the parent. Removed children: ${childrenSerials.join(", ")}.`
                         }
-                    });
-                    await assemblyChange.save(); //save event document
+                    }], { session: session });
 
                 }
 
 
-        }
+            }
 
-        /* Generate event document for the asset update and shipment */
-        const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
-        const newKey = `SHIP-${count.next}`; //shipment doc and event doc are in separate collections so they can have the same key
+            /* Generate event document for the asset update and shipment */
+            const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
+            const newKey = `SHIP-${count.next}`; //shipment doc and event doc are in separate collections so they can have the same key
 
-        const assetChange = new Event({
-            eventType: `${shipment.shipmentType} Shipment`,
-            eventTime: Date.now(),
-            key: newKey,
-            productIds: updatedSerials,
-            initiatingUser: username.employeeId,
-            eventData: {}
+            await Event.create([{
+                eventType: `${shipment.shipmentType} Shipment`,
+                eventTime: Date.now(),
+                key: newKey,
+                productIds: updatedSerials,
+                initiatingUser: username.employeeId,
+                eventData: {}
+            }], { session: session });
+
+            const shipment = {
+                createdBy: username.employeeId,
+                created: Date.now(),
+                updated: null,
+                completed: null,
+                status: "Staging",
+                shipmentType: req.body.shipmentType,
+                specialInstructions: req.body.specialInstructions,
+                contractId: req.body.contractId || null,
+                manifest: req.body.manifest,
+                shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
+                shipTo: mongoose.Types.ObjectId(req.body.shipTo),
+                key: newKey
+            };
+            if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
+            if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
+
+            await Shipment.create([shipment], { session: session });
+
+            res.status(200).json({ message: "Successfully created shipment" })
         });
 
-        await assetChange.save(); //save event document
-
-        const shipment = {
-            createdBy: username.employeeId,
-            created: Date.now(),
-            updated: null,
-            completed: null,
-            status: "Staging",
-            shipmentType: req.body.shipmentType,
-            specialInstructions: req.body.specialInstructions,
-            contractId: req.body.contractId || null,
-            manifest: req.body.manifest,
-            shipFrom: mongoose.Types.ObjectId(req.body.shipFrom),
-            shipTo: mongoose.Types.ObjectId(req.body.shipTo),
-            key: newKey
-        };
-        if (req.body.shipFromOverride) shipment.shipFromOverride = req.body.shipFromOverride;
-        if (req.body.shipToOverride) shipment.shipToOverride = req.body.shipToOverride;
-
-        const newShipment = new Shipment(shipment);
-
-        await newShipment.save();
-
-        res.status(200).json({ message: "Successfully created shipment" })
     }
     catch (err) {
         console.log(err)
@@ -612,10 +613,13 @@ router.post('/', async (req, res, err) => {
             message: "Error creating shipment",
             interalCode: "shipment_creation_error"
         })
+    } finally {
+        session.endSession();
     }
 });
 
 router.patch('/', async (req, res) => {
+    const session = await mongoose.startSession();
     /* Destructure key from request URL params to find shipment and get status from request body */
     const { shipments, user } = req.body;
     const username = JSON.parse(decrypt(user));
@@ -629,94 +633,99 @@ router.patch('/', async (req, res) => {
     }, {});
 
     try {
-        const foundShipments = await Shipment.find({ key: { $in: shipments } });
-        const updatedShipments = await Shipment.updateMany({ key: { $in: shipments } }, updateObject);
+        await session.withTransaction(async () => {
 
-        if (!updatedShipments.n) {
-            /* Document(s) with key not found */
-            res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
-        } else {
+            const foundShipments = await Shipment.find({ key: { $in: shipments } });
+            const updatedShipments = await Shipment.updateMany({ key: { $in: shipments } }, updateObject).session(session);
 
-            /* Update was successful */
-            for (let i = 0; i < foundShipments.length; i++) {
+            if (!updatedShipments.n) {
+                /* Document(s) with key not found */
+                res.status(404).json({ message: "Shipment not found", internal_code: "shipment_not_found" });
+            } else {
 
-                /* Dynamically create the update query and description for the event document */
-                const assetUpdateObject = {};
-                const updateDescriptions = [];
+                /* Update was successful */
+                for (let i = 0; i < foundShipments.length; i++) {
 
-                /* Only act on assets in the manifest marked as serialized (i.e. have valid serials, not an unserialized item) */
-                const serials = foundShipments[i]["manifest"].reduce((acc, asset) => asset.serialized ? [...acc, asset.serial] : acc, []);
+                    /* Dynamically create the update query and description for the event document */
+                    const assetUpdateObject = {};
+                    const updateDescriptions = [];
 
-                /** 
-                 * Status update handler (TODO: Add more handling for abandoned?)
-                 * 
-                 * Updates assets' deployedLocation to the shipment's "shipTo" if the shipment is being moved from "Staging" to "Completed", indicating the asset is now at its destination
-                 * Updates assets' deployedLocation to the shipment's "shipFrom" if the shipment is being moved from "Completed" back to "Staging", indicating the asset is back at its source
-                 * Updates or removes assets' deployedLocationOverride as needed
-                 */
-                if (updateObject["status"]) {
-                    /* Store new location ID to lookup later for the event details */
-                    let location = null;
+                    /* Only act on assets in the manifest marked as serialized (i.e. have valid serials, not an unserialized item) */
+                    const serials = foundShipments[i]["manifest"].reduce((acc, asset) => asset.serialized ? [...acc, asset.serial] : acc, []);
 
-                    if (foundShipments[i]["status"] === "Staging" && updateObject["status"] === "Completed") {
-                        assetUpdateObject["deployedLocation"] = foundShipments[i]["shipTo"];
-                        location = foundShipments[i]["shipTo"];
+                    /** 
+                     * Status update handler (TODO: Add more handling for abandoned?)
+                     * 
+                     * Updates assets' deployedLocation to the shipment's "shipTo" if the shipment is being moved from "Staging" to "Completed", indicating the asset is now at its destination
+                     * Updates assets' deployedLocation to the shipment's "shipFrom" if the shipment is being moved from "Completed" back to "Staging", indicating the asset is back at its source
+                     * Updates or removes assets' deployedLocationOverride as needed
+                     */
+                    if (updateObject["status"]) {
+                        /* Store new location ID to lookup later for the event details */
+                        let location = null;
 
-                        /* Set overrides as needed */
-                        if (foundShipments[i]["shipToOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipToOverride"];
-                        else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
+                        if (foundShipments[i]["status"] === "Staging" && updateObject["status"] === "Completed") {
+                            assetUpdateObject["deployedLocation"] = foundShipments[i]["shipTo"];
+                            location = foundShipments[i]["shipTo"];
 
-                    } else if (foundShipments[i]["status"] === "Completed" && updateObject["status"] === "Staging") {
-                        assetUpdateObject["deployedLocation"] = foundShipments[i]["shipFrom"];
-                        location = foundShipments[i]["shipFrom"];
+                            /* Set overrides as needed */
+                            if (foundShipments[i]["shipToOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipToOverride"];
+                            else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
 
-                        if (foundShipments[i]["shipFromOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipFromOverride"];
-                        else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
+                        } else if (foundShipments[i]["status"] === "Completed" && updateObject["status"] === "Staging") {
+                            assetUpdateObject["deployedLocation"] = foundShipments[i]["shipFrom"];
+                            location = foundShipments[i]["shipFrom"];
+
+                            if (foundShipments[i]["shipFromOverride"]) assetUpdateObject["deployedLocationOverride"] = foundShipments[i]["shipFromOverride"];
+                            else assetUpdateObject["$unset"] = { deployedLocationOverride: 1 };
+                        }
+
+                        /* Document event details */
+                        updateDescriptions.push(`Shipment ${foundShipments[i]["key"]} marked '${updateObject["status"]}' from '${foundShipments[i]["status"]}'.`);
+                        const foundLocation = await Location.findById({ _id: location });
+                        updateDescriptions.push(`Location changed to ${foundLocation["locationName"]}.`);
                     }
 
-                    /* Document event details */
-                    updateDescriptions.push(`Shipment ${foundShipments[i]["key"]} marked '${updateObject["status"]}' from '${foundShipments[i]["status"]}'.`);
-                    const foundLocation = await Location.findById({ _id: location });
-                    updateDescriptions.push(`Location changed to ${foundLocation["locationName"]}.`);
+                    /* Perform actual updates on all the assets in the shipment */
+                    const updatedAssets = await Assets.updateMany({ serial: { $in: serials } }, assetUpdateObject).session(session);
+                    if (updatedAssets.nModified) updateDescriptions.push(`Updated ${updatedAssets.nModified} asset(s) ${Object.keys(updateObject).join(", ")}.`)
+
+                    /* Perform updates on child assets */
+                    const parentAssemblies = await Assets.find({ serial: { $in: serials }, assetType: "Assembly" });
+                    if (parentAssemblies.length) {
+                        const parentSerials = parentAssemblies.map(asm => asm.serial);
+                        const findChildren = await Assets.find({ parentId: { $in: parentSerials } }).select({ serial: 1 });
+                        if (findChildren.length) {
+                            const updateChildren = await Assets.updateMany({ parentId: { $in: parentSerials } }, assetUpdateObject).session(session);
+                            if (updateChildren.nModified) updateDescriptions.push(`${updateChildren.nModified} asset(s) were children of assemblies in the shipment and were updated accordingly.`);
+                            serials.push(...findChildren.map(child => child.serial));
+                        }
+                    }
+
+                    /* Generate event document for the asset update */
+                    const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
+
+                    await Event.create([{
+                        eventType: "Change of Location",
+                        eventTime: Date.now(),
+                        key: `LOC-${count.next}`,
+                        productIds: serials,
+                        initiatingUser: username.employeeId,
+                        eventData: {
+                            details: updateDescriptions.join(" ")
+                        }
+                    }], { session: session });
                 }
 
-                /* Perform actual updates on all the assets in the shipment */
-                const updatedAssets = await Assets.updateMany({ serial: { $in: serials } }, assetUpdateObject);
-                if (updatedAssets.nModified) updateDescriptions.push(`Updated ${updatedAssets.nModified} asset(s) ${Object.keys(updateObject).join(", ")}.`)
-
-                /* Perform updates on child assets */
-                const parentAssemblies = await Assets.find({ serial: { $in: serials }, assetType: "Assembly" });
-                if (parentAssemblies.length) {
-                    const parentSerials = parentAssemblies.map(asm => asm.serial);
-                    const findChildren = await Assets.find({ parentId: { $in: parentSerials } }).select({ serial: 1 });
-                    if (findChildren.length) {
-                        const updateChildren = await Assets.updateMany({ parentId: { $in: parentSerials } }, assetUpdateObject);
-                        if (updateChildren.nModified) updateDescriptions.push(`${updateChildren.nModified} asset(s) were children of assemblies in the shipment and were updated accordingly.`);
-                        serials.push(...findChildren.map(child => child.serial));
-                    }
-                }
-
-                /* Generate event document for the asset update */
-                const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false });
-                const locationChange = new Event({
-                    eventType: "Change of Location",
-                    eventTime: Date.now(),
-                    key: `LOC-${count.next}`,
-                    productIds: serials,
-                    initiatingUser: username.employeeId,
-                    eventData: {
-                        details: updateDescriptions.join(" ")
-                    }
-                });
-    
-                await locationChange.save(); //save event document
+                res.status(200).json({ message: "Shipment(s) successfully updated" });
             }
+        });
 
-            res.status(200).json({ message: "Shipment(s) successfully updated" });
-        }
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Error updating shipment", internal_code: "shipment_update_error" });
+    } finally {
+        session.endSession();
     }
 });
 
@@ -725,14 +734,14 @@ router.patch('/', async (req, res) => {
  */
 router.put('/load', async (req, res) => {
     try {
-        sampleShipment.forEach(async (item, idx) => {
-            const shipment = new Shipment({
-                ...item,
-                shipFrom: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipFrom"]) : null,
-                shipTo: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipTo"]) : null
-            });
-            await shipment.save();
-        })
+        const newShipments = sampleShipment.map(shipment => ({
+            ...item,
+            shipFrom: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipFrom"]) : null,
+            shipTo: item["shipFrom"] ? mongoose.Types.ObjectId(item["shipTo"]) : null
+        }));
+
+        await Shipment.create(newShipments);
+
         res.status(200).json({ message: "success" })
     }
     catch (err) {
