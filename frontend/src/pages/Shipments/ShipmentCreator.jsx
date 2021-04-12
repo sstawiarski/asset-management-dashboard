@@ -320,6 +320,7 @@ const ShipmentCreator = () => {
         console.log(state.shipTo);
         if(state.shipFrom==null || state.shipTo==null){
             console.log("fill out all forms")
+            alert("All fields must be filled");
         }else{
             setSubmission(s => ({
                 ...s,

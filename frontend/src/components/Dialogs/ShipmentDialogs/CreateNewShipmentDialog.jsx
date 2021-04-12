@@ -28,6 +28,13 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) => {
     const classes = useStyles();
+    const [shipType,setShipType]=useState("");
+    const [shipFrom,setShipFrom]=useState("");
+    const [shipTo,setShipTo]=useState("");
+    const [missingType, setMissingType] = useState(false);
+    const [missingFrom,setMissingFrom] =useState(false);
+    const [missingTo, setMissingTo] =useState(false);
+
     const [state, setState] = useState({
         shipFrom: null,
         shipTo: null,
@@ -83,6 +90,18 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        if(shipType===""){
+            setMissingType(true);
+            return;
+        }
+        if(shipFrom===""){
+            setMissingFrom(true);
+            return;
+        }
+        if(shipTo===""){
+            setMissingTo(true);
+            return;
+        }
         handleCreate(state);
         setState({
             shipFrom: null,
@@ -109,7 +128,10 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                                 fullWidth
                                 labelWidth={110}
                                 value={state.shipmentType}
-                                onChange={handleChange}>
+                                onChange={(event)=>{
+                                    if(missingType){setMissingType(false)};
+                                    handleChange(event)}}
+                                    >
 
                                 <MenuItem value="Incoming">Incoming</MenuItem>
                                 <MenuItem value="Outgoing">Outgoing</MenuItem>
@@ -124,7 +146,9 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             value={state.shipFrom}
                             fullWidth
                             groupBy={(option) => option.locationType}
-                            onChange={(event, newValue) => setState(s => ({ ...s, shipFrom: newValue }))}
+                            onChange={(event, newValue) =>{ 
+                                if(missingFrom){setMissingFrom(false)}
+                                setState(s => ({ ...s, shipFrom: newValue }))}}
                             className={classes.autocomplete}
                             renderOption={(option) => {
                                 return (
@@ -157,7 +181,9 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             value={state.shipTo}
                             fullWidth
                             groupBy={(option) => option.locationType}
-                            onChange={(event, newValue) => setState(s => ({ ...s, shipTo: newValue }))}
+                            onChange={(event, newValue) => {
+                                if(missingTo){setMissingTo(false)}
+                                setState(s => ({ ...s, shipTo: newValue }))}}
                             className={classes.autocomplete}
                             renderOption={(option) => {
                                 return (
