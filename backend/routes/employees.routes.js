@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Employee = require('../models/employee.model');
-const sampleEmployees = require('../sample_data/sampleEmployee.data')
+const sampleEmployees = require('../sample_data/sampleEmployee.data');
+const decrypt = require('../auth.utils').decrypt;
 
 router.put('/load', async (req, res) => {
   try {
