@@ -9,9 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
-import Header from '../components/Header'
-import AssetTimeline from '../components/AssetTimeline'
-import Manifest from '../components/Manifest';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
@@ -20,10 +17,15 @@ import EditIcon from '@material-ui/icons/Edit';
 import ExtensionIcon from '@material-ui/icons/Extension';
 
 //Dialogs
-import AssemblyModificationWarning from '../components/Dialogs/AssemblyModificationWarning';
+import AssemblyModificationWarning from '../../components/Dialogs/AssetDialogs/AssemblyModificationWarning';
+
+//Custom Components
+import Header from '../../components/General/Header'
+import AssetTimeline from '../../components/General/AssetTimeline'
+import Manifest from '../../components/General/Manifest';
 
 //Tools
-import { dateOptions } from '../utils/constants.utils';
+import { dateOptions } from '../../utils/constants.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {

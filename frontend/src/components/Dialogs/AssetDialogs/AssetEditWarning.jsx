@@ -6,7 +6,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
-import SimpleList from '../Tables/SimpleList';
+import SimpleList from '../../Tables/SimpleList';
 
 import WarningIcon from '@material-ui/icons/Warning';
 

@@ -8,7 +8,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
-import Header from '../components/Header'
 import Button from '@material-ui/core/Button';
 import Skeleton from '@material-ui/lab/Skeleton';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -17,12 +16,13 @@ import Tooltip from '@material-ui/core/Tooltip';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 
 //Custom Components
-import SimpleList from '../components/Tables/SimpleList';
-import SimpleMap from '../components/SimpleMap';
+import SimpleList from '../../components/Tables/SimpleList';
+import Map from '../../components/General/Map';
+import Header from '../../components/General/Header'
 
 //Tools
-import { dateOptions } from '../utils/constants.utils';
-import { prettyStringify } from '../utils/mapping.utils';
+import { dateOptions } from '../../utils/constants.utils';
+import { prettyStringify } from '../../utils/mapping.utils';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -259,12 +259,10 @@ const ShipmentDetails = (props) => {
                                             loading ?
                                                 <Skeleton variant="rect" height={300} style={{ borderRadius: "6px" }} />
                                                 : hasLocations ?
-                                                    <>
-                                                        <SimpleMap
-                                                            start={shipment.shipFrom}
-                                                            end={shipment.shipTo}
-                                                        />
-                                                    </>
+                                                    <Map
+                                                        start={shipment.shipFrom}
+                                                        end={shipment.shipTo}
+                                                    />
                                                     : null
                                         }
 

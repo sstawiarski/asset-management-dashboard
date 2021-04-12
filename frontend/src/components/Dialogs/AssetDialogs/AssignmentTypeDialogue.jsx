@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
+
 import { makeStyles } from '@material-ui/core/styles';
 
-//Material-UI Components
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-
-//Tools
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
@@ -27,19 +27,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) => {
+const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) => {
     const classes = useStyles();
 
+    const [user, ] = useLocalStorage('user', {});
+
     /* Store state of select dropdown */
-    const [status, setStatus] = useState("");
-    const selectedFields = ['Staging', 'Completed', 'Abandoned'];
-    const [user,] = useLocalStorage('user', {});
+    const [type, setType] = useState("");
 
     /* Helper method to send update command -- uses async so we can use 'await' keyword */
     const sendData = async (data) => {
 
         //uses PATCH endpoint and sends the arguments in the body of the HTTP request
-        const result = await fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
+        const result = await fetch(`${process.env.REACT_APP_API_URL}/assets`, {
             method: "PATCH",
             mode: 'cors',
             headers: {
@@ -51,13 +51,13 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     }
 
     const handleSubmit = (event) => {
-
         event.preventDefault();
 
+        //setup data object to send based on API docs and required parameters
         const data = {
-            shipments: selected,
+            assets: selected,
             update: {
-                status: status
+                assignmentType: type
             },
             override: override,
             user: user.uniqueId
@@ -75,11 +75,12 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
                 //check if we got back null and send response to parent page for snackbar rendering
                 if (json) {
-                    onSuccess(true, `Successfully updated ${selected.length} shipment(s) status to ${status}!`);
+                    const assignType = type;
                     handleClose();
+                    onSuccess(true, `Successfully changed ${selected.length} assets(s) assignment type to ${assignType}! Event Key: ${json.key}`)
                 } else {
                     handleClose();
-                    onSuccess(false, `Failed to update shipment status...`);
+                    onSuccess(false, `Failed to update assignment type...`);
                 }
             })
     }
@@ -87,27 +88,36 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setStatus("");
+        setType("");
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-status-dialog-title">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignment-type-dialog-title">
 
-            <DialogTitle id="change-status-dialog-title">Change Shipment Status</DialogTitle>
+            <DialogTitle id="change-assignment-type-dialog-title">Change Assignment Type</DialogTitle>
 
             <DialogContent>
                 <DialogContentText>
-                    Changing status of {selected.length} shipment{selected.length > 1 ? "s" : ""}
+                    Changing the assignment type of {selected.length} product{selected.length > 1 ? "s" : ""}
                 </DialogContentText>
 
                 <div className={classes.item}>
-                    <Autocomplete
-                        id="status-dropdown"
-                        options={selectedFields}
-                        autoHighlight
-                        onChange={(event, newValue) => setStatus(newValue)}
-                        renderInput={(params) => <TextField {...params} label="Status" variant="outlined" />}
-                    />
+                    <FormControl variant="outlined" className={classes.formControl}>
+                        <InputLabel id="product-status-label">Assignment Type</InputLabel>
+                        {/* Controlled select, get value from state and changes state when it changes */}
+                        <Select
+                            labelId="assignment-type-label"
+                            labelWidth={105}
+                            id="assignment-type-select"
+                            value={type}
+                            onChange={(event) => setType(event.target.value)}
+                        >
+
+                            <MenuItem value={"Owned"}>Owned</MenuItem>
+                            <MenuItem value={"Rental"}>Rental</MenuItem>
+
+                        </Select>
+                    </FormControl>
                 </div>
             </DialogContent>
 
@@ -124,4 +134,4 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     );
 };
 
-export default ChangeStatusDialog;
+export default AssignmentTypeDialog;

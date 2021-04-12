@@ -24,10 +24,10 @@ import DoneIcon from '@material-ui/icons/Done';
 import SearchIcon from '@material-ui/icons/Search';
 
 //Custom Components
-import SimpleList from '../Tables/SimpleList';
+import SimpleList from '../../Tables/SimpleList';
 
 //Tools
-import useLocalStorage from '../../utils/auth/useLocalStorage.hook';
+import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submission, handleCancel }) => {
 

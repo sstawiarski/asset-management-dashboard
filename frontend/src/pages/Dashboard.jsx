@@ -13,7 +13,7 @@ import DomainIcon from "@material-ui/icons/Domain";
 
 //Custom Components
 import Searchbar from '../components/Searchbar/Searchbar';
-import Header from '../components/Header';
+import Header from '../components/General/Header';
 
 const useStyles = makeStyles({
     moduleHeader: {
