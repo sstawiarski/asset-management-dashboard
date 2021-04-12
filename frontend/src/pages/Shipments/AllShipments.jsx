@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles';
+import ScrollContainer from 'react-indiana-drag-scroll'
 
 //Material-UI Components
 import Snackbar from '@material-ui/core/Snackbar';
@@ -32,11 +33,12 @@ import AddIcon from '@material-ui/icons/Add';
 const useStyles = makeStyles((theme) => ({
     tabBar: {
         width: "100%",
-        marginLeft: "10%"
+        marginLeft: "10%",
+        marginRight: "10%"
     },
     searchbarContainer: {
-        width: "60%",
-        marginRight: "10px"
+        width: "40%",
+        paddingRight: "10%"
     }
 }));
 
@@ -76,7 +78,7 @@ const AllShipments = (props) => {
     }
 
     /* handle change of tab view */
-    const handleTabChange = (event, newValue) => { 
+    const handleTabChange = (event, newValue) => {
 
         /* Remove the filter if all shipment types are selected */
         if (newValue === "All") {
@@ -89,7 +91,7 @@ const AllShipments = (props) => {
         } else {
             setFilters(f => ({ ...f, status: newValue, page: 0 }));
         }
-        
+
         setCurrentTab(newValue);
     };
 
@@ -166,7 +168,7 @@ const AllShipments = (props) => {
             keys.forEach((key, idx) => {
                 if (idx === 0) url = `${url}?`
                 url = `${url}&${key}=${filters[key]}`;
-                
+
             });
 
             return url;
@@ -210,7 +212,7 @@ const AllShipments = (props) => {
                     filters={filters}
                     count={shipmentCount}
                     checkboxes={true}
-                    setCurrentTab= {setCurrentTab}
+                    setCurrentTab={setCurrentTab}
 
                     onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                     onSelectedChange={setSelected}>
@@ -239,7 +241,7 @@ const AllShipments = (props) => {
                                 </Menu>
                             </>
                             :
-                            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <>
 
                                 <Link to="/shipments/create" >
                                     <IconButton >
@@ -248,12 +250,16 @@ const AllShipments = (props) => {
                                 </Link>
 
                                 {/* Shipment Status tabs */}
-                                <Tabs className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
-                                    <Tab label="All" value="All" name="All" />
-                                    <Tab label="Staging" value="Staging" name="Staging" />
-                                    <Tab label="Completed" value="Completed" name="Completed" />
-                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
-                                </Tabs>
+
+                                <ScrollContainer>
+                                    <Tabs className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+                                        <Tab label="All" value="All" name="All" />
+                                        <Tab label="Staging" value="Staging" name="Staging" />
+                                        <Tab label="Completed" value="Completed" name="Completed" />
+                                        <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
+                                    </Tabs>
+                                </ScrollContainer>
+
 
                                 <div className={classes.searchbarContainer}>
                                     <TextField id="searchBox"
@@ -274,7 +280,7 @@ const AllShipments = (props) => {
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
                                 </IconButton>
-                            </div>
+                            </>
                         }
                     </TableToolbar>
 

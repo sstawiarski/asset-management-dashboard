@@ -22,6 +22,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-geocode": "^0.2.3",
+    "react-indiana-drag-scroll": "^2.0.1",
     "react-leaflet": "^2.8.0",
     "react-leaflet-curve": "^2.0.1",
     "react-leaflet-markercluster": "^2.0.0",
