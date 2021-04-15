@@ -426,7 +426,7 @@ router.get("/", async (req, res) => {
 /**
  * Create a new shipment
  */
-router.post('/', async (req, res, err) => {
+router.post('/', async (req, res) => {
     try {
         const username = JSON.parse(decrypt(req.body.user)); //get unique user info
         const serials = req.body["manifest"] ? req.body["manifest"].filter(item => item["serial"] !== "N/A").map(asset => asset["serial"]) : [];
@@ -447,7 +447,7 @@ router.post('/', async (req, res, err) => {
             $and: [
                 {
                     parentId: {
-                        $exists: true
+                        $ne: null
                     }
                 },
                 {
@@ -573,7 +573,7 @@ router.post('/', async (req, res, err) => {
         const newKey = `SHIP-${count.next}`; //shipment doc and event doc are in separate collections so they can have the same key
 
         const assetChange = new Event({
-            eventType: `${shipment.shipmentType} Shipment`,
+            eventType: `${req.body.shipmentType} Shipment`,
             eventTime: Date.now(),
             key: newKey,
             productIds: updatedSerials,
