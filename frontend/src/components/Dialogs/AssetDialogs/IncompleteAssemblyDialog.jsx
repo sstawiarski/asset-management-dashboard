@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
@@ -75,6 +76,13 @@ const IncompleteAssemblyDialog = ({ open, setOpen, missingItems, handleOverride 
             </DialogActions>
         </Dialog>
     )
+}
+
+IncompleteAssemblyDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    missingItems: PropTypes.array, 
+    handleOverride: PropTypes.func 
 }
 
 export default IncompleteAssemblyDialog;

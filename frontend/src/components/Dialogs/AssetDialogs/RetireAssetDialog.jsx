@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -131,6 +132,14 @@ const RetireAssetDialog = ({ open, setOpen, selected, onSuccess, override }) => 
 
         </Dialog>
     );
+};
+
+RetireAssetDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    selected: PropTypes.array, 
+    onSuccess: PropTypes.func, 
+    override: PropTypes.func
 };
 
 export default RetireAssetDialog;

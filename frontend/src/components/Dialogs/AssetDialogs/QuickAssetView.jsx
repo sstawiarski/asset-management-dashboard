@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -125,6 +127,12 @@ const QuickAssetView = (props) => {
         </Dialog>
     );
 
-}
+};
+
+QuickAssetView.propTypes = {
+    identifier: PropTypes.string,
+    isOpen: PropTypes.bool,
+    setOpen: PropTypes.func
+};
 
 export default QuickAssetView;

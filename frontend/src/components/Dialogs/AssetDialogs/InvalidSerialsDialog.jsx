@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
@@ -69,6 +70,12 @@ const InvalidSerialsDialog = ({ open, setOpen, items }) => {
             </DialogActions>
         </Dialog>
     )
+};
+
+InvalidSerialsDialog.propTypes = {
+    open: PropTypes.func,
+    setOpen: PropTypes.func,
+    items: PropTypes.array
 }
 
 export default InvalidSerialsDialog;

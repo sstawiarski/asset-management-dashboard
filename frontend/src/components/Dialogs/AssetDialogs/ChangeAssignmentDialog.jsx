@@ -142,6 +142,6 @@ ChangeAssignmentDialog.propTypes = {
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 
     override: PropTypes.func 
-}
+};
 
 export default ChangeAssignmentDialog;
