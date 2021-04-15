@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -342,6 +343,13 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
         </Dialog>
     );
+};
+
+CreateAssetDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    onSuccess: PropTypes.func, 
+    onSemiSuccess: PropTypes.func 
 };
 
 export default CreateAssetDialog;

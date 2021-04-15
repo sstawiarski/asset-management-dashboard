@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -133,6 +134,14 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
 
         </Dialog>
     );
+};
+
+ChangeOwnershipDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    selected: PropTypes.array, 
+    onSuccess: PropTypes.func, 
+    override: PropTypes.func 
 };
 
 export default ChangeOwnershipDialog;
