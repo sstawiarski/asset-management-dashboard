@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 
@@ -19,14 +19,18 @@ const useStyles = makeStyles({
         backgroundColor: "#EBEBEB"
     },
     body: {
-        backgroundColor: "#FAFAFA",
-        textDecoration: "none",
+        backgroundColor: "#F6F6F6",
+        paddingTop: "5px",
+        "&:hover": {
+            cursor: "pointer",
+            backgroundColor: "#FCFCFC"
+        }
     }
 });
 
 const Manifest = ({ data }) => {
-    
     const classes = useStyles();
+    const history = useHistory();
 
     const [items, setItems] = useState([]);
 
@@ -55,10 +59,14 @@ const Manifest = ({ data }) => {
                 <TableBody>
                     {items.map(item => {
                         return (
-                                <TableRow className={classes.body} component={Link} to={`/assets/${item.serial}`} key={item.serial}>
-                                    <TableCell component="th" scope="row">{item.serial}</TableCell>
-                                    <TableCell>{item.assetName}</TableCell>
-                                </TableRow>
+                            <TableRow
+                                className={classes.body}
+                                key={item.serial}
+                                onClick={() => history.push(`/assets/${item.serial}`)}>
+
+                                <TableCell component="th" scope="row">{item.serial}</TableCell>
+                                <TableCell>{item.assetName}</TableCell>
+                            </TableRow>
                         );
                     })}
                 </TableBody>
