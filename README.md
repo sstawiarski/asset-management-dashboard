@@ -7,6 +7,13 @@ Product Management Portal is a full [MERN](https://www.mongodb.com/mern-stack) s
 ### Motivation
 This project was developed in collaboration with [Evolution Engineering & Energy Technologies](https://evolutioneng.com) as a central dashboard for the management and tracking of company assets and shipments. The goal was to build a custom application that would help to replace and amalgamate the fragmented, 3rd party management solutions currently in use. Prior to this application, the company did not have a reliable way to track and maintain history, status, rental assignment, or ownership (among other details) of these products.
 ### Features
+- **Central dashboard** with global search
+- Listing, filtering, and creation of assets and shipments
+- **Map views** for asset locations and shipment routes
+- Support for **file attachments** to shipments
+- Error-checking and **schema validation** of assemblies
+- "Shopping cart"-style tools for **creating and managing assemblies and shipments**
+
 
 ### Build status
 [![Build Status](https://travis-ci.com/sstawiarski/SER-401-Project-24.svg?token=yWvjuE637yC3W4EstXCj&branch=main)](https://travis-ci.com/sstawiarski/SER-401-Project-24)
@@ -68,9 +75,9 @@ npm run-script launch
   
 
 ---
-To manually launch the frontend, ensure dependencies are installed with `npm install`, then a development build can be launched using `npm start` and a production build can be built using `npm run-script build` and served using `serve -s [build directory] -l [port]`.
+To manually launch the frontend from the `frontend` directory, ensure dependencies are installed with `npm install`, then a development build can be launched using `npm start` and a production build can be built using `npm run-script build` and served using `serve -s [build directory] -l [port]`.
 
-To manually launch the backend server, ensure dependencies are installed with `npm install`, then the server can be started with either `node server.js` for a single invocation, or `nodemon server.js` for restarting the server when files are updated.
+To manually launch the backend server from the `backend` directory, ensure dependencies are installed with `npm install`, then the server can be started with either `node server.js` for a single invocation, or `nodemon server.js` for restarting the server when files are updated.
   
 Both the frontend and the backend expect `.env` files with necessary values to run. See [here](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/sample.env) for the example frontend `.env` and [here](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/sample.env) for the example backend `.env`.
 
