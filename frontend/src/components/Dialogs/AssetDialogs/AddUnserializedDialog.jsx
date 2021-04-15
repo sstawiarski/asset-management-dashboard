@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import uuid from 'react-uuid'
+import PropTypes from 'prop-types';
 
 //Material-UI Components
 import Grid from '@material-ui/core/Grid';
@@ -121,6 +122,12 @@ const AddUnserializedDialog = ({ open, onClose, onSubmit }) => {
             </DialogActions>
         </Dialog>
     )
+}
+
+AddUnserializedDialog.PropTypes = {
+    open: PropTypes.func,
+    onClose: PropTypes.func,
+    onSubmit: PropTypes.func
 }
 
 export default AddUnserializedDialog;

@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 //Library Tools
 import { useHistory } from 'react-router-dom';
@@ -109,6 +111,12 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
             </DialogActions>
         </Dialog>
     )
+}
+
+AssemblyModificationWarning.propTypes = {
+    open: PropTypes.func,
+    setOpen: PropTypes.func,
+    assembly: PropTypes.object
 }
 
 export default AssemblyModificationWarning;

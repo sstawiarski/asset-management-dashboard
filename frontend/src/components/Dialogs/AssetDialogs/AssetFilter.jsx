@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import DateFnsUtils from '@date-io/date-fns';
@@ -336,4 +337,11 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
             </DialogActions>
         </Dialog>
     )
+}
+
+FormDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    setActiveFilters: PropTypes.func,
+    assetList: PropTypes.array
 }
