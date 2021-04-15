@@ -34,29 +34,29 @@ This project was developed in collaboration with [Evolution Engineering & Energy
   
 ### Screenshots
 ##### Login
-![Login screen](https://i.imgur.com/CIZFrpr.png)
+![Login screen](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/login.webp)
 ##### User Profile
-![User profile](https://i.imgur.com/LGPIiXf.png)
+![User profile](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/profile.webp)
 ##### Dashboard (sidebar open)
-![Dashboard with sidebar open](https://i.imgur.com/NHxAiKf.png)
+![Dashboard with sidebar open](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/dashwsidebar.webp)
 ##### Global Search
-![Dashboard page with search bar and results](https://i.imgur.com/33dCNRO.png)
+![Dashboard page with search bar and results](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/searchpopup.webp)
 ##### Search Details
-![Search details page with table of search results](https://i.imgur.com/j8Kdt2T.png)
+![Search details page with table of search results](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/searchdetails.webp)
 ##### All Assets (list view)
-![Table with list of all assets in the system](https://i.imgur.com/KoM9WyA.png)
+![Table with list of all assets in the system](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/allassets.webp)
 ##### All Assets (map view)
-![A map of assets / markers based on their locations alongside a table with list of all assets in the viewport of the map](https://i.imgur.com/ts03qOz.png)
+![A map of assets / markers based on their locations alongside a table with list of all assets in the viewport of the map](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/mapview.webp)
 ##### Asset Details
-![Page displaying properties of a single asset in a clean way with a timeline of its associated events](https://i.imgur.com/uAjmdvw.png)
+![Page displaying properties of a single asset in a clean way with a timeline of its associated events](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/assetdetails.webp)
 ##### Assembly Manager
-![Assembly manager and creator tool as a table of assets and a floating "shopping cart"-style widget](https://i.imgur.com/Ky5XwuM.png)
+![Assembly manager and creator tool as a table of assets and a floating "shopping cart"-style widget](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/assembly.webp)
 ##### All Shipments
-![Table with list of all shipments in the system, organized by their status](https://i.imgur.com/WYsue48.png)
+![Table with list of all shipments in the system, organized by their status](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/allshipments.webp)
 ##### Shipment Details
-![Page displaying properties of a single shipment in a clean way with a map of the shipment's route and a table of the items contained in the shipment](https://i.imgur.com/Kr1IlRz.png)
+![Page displaying properties of a single shipment in a clean way with a map of the shipment's route and a table of the items contained in the shipment](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/shipmentdetails.webp)
 ##### Shipment Creator (Submission Dialog)
-![Shipment creator tool with a submission dialog listing the source and destination locations of the shipments and possible overrides on the location properties](https://i.imgur.com/teAkitH.png)
+![Shipment creator tool with a submission dialog listing the source and destination locations of the shipments and possible overrides on the location properties](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/submitshipment.webp)
 
 ### Installation
 Further details may be found in the `frontend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/README.md) and the `backend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/README.md).
