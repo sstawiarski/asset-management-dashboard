@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import { makeStyles } from '@material-ui/core/styles'
@@ -185,6 +186,12 @@ const AssetTimeline = ({ data, onMore, empty }) => {
             <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
         </>
     );
+};
+
+AssetTimeline.propTypes = {
+    data: PropTypes.object, 
+    onMore: PropTypes.func, 
+    empty: PropTypes.bool
 };
 
 export default AssetTimeline;
