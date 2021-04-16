@@ -129,7 +129,7 @@ ChangeGroupTagDialog.propTypes = {
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 
-    override: PropTypes.func 
+    override: PropTypes.bool 
 };
 
 export default ChangeGroupTagDialog;

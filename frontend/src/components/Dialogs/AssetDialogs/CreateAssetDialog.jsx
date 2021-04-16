@@ -346,7 +346,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 };
 
 CreateAssetDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     onSuccess: PropTypes.func, 
     onSemiSuccess: PropTypes.func 

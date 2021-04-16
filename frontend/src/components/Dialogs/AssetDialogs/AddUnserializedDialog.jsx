@@ -124,7 +124,7 @@ const AddUnserializedDialog = ({ open, onClose, onSubmit }) => {
     )
 }
 
-AddUnserializedDialog.PropTypes = {
+AddUnserializedDialog.propTypes = {
     open: PropTypes.func,
     onClose: PropTypes.func,
     onSubmit: PropTypes.func
