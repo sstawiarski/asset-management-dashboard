@@ -50,11 +50,9 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
     }, [submission.shipFrom, submission.shipTo]);
 
     const handleSubmit = (event) => {
-        event.preventDefault();
-
         try {
             const submit = {
-                assets: submission.assets,
+                manifest: submission.assets,
                 shipmentType: submission.shipmentType,
                 shipFrom: submission.shipFrom.id,
                 shipTo: submission.shipTo.id,
@@ -65,35 +63,34 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
             if (Object.keys(shipFromOverrides).length) submit["shipFromOverrides"] = shipFromOverrides;
             if (Object.keys(shipToOverrides).length) submit["shipToOverrides"] = shipToOverrides;
 
-            // TODO: create shipment POST endpoint
-            console.log(JSON.stringify(submit));
-            /*
-                        fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                            },
-                            body: JSON.stringify(submit)
-                        }).then(response => {
-                            if (response.status < 300) {
-                                return response.json();
-                            } else {
-                                return null;
-                            }
-                        })
-                            .then(json => {
-                                if (json) {
-                                    onSuccess();
-                                } else {
-                                    onFailure();
-                                }
-                                handleCancel();
-                            })
-            */
+            /* POST new shipment */
+            fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(submit)
+            }).then(response => {
+                if (response.status < 300) {
+                    return response.json();
+                } else {
+                    return null;
+                }
+            })
+                .then(json => {
+                    if (json) {
+                        onSuccess();
+                    } else {
+                        onFailure();
+                    }
+                    handleCancel();
+                });
+
         } catch (e) {
             console.log(e)
+            onFailure();
         }
     }
 

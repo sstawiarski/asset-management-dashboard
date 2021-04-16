@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 //Library Tools
 import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
 import { makeStyles } from '@material-ui/core/styles'
 
 //Material-UI Components
@@ -280,7 +279,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters, disableStatusFilter }
                                     inputVariant="outlined"
                                     label="Date Created"
                                     value={state.created}
-                                    onChange={date => handleDateChange("updated", date)}
+                                    onChange={date => handleDateChange("created", date)}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}

@@ -33,11 +33,11 @@ IndicatorBar.propTypes = {
     /**
      * An array of warning message strings
      */
-    warnings: PropTypes.arrayOf(PropTypes.string),
+    warnings: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
     /**
      * An array of error message strings
      */
-    errors: PropTypes.arrayOf(PropTypes.string),
+    errors: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.string)]),
     /**
      * Error indicator label override
      */
@@ -45,7 +45,7 @@ IndicatorBar.propTypes = {
     /**
      * Warning indicator label override
      */
-     warningLabel: PropTypes.string,
+    warningLabel: PropTypes.string,
 }
 
 export default IndicatorBar;

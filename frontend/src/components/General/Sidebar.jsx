@@ -40,12 +40,16 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     menuIcon: {
-        marginRight: 20
+        marginRight: 5,
+        [theme.breakpoints.up('sm')]: {
+            marginRight: 20,
+        },
     },
     name: {
         color: "white",
         textShadow: "1px 1px 4px #0f0f0f",
         flexBasis: "100%",
+        cursor: "pointer"
     },
     drawer: {
         width: drawerWidth,
@@ -76,8 +80,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         padding: theme.spacing(1, 0, 0, 0),
-        // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
         flexWrap: "wrap",
         backgroundColor: theme.palette.primary.main
     },
@@ -96,6 +98,13 @@ const useStyles = makeStyles((theme) => ({
     },
     nonHighlighted: {
         color: "rgba(0, 0, 0, 0.6)"
+    },
+    accountCircleIcon: {
+        marginLeft: "65%",
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: "24px",
+            width: "auto"
+        },
     }
 }));
 
@@ -181,13 +190,17 @@ const isHighlighted = (location, link, open) => {
         } else if (text === "/shipments/create" && link === "Add New" && open) {
             return true;
         } else if (text === "/account" && link === "Account" && !open) {
-                return true; 
+            return true;
         } else {
             return false;
         }
     }
     return false;
 }
+
+const assetPages = ['View All', 'Assembly Manager'];
+const shipmentPages = ['View All', 'Add New'];
+const sidebarSections = ['Home', 'Assets', 'Shipments', 'Sign Out'];
 
 const Sidebar = ({ location }) => {
     const classes = useStyles();
@@ -246,8 +259,7 @@ const Sidebar = ({ location }) => {
 
                     {/* Account icon, name, and settings header section */}
                     <List className={classes.accountHeader}>
-                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null} disableRipple={!open ? true : false} onClick={() => history.push('/account')}>
-
+                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null} disableRipple={!open ? true : false}>
                             {/* Render account icon as one of 2 types of buttons for better styling open vs. closed */}
                             {
                                 open ?
@@ -255,35 +267,38 @@ const Sidebar = ({ location }) => {
                                         size="small"
                                         disableRipple
                                         style={{ marginLeft: "20px", marginRight: "10px" }}
+                                        onClick={() => history.push('/account')}
                                     >
                                         <AccountCircleIcon />
                                     </IconButton>
                                     :
-                                    <ListItemIcon>
-                                        <AccountCircleIcon 
-                                        style={{ marginLeft: "24px" }} 
-                                        className={isHighlighted(location, "Account", open) ?
-                                            !open ? classes.highlighted : classes.moduleText
-                                            : classes.nonHighlighted}
+                                    <ListItemIcon onClick={() => history.push('/account')}>
+                                        <AccountCircleIcon
+                                            
+                                            className={[isHighlighted(location, "Account", open) ?
+                                                !open ? classes.highlighted : classes.moduleText
+                                                : classes.nonHighlighted, classes.accountCircleIcon].join(' ')}
                                         />
                                     </ListItemIcon>
                             }
 
-
-
                             {/* Logged in user name */}
                             <ListItemText
                                 primary={fullName}
+                                onClick={() => history.push('/account')}
                                 className={classes.name}
+                                title="Account details"
                                 primaryTypographyProps={{ variant: "h6", style: !open ? { width: 0, visibility: "hidden" } : null }}
                             />
+
 
                             {/* Settings icon */}
                             <IconButton
                                 size="small"
                                 disableRipple
+                                disabled={true}
                                 style={!open ? { width: 0, visibility: "hidden" } : null}
-                                onClick={(e) => { 
+                                onClick={(e) => {
                                     e.stopPropagation();
                                     history.push('/settings');
                                 }}
@@ -304,7 +319,7 @@ const Sidebar = ({ location }) => {
                 {/* Generate list of actual sidebar links */}
                 <List>
                     {
-                        ['Home', 'Assets', 'Shipments', 'Sign Out'].map(text => {
+                        sidebarSections.map(text => {
                             return (
                                 <React.Fragment key={text}>
                                     <ListItem
@@ -381,7 +396,7 @@ const Sidebar = ({ location }) => {
                                                 <List component="div" disablePadding>
                                                     {
                                                         open ?
-                                                            ["View All", "Assembly Manager", "Assignments"].map((item, idx) => {
+                                                            assetPages.map((item, idx) => {
                                                                 return (
                                                                     <ListItem
                                                                         key={idx}
@@ -435,7 +450,7 @@ const Sidebar = ({ location }) => {
                                                     <List component="div" disablePadding>
                                                         {
                                                             open ?
-                                                                ["View All", "Track", "Add New"].map((item, idx) => {
+                                                                shipmentPages.map((item, idx) => {
                                                                     return (
                                                                         <ListItem
                                                                             key={idx}

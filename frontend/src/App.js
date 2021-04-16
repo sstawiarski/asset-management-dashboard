@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation, Switch, Route, Redirect } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import { CssBaseline } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import './App.css';
@@ -29,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: "row",
-    minHeight: "100vh",
-    backgroundColor: "#F0FCFF"
+    minHeight: "100vh"
   },
   content: {
     flexGrow: 12,
@@ -51,6 +51,15 @@ const theme = createMuiTheme({
       main: '#48656b',
     },
   },
+  overrides: {
+    MuiCssBaseline:{
+      '@global': {
+        body: {
+          backgroundColor: "#F0FCFF"
+        }
+      }
+    }
+  }
 });
 
 function App() {
@@ -71,6 +80,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Switch>
         <Route exact path="/login" render={(props) => <LoginPage {...props} />} />
         {!loggedIn && Object.keys(local).length <= 0 ? <Redirect to='/login' /> : null}

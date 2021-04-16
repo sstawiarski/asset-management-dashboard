@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 //Library Tools
 import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
 
 //Material-UI Components
 import Grid from '@material-ui/core/Grid';

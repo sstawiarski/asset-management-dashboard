@@ -1,7 +1,5 @@
 const express = require('express');
 const app = express();
-
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
@@ -36,7 +34,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
     origin: process.env.CORS_URL
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 /* Connect to MongoDB */
 mongoose.connect(process.env.DB_URL, {
@@ -59,6 +57,7 @@ const locationRoutes = require('./routes/locations.routes')
 const assemblyRoutes = require('./routes/assemblies.routes')
 const authRoutes = require('./routes/auth.routes')
 const shipmentRoutes = require('./routes/shipments.routes')
+const attachmentRoutes = require('./routes/attachments.routes')
 
 /* Swagger config for API docs */
 const swaggerConfig = require('./documentation/swagger.config');
@@ -73,3 +72,4 @@ app.use('/locations', locationRoutes);
 app.use('/assemblies', assemblyRoutes);
 app.use('/auth', authRoutes);
 app.use('/shipments', shipmentRoutes);
+app.use('/attachments', attachmentRoutes);

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 //Library Tools
-import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
 import uuid from 'react-uuid';
 
@@ -36,7 +35,7 @@ import Header from '../../components/General/Header'
 import ChipBar from '../../components/Tables/ChipBar';
 import CustomTable from '../../components/Tables/CustomTable'
 import TableToolbar from '../../components/Tables/TableToolbar';
-import NewCart from '../../components/General/Cart';
+import Cart from '../../components/General/Cart';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -103,10 +102,9 @@ const selectedFields = ["serial", "assetName", "assetType", "owner", "checkedOut
 
 const ShipmentCreator = () => {
     const classes = useStyles();
-    const history = useHistory();
 
     /* Data state */
-    const [state, setState] = useState({}); //main info about assembly, owner, etc
+    const [state, setState] = useState({}); //main info about shipment, locations, etc
     const [assets, setAssets] = useState([]); //results list
     const [selected, setSelected] = useState([]);
     const [mapItems, setMapItems] = useState([]);
@@ -114,7 +112,6 @@ const ShipmentCreator = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [cartItems, setCartItems] = useState([]);
     const [success, setSuccess] = useState(null);
-    const [override, toggleOverride] = useState(false);
     const [submission, setSubmission] = useState({});
     const [hasParents, setHasParents] = useState(false);
     const [haveParents, setHaveParents] = useState([]);
@@ -188,7 +185,7 @@ const ShipmentCreator = () => {
     useEffect(() => {
         setCartBadge("badge badge-reload");
         setCartBadge("badge");
-    }, [cartItems])
+    }, [cartItems]);
 
     /* Initial blank page button handler to open creator dialog */
     const handleStart = () => {
@@ -197,22 +194,26 @@ const ShipmentCreator = () => {
 
     /* Set information from creator dialog upon submission */
     const handleCreate = (childState) => {
-        setState(s => ({
-            ...s,
-            shipFrom: {
-                id: childState.shipFrom["_id"],
-                key: childState.shipFrom["key"],
-                name: childState.shipFrom["locationName"]
-            },
-            shipTo: {
-                id: childState.shipTo["_id"],
-                key: childState.shipTo["key"],
-                name: childState.shipTo["locationName"]
-            },
-            shipmentType: childState.shipmentType
-        }));
-        setCreatorOpen(false);
-        toggleShipment(true);
+        if(childState.shipFrom==null || childState.shipTo==null || childState.shipmentType==null){
+            console.log('all fields must be filled.')
+        }else{
+            setState(s => ({
+                ...s,
+                shipFrom: {
+                    id: childState.shipFrom["_id"],
+                    key: childState.shipFrom["key"],
+                    name: childState.shipFrom["locationName"]
+                },
+                shipTo: {
+                    id: childState.shipTo["_id"],
+                    key: childState.shipTo["key"],
+                    name: childState.shipTo["locationName"]
+                },
+                shipmentType: childState.shipmentType
+            }));
+            setCreatorOpen(false);
+            toggleShipment(true);
+        }
     }
 
     /* Handle cancel button on creator dialog */
@@ -312,37 +313,41 @@ const ShipmentCreator = () => {
      * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
+        console.log(state.shipFrom);
+        console.log(state.shipTo);
+        if(state.shipFrom==null || state.shipTo==null){
+            console.log("fill out all forms")
+            alert("All fields must be filled");
+        }else{
+            setSubmission(s => ({
+                ...s,
+                shipmentType: state.shipmentType,
+                shipFrom: state.shipFrom,
+                shipTo: state.shipTo,
+                assets: cartItems.map(item => ({
+                    serial: item.serial,
+                    name: item.name ? item.name : item.assetName,
+                    quantity: item.quantity ? item.quantity : 1,
+                    notes: item.notes ? item.notes : null,
+                    serialized: item.serial !== "N/A" ? true : false
+                })),
+                override: state.override || false
+            }));
 
-        setSubmission(s => ({
-            ...s,
-            shipmentType: state.shipmentType,
-            shipFrom: state.shipFrom,
-            shipTo: state.shipTo,
-            assets: cartItems.map(item => ({
-                serial: item.serial,
-                name: item.name ? item.name : item.assetName,
-                quantity: item.quantity ? item.quantity : 1,
-                notes: item.notes ? item.notes : null,
-                serialized: item.serial !== "N/A" ? true : false
-            })),
-            override: state.override || false
-        }));
-
-        setAnchorEl(null);
-        setSubmitOpen(true);
+            setAnchorEl(null);
+            setSubmitOpen(true);
+    }
 
     };
 
 
     /* Handles the cancel button from the Submit Assembly dialog but leave all selections and cart items in place for editing */
     const handleSubmitCancel = () => {
-        toggleOverride(false);
         setSubmitOpen(false);
     };
 
-    /* Remove all state when assembly is abandoned */
+    /* Remove all state when shipment is abandoned */
     const handleAbandon = () => {
-        toggleOverride(false);
         setCreatorOpen(false);
         toggleShipment(false);
         setSubmitOpen(false);
@@ -367,7 +372,7 @@ const ShipmentCreator = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                    {/* Render placeholder box if assembly is not started or the actual results table if it is */}
+                    {/* Render placeholder box if shipment is not started or the actual results table if it is */}
                     {
                         shipmentStarted
                             ?
@@ -441,7 +446,8 @@ const ShipmentCreator = () => {
                 </Grid>
             </Grid>
 
-            <NewCart
+            {/* Shipment cart */}
+            <Cart
                 cartItems={cartItems}
                 headers={["Serial", "Name", "Quantity"]}
                 onSubmit={handleSubmitCheck}
@@ -462,6 +468,7 @@ const ShipmentCreator = () => {
                 notes
                 placement="top" />
 
+            {/* Dialogs */}
             <CreateNewShipmentDialog
                 creatorOpen={creatorOpen}
                 handleCreate={handleCreate}
@@ -523,25 +530,33 @@ const ShipmentCreator = () => {
             />
 
 
-            {/* Success or failure feedback upon assembly submission */}
-            {/* Resets all creator state upon success or leave intact for another try if the assembly fails to submit */}
+            {/* Success or failure feedback upon shipment submission */}
+            {/* Resets all creator state upon success or leave intact for another try if the shipment fails to submit */}
             <Snackbar
                 open={success !== null}
-                onEnter={() => toggleShipment(false)}
+                onEnter={() => success ? toggleShipment(false) : {}}
                 autoHideDuration={5000}
                 onClose={() => {
                     if (success) {
-                        setSuccess(null)
+                        setSuccess(null);
                         handleAbandon();
+                        return;
                     }
-                    setSuccess(null)
+                    setSuccess(null);
                 }}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                style={{ boxShadow: "1px 2px 6px #5f5f5f", borderRadius: "3px" }}>
+                anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center"
+                }}
+                style={{
+                    boxShadow: "1px 2px 6px #5f5f5f",
+                    borderRadius: "3px"
+                }}>
+
                 {
                     success !== null ?
                         <Alert onClose={() => setSuccess(null)} severity={success ? "success" : "error"}>
-                            {success === true ? "Assembly successfully created or modified!" : "Failed to submit assembly..."}
+                            {success === true ? "Shipment successfully created!" : "Failed to submit shipment..."}
                         </Alert>
                         : null
                 }

@@ -64,7 +64,7 @@ ErrorIndicator.propTypes = {
     /**
      * An array of warning message strings
      */
-    warnings: PropTypes.arrayOf(PropTypes.string)
+    errors: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.string)])
 }
 
 export default ErrorIndicator;

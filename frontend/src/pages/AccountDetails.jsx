@@ -1,13 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles'
+
+//Library Tools
+import { makeStyles } from '@material-ui/core/styles';
 import base64url from 'base64url';
+
+//Material-UI Imports
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 import TextField from "@material-ui/core/TextField";
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
+
+//Icons
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
+//Tools
+import useLocalStorage from '../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,38 +27,40 @@ const useStyles = makeStyles((theme) => ({
         width: "100%"
     },
     item: {
-        padding: "10px",
+        padding: "6px",
+        marginTop: "5px",
         marginLeft: "0",
     },
     center: {
         marginLeft: "auto",
         marginRight: "auto",
-        width: "50%",
+        width: "60%",
         marginBottom: '20px',
         marginTop: '40px',
-        padding: "40px 10px 40px 10px"
+        padding: "30px 0px 30px 0px"
     },
     break: {
-        fontWeight: "bold"
+        fontWeight: "bold",
+        marginTop: props => props.isEdit ? "5px" : "0px"
     },
     name: {
         color: theme.palette.secondary.main
+    },
+    error: {
+        width: "50%",
+        marginLeft: "auto",
+        marginRight: "auto"
     }
 }));
 
-const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) => {
-    const classes = useStyles();
+const AccountDetails = () => {
     const [local,] = useLocalStorage('user', {});
-
     const user = local.firstName + " " + local.lastName;
+
     const encodedID = base64url(JSON.stringify(local.uniqueId));
     const url = `${process.env.REACT_APP_API_URL}/auth/${encodedID}`;
 
     const [employee, setEmployee] = useState(null);
-
-    const [error, setError] = useState("");
-    const [edit, setEdit] = useState(false);
-
     const [state, setState] = useState({
         username: "",
         password: "",
@@ -57,6 +69,11 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
         visible: false,
         result: null
     });
+    const [error, setError] = useState("");
+    const [edit, setEdit] = useState(false);
+    const [alert, setAlert] = useState(null);
+
+    const classes = useStyles({ isEdit: edit });
 
     /* Fetch user info */
     useEffect(() => {
@@ -73,7 +90,16 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
             });
     }, [url]);
 
-     /* Sign in text box change handler */
+    /* Check that passwords match */
+    useEffect(() => {
+        if (state.password !== state.confirmPassword) {
+            setError("Passwords do not match");
+        } else {
+            setError("");
+        }
+    }, [state.password, state.confirmPassword]);
+
+    /* Sign in text box change handler */
     const handleChange = (event) => {
         setError("");
         setState({
@@ -81,43 +107,46 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
             [event.target.name]: event.target.value,
             result: null
         });
-
-        if ((state.password!==state.confirmPassword)) {
-        	setError("Passwords do not match");
-        } else {
-            setError("");
-        }
     };
 
-     /* reset edited fields */
+    /* Reset edited fields */
     const handleCancel = (event) => {
         setEdit(false);
         setError("");
         setState({
-        username: "",
-        password: "",
-        confirmPassword: "",
-        email: "",
-        visible: false,
-     });
+            username: "",
+            password: "",
+            confirmPassword: "",
+            email: "",
+            visible: false,
+        });
     }
 
-     /* Submits updated account data */
-    const handleSubmit = (event) => {
-        event.preventDefault();
-
-
-        let data = {};
-        if (state.username.length > 0) {
-        	data.username = state.username;
+    /* Submits updated account data */
+    const handleSubmit = () => {
+        let data = {
+            user: local.uniqueId
+        };
+        if (state.username) {
+            data.username = state.username;
         }
 
-        if (state.email.length > 0) {
-        	data.email = state.email;
+        if (state.email) {
+            data.email = state.email;
         }
 
-        if (state.password > 0) {
-        	data.password = state.password;
+        if (state.password) {
+            if (!state.confirmPassword) {
+                setError("Missing password confirmation");
+                return;
+            } else if (state.confirmPassword !== state.password) {
+                setError("Passwords do not match!");
+                return;
+            } else data.password = state.password;
+
+        } else if (!state.password && state.confirmPassword) {
+            setError("Password field is empty");
+            return;
         }
 
         try {
@@ -138,15 +167,20 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
             })
                 .then(json => {
                     if (json) {
-                        onSuccess();
+                        setAlert({ type: "success", message: "Updated user information" });
+                        setEmployee(emp => ({ ...emp, ...data }));
+                        handleCancel();
                     } else {
-                        onFailure();
+                        setAlert({ type: "error", message: "Could not update profile..." });
                     }
-                    
+
+                }).catch(() => {
+                    setAlert({ type: "error", message: "Could not update profile..." });
                 })
 
         } catch (e) {
-            console.log(e)
+            console.log(e);
+            setAlert({ type: "error", message: "Could not update profile..." });
         }
     }
 
@@ -174,9 +208,19 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                                     <Typography variant="subtitle1" className={classes.break}>Username:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                   
-                                    {edit===false ? <Typography variant="body1">{employee.username}</Typography> : <form><TextField id="outlined-basic" name="username" label={employee.username} variant="outlined" value={state.username}
-                                        onChange={handleChange} /></form>
+
+                                    {
+                                        edit === false ?
+                                            <Typography variant="body1">{employee.username}</Typography>
+                                            : <TextField
+                                                id="username-edit"
+                                                name="username"
+                                                label={"Username"}
+                                                variant="outlined"
+                                                size="small"
+                                                value={state.username}
+                                                placeholder={employee.username}
+                                                onChange={handleChange} />
                                     }
                                 </Grid>
 
@@ -188,7 +232,19 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                                     <Typography variant="subtitle1" className={classes.break}>Email:</Typography>
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
-                                    {edit===false ? <Typography variant="body1">{employee.email}</Typography> : <form><TextField id="outlined-basic" label={employee.email} variant="outlined" name ="email" value={state.email} onChange={handleChange} /></form>}
+                                    {
+                                        edit === false ?
+                                            <Typography variant="body1">{employee.email}</Typography>
+                                            : <TextField
+                                                id="email-edit"
+                                                label="Email"
+                                                variant="outlined"
+                                                name="email"
+                                                size="small"
+                                                value={state.email}
+                                                placeholder={employee.email}
+                                                onChange={handleChange} />
+                                    }
                                 </Grid>
 
                             </Grid>
@@ -196,42 +252,121 @@ const AccountDetails = ({ open, onSuccess, onFailure, isComplete, submission }) 
                             <Grid container className={classes.break}>
 
                                 <Grid item xs={6} className={classes.item}>
-                                    {edit===false ? <Typography variant="subtitle1" className={classes.break}>Password:</Typography> : <Typography variant="subtitle1" className={classes.break}>New Password:</Typography> }
+                                    {
+                                        edit === false ?
+                                            <Typography variant="subtitle1" className={classes.break}>Password:</Typography>
+                                            : <Typography variant="subtitle1" className={classes.break}>New Password:</Typography>}
                                 </Grid>
                                 <Grid item xs={6} className={classes.item}>
 
-                                    {edit===false ? <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography> : <form><TextField id="outlined-basic" label="new password" variant="outlined" name="password" value={state.password} onChange={handleChange} /></form>}
+                                    {
+                                        edit === false ?
+                                            <Typography variant="body1">{'*'.repeat(employee.passwordLength)}</Typography>
+                                            : <TextField
+                                                id="password-edit"
+                                                label="New Password"
+                                                variant="outlined"
+                                                name="password"
+                                                size="small"
+                                                value={state.password}
+                                                onChange={handleChange} />
+                                    }
                                 </Grid>
-                            
+
                             </Grid>
-                            {edit===true ? 
-                                <Grid container className={classes.break}>
-	                                <Grid item xs={6} className={classes.item}>
-	                                    <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
-	                                </Grid>
-                                    <Grid item xs={6} className={classes.item}>
-                                        <form><TextField id="outlined-basic" label="new password" variant="outlined" name="confirmPassword" value={state.confirmPassword} onChange={handleChange} /></form>
-                                    </Grid>
-                                     {/* passwords don't match */}
-                                     <Grid item xs={6} className={classes.center}>
-                                {
-                                    error ?
-                                        <>
-                                            <br />
-                                            <Typography variant="caption" style={{ color: "red" }}>Error: {error}</Typography>
-                                        </>
-                                        : null
-                                }
-                                </Grid>
-                                
-                                </Grid> : null
+                            {
+                                edit === true ?
+                                    <Grid container className={classes.break}>
+                                        <Grid item xs={6} className={classes.item}>
+                                            <Typography variant="subtitle1" className={classes.break}>Confirm Password:</Typography>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.item}>
+                                            <TextField
+                                                id="confirm-password"
+                                                label="Confirm Password"
+                                                variant="outlined"
+                                                name="confirmPassword"
+                                                size="small"
+                                                value={state.confirmPassword}
+                                                onChange={handleChange} />
+                                        </Grid>
+
+                                        {/* Form error display */}
+                                        {
+                                            error &&
+                                            (
+                                                <Grid item xs={6} className={classes.error}>
+
+                                                    <br />
+                                                    <Typography
+                                                        variant="caption"
+                                                        style={{
+                                                            color: "red",
+                                                            fontWeight: "bold"
+                                                        }}>
+                                                        ERROR: {error}
+                                                    </Typography>
+
+                                                </Grid>
+                                            )
+                                        }
+
+
+                                    </Grid> : null
                             }
                         </>
                         : null
                 }
             </Paper>
 
-            {edit===false ? <Button variant="contained" color="primary"  onClick={() => setEdit(true)}>Edit Profile</Button> : <div><Button variant="contained" color="primary"  onClick={handleCancel}>Cancel</Button> <Button variant="contained" type="submit" color="primary"  onClick={handleSubmit}>Submit</Button></div> }
+            {
+                edit === false ?
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        onClick={() => setEdit(true)}>Edit Profile</Button>
+                    :
+                    <>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            style={{
+                                marginRight: "10px",
+                                color: "red",
+                                border: "1px solid red"
+                            }}
+                            onClick={handleCancel}>Cancel</Button>
+                        <Button
+                            variant="contained"
+                            type="submit"
+                            color="primary"
+                            size="small"
+                            onClick={handleSubmit}>Submit</Button>
+                    </>
+            }
+
+            {/* Success / Failure alert for updates */}
+            <Snackbar
+                open={Boolean(alert)}
+                autoHideDuration={5000}
+                onClose={() => setAlert(null)}
+                anchorOrigin={{ horizontal: 'center', vertical: 'top' }}>
+
+                <Alert
+                    onClose={() => setAlert(null)}
+                    severity={alert?.type}
+                    style={{
+                        boxShadow: "1px 1px 4px #000000",
+                        borderRadius: "3px"
+                    }}
+                >
+
+                    {alert?.message}
+                </Alert>
+
+            </Snackbar>
+
         </div>
 
     )

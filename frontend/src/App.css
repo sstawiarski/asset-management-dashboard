@@ -12,6 +12,9 @@
   height: 5vh;
 }
 
+.root {
+  background-color: "#F0FCFF";
+}
 
 
 .App-header {
@@ -65,3 +68,14 @@
   top:-20px;
   opacity:0.9;
   }
+
+
+.photo-viewer-container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.photo {
+  width: 100% !important;
+  height: 100% !important;
+}

@@ -1,6 +1,6 @@
 //Retrieved from https://usehooks.com/useLocalStorage/
 
-import React, { useState } from "react";
+import { useState } from "react";
 
 const useLocalStorage = (key, initialValue) => {
     const [storedValue, setStoredValue] = useState(() => {
