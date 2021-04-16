@@ -1,7 +1,5 @@
 const express = require('express');
 const app = express();
-
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express');
@@ -36,7 +34,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
     origin: process.env.CORS_URL
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 /* Connect to MongoDB */
 mongoose.connect(process.env.DB_URL, {
@@ -73,3 +71,4 @@ app.use('/locations', locationRoutes);
 app.use('/assemblies', assemblyRoutes);
 app.use('/auth', authRoutes);
 app.use('/shipments', shipmentRoutes);
+app.use('/attachments', attachmentRoutes);

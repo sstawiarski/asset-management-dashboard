@@ -521,6 +521,45 @@ const schemas = {
                 }
             }
         }
+    },
+    attachment: {
+        type: 'object',
+        description: 'A file attachment',
+        properties: {
+            _id: {
+                type: 'string'
+            },
+            uuid: {
+                type: 'string',
+                description: 'A unique ID'
+            },
+            filename: {
+                type: 'string',
+                description: 'The "pretty" filename; the file\'s original name'
+            },
+            link: {
+                type: 'string',
+                description: 'The file\'s local name'
+            },
+            fileType: {
+                type: 'string',
+                description: 'The file\'s extension'
+            },
+            user: {
+                type: 'string',
+                description: 'The first and last name of the user who uploaded the attachment'
+            },
+            dateAdded: {
+                type: 'string',
+                description: 'The date the attachment was uploaded'
+            }
+        }
+    },
+    attachments: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/attachment'
+        }
     }
 }
 

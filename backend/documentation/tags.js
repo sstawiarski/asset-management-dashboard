@@ -19,6 +19,9 @@ const tags = [
     },
     {
         name: 'Authentication'
+    },
+    {
+        name: 'Attachments'
     }
 ]
 

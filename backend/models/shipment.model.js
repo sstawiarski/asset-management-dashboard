@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const manifest = require('./manifest.model')
+const attachment = require('./attachment.model');
 const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 const { getValue, setValue } = require("mongoose/lib/utils");
 
@@ -30,7 +31,8 @@ const Shipment = new Schema({
     confidenceScore: { type: mongoose.Schema.Types.Number, required: false, unique: false },
     manifest: [manifest],
     shipFromOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false },
-    shipToOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false }
+    shipToOverride: { type: mongoose.Schema.Types.Mixed, required: false, unique: false },
+    attachments: { type: [attachment], required: false, unique: false }
 });
 
 Shipment.plugin(mongoose_fuzzy_searching, {

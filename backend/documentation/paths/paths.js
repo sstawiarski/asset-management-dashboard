@@ -5,6 +5,7 @@ const employeePaths = require('./employees.paths')
 const locationPaths = require('./locations.paths')
 const authPaths = require('./auth.paths');
 const shipmentPaths = require('./shipments.paths');
+const attachmentPaths = require('./attachments.paths');
 
 const paths = {
     '/assets': assetsPaths.root,
@@ -36,6 +37,11 @@ const paths = {
     '/shipments': shipmentPaths.root,
     '/shipments/load': shipmentPaths.load,
     '/shipments/:key': shipmentPaths.findByKey,
+
+    '/attachments/:name': attachmentPaths.getByName,
+    '/attachments/shipment/:key': attachmentPaths.postToKey,
+    '/attachments/:uuid': attachmentPaths.deleteByUUID,
+    '/attachments/shipment/:key': attachmentPaths.getForShipment
 }
 
 module.exports = paths;
