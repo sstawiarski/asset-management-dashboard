@@ -2,9 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "SER-401 back end",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "run:nodemon": "nodemon server.js",
+    "run": "forever stopall && forever start server.js"
   },
   "author": "",
   "license": "ISC",
@@ -22,5 +24,9 @@
     "redis": "^3.0.2",
     "redis-server": "^1.2.2",
     "swagger-ui-express": "^4.1.4"
+  },
+  "devDependencies": {
+    "forever": "^3.0.4",
+    "nodemon": "2.0.7"
   }
 }

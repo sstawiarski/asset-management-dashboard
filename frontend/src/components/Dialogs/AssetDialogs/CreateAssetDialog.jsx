@@ -47,9 +47,6 @@ const useStyles = makeStyles((theme) => ({
 
 const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const classes = useStyles();
-
-    const [status, setStatus] = useState("");
-    const [failed, setFailed] = useState("");
     const [options, setOptions] = useState([]);
     const [serials, setSerials] = useState("");
     const [schema, setSchema] = useState("");
@@ -198,8 +195,6 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     //reset dialog to default state on close
     const handleClose = () => {
         setOpen(false);
-        setStatus("");
-        setFailed(null);
         setSerials("");
         setSchema("");
         setBeginRange("");
