@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
@@ -78,6 +79,16 @@ const WarningDialog = ({ open, setOpen, items, handleOverride, text, title, head
             </DialogActions>
         </Dialog>
     )
+};
+
+WarningDialog.propTypes = {
+    open: PropTypes.bool, 
+    setOpen: PropTypes.func, 
+    items: PropTypes.array, 
+    handleOverride: PropTypes.func, 
+    text: PropTypes.element, 
+    title: PropTypes.element, 
+    headers: PropTypes.array
 }
 
 export default WarningDialog;
