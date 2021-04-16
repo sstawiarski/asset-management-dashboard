@@ -32,13 +32,10 @@ import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
     tabBar: {
-        width: "100%",
-        marginLeft: "10%",
-        marginRight: "10%"
+
     },
     searchbarContainer: {
-        width: "40%",
-        paddingRight: "10%"
+
     }
 }));
 
@@ -251,14 +248,14 @@ const AllShipments = (props) => {
 
                                 {/* Shipment Status tabs */}
 
-                                <ScrollContainer>
-                                    <Tabs className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+
+                                    <Tabs variant="scrollable" className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
                                         <Tab label="All" value="All" name="All" />
                                         <Tab label="Staging" value="Staging" name="Staging" />
                                         <Tab label="Completed" value="Completed" name="Completed" />
                                         <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
                                     </Tabs>
-                                </ScrollContainer>
+
 
 
                                 <div className={classes.searchbarContainer}>

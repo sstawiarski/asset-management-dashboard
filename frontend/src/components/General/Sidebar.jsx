@@ -40,7 +40,10 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     menuIcon: {
-        marginRight: 20
+        marginRight: 5,
+        [theme.breakpoints.up('sm')]: {
+            marginRight: 20,
+        },
     },
     name: {
         color: "white",
@@ -95,6 +98,13 @@ const useStyles = makeStyles((theme) => ({
     },
     nonHighlighted: {
         color: "rgba(0, 0, 0, 0.6)"
+    },
+    accountCircleIcon: {
+        marginLeft: "65%",
+        [theme.breakpoints.up('sm')]: {
+            marginLeft: "24px",
+            width: "auto"
+        },
     }
 }));
 
@@ -264,10 +274,10 @@ const Sidebar = ({ location }) => {
                                     :
                                     <ListItemIcon onClick={() => history.push('/account')}>
                                         <AccountCircleIcon
-                                            style={{ marginLeft: "24px" }}
-                                            className={isHighlighted(location, "Account", open) ?
+                                            
+                                            className={[isHighlighted(location, "Account", open) ?
                                                 !open ? classes.highlighted : classes.moduleText
-                                                : classes.nonHighlighted}
+                                                : classes.nonHighlighted, classes.accountCircleIcon].join(' ')}
                                         />
                                     </ListItemIcon>
                             }
