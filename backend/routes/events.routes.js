@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
@@ -8,6 +7,7 @@ const Event = require('../models/event.model');
 const Shipment = require('../models/shipment.model')
 const sampleEvents = require('../sample_data/sampleEvents.data')
 const dateFunctions = require("date-fns");
+const { cacheTime } = require('../cache');
 
 router.get('/', async (req, res) => {
 
@@ -162,7 +162,7 @@ router.get('/', async (req, res) => {
         }
         aggregateArray.push(projection);
 
-        const result = await Event.aggregate(aggregateArray);
+        const result = await Event.aggregate(aggregateArray).cache({ ttl: cacheTime });
 
         if (req.query.search) {
 
@@ -216,7 +216,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.put('/load', (req, res) => {
+router.put('/load', async (req, res) => {
     try {
         sampleEvents.forEach(async (item) => {
             let data = item.eventData;
@@ -232,7 +232,10 @@ router.put('/load', (req, res) => {
             })
 
             await event.save();
-        })
+        });
+
+        await mongoose.clearCache({ collection: 'events' }, true);
+
         res.status(200).json({ message: "success" })
     } catch (err) {
         console.log(err);
@@ -252,7 +255,7 @@ router.get('/:serial', async (req, res) => {
             productIds: {
                 $in: serial
             }
-        }).sort({ eventTime: -1 });
+        }).sort({ eventTime: -1 }).cache({ ttl: cacheTime });
 
         if (req.query) {
             if (limit && (skip >= 0)) {

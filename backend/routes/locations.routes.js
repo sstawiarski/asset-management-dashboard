@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Location = require('../models/location.model');
 const sampleLocations = require('../sample_data/sampleLocations.data');
+const mongoose = require('mongoose');
+const { cacheTime } = require('../cache');
 
 router.get('/', async (req, res) => {
     const type = req.query.type;
@@ -11,18 +13,22 @@ router.get('/', async (req, res) => {
         /* No specific type selected, send all as one array with appropriate type and name identifiers */
         if (!type) {
 
-            const result = await Location.find({}, { contactName: 0, contactNumber: 0, __v: 0 })
-                .sort({ locationType: 1, locationName: 1 });
+            const result = await Location
+                .find({})
+                .select({ contactName: 0, contactNumber: 0, __v: 0 })
+                .sort({ locationType: 1, locationName: 1 })
+                .cache({ ttl: cacheTime });
 
             res.status(200).json(result);
+
         } else {
             if (decodeType !== "Rig" && decodeType !== "Staging Facility" && decodeType !== "Repair Facility") {
-
                 res.status(400).json({ message: "Invalid type specifier", internalCode: "invalid_location_type" });
-            
             } else {
 
-                const result = await Location.find({ locationType: decodeType }, { contactName: 0, contactNumber: 0, __v: 0 })
+                const result = await Location
+                    .find({ locationType: decodeType })
+                    .select({ contactName: 0, contactNumber: 0, __v: 0 })
                     .sort({ locationName: 1 });
 
                 if (result.length) {
@@ -49,6 +55,9 @@ router.put("/load", async (req, res) => {
         });
 
         await Promise.all(locations);
+
+        await mongoose.clearCache({ collection: 'locations' }, true);
+
         res.status(200).json({ message: "loaded locations" });
     } catch (err) {
         console.log(err);
@@ -59,9 +68,14 @@ router.put("/load", async (req, res) => {
 router.get("/:location", async (req, res) => {
     try {
         const getLocation = req.params.location;
-        const location = await Location.findOne({ key: getLocation });
+
+        const location = await Location
+            .findOne({ key: getLocation })
+            .cache({ ttl: cacheTime });
+
         if (location) res.status(200).json(location);
         else res.status(404).json({ message: "No location found for key", internalCode: "location_not_found" });
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "error retrieving location data", internalCode: "location_retrieval_error" });

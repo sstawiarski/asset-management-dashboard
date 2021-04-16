@@ -11,8 +11,11 @@ const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 const decrypt = require('../auth.utils').decrypt;
+const { cacheTime } = require('../cache');
 
 router.get("/", async (req, res, err) => {
+  const isMap = req?.query?.mapView === "true" && req?.query?.mapBounds;
+
   try {
     let aggregateArray = [];
 
@@ -246,7 +249,7 @@ router.get("/", async (req, res, err) => {
 
     aggregateArray.push(deployedLocationOverride);
     aggregateArray.push(locationModificationProjection);
-    
+
     if (req.query.mapView === "true") {
       const boundsArray = (decodeURI(req.query.mapBounds).split(','));
       const inBounds = {
@@ -333,7 +336,9 @@ router.get("/", async (req, res, err) => {
     }
     aggregateArray.push(projection);
 
-    const result = await Asset.aggregate(aggregateArray);
+    /* Map bounds change frequently so only cache for a minute to avoid ballooning of cache size */
+    const time = isMap ? (1 * 60 * 1000) : cacheTime;
+    const result = await Asset.aggregate(aggregateArray).cache({ ttl: time });
 
     //filter results to determine better or even exact matches
     if (req.query.search) {
@@ -489,6 +494,8 @@ router.post('/', async (req, res, err) => {
         }
       });
       await creation.save();
+
+      await mongoose.clearCache({ collection: ['assets', 'events'] }, true);
 
       //send back success message with any serials that could not be provisioned
       res.status(200).json({
@@ -675,6 +682,8 @@ router.patch("/", async (req, res) => {
       });
       await event.save();
 
+      await mongoose.clearCache({ collection: ['events', 'assets'] }, true);
+
       const additionalInfo = (missingChildSerials.length && req.body.override) ? `` : (!req.body.override && missingChildSerials.length) ? `${missingChildSerials.length} of these assets were children of assemblies not in the requested list and were not updated.` : "";
       //use lengths from found arrays to send a response
       res.status(200).json({
@@ -701,7 +710,7 @@ router.patch("/", async (req, res) => {
  */
 router.get('/schemas', async (req, res) => {
   try {
-    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 })
+    const results = await AssemblySchema.find({ components: { $exists: false } }).select({ components: 0, _id: 0, __v: 0 }).cache({ ttl: cacheTime });
     res.status(200).json(results);
   } catch (err) {
     console.log(err);
@@ -721,6 +730,8 @@ router.put("/load", async (req, res) => {
       });
       await asset.save();
     });
+
+    await mongoose.clearCache({ collection: 'assets' }, true);
 
     res.status(200).json({ message: "success" });
   } catch (err) {
@@ -791,6 +802,9 @@ router.post('/assembly', async (req, res, err) => {
     });
 
     await creation.save();
+
+
+    await mongoose.clearCache({ collection: ['assets', 'events'] }, true);
 
     res.status(200).json({ message: "Successfully created assembly", key: `CRE-${count.next}` });
 
@@ -867,6 +881,8 @@ router.patch('/assembly', async (req, res) => {
 
     await modification.save();
 
+    await mongoose.clearCache({ collection: ['assets', 'events'] }, true);
+
     res.status(200).json({ message: "Successfully updated assembly" });
 
   } catch (err) {
@@ -930,6 +946,8 @@ router.put("/assembly/schema", async (req, res) => {
       await assembly.save();
     }
 
+    await mongoose.clearCache({ collection: 'schemas' }, true);
+
     res.status(200).json({
       message: "success"
     });
@@ -969,19 +987,20 @@ router.get("/assembly/schema", async (req, res) => {
     let schema = null;
 
     if (isAll) {
-      schema = await AssemblySchema.find(query).select({
-        _id: 0,
-        __v: 0,
-        components: 0
-      });
+      schema = await AssemblySchema
+        .find(query)
+        .select({ _id: 0, __v: 0, components: 0 })
+        .cache({ ttl: cacheTime });
+
     } else {
-      schema = await AssemblySchema.findOne(query).select({
-        _id: 0,
-        __v: 0
-      });
+      schema = await AssemblySchema
+        .findOne(query)
+        .select({ _id: 0, __v: 0 })
+        .cache({ ttl: cacheTime });
     }
     if ((isAll && schema.length > 0) || (schema instanceof Object && Object.keys(schema).length > 0)) {
       res.status(200).json(schema);
+
     } else {
       res.status(404).json({
         message: "Error finding assembly schema",
@@ -1007,7 +1026,11 @@ router.get("/:serial", async (req, res, err) => {
   const projection = project ? { [project]: 1, _id: 0 } : {};
 
   try {
-    let asset = await Asset.findOne({ serial: serial }, projection).populate('deployedLocation');
+    let asset = await Asset
+      .findOne({ serial: serial })
+      .select(projection)
+      .populate('deployedLocation')
+      .cache({ ttl: cacheTime });
 
     /* if there is a location override, update the deployedLocation with the overrides and remove the override object */
     if (asset["deployedLocationOverride"] && asset["deployedLocation"]) {
