@@ -4,6 +4,7 @@
  * License: MIT
  */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -168,5 +169,10 @@ const AssetResult = ({ data, divider }) => {
         </div>
     );
 };
+
+AssetResult.propTypes = {
+    data: PropTypes.object,
+    divider: PropTypes.element
+}
 
 export default AssetResult;
