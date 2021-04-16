@@ -57,6 +57,7 @@ const locationRoutes = require('./routes/locations.routes')
 const assemblyRoutes = require('./routes/assemblies.routes')
 const authRoutes = require('./routes/auth.routes')
 const shipmentRoutes = require('./routes/shipments.routes')
+const attachmentRoutes = require('./routes/attachments.routes')
 
 /* Swagger config for API docs */
 const swaggerConfig = require('./documentation/swagger.config');

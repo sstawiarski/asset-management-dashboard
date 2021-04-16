@@ -94,19 +94,15 @@ router.post('/shipment/:key', upload, async (req, res) => {
 router.get('/:uuid', async (req, res) => {
     const { uuid } = req.params;
 
+    let file;
     try {
-        /* Load file from filesystem */
-        const file = await fs.readFile(`public/uploads/${uuid}`);
+        file = await fs.readFile(`public/uploads/${uuid}`);
+    } catch (err) { }
 
-        if (!file) {
-            res.status(404).json({ message: "Attachment not found", internalCode: "attachment_not_found" });
-        } else {
-            res.status(200).send(file).end();
-        }
-
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Internal server error", internalCode: "internal_server_error" });
+    if (!file) {
+        res.status(404).json({ message: "Attachment not found", internalCode: "attachment_not_found" });
+    } else {
+        res.status(200).send(file).end();
     }
 
 });
@@ -138,7 +134,7 @@ router.delete('/:uuid', async (req, res) => {
             /* Delete attachment from the filesystem */
             await fs.unlink(link);
 
-            res.status(200).status(200).json({ message: "Successfully deleted attachment" });
+            res.status(200).json({ message: "Successfully deleted attachment" });
         }
     } catch (err) {
         res.status(500).json({ message: "Could not delete attachment", internalCode: "attachment_deletion_error" });
