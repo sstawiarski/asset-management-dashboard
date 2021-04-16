@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import PropTypes from 'prop-types';
 
 //Library Tools
@@ -12,8 +12,8 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 
 //Other Components
-import FileViewer from 'react-file-viewer';
 import PDFViewer from '../../General/PDFViewer'
+const FileViewer = React.lazy(() => import('react-file-viewer'));
 
 const useStyles = makeStyles(theme => ({
     downloadLinkContainer: {
@@ -74,10 +74,14 @@ const FilePreview = ({ file, open, onClose, title, prepend }) => {
                 {
                     file?.fileType === 'pdf' ?
                         <PDFViewer filepath={downloadURL} />
-                        : <FileViewer
-                            className={classes.fileViewer}
-                            fileType={file ? file.fileType : "jpg"}
-                            filePath={downloadURL} />
+                        : file?.fileType && (
+                            <Suspense fallback={null}>
+                                <FileViewer
+                                    className={classes.fileViewer}
+                                    fileType={file ? file.fileType : "jpg"}
+                                    filePath={downloadURL} />
+                            </Suspense>
+                        )
 
                 }
 

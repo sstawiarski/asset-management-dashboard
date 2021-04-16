@@ -279,7 +279,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters, disableStatusFilter }
                                     inputVariant="outlined"
                                     label="Date Created"
                                     value={state.created}
-                                    onChange={date => handleDateChange("updated", date)}
+                                    onChange={date => handleDateChange("created", date)}
                                     KeyboardButtonProps={{
                                         'aria-label': 'change date',
                                     }}

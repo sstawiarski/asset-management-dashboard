@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-//Library Tools
-import { makeStyles } from '@material-ui/core/styles';
-import ScrollContainer from 'react-indiana-drag-scroll'
-
 //Material-UI Components
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
@@ -30,20 +26,11 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
 
-const useStyles = makeStyles((theme) => ({
-    tabBar: {
-
-    },
-    searchbarContainer: {
-
-    }
-}));
-
 //the object fields to get for the table we need, in this case shipments
 const selectedFields = ["key", "shipmentType", "status", "shipFrom", "shipTo", "updated", "createdBy", "created"];
 
 const AllShipments = (props) => {
-    const classes = useStyles();
+
 
     const isWarning = false; // TODO: temporary fix for dialogs only opening once due to warning check not being implemented (yet?)
     const [currentTab, setCurrentTab] = useState("All");
@@ -249,7 +236,7 @@ const AllShipments = (props) => {
                                 {/* Shipment Status tabs */}
 
 
-                                    <Tabs variant="scrollable" className={classes.tabBar} aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+                                    <Tabs variant="scrollable" aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
                                         <Tab label="All" value="All" name="All" />
                                         <Tab label="Staging" value="Staging" name="Staging" />
                                         <Tab label="Completed" value="Completed" name="Completed" />
@@ -258,7 +245,7 @@ const AllShipments = (props) => {
 
 
 
-                                <div className={classes.searchbarContainer}>
+
                                     <TextField id="searchBox"
                                         variant="outlined"
                                         size="small"
@@ -273,7 +260,7 @@ const AllShipments = (props) => {
                                         }}
                                         onKeyDown={handleKeyDown}
                                     />
-                                </div>
+
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
                                 </IconButton>
