@@ -194,22 +194,26 @@ const ShipmentCreator = () => {
 
     /* Set information from creator dialog upon submission */
     const handleCreate = (childState) => {
-        setState(s => ({
-            ...s,
-            shipFrom: {
-                id: childState.shipFrom["_id"],
-                key: childState.shipFrom["key"],
-                name: childState.shipFrom["locationName"]
-            },
-            shipTo: {
-                id: childState.shipTo["_id"],
-                key: childState.shipTo["key"],
-                name: childState.shipTo["locationName"]
-            },
-            shipmentType: childState.shipmentType
-        }));
-        setCreatorOpen(false);
-        toggleShipment(true);
+        if(childState.shipFrom==null || childState.shipTo==null || childState.shipmentType==null){
+            console.log('all fields must be filled.')
+        }else{
+            setState(s => ({
+                ...s,
+                shipFrom: {
+                    id: childState.shipFrom["_id"],
+                    key: childState.shipFrom["key"],
+                    name: childState.shipFrom["locationName"]
+                },
+                shipTo: {
+                    id: childState.shipTo["_id"],
+                    key: childState.shipTo["key"],
+                    name: childState.shipTo["locationName"]
+                },
+                shipmentType: childState.shipmentType
+            }));
+            setCreatorOpen(false);
+            toggleShipment(true);
+        }
     }
 
     /* Handle cancel button on creator dialog */
@@ -309,24 +313,30 @@ const ShipmentCreator = () => {
      * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
+        console.log(state.shipFrom);
+        console.log(state.shipTo);
+        if(state.shipFrom==null || state.shipTo==null){
+            console.log("fill out all forms")
+            alert("All fields must be filled");
+        }else{
+            setSubmission(s => ({
+                ...s,
+                shipmentType: state.shipmentType,
+                shipFrom: state.shipFrom,
+                shipTo: state.shipTo,
+                assets: cartItems.map(item => ({
+                    serial: item.serial,
+                    name: item.name ? item.name : item.assetName,
+                    quantity: item.quantity ? item.quantity : 1,
+                    notes: item.notes ? item.notes : null,
+                    serialized: item.serial !== "N/A" ? true : false
+                })),
+                override: state.override || false
+            }));
 
-        setSubmission(s => ({
-            ...s,
-            shipmentType: state.shipmentType,
-            shipFrom: state.shipFrom,
-            shipTo: state.shipTo,
-            assets: cartItems.map(item => ({
-                serial: item.serial,
-                name: item.name ? item.name : item.assetName,
-                quantity: item.quantity ? item.quantity : 1,
-                notes: item.notes ? item.notes : null,
-                serialized: item.serial !== "N/A" ? true : false
-            })),
-            override: state.override || false
-        }));
-
-        setAnchorEl(null);
-        setSubmitOpen(true);
+            setAnchorEl(null);
+            setSubmitOpen(true);
+    }
 
     };
 
