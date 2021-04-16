@@ -9,8 +9,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
 
 //Custom Components
 import ShipmentFilter from '../../components/Dialogs/ShipmentDialogs/ShipmentFilter';
@@ -19,9 +17,9 @@ import Header from '../../components/General/Header'
 import CustomTable from '../../components/Tables/CustomTable'
 import TableToolbar from '../../components/Tables/TableToolbar';
 import ChipBar from '../../components/Tables/ChipBar';
+import TableSearchbar from '../../components/Tables/TableSearchbar';
 
 //Icons
-import SearchIcon from '@material-ui/icons/Search';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import EditIcon from '@material-ui/icons/Edit';
 import AddIcon from '@material-ui/icons/Add';
@@ -234,32 +232,27 @@ const AllShipments = (props) => {
                                 </Link>
 
                                 {/* Shipment Status tabs */}
+                                <Tabs variant="scrollable" aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
+                                    <Tab label="All" value="All" name="All" />
+                                    <Tab label="Staging" value="Staging" name="Staging" />
+                                    <Tab label="Completed" value="Completed" name="Completed" />
+                                    <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
+                                </Tabs>
 
-
-                                    <Tabs variant="scrollable" aria-label="shipment status tabs" value={currentTab} onChange={handleTabChange}>
-                                        <Tab label="All" value="All" name="All" />
-                                        <Tab label="Staging" value="Staging" name="Staging" />
-                                        <Tab label="Completed" value="Completed" name="Completed" />
-                                        <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
-                                    </Tabs>
-
-
-
-
-                                    <TextField id="searchBox"
-                                        variant="outlined"
-                                        size="small"
-                                        fullWidth
-                                        value={search}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon />
-                                                </InputAdornment>
-                                            )
-                                        }}
-                                        onKeyDown={handleKeyDown}
-                                    />
+                                <TableSearchbar
+                                    searchValue={search}
+                                    onInputChange={(e) => setSearch(e.target.value)}
+                                    onSearch={handleKeyDown}
+                                    onClear={() => {
+                                        setSearch("");
+                                        setFilters(f => {
+                                            const newFilters = { ...f };
+                                            delete newFilters["search"];
+                                            return newFilters;
+                                        })
+                                    }}
+                                    disabled={selected.length > 0}
+                                />
 
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
