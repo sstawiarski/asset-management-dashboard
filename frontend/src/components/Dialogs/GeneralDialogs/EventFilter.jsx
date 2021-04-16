@@ -1,7 +1,6 @@
 import React from 'react';
 
 import DateFnsUtils from '@date-io/date-fns';
-import 'date-fns';
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, FormControl, DialogTitle } from '@material-ui/core';
 import Select from '@material-ui/core/Select';

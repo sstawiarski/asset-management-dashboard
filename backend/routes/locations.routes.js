@@ -49,15 +49,8 @@ router.get('/', async (req, res) => {
 
 router.put("/load", async (req, res) => {
     try {
-        const locations = sampleLocations.map(item => {
-            const loc = new Location({ ...item });
-            return loc.save();
-        });
-
-        await Promise.all(locations);
-
+        await Location.create(sampleLocations);
         await mongoose.clearCache({ collection: 'locations' }, true);
-
         res.status(200).json({ message: "loaded locations" });
     } catch (err) {
         console.log(err);
