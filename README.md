@@ -22,6 +22,10 @@ You may use the following credentials to log in:
 Username: jsmith
 Password: password1
 ```
+**Note:** The live demo is hosted on a free [Heroku](https://www.heroku.com/) server which shuts down after 30 minutes of inactivity (and deletes files with it). 
+- You may need to refresh the page multiple times to allow the server to start before login or API calls can go through
+- Some attachments may show up under a shipment's details, but attempting to view them results in a spinner because Heroku deleted the files as temporary
+  - **To test attachment functionality**, upload a new attachment and immediately view it
 
 ### Build status
 [![Build Status](https://travis-ci.com/sstawiarski/SER-401-Project-24.svg?token=yWvjuE637yC3W4EstXCj&branch=main)](https://travis-ci.com/sstawiarski/SER-401-Project-24)
