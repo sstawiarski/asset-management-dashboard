@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles'
 
 import Button from '@material-ui/core/Button';
@@ -200,6 +201,12 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
             </DialogActions>
         </Dialog>
     );
+};
+
+CreateNewShipmentDialog.propTypes = {
+    creatorOpen: PropTypes.bool, 
+    handleCreate: PropTypes.func, 
+    handleCancel: PropTypes.func
 };
 
 export default CreateNewShipmentDialog;
