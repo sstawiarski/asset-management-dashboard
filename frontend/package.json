@@ -31,7 +31,6 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "react-uuid": "^1.0.2",
-    "source-map-explorer": "^2.5.2",
     "turf-linestring": "^1.0.2"
   },
   "scripts": {
@@ -39,8 +38,7 @@
     "build": "react-scripts build",
     "test": "CI=true react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "coveralls": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls"
   },
   "eslintConfig": {
     "extends": "react-app"
