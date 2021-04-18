@@ -1,0 +1,2762 @@
+[{
+  "_id": {
+    "$oid": "5f8de0a55e49971ce83d8692"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "98",
+    "a9",
+    "ea",
+    "re",
+    "a98",
+    "ea9",
+    "rea",
+    "ea98",
+    "rea9",
+    "rea98"
+  ],
+  "key": "REA-98",
+  "eventType": "Reassignment",
+  "eventData": {
+    "authorizor": "Jane Doe",
+    "newAssignee": "Drillco",
+    "oldAssignee": "Supply Chain USA"
+  },
+  "eventTime": {
+    "$date": "2020-10-19T18:53:25.415Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f8de0a55e49971ce83d8691"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "09",
+    "90",
+    "n9",
+    "wn",
+    "ow",
+    "909",
+    "n90",
+    "wn9",
+    "own",
+    "n909",
+    "wn90",
+    "own9",
+    "wn909",
+    "own90",
+    "own909"
+  ],
+  "key": "OWN-909",
+  "eventType": "Change of Ownership",
+  "eventData": {
+    "authorizer": "John Smith",
+    "newOwner": "Evolution-Canada",
+    "oldOwner": "Supply Chain USA"
+  },
+  "eventTime": {
+    "$date": "2020-10-19T18:53:25.415Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f9a177050d76040abbbc13a"
+  },
+  "productIds": [
+    "X800-920",
+    "G800-1111",
+    "C800-1011",
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "t3",
+    "et",
+    "re",
+    "et3",
+    "ret",
+    "ret3"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-10-29T01:14:24.863Z"
+  },
+  "key": "RET-3",
+  "eventData": {
+    "details": "Changed 4 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f9a1a217f3aa24108ad3891"
+  },
+  "productIds": [
+    "X800-920",
+    "G800-1111",
+    "C800-1011",
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "t4",
+    "et",
+    "re",
+    "et4",
+    "ret",
+    "ret4"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-10-29T01:25:53.241Z"
+  },
+  "key": "RET-4",
+  "eventData": {
+    "details": "Changed 4 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f9a1a427f3aa24108ad3892"
+  },
+  "productIds": [
+    "X800-920",
+    "G800-1111",
+    "C800-1011",
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "t5",
+    "et",
+    "re",
+    "et5",
+    "ret",
+    "ret5"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-10-29T01:26:26.941Z"
+  },
+  "key": "RET-5",
+  "eventData": {
+    "details": "Changed 4 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa5b53c22ad54216935cadf"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "t7",
+    "et",
+    "re",
+    "et7",
+    "ret",
+    "ret7"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-06T20:42:36.180Z"
+  },
+  "key": "RET-7",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa5b54a22ad54216935cae0"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "t8",
+    "et",
+    "re",
+    "et8",
+    "ret",
+    "ret8"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-06T20:42:50.454Z"
+  },
+  "key": "RET-8",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa7601cc82a1d48d0e5ba72"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "t9",
+    "et",
+    "re",
+    "et9",
+    "ret",
+    "ret9"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-08T03:03:56.058Z"
+  },
+  "key": "RET-9",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9dd298d6d53a7d136c0ec"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "10",
+    "p1",
+    "rp",
+    "gr",
+    "p10",
+    "rp1",
+    "grp",
+    "rp10",
+    "grp1",
+    "grp10"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-10T00:22:01.717Z"
+  },
+  "key": "GRP-10",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to US-Group-11."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9dfbd8d6d53a7d136c0ed"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "11",
+    "p1",
+    "rp",
+    "gr",
+    "p11",
+    "rp1",
+    "grp",
+    "rp11",
+    "grp1",
+    "grp11"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-10T00:33:01.037Z"
+  },
+  "key": "GRP-11",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to US-Group-9."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9dfc88d6d53a7d136c0ee"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "12",
+    "p1",
+    "rp",
+    "gr",
+    "p12",
+    "rp1",
+    "grp",
+    "rp12",
+    "grp1",
+    "grp12"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-10T00:33:12.714Z"
+  },
+  "key": "GRP-12",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to US-Group-11."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9e0c88d6d53a7d136c0ef"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "13",
+    "p1",
+    "rp",
+    "gr",
+    "p13",
+    "rp1",
+    "grp",
+    "rp13",
+    "grp1",
+    "grp13"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-10T00:37:28.041Z"
+  },
+  "key": "GRP-13",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Group11."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9e15f8d6d53a7d136c0f0"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "14",
+    "p1",
+    "rp",
+    "gr",
+    "p14",
+    "rp1",
+    "grp",
+    "rp14",
+    "grp1",
+    "grp14"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-10T00:39:59.673Z"
+  },
+  "key": "GRP-14",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to ."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb36b58bc8017322013983a"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "15",
+    "p1",
+    "rp",
+    "gr",
+    "p15",
+    "rp1",
+    "grp",
+    "rp15",
+    "grp1",
+    "grp15"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-17T06:19:04.465Z"
+  },
+  "key": "GRP-15",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to tag."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb36b5fbc8017322013983b"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "16",
+    "p1",
+    "rp",
+    "gr",
+    "p16",
+    "rp1",
+    "grp",
+    "rp16",
+    "grp1",
+    "grp16"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-17T06:19:11.957Z"
+  },
+  "key": "GRP-16",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to tag."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb36b7abc8017322013983c"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "17",
+    "p1",
+    "rp",
+    "gr",
+    "p17",
+    "rp1",
+    "grp",
+    "rp17",
+    "grp1",
+    "grp17"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-17T06:19:38.753Z"
+  },
+  "key": "GRP-17",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to ."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb36b81bc8017322013983d"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "18",
+    "p1",
+    "rp",
+    "gr",
+    "p18",
+    "rp1",
+    "grp",
+    "rp18",
+    "grp1",
+    "grp18"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-17T06:19:45.599Z"
+  },
+  "key": "GRP-18",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to ."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e0c84854050d9d50d442"
+  },
+  "productIds": [],
+  "key_fuzzy": [
+    "26",
+    "t2",
+    "et",
+    "re",
+    "t26",
+    "et2",
+    "ret",
+    "et26",
+    "ret2",
+    "ret26"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:16:56.988Z"
+  },
+  "key": "RET-26",
+  "eventData": {
+    "details": "Changed 0 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e1646936870dd53f708d"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "29",
+    "m2",
+    "em",
+    "re",
+    "m29",
+    "em2",
+    "rem",
+    "em29",
+    "rem2",
+    "rem29"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:19:32.357Z"
+  },
+  "key": "REM-29",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e19c6936870dd53f708e"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "30",
+    "t3",
+    "et",
+    "re",
+    "t30",
+    "et3",
+    "ret",
+    "et30",
+    "ret3",
+    "ret30"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:20:28.272Z"
+  },
+  "key": "RET-30",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e19c6936870dd53f708f"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "31",
+    "m3",
+    "em",
+    "re",
+    "m31",
+    "em3",
+    "rem",
+    "em31",
+    "rem3",
+    "rem31"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:20:28.290Z"
+  },
+  "key": "REM-31",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e2f56936870dd53f7090"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "32",
+    "t3",
+    "et",
+    "re",
+    "t32",
+    "et3",
+    "ret",
+    "et32",
+    "ret3",
+    "ret32"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:26:13.196Z"
+  },
+  "key": "RET-32",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e2f56936870dd53f7091"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "33",
+    "m3",
+    "em",
+    "re",
+    "m33",
+    "em3",
+    "rem",
+    "em33",
+    "rem3",
+    "rem33"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:26:13.217Z"
+  },
+  "key": "REM-33",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e37bf932130e0785b228"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "34",
+    "t3",
+    "et",
+    "re",
+    "t34",
+    "et3",
+    "ret",
+    "et34",
+    "ret3",
+    "ret34"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:28:27.869Z"
+  },
+  "key": "RET-34",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e37bf932130e0785b229"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "35",
+    "m3",
+    "em",
+    "re",
+    "m35",
+    "em3",
+    "rem",
+    "em35",
+    "rem3",
+    "rem35"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:28:27.900Z"
+  },
+  "key": "REM-35",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e3fab4646b0e1bee7cbd"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "36",
+    "t3",
+    "et",
+    "re",
+    "t36",
+    "et3",
+    "ret",
+    "et36",
+    "ret3",
+    "ret36"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:30:34.852Z"
+  },
+  "key": "RET-36",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e3fab4646b0e1bee7cbe"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "37",
+    "m3",
+    "em",
+    "re",
+    "m37",
+    "em3",
+    "rem",
+    "em37",
+    "rem3",
+    "rem37"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:30:34.885Z"
+  },
+  "key": "REM-37",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e503a9fd1d0e416fc7e2"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "38",
+    "m3",
+    "em",
+    "re",
+    "m38",
+    "em3",
+    "rem",
+    "em38",
+    "rem3",
+    "rem38"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:34:59.399Z"
+  },
+  "key": "REM-38",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e503a9fd1d0e416fc7e3"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "39",
+    "t3",
+    "et",
+    "re",
+    "t39",
+    "et3",
+    "ret",
+    "et39",
+    "ret3",
+    "ret39"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:34:59.451Z"
+  },
+  "key": "RET-39",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e87820a9980e7c427737"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "40",
+    "t4",
+    "et",
+    "re",
+    "t40",
+    "et4",
+    "ret",
+    "et40",
+    "ret4",
+    "ret40"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:49:44.798Z"
+  },
+  "key": "RET-40",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e8fbc6fd950eb21a5562"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "41",
+    "m4",
+    "em",
+    "re",
+    "m41",
+    "em4",
+    "rem",
+    "em41",
+    "rem4",
+    "rem41"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-19T21:51:55.860Z"
+  },
+  "key": "REM-41",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e8fbc6fd950eb21a5563"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "42",
+    "t4",
+    "et",
+    "re",
+    "t42",
+    "et4",
+    "ret",
+    "et42",
+    "ret4",
+    "ret42"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:51:55.918Z"
+  },
+  "key": "RET-42",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e90bc6fd950eb21a5564"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "43",
+    "t4",
+    "et",
+    "re",
+    "t43",
+    "et4",
+    "ret",
+    "et43",
+    "ret4",
+    "ret43"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:52:11.662Z"
+  },
+  "key": "RET-43",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6e961c6fd950eb21a5565"
+  },
+  "productIds": [
+    "X800-920"
+  ],
+  "key_fuzzy": [
+    "45",
+    "t4",
+    "et",
+    "re",
+    "t45",
+    "et4",
+    "ret",
+    "et45",
+    "ret4",
+    "ret45"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T21:53:37.665Z"
+  },
+  "key": "RET-45",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6f3f2a053b517edf47fb9"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "46",
+    "a4",
+    "ea",
+    "re",
+    "a46",
+    "ea4",
+    "rea",
+    "ea46",
+    "rea4",
+    "rea46"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-11-19T22:38:42.839Z"
+  },
+  "key": "REA-46",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to ."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6f4b2a053b517edf47fba"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "47",
+    "a4",
+    "ea",
+    "re",
+    "a47",
+    "ea4",
+    "rea",
+    "ea47",
+    "rea4",
+    "rea47"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-11-19T22:41:54.453Z"
+  },
+  "key": "REA-47",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to [object Object]."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6f55f8e043c182bf3c7a3"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "48",
+    "a4",
+    "ea",
+    "re",
+    "a48",
+    "ea4",
+    "rea",
+    "ea48",
+    "rea4",
+    "rea48"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-11-19T22:44:47.784Z"
+  },
+  "key": "REA-48",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to Supply Chain USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6f5df8e043c182bf3c7a4"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "49",
+    "n4",
+    "wn",
+    "ow",
+    "n49",
+    "wn4",
+    "own",
+    "wn49",
+    "own4",
+    "own49"
+  ],
+  "eventType": "Change of Ownership",
+  "eventTime": {
+    "$date": "2020-11-19T22:46:55.604Z"
+  },
+  "key": "OWN-49",
+  "eventData": {
+    "details": "Changed 1 product(s) Owner to Supply Chain USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6fb6d937fb01be9dd1515"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "50",
+    "t5",
+    "et",
+    "re",
+    "t50",
+    "et5",
+    "ret",
+    "et50",
+    "ret5",
+    "ret50"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T23:10:37.738Z"
+  },
+  "key": "RET-50",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6fde6937fb01be9dd1516"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "51",
+    "t5",
+    "et",
+    "re",
+    "t51",
+    "et5",
+    "ret",
+    "et51",
+    "ret5",
+    "ret51"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T23:21:10.481Z"
+  },
+  "key": "RET-51",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6ff0f937fb01be9dd1517"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "52",
+    "t5",
+    "et",
+    "re",
+    "t52",
+    "et5",
+    "ret",
+    "et52",
+    "ret5",
+    "ret52"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-19T23:26:07.186Z"
+  },
+  "key": "RET-52",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6ff8a937fb01be9dd1518"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "53",
+    "p5",
+    "rp",
+    "gr",
+    "p53",
+    "rp5",
+    "grp",
+    "rp53",
+    "grp5",
+    "grp53"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-19T23:28:10.070Z"
+  },
+  "key": "GRP-53",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to USA-Group-1."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb6ffe4937fb01be9dd1519"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "54",
+    "p5",
+    "rp",
+    "gr",
+    "p54",
+    "rp5",
+    "grp",
+    "rp54",
+    "grp5",
+    "grp54"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-19T23:29:40.508Z"
+  },
+  "key": "GRP-54",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to USA-Group-2."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb70145937fb01be9dd151a"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "55",
+    "a5",
+    "ea",
+    "re",
+    "a55",
+    "ea5",
+    "rea",
+    "ea55",
+    "rea5",
+    "rea55"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-11-19T23:35:33.675Z"
+  },
+  "key": "REA-55",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to Evolution-USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb999c9fc5ded4054b3da8f"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "59",
+    "m5",
+    "em",
+    "re",
+    "m59",
+    "em5",
+    "rem",
+    "em59",
+    "rem5",
+    "rem59"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-11-21T22:50:49.789Z"
+  },
+  "key": "REM-59",
+  "eventData": {
+    "details": "Removed Centralizer from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb999c9fc5ded4054b3da90"
+  },
+  "productIds": [
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "60",
+    "t6",
+    "et",
+    "re",
+    "t60",
+    "et6",
+    "ret",
+    "et60",
+    "ret6",
+    "ret60"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2020-11-21T22:50:49.856Z"
+  },
+  "key": "RET-60",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb9ccb8d5160251a0916f23"
+  },
+  "productIds": [
+    "C800-1011",
+    "G800-11120"
+  ],
+  "key_fuzzy": [
+    "61",
+    "p6",
+    "rp",
+    "gr",
+    "p61",
+    "rp6",
+    "grp",
+    "rp61",
+    "grp6",
+    "grp61"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-11-22T02:28:08.221Z"
+  },
+  "key": "GRP-61",
+  "eventData": {
+    "details": "Changed 2 product(s) GroupTag to tag 3."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fd281524f556d58a4c5b214"
+  },
+  "productIds": [
+    "1234567890",
+    "2345",
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "62",
+    "p6",
+    "rp",
+    "gr",
+    "p62",
+    "rp6",
+    "grp",
+    "rp62",
+    "grp6",
+    "grp62"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-12-10T20:13:06.702Z"
+  },
+  "key": "GRP-62",
+  "eventData": {
+    "details": "Changed 3 product(s) GroupTag to Tag Test 1."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fd2816a4f556d58a4c5b215"
+  },
+  "productIds": [
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "63",
+    "m6",
+    "em",
+    "re",
+    "m63",
+    "em6",
+    "rem",
+    "em63",
+    "rem6",
+    "rem63"
+  ],
+  "eventType": "Removal of Child Asset",
+  "eventTime": {
+    "$date": "2020-12-10T20:13:30.825Z"
+  },
+  "key": "REM-63",
+  "eventData": {
+    "details": "Removed Gap Sub from G800-1119 and marked incomplete."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fd2816a4f556d58a4c5b216"
+  },
+  "productIds": [
+    "G800-1111"
+  ],
+  "key_fuzzy": [
+    "64",
+    "p6",
+    "rp",
+    "gr",
+    "p64",
+    "rp6",
+    "grp",
+    "rp64",
+    "grp6",
+    "grp64"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-12-10T20:13:30.874Z"
+  },
+  "key": "GRP-64",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Test."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fd9a2d9c578dc384c96a0ab"
+  },
+  "productIds": [
+    "1234567890",
+    "2345"
+  ],
+  "key_fuzzy": [
+    "65",
+    "p6",
+    "rp",
+    "gr",
+    "p65",
+    "rp6",
+    "grp",
+    "rp65",
+    "grp6",
+    "grp65"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-12-16T06:02:01.713Z"
+  },
+  "key": "GRP-65",
+  "eventData": {
+    "details": "Changed 2 product(s) GroupTag to Tag Test 2."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda5a9ec578dc384c96a0ac"
+  },
+  "productIds": [
+    "Fritts-1"
+  ],
+  "key_fuzzy": [
+    "66",
+    "a6",
+    "ea",
+    "re",
+    "a66",
+    "ea6",
+    "rea",
+    "ea66",
+    "rea6",
+    "rea66"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-12-16T19:06:06.506Z"
+  },
+  "key": "REA-66",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to Evolution-USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda5ad8c578dc384c96a0ad"
+  },
+  "productIds": [
+    "Fritts-1"
+  ],
+  "key_fuzzy": [
+    "67",
+    "a6",
+    "ea",
+    "re",
+    "a67",
+    "ea6",
+    "rea",
+    "ea67",
+    "rea6",
+    "rea67"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-12-16T19:07:04.903Z"
+  },
+  "key": "REA-67",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to Bob's Drilling."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda5befc578dc384c96a0ae"
+  },
+  "productIds": [
+    "Fritts-1"
+  ],
+  "key_fuzzy": [
+    "68",
+    "a6",
+    "ea",
+    "re",
+    "a68",
+    "ea6",
+    "rea",
+    "ea68",
+    "rea6",
+    "rea68"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2020-12-16T19:11:43.980Z"
+  },
+  "key": "REA-68",
+  "eventData": {
+    "details": "Changed 1 product(s) Assignee to BHGE Drilling."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda5cdac578dc384c96a0af"
+  },
+  "productIds": [
+    "Fritts-1"
+  ],
+  "key_fuzzy": [
+    "69",
+    "n6",
+    "wn",
+    "ow",
+    "n69",
+    "wn6",
+    "own",
+    "wn69",
+    "own6",
+    "own69"
+  ],
+  "eventType": "Change of Ownership",
+  "eventTime": {
+    "$date": "2020-12-16T19:15:38.247Z"
+  },
+  "key": "OWN-69",
+  "eventData": {
+    "details": "Changed 1 product(s) Owner to Evolution-USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda71b6c578dc384c96a0b0"
+  },
+  "productIds": [
+    "X800-920",
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "70",
+    "p7",
+    "rp",
+    "gr",
+    "p70",
+    "rp7",
+    "grp",
+    "rp70",
+    "grp7",
+    "grp70"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-12-16T20:44:38.937Z"
+  },
+  "key": "GRP-70",
+  "eventData": {
+    "details": "Changed 2 product(s) GroupTag to Rental Pool."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fda71d6c578dc384c96a0b1"
+  },
+  "productIds": [
+    "X800-920",
+    "G800-1119"
+  ],
+  "key_fuzzy": [
+    "71",
+    "p7",
+    "rp",
+    "gr",
+    "p71",
+    "rp7",
+    "grp",
+    "rp71",
+    "grp7",
+    "grp71"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2020-12-16T20:45:10.632Z"
+  },
+  "key": "GRP-71",
+  "eventData": {
+    "details": "Changed 2 product(s) GroupTag to ."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6005e813b732acc2aba8563a"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "74",
+    "p7",
+    "rp",
+    "gr",
+    "p74",
+    "rp7",
+    "grp",
+    "rp74",
+    "grp7",
+    "grp74"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-01-18T19:57:07.455Z"
+  },
+  "key": "GRP-74",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Tag Test."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6005e851b732acc2aba8563b"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "75",
+    "p7",
+    "rp",
+    "gr",
+    "p75",
+    "rp7",
+    "grp",
+    "rp75",
+    "grp7",
+    "grp75"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-01-18T19:58:09.977Z"
+  },
+  "key": "GRP-75",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Tag Test 1."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6005e868b732acc2aba8563c"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "76",
+    "p7",
+    "rp",
+    "gr",
+    "p76",
+    "rp7",
+    "grp",
+    "rp76",
+    "grp7",
+    "grp76"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-01-18T19:58:32.308Z"
+  },
+  "key": "GRP-76",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Tag Test 2."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60077996b832bffe499c2dd7"
+  },
+  "productIds": [
+    "G800-76"
+  ],
+  "key_fuzzy": [
+    "78",
+    "e7",
+    "re",
+    "cr",
+    "e78",
+    "re7",
+    "cre",
+    "re78",
+    "cre7",
+    "cre78"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-01-20T00:30:14.835Z"
+  },
+  "key": "CRE-78",
+  "eventData": {
+    "details": "Asset created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60077bfde1a0cefeaed3ad5b"
+  },
+  "productIds": [
+    "G800-77",
+    "G800-78"
+  ],
+  "key_fuzzy": [
+    "80",
+    "e8",
+    "re",
+    "cr",
+    "e80",
+    "re8",
+    "cre",
+    "re80",
+    "cre8",
+    "cre80"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-01-20T00:40:29.450Z"
+  },
+  "key": "CRE-80",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601069f412b131cbab2de3b6"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "81",
+    "t8",
+    "et",
+    "re",
+    "t81",
+    "et8",
+    "ret",
+    "et81",
+    "ret8",
+    "ret81"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2021-01-26T19:13:56.185Z"
+  },
+  "key": "RET-81",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60106a6a8b31f8cc27416479"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "82",
+    "t8",
+    "et",
+    "re",
+    "t82",
+    "et8",
+    "ret",
+    "et82",
+    "ret8",
+    "ret82"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2021-01-26T19:15:54.551Z"
+  },
+  "key": "RET-82",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60106a9d07884ccc3e8d4ddc"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "83",
+    "t8",
+    "et",
+    "re",
+    "t83",
+    "et8",
+    "ret",
+    "et83",
+    "ret8",
+    "ret83"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2021-01-26T19:16:45.631Z"
+  },
+  "key": "RET-83",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to true."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60106af0b5e015cc5ce29b16"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "85",
+    "t8",
+    "et",
+    "re",
+    "t85",
+    "et8",
+    "ret",
+    "et85",
+    "ret8",
+    "ret85"
+  ],
+  "eventType": "Change of Retirement Status",
+  "eventTime": {
+    "$date": "2021-01-26T19:18:08.571Z"
+  },
+  "key": "RET-85",
+  "eventData": {
+    "details": "Changed 1 product(s) Retired to false."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601329f81bda125d7b9b2ce5"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "86",
+    "p8",
+    "rp",
+    "gr",
+    "p86",
+    "rp8",
+    "grp",
+    "rp86",
+    "grp8",
+    "grp86"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-01-28T21:17:44.993Z"
+  },
+  "key": "GRP-86",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Tag Test 3."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60148f37861f7e14a1224d0b"
+  },
+  "productIds": [
+    "G800-123",
+    "G800-124"
+  ],
+  "key_fuzzy": [
+    "87",
+    "e8",
+    "re",
+    "cr",
+    "e87",
+    "re8",
+    "cre",
+    "re87",
+    "cre8",
+    "cre87"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-01-29T22:41:59.901Z"
+  },
+  "key": "CRE-87",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c214acbc0d8c38516b4a"
+  },
+  "productIds": [
+    "1234567890",
+    "2345"
+  ],
+  "key_fuzzy": [
+    "88",
+    "n8",
+    "wn",
+    "ow",
+    "n88",
+    "wn8",
+    "own",
+    "wn88",
+    "own8",
+    "own88"
+  ],
+  "eventType": "Change of Ownership",
+  "eventTime": {
+    "$date": "2021-01-31T14:43:32.612Z"
+  },
+  "key": "OWN-88",
+  "eventData": {
+    "details": "Changed 2 product(s) Owner to Evolution-USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c286acbc0d8c38516b57"
+  },
+  "productIds": [
+    "C800-133",
+    "C800-134",
+    "C800-135",
+    "C800-136",
+    "C800-137",
+    "C800-138",
+    "C800-139",
+    "C800-140",
+    "C800-141",
+    "C800-142",
+    "C800-143",
+    "C800-144"
+  ],
+  "key_fuzzy": [
+    "89",
+    "e8",
+    "re",
+    "cr",
+    "e89",
+    "re8",
+    "cre",
+    "re89",
+    "cre8",
+    "cre89"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-01-31T14:45:26.586Z"
+  },
+  "key": "CRE-89",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6019cabda1d8661d9d1eabf8"
+  },
+  "productIds": [
+    "G800-111",
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "90",
+    "e9",
+    "re",
+    "cr",
+    "e90",
+    "re9",
+    "cre",
+    "re90",
+    "cre9",
+    "cre90"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-02T21:57:17.313Z"
+  },
+  "key": "CRE-90",
+  "eventData": {
+    "details": "Created new assembly with serial G800-111"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6019cc074cd4931e7b86ba88"
+  },
+  "productIds": [
+    "G800-111",
+    "C800-1011"
+  ],
+  "key_fuzzy": [
+    "91",
+    "e9",
+    "re",
+    "cr",
+    "e91",
+    "re9",
+    "cre",
+    "re91",
+    "cre9",
+    "cre91"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-02T22:02:47.406Z"
+  },
+  "key": "CRE-91",
+  "eventData": {
+    "details": "Created new assembly with serial G800-111"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ca156f85a7efe57eb89cd"
+  },
+  "productIds": [
+    "G800-112",
+    "C800-133",
+    "Fritts-1",
+    "G800-1"
+  ],
+  "key_fuzzy": [
+    "92",
+    "e9",
+    "re",
+    "cr",
+    "e92",
+    "re9",
+    "cre",
+    "re92",
+    "cre9",
+    "cre92"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-05T01:37:26.071Z"
+  },
+  "key": "CRE-92",
+  "eventData": {
+    "details": "Created new assembly with serial G800-112"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ca227f85a7efe57eb89cf"
+  },
+  "productIds": [
+    "L800-110"
+  ],
+  "key_fuzzy": [
+    "93",
+    "e9",
+    "re",
+    "cr",
+    "e93",
+    "re9",
+    "cre",
+    "re93",
+    "cre9",
+    "cre93"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-05T01:40:55.551Z"
+  },
+  "key": "CRE-93",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ef5d424bcfc31a12af5ac"
+  },
+  "productIds": [
+    "G800-111111",
+    "C800-134",
+    "G800-1000"
+  ],
+  "key_fuzzy": [
+    "94",
+    "e9",
+    "re",
+    "cr",
+    "e94",
+    "re9",
+    "cre",
+    "re94",
+    "cre9",
+    "cre94"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-06T20:02:28.216Z"
+  },
+  "key": "CRE-94",
+  "eventData": {
+    "details": "Created new assembly with serial G800-111111"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ef63424bcfc31a12af5ad"
+  },
+  "productIds": [
+    "G800-111111",
+    "C800-134"
+  ],
+  "key_fuzzy": [
+    "95",
+    "m9",
+    "bm",
+    "ab",
+    "m95",
+    "bm9",
+    "abm",
+    "bm95",
+    "abm9",
+    "abm95"
+  ],
+  "eventType": "Assembly Modification",
+  "eventTime": {
+    "$date": "2021-02-06T20:04:04.525Z"
+  },
+  "key": "ABM-95",
+  "eventData": {
+    "details": "Updated assembly with serial G800-111111. Removed children from [] and added to this assembly."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ef891c997c8327fef885b"
+  },
+  "productIds": [
+    "G800-111111",
+    "C800-134",
+    "G800-1000",
+    null
+  ],
+  "key_fuzzy": [
+    "96",
+    "m9",
+    "bm",
+    "ab",
+    "m96",
+    "bm9",
+    "abm",
+    "bm96",
+    "abm9",
+    "abm96"
+  ],
+  "eventType": "Assembly Modification",
+  "eventTime": {
+    "$date": "2021-02-06T20:14:09.628Z"
+  },
+  "key": "ABM-96",
+  "eventData": {
+    "details": "Updated assembly with serial G800-111111. Removed children from [null] and added to this assembly."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ef8aec997c8327fef885c"
+  },
+  "productIds": [
+    "G800-111111",
+    "C800-134"
+  ],
+  "key_fuzzy": [
+    "97",
+    "m9",
+    "bm",
+    "ab",
+    "m97",
+    "bm9",
+    "abm",
+    "bm97",
+    "abm9",
+    "abm97"
+  ],
+  "eventType": "Assembly Modification",
+  "eventTime": {
+    "$date": "2021-02-06T20:14:38.763Z"
+  },
+  "key": "ABM-97",
+  "eventData": {
+    "details": "Updated assembly with serial G800-111111. Removed children from [] and added to this assembly."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f008bc997c8327fef885e"
+  },
+  "productIds": [
+    "G800-99",
+    "C800-135"
+  ],
+  "key_fuzzy": [
+    "98",
+    "e9",
+    "re",
+    "cr",
+    "e98",
+    "re9",
+    "cre",
+    "re98",
+    "cre9",
+    "cre98"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-06T20:48:11.250Z"
+  },
+  "key": "CRE-98",
+  "eventData": {
+    "details": "Created new assembly with serial G800-99"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f012dc997c8327fef8860"
+  },
+  "productIds": [
+    "G800-9",
+    "C800-136"
+  ],
+  "key_fuzzy": [
+    "99",
+    "e9",
+    "re",
+    "cr",
+    "e99",
+    "re9",
+    "cre",
+    "re99",
+    "cre9",
+    "cre99"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-06T20:50:53.229Z"
+  },
+  "key": "CRE-99",
+  "eventData": {
+    "details": "Created new assembly with serial G800-9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f02a4c997c8327fef8862"
+  },
+  "productIds": [
+    "G800-91",
+    "C800-137"
+  ],
+  "key_fuzzy": [
+    "00",
+    "10",
+    "e1",
+    "re",
+    "cr",
+    "100",
+    "e10",
+    "re1",
+    "cre",
+    "e100",
+    "re10",
+    "cre1",
+    "re100",
+    "cre10",
+    "cre100"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-02-06T20:57:08.266Z"
+  },
+  "key": "CRE-100",
+  "eventData": {
+    "details": "Created new assembly with serial G800-91"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "602330353ed1c1e91bc0c431"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "01",
+    "10",
+    "p1",
+    "rp",
+    "gr",
+    "101",
+    "p10",
+    "rp1",
+    "grp",
+    "p101",
+    "rp10",
+    "grp1",
+    "rp101",
+    "grp10",
+    "grp101"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-02-10T01:00:37.756Z"
+  },
+  "key": "GRP-101",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to Testing 02/09/2021."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60416a7eaf03bdba7da3da1a"
+  },
+  "productIds": [
+    "G800-69"
+  ],
+  "key_fuzzy": [
+    "02",
+    "10",
+    "e1",
+    "re",
+    "cr",
+    "102",
+    "e10",
+    "re1",
+    "cre",
+    "e102",
+    "re10",
+    "cre1",
+    "re102",
+    "cre10",
+    "cre102"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-03-04T23:17:18.399Z"
+  },
+  "key": "CRE-102",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60417028b3d10dbbbea3f2a6"
+  },
+  "productIds": [],
+  "key_fuzzy": [
+    "03",
+    "10",
+    "e1",
+    "re",
+    "cr",
+    "103",
+    "e10",
+    "re1",
+    "cre",
+    "e103",
+    "re10",
+    "cre1",
+    "re103",
+    "cre10",
+    "cre103"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-03-04T23:41:28.509Z"
+  },
+  "key": "CRE-103",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60417039b3d10dbbbea3f2a8"
+  },
+  "productIds": [
+    "G800-858"
+  ],
+  "key_fuzzy": [
+    "04",
+    "10",
+    "e1",
+    "re",
+    "cr",
+    "104",
+    "e10",
+    "re1",
+    "cre",
+    "e104",
+    "re10",
+    "cre1",
+    "re104",
+    "cre10",
+    "cre104"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-03-04T23:41:45.244Z"
+  },
+  "key": "CRE-104",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60551f47655a582c5a86ba43"
+  },
+  "productIds": [
+    "1234567890",
+    "2345"
+  ],
+  "key_fuzzy": [
+    "05",
+    "10",
+    "n1",
+    "wn",
+    "ow",
+    "105",
+    "n10",
+    "wn1",
+    "own",
+    "n105",
+    "wn10",
+    "own1",
+    "wn105",
+    "own10",
+    "own105"
+  ],
+  "eventType": "Change of Ownership",
+  "eventTime": {
+    "$date": "2021-03-19T22:01:43.752Z"
+  },
+  "key": "OWN-105",
+  "eventData": {
+    "details": "Changed 2 product(s) Owner to BHGE Drilling."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6064d2022299aa60c9640c25"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "06",
+    "10",
+    "p1",
+    "rp",
+    "gr",
+    "106",
+    "p10",
+    "rp1",
+    "grp",
+    "p106",
+    "rp10",
+    "grp1",
+    "rp106",
+    "grp10",
+    "grp106"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-03-31T19:48:18.015Z"
+  },
+  "key": "GRP-106",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to redis test 1."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065288b02150a6e4b7c3c01"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "07",
+    "10",
+    "p1",
+    "rp",
+    "gr",
+    "107",
+    "p10",
+    "rp1",
+    "grp",
+    "p107",
+    "rp10",
+    "grp1",
+    "rp107",
+    "grp10",
+    "grp107"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-04-01T01:57:31.381Z"
+  },
+  "key": "GRP-107",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to redis test 2."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60652e1402150a6e4b7c3c04"
+  },
+  "productIds": [
+    "ECAM111-0",
+    "ECAM111-1"
+  ],
+  "key_fuzzy": [
+    "08",
+    "10",
+    "e1",
+    "re",
+    "cr",
+    "108",
+    "e10",
+    "re1",
+    "cre",
+    "e108",
+    "re10",
+    "cre1",
+    "re108",
+    "cre10",
+    "cre108"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-04-01T02:21:08.584Z"
+  },
+  "key": "CRE-108",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60652e5d02150a6e4b7c3c05"
+  },
+  "productIds": [
+    "ECAM111-0",
+    "ECAM111-1"
+  ],
+  "key_fuzzy": [
+    "09",
+    "10",
+    "a1",
+    "ea",
+    "re",
+    "109",
+    "a10",
+    "ea1",
+    "rea",
+    "a109",
+    "ea10",
+    "rea1",
+    "ea109",
+    "rea10",
+    "rea109"
+  ],
+  "eventType": "Reassignment",
+  "eventTime": {
+    "$date": "2021-04-01T02:22:21.890Z"
+  },
+  "key": "REA-109",
+  "eventData": {
+    "details": "Changed 2 product(s) Assignee to Supply Chain USA."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "606530d302150a6e4b7c3c06"
+  },
+  "productIds": [
+    "ECAM111-1"
+  ],
+  "key_fuzzy": [
+    "10",
+    "11",
+    "p1",
+    "rp",
+    "gr",
+    "110",
+    "p11",
+    "rp1",
+    "grp",
+    "p110",
+    "rp11",
+    "grp1",
+    "rp110",
+    "grp11",
+    "grp110"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-04-01T02:32:51.221Z"
+  },
+  "key": "GRP-110",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to redis test 2."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6065310b02150a6e4b7c3c07"
+  },
+  "productIds": [
+    "ECAM111-0",
+    "ECAM111-1"
+  ],
+  "key_fuzzy": [
+    "11",
+    "p1",
+    "rp",
+    "gr",
+    "111",
+    "p11",
+    "rp1",
+    "grp",
+    "p111",
+    "rp11",
+    "grp1",
+    "rp111",
+    "grp11",
+    "grp111"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-04-01T02:33:47.671Z"
+  },
+  "key": "GRP-111",
+  "eventData": {
+    "details": "Changed 2 product(s) GroupTag to redis test 3."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60668464b6c23e7a12733037"
+  },
+  "productIds": [
+    "1234567890"
+  ],
+  "key_fuzzy": [
+    "12",
+    "11",
+    "p1",
+    "rp",
+    "gr",
+    "112",
+    "p11",
+    "rp1",
+    "grp",
+    "p112",
+    "rp11",
+    "grp1",
+    "rp112",
+    "grp11",
+    "grp112"
+  ],
+  "eventType": "Change of Group Tag",
+  "eventTime": {
+    "$date": "2021-04-02T02:41:40.111Z"
+  },
+  "key": "GRP-112",
+  "eventData": {
+    "details": "Changed 1 product(s) GroupTag to click test."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6074816e89346aa397302d75"
+  },
+  "productIds": [],
+  "key_fuzzy": [
+    "13",
+    "11",
+    "e1",
+    "re",
+    "cr",
+    "113",
+    "e11",
+    "re1",
+    "cre",
+    "e113",
+    "re11",
+    "cre1",
+    "re113",
+    "cre11",
+    "cre113"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-04-12T17:20:46.305Z"
+  },
+  "key": "CRE-113",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6078a50494a122f2f7f08c2a"
+  },
+  "productIds": [
+    "C800-99"
+  ],
+  "key_fuzzy": [
+    "14",
+    "11",
+    "e1",
+    "re",
+    "cr",
+    "114",
+    "e11",
+    "re1",
+    "cre",
+    "e114",
+    "re11",
+    "cre1",
+    "re114",
+    "cre11",
+    "cre114"
+  ],
+  "eventType": "Creation",
+  "eventTime": {
+    "$date": "2021-04-15T20:41:40.148Z"
+  },
+  "key": "CRE-114",
+  "eventData": {
+    "details": "Asset(s) created in system."
+  },
+  "__v": 0
+}]
