@@ -248,11 +248,11 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
 };
 
 CreateNewShipmentDialog.propTypes = {
-    /* Whether the dialog is open */
+    /** Whether the dialog is open */
     creatorOpen: PropTypes.bool, 
-    /* Callback to run when shipment is started */
+    /** Callback to run when shipment is started */
     handleCreate: PropTypes.func, 
-    /* Callback to run when user cancels the initialization process */
+    /** Callback to run when user cancels the initialization process */
     handleCancel: PropTypes.func
 }
 

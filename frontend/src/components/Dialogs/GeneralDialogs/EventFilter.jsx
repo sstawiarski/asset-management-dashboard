@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import DateFnsUtils from '@date-io/date-fns';
 import { makeStyles } from '@material-ui/core/styles'
@@ -158,4 +159,10 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
             </DialogActions>
         </Dialog>
     )
-}
+};
+
+FormDialog.propTypes = {
+    setOpen: PropTypes.func,
+    open: PropTypes.bool,
+    setActiveFilters: PropTypes.func
+};

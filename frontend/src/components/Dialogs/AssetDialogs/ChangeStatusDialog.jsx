@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 //Material-UI Components
 import Button from '@material-ui/core/Button';
@@ -122,6 +123,14 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 
         </Dialog>
     );
+};
+
+ChangeStatusDialog.propTypes = {
+    open: PropTypes.func, 
+    setOpen: PropTypes.func, 
+    selected: PropTypes.array, 
+    onSuccess: PropTypes.func, 
+    override: PropTypes.bool 
 };
 
 export default ChangeStatusDialog;

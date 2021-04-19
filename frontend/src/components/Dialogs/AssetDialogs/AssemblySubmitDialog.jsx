@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import debounce from 'lodash/debounce'
@@ -261,6 +262,14 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
             }
         </Dialog>
     )
+}
+
+AssemblySubmitDialog.propTypes = {
+    open: PropTypes.func,
+    onSuccess: PropTypes.func, 
+    isComplete: PropTypes.bool,
+    submission: PropTypes.object,
+    handleCancel: PropTypes.func
 }
 
 export default AssemblySubmitDialog;

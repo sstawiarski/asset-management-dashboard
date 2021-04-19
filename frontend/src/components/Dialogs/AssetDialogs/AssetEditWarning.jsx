@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, DialogTitle, DialogContent, Typography } from '@material-ui/core';
@@ -75,6 +76,13 @@ const AssetEditWarning = ({ open, setOpen, items, handleOverride }) => {
             </DialogActions>
         </Dialog>
     )
+}
+
+AssetEditWarning.propTypes = {
+    open: PropTypes.func,
+    setOpen: PropTypes.func, 
+    items: PropTypes.array, 
+    handleOverride: PropTypes.func
 }
 
 export default AssetEditWarning;

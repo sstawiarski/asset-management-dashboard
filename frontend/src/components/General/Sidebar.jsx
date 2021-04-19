@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 //Library Tools
 import clsx from 'clsx';
@@ -507,5 +508,9 @@ const Sidebar = ({ location }) => {
         </>
     )
 };
+
+Sidebar.propTypes = {
+    location: PropTypes.string,
+}
 
 export default Sidebar;

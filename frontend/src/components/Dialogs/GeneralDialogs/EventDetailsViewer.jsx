@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -107,6 +109,12 @@ const EventDetailsViewer = ({ event, open, onClose }) => {
         </Dialog >
     );
 
+};
+
+EventDetailsViewer.propTypes = {
+    event: PropTypes.object,
+    open: PropTypes.bool,
+    onClose: PropTypes.func
 };
 
 export default EventDetailsViewer;
