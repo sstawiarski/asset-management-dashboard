@@ -1,0 +1,2135 @@
+[{
+  "_id": {
+    "$oid": "5f8894746c07c43e5663d7d7"
+  },
+  "serial_fuzzy": [
+    "11",
+    "01",
+    "10",
+    "00",
+    "80",
+    "c8",
+    "011",
+    "101",
+    "010",
+    "001",
+    "800",
+    "c80",
+    "1011",
+    "0101",
+    "0010",
+    "8001",
+    "c800",
+    "01011",
+    "00101",
+    "80010",
+    "c8001",
+    "001011",
+    "800101",
+    "c80010",
+    "8001011",
+    "c800101",
+    "c8001011"
+  ],
+  "assetName": "Centralizer",
+  "assetType": "Asset",
+  "deployedLocation": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "owner": "Testing",
+  "parentId": "G800-1119",
+  "serial": "C800-1011",
+  "checkedOut": true,
+  "groupTag": "Tag Test 1",
+  "assignmentType": "Owned",
+  "assignee": "Evolution-USA",
+  "contractNumber": "202015",
+  "dateCreated": {
+    "$date": "2020-10-15T18:27:00.002Z"
+  },
+  "__v": 0,
+  "retired": true,
+  "provisioned": false
+},{
+  "_id": {
+    "$oid": "5f8894746c07c43e5663d7d6"
+  },
+  "serial_fuzzy": [
+    "11",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "111",
+    "011",
+    "001",
+    "800",
+    "g80",
+    "1111",
+    "0111",
+    "0011",
+    "8001",
+    "g800",
+    "01111",
+    "00111",
+    "80011",
+    "g8001",
+    "001111",
+    "800111",
+    "g80011",
+    "8001111",
+    "g800111",
+    "g8001111"
+  ],
+  "assetName": "Gap Sub",
+  "assetType": "Asset",
+  "deployedLocation": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "owner": "Evolution-USA",
+  "parentId": null,
+  "lastUpdated": null,
+  "serial": "G800-1111",
+  "checkedOut": true,
+  "groupTag": "Test",
+  "assignmentType": "Rental",
+  "assignee": "Nabors Drilling",
+  "contractNumber": "202012345",
+  "dateCreated": {
+    "$date": "2020-10-15T18:27:00.001Z"
+  },
+  "__v": 0,
+  "retired": false,
+  "provisioned": false
+},{
+  "_id": {
+    "$oid": "5f8894746c07c43e5663d7d8"
+  },
+  "serial_fuzzy": [
+    "20",
+    "92",
+    "09",
+    "00",
+    "80",
+    "x8",
+    "920",
+    "092",
+    "009",
+    "800",
+    "x80",
+    "0920",
+    "0092",
+    "8009",
+    "x800",
+    "00920",
+    "80092",
+    "x8009",
+    "800920",
+    "x80092",
+    "x800920"
+  ],
+  "assetType": "Asset",
+  "assetName": "Crossover Sub",
+  "deployedLocation": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "owner": "Evolution-USA",
+  "parentId": "G800-1119",
+  "serial": "X800-920",
+  "checkedOut": false,
+  "groupTag": "",
+  "assignmentType": "Owned",
+  "assignee": "",
+  "contractNumber": "",
+  "dateCreated": {
+    "$date": "2020-10-15T18:27:00.003Z"
+  },
+  "retired": false,
+  "provisioned": false,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f8894746c07c43e5663d7d9"
+  },
+  "serial_fuzzy": [
+    "19",
+    "11",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "119",
+    "111",
+    "011",
+    "001",
+    "800",
+    "g80",
+    "1119",
+    "0111",
+    "0011",
+    "8001",
+    "g800",
+    "01119",
+    "00111",
+    "80011",
+    "g8001",
+    "001119",
+    "800111",
+    "g80011",
+    "8001119",
+    "g800111",
+    "g8001119"
+  ],
+  "assetType": "Assembly",
+  "assetName": "Carrier",
+  "deployedLocation": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "owner": "Evolution-USA",
+  "parentId": null,
+  "serial": "G800-1119",
+  "checkedOut": false,
+  "retired": false,
+  "groupTag": "",
+  "assignmentType": "Owned",
+  "assignee": "",
+  "contractNumber": "",
+  "dateCreated": {
+    "$date": "2020-10-15T18:27:00.004Z"
+  },
+  "incomplete": true,
+  "missingItems": [
+    "Pulser",
+    "Centralizer",
+    "Gap Sub"
+  ],
+  "provisioned": false,
+  "assembled": false,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fb9a2f330c6d460030189bc"
+  },
+  "assetName": "Carrier",
+  "assetType": "Asset",
+  "deployedLocation": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "owner": "",
+  "parentId": null,
+  "serial": "G800-11120",
+  "checkedOut": false,
+  "groupTag": "tag 3",
+  "assignmentType": "Owned",
+  "assignee": null,
+  "dateCreated": {
+    "$date": "2020-11-20T18:27:00.002Z"
+  },
+  "__v": 0,
+  "retired": false,
+  "provisioned": true
+},{
+  "_id": {
+    "$oid": "5fb9e717e65ce84754d1dd64"
+  },
+  "serial_fuzzy": [
+    "45",
+    "34",
+    "23",
+    "345",
+    "234",
+    "2345"
+  ],
+  "assetName": "Crossover Sub",
+  "serial": "2345",
+  "owner": "BHGE Drilling",
+  "assignmentType": "Rental",
+  "groupTag": "Tag Test 2",
+  "assignee": "bhge",
+  "checkedOut": false,
+  "assetType": "Asset",
+  "dateCreated": {
+    "$date": "2020-11-22T04:20:39.632Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2021-03-19T22:01:43.622Z"
+  }
+},{
+  "_id": {
+    "$oid": "5fb9e739e65ce84754d1dd65"
+  },
+  "serial_fuzzy": [
+    "90",
+    "89",
+    "78",
+    "67",
+    "56",
+    "45",
+    "34",
+    "23",
+    "12",
+    "890",
+    "789",
+    "678",
+    "567",
+    "456",
+    "345",
+    "234",
+    "123",
+    "7890",
+    "6789",
+    "5678",
+    "4567",
+    "3456",
+    "2345",
+    "1234",
+    "67890",
+    "56789",
+    "45678",
+    "34567",
+    "23456",
+    "12345",
+    "567890",
+    "456789",
+    "345678",
+    "234567",
+    "123456",
+    "4567890",
+    "3456789",
+    "2345678",
+    "1234567",
+    "34567890",
+    "23456789",
+    "12345678",
+    "234567890",
+    "123456789",
+    "1234567890"
+  ],
+  "assetName": "Carrier",
+  "serial": "1234567890",
+  "owner": "BHGE Drilling",
+  "assignmentType": "Rental",
+  "groupTag": "click test",
+  "assignee": "bhge",
+  "checkedOut": false,
+  "assetType": "Asset",
+  "dateCreated": {
+    "$date": "2020-11-22T04:21:13.480Z"
+  },
+  "__v": 0,
+  "retired": false,
+  "lastUpdated": {
+    "$date": "2021-04-02T02:41:39.979Z"
+  }
+},{
+  "_id": {
+    "$oid": "5fb9e81ce65ce84754d1dd66"
+  },
+  "serial_fuzzy": [
+    "s1",
+    "ts",
+    "tt",
+    "it",
+    "ri",
+    "fr",
+    "ts1",
+    "tts",
+    "itt",
+    "rit",
+    "fri",
+    "tts1",
+    "itts",
+    "ritt",
+    "frit",
+    "itts1",
+    "ritts",
+    "fritt",
+    "ritts1",
+    "fritts",
+    "fritts1"
+  ],
+  "assetName": "Crossover Sub",
+  "serial": "Fritts-1",
+  "owner": "Evolution-USA",
+  "assignmentType": "Rental",
+  "groupTag": "Fritts-test",
+  "assignee": "BHGE Drilling",
+  "checkedOut": false,
+  "assetType": "Asset",
+  "dateCreated": {
+    "$date": "2020-11-22T04:25:00.576Z"
+  },
+  "__v": 0,
+  "parentId": "G800-112"
+},{
+  "_id": {
+    "$oid": "5fb9e9b63c88ad1db4bb7161"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "s2",
+    "ts",
+    "tt",
+    "it",
+    "ri",
+    "fr",
+    "ts2",
+    "tts",
+    "itt",
+    "rit",
+    "fri",
+    "tts2",
+    "itts",
+    "ritt",
+    "frit",
+    "itts2",
+    "ritts",
+    "fritt",
+    "ritts2",
+    "fritts",
+    "fritts2"
+  ],
+  "assetName": "Centralizer",
+  "serial": "fritts-2",
+  "owner": "Evolution-Calgary",
+  "assignmentType": "Owned",
+  "groupTag": "Test group",
+  "assignee": "BHGE",
+  "checkedOut": false,
+  "assetType": "Asset",
+  "dateCreated": {
+    "$date": "2020-11-22T04:31:50.381Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "600759fff4be56f82992e9c9"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "22",
+    "02",
+    "10",
+    "91",
+    "09",
+    "00",
+    "80",
+    "g8",
+    "222",
+    "022",
+    "102",
+    "910",
+    "091",
+    "009",
+    "800",
+    "g80",
+    "2222",
+    "0222",
+    "1022",
+    "9102",
+    "0910",
+    "0091",
+    "8009",
+    "g800",
+    "22222",
+    "02222",
+    "10222",
+    "91022",
+    "09102",
+    "00910",
+    "80091",
+    "g8009",
+    "022222",
+    "102222",
+    "910222",
+    "091022",
+    "009102",
+    "800910",
+    "g80091",
+    "1022222",
+    "9102222",
+    "0910222",
+    "0091022",
+    "8009102",
+    "g800910",
+    "91022222",
+    "09102222",
+    "00910222",
+    "80091022",
+    "g8009102",
+    "091022222",
+    "009102222",
+    "800910222",
+    "g80091022",
+    "0091022222",
+    "8009102222",
+    "g800910222",
+    "80091022222",
+    "g8009102222",
+    "g80091022222"
+  ],
+  "serial": "G800-91022222",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:15:27.548Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af765451ff84eaeddcb"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "000",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1000",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01000",
+    "00100",
+    "80010",
+    "g8001",
+    "001000",
+    "800100",
+    "g80010",
+    "8001000",
+    "g800100",
+    "g8001000"
+  ],
+  "serial": "G800-1000",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:35.812Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": null
+},{
+  "_id": {
+    "$oid": "60075af765451ff84eaeddcc"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "01",
+    "00",
+    "10",
+    "80",
+    "g8",
+    "001",
+    "100",
+    "010",
+    "800",
+    "g80",
+    "1001",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01001",
+    "00100",
+    "80010",
+    "g8001",
+    "001001",
+    "800100",
+    "g80010",
+    "8001001",
+    "g800100",
+    "g8001001"
+  ],
+  "serial": "G800-1001",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:35.858Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af765451ff84eaeddcd"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "02",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "002",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1002",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01002",
+    "00100",
+    "80010",
+    "g8001",
+    "001002",
+    "800100",
+    "g80010",
+    "8001002",
+    "g800100",
+    "g8001002"
+  ],
+  "serial": "G800-1002",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:35.900Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af765451ff84eaeddce"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "03",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "003",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1003",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01003",
+    "00100",
+    "80010",
+    "g8001",
+    "001003",
+    "800100",
+    "g80010",
+    "8001003",
+    "g800100",
+    "g8001003"
+  ],
+  "serial": "G800-1003",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:35.946Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af765451ff84eaeddcf"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "04",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "004",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1004",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01004",
+    "00100",
+    "80010",
+    "g8001",
+    "001004",
+    "800100",
+    "g80010",
+    "8001004",
+    "g800100",
+    "g8001004"
+  ],
+  "serial": "G800-1004",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:35.989Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af865451ff84eaeddd0"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "05",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "005",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1005",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01005",
+    "00100",
+    "80010",
+    "g8001",
+    "001005",
+    "800100",
+    "g80010",
+    "8001005",
+    "g800100",
+    "g8001005"
+  ],
+  "serial": "G800-1005",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:36.029Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af865451ff84eaeddd1"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "06",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "006",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1006",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01006",
+    "00100",
+    "80010",
+    "g8001",
+    "001006",
+    "800100",
+    "g80010",
+    "8001006",
+    "g800100",
+    "g8001006"
+  ],
+  "serial": "G800-1006",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:36.072Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af865451ff84eaeddd2"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "07",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "007",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1007",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01007",
+    "00100",
+    "80010",
+    "g8001",
+    "001007",
+    "800100",
+    "g80010",
+    "8001007",
+    "g800100",
+    "g8001007"
+  ],
+  "serial": "G800-1007",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:36.110Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af865451ff84eaeddd3"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "08",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "008",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1008",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01008",
+    "00100",
+    "80010",
+    "g8001",
+    "001008",
+    "800100",
+    "g80010",
+    "8001008",
+    "g800100",
+    "g8001008"
+  ],
+  "serial": "G800-1008",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:36.147Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075af865451ff84eaeddd4"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "09",
+    "00",
+    "10",
+    "01",
+    "80",
+    "g8",
+    "009",
+    "100",
+    "010",
+    "001",
+    "800",
+    "g80",
+    "1009",
+    "0100",
+    "0010",
+    "8001",
+    "g800",
+    "01009",
+    "00100",
+    "80010",
+    "g8001",
+    "001009",
+    "800100",
+    "g80010",
+    "8001009",
+    "g800100",
+    "g8001009"
+  ],
+  "serial": "G800-1009",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:19:36.186Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60075f1c88a6bef85c21d1e3"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "01",
+    "00",
+    "80",
+    "g8",
+    "001",
+    "800",
+    "g80",
+    "8001",
+    "g800",
+    "g8001"
+  ],
+  "serial": "G800-1",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:37:16.241Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-112"
+},{
+  "_id": {
+    "$oid": "60075f1c88a6bef85c21d1e4"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "02",
+    "00",
+    "80",
+    "g8",
+    "002",
+    "800",
+    "g80",
+    "8002",
+    "g800",
+    "g8002"
+  ],
+  "serial": "G800-2",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-19T22:37:16.301Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "600773d2004f2af9cd515021"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "09",
+    "90",
+    "00",
+    "80",
+    "g8",
+    "909",
+    "090",
+    "009",
+    "800",
+    "g80",
+    "0909",
+    "0090",
+    "8009",
+    "g800",
+    "00909",
+    "80090",
+    "g8009",
+    "800909",
+    "g80090",
+    "g800909"
+  ],
+  "serial": "G800-909",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-20T00:05:38.697Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6007794361e013fe3a0179d5"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "75",
+    "07",
+    "00",
+    "80",
+    "g8",
+    "075",
+    "007",
+    "800",
+    "g80",
+    "0075",
+    "8007",
+    "g800",
+    "80075",
+    "g8007",
+    "g80075"
+  ],
+  "serial": "G800-75",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-20T00:28:51.194Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60077996b832bffe499c2dd6"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "76",
+    "07",
+    "00",
+    "80",
+    "g8",
+    "076",
+    "007",
+    "800",
+    "g80",
+    "0076",
+    "8007",
+    "g800",
+    "80076",
+    "g8007",
+    "g80076"
+  ],
+  "serial": "G800-76",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-20T00:30:14.776Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60077bfde1a0cefeaed3ad59"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "77",
+    "07",
+    "00",
+    "80",
+    "g8",
+    "077",
+    "007",
+    "800",
+    "g80",
+    "0077",
+    "8007",
+    "g800",
+    "80077",
+    "g8007",
+    "g80077"
+  ],
+  "serial": "G800-77",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-20T00:40:29.335Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60077bfde1a0cefeaed3ad5a"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "78",
+    "07",
+    "00",
+    "80",
+    "g8",
+    "078",
+    "007",
+    "800",
+    "g80",
+    "0078",
+    "8007",
+    "g800",
+    "80078",
+    "g8007",
+    "g80078"
+  ],
+  "serial": "G800-78",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-20T00:40:29.386Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60148f37861f7e14a1224d09"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "23",
+    "12",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "123",
+    "012",
+    "001",
+    "800",
+    "g80",
+    "0123",
+    "0012",
+    "8001",
+    "g800",
+    "00123",
+    "80012",
+    "g8001",
+    "800123",
+    "g80012",
+    "g800123"
+  ],
+  "serial": "G800-123",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-29T22:41:59.722Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60148f37861f7e14a1224d0a"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "24",
+    "12",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "124",
+    "012",
+    "001",
+    "800",
+    "g80",
+    "0124",
+    "0012",
+    "8001",
+    "g800",
+    "00124",
+    "80012",
+    "g8001",
+    "800124",
+    "g80012",
+    "g800124"
+  ],
+  "serial": "G800-124",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-29T22:41:59.835Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c284acbc0d8c38516b4b"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "33",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "133",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0133",
+    "0013",
+    "8001",
+    "c800",
+    "00133",
+    "80013",
+    "c8001",
+    "800133",
+    "c80013",
+    "c800133"
+  ],
+  "serial": "C800-133",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:24.782Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-112"
+},{
+  "_id": {
+    "$oid": "6016c284acbc0d8c38516b4c"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "34",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "134",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0134",
+    "0013",
+    "8001",
+    "c800",
+    "00134",
+    "80013",
+    "c8001",
+    "800134",
+    "c80013",
+    "c800134"
+  ],
+  "serial": "C800-134",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:24.954Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-111111"
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b4d"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "35",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "135",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0135",
+    "0013",
+    "8001",
+    "c800",
+    "00135",
+    "80013",
+    "c8001",
+    "800135",
+    "c80013",
+    "c800135"
+  ],
+  "serial": "C800-135",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.101Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-99"
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b4e"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "36",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "136",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0136",
+    "0013",
+    "8001",
+    "c800",
+    "00136",
+    "80013",
+    "c8001",
+    "800136",
+    "c80013",
+    "c800136"
+  ],
+  "serial": "C800-136",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.252Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-9"
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b4f"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "37",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "137",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0137",
+    "0013",
+    "8001",
+    "c800",
+    "00137",
+    "80013",
+    "c8001",
+    "800137",
+    "c80013",
+    "c800137"
+  ],
+  "serial": "C800-137",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.396Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-91"
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b50"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "38",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "138",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0138",
+    "0013",
+    "8001",
+    "c800",
+    "00138",
+    "80013",
+    "c8001",
+    "800138",
+    "c80013",
+    "c800138"
+  ],
+  "serial": "C800-138",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.548Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b51"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "39",
+    "13",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "139",
+    "013",
+    "001",
+    "800",
+    "c80",
+    "0139",
+    "0013",
+    "8001",
+    "c800",
+    "00139",
+    "80013",
+    "c8001",
+    "800139",
+    "c80013",
+    "c800139"
+  ],
+  "serial": "C800-139",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.692Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c285acbc0d8c38516b52"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "40",
+    "14",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "140",
+    "014",
+    "001",
+    "800",
+    "c80",
+    "0140",
+    "0014",
+    "8001",
+    "c800",
+    "00140",
+    "80014",
+    "c8001",
+    "800140",
+    "c80014",
+    "c800140"
+  ],
+  "serial": "C800-140",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:25.853Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c286acbc0d8c38516b53"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "41",
+    "14",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "141",
+    "014",
+    "001",
+    "800",
+    "c80",
+    "0141",
+    "0014",
+    "8001",
+    "c800",
+    "00141",
+    "80014",
+    "c8001",
+    "800141",
+    "c80014",
+    "c800141"
+  ],
+  "serial": "C800-141",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:26Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c286acbc0d8c38516b54"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "42",
+    "14",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "142",
+    "014",
+    "001",
+    "800",
+    "c80",
+    "0142",
+    "0014",
+    "8001",
+    "c800",
+    "00142",
+    "80014",
+    "c8001",
+    "800142",
+    "c80014",
+    "c800142"
+  ],
+  "serial": "C800-142",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:26.153Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c286acbc0d8c38516b55"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "43",
+    "14",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "143",
+    "014",
+    "001",
+    "800",
+    "c80",
+    "0143",
+    "0014",
+    "8001",
+    "c800",
+    "00143",
+    "80014",
+    "c8001",
+    "800143",
+    "c80014",
+    "c800143"
+  ],
+  "serial": "C800-143",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:26.291Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6016c286acbc0d8c38516b56"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "44",
+    "14",
+    "01",
+    "00",
+    "80",
+    "c8",
+    "144",
+    "014",
+    "001",
+    "800",
+    "c80",
+    "0144",
+    "0014",
+    "8001",
+    "c800",
+    "00144",
+    "80014",
+    "c8001",
+    "800144",
+    "c80014",
+    "c800144"
+  ],
+  "serial": "C800-144",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-01-31T14:45:26.428Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ca155f85a7efe57eb89cc"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "12",
+    "11",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "112",
+    "011",
+    "001",
+    "800",
+    "g80",
+    "0112",
+    "0011",
+    "8001",
+    "g800",
+    "00112",
+    "80011",
+    "g8001",
+    "800112",
+    "g80011",
+    "g800112"
+  ],
+  "serial": "G800-112",
+  "assetName": "Carrier",
+  "owner": "Supply Chain-CAN",
+  "assetType": "Assembly",
+  "parentId": null,
+  "dateCreated": {
+    "$date": "2021-02-05T01:37:25.931Z"
+  },
+  "groupTag": "",
+  "checkedOut": false,
+  "assignmentType": "Owned",
+  "incomplete": false,
+  "assembled": true,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601ca227f85a7efe57eb89ce"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "10",
+    "11",
+    "01",
+    "00",
+    "80",
+    "l8",
+    "110",
+    "011",
+    "001",
+    "800",
+    "l80",
+    "0110",
+    "0011",
+    "8001",
+    "l800",
+    "00110",
+    "80011",
+    "l8001",
+    "800110",
+    "l80011",
+    "l800110"
+  ],
+  "serial": "L800-110",
+  "assetName": "Landing Sub",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-02-05T01:40:55.511Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0,
+  "parentId": "G800-112"
+},{
+  "_id": {
+    "$oid": "601ef5d424bcfc31a12af5ab"
+  },
+  "missingItems": [
+    "Landing Sub",
+    "Crossover Sub",
+    "Gap Sub"
+  ],
+  "serial_fuzzy": [
+    "11",
+    "01",
+    "00",
+    "80",
+    "g8",
+    "111",
+    "011",
+    "001",
+    "800",
+    "g80",
+    "1111",
+    "0111",
+    "0011",
+    "8001",
+    "g800",
+    "11111",
+    "01111",
+    "00111",
+    "80011",
+    "g8001",
+    "111111",
+    "011111",
+    "001111",
+    "800111",
+    "g80011",
+    "0111111",
+    "0011111",
+    "8001111",
+    "g800111",
+    "00111111",
+    "80011111",
+    "g8001111",
+    "800111111",
+    "g80011111",
+    "g800111111"
+  ],
+  "serial": "G800-111111",
+  "assetName": "Carrier",
+  "owner": "Supply Chain-CAN",
+  "assetType": "Assembly",
+  "parentId": null,
+  "dateCreated": {
+    "$date": "2021-02-06T20:02:28.028Z"
+  },
+  "groupTag": "",
+  "checkedOut": false,
+  "assignmentType": "Owned",
+  "incomplete": true,
+  "assembled": false,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f008bc997c8327fef885d"
+  },
+  "missingItems": [
+    "Landing Sub",
+    "Crossover Sub",
+    "Gap Sub"
+  ],
+  "serial_fuzzy": [
+    "99",
+    "09",
+    "00",
+    "80",
+    "g8",
+    "099",
+    "009",
+    "800",
+    "g80",
+    "0099",
+    "8009",
+    "g800",
+    "80099",
+    "g8009",
+    "g80099"
+  ],
+  "serial": "G800-99",
+  "assetName": "Carrier",
+  "owner": "Supply Chain-CAN",
+  "assetType": "Assembly",
+  "parentId": null,
+  "dateCreated": {
+    "$date": "2021-02-06T20:48:11.143Z"
+  },
+  "groupTag": "",
+  "checkedOut": false,
+  "assignmentType": "Owned",
+  "incomplete": true,
+  "assembled": true,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f012dc997c8327fef885f"
+  },
+  "missingItems": [
+    "Landing Sub",
+    "Crossover Sub",
+    "Gap Sub"
+  ],
+  "serial_fuzzy": [
+    "09",
+    "00",
+    "80",
+    "g8",
+    "009",
+    "800",
+    "g80",
+    "8009",
+    "g800",
+    "g8009"
+  ],
+  "serial": "G800-9",
+  "assetName": "Carrier",
+  "owner": "Supply Chain-CAN",
+  "assetType": "Assembly",
+  "parentId": null,
+  "dateCreated": {
+    "$date": "2021-02-06T20:50:53.143Z"
+  },
+  "groupTag": "",
+  "checkedOut": false,
+  "assignmentType": "Owned",
+  "incomplete": true,
+  "assembled": false,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601f02a4c997c8327fef8861"
+  },
+  "missingItems": [
+    "Landing Sub",
+    "Crossover Sub",
+    "Gap Sub"
+  ],
+  "serial_fuzzy": [
+    "91",
+    "09",
+    "00",
+    "80",
+    "g8",
+    "091",
+    "009",
+    "800",
+    "g80",
+    "0091",
+    "8009",
+    "g800",
+    "80091",
+    "g8009",
+    "g80091"
+  ],
+  "serial": "G800-91",
+  "assetName": "Carrier",
+  "owner": "Supply Chain-CAN",
+  "assetType": "Assembly",
+  "parentId": null,
+  "dateCreated": {
+    "$date": "2021-02-06T20:57:08.180Z"
+  },
+  "groupTag": "",
+  "checkedOut": false,
+  "assignmentType": "Owned",
+  "incomplete": true,
+  "assembled": true,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60416a7eaf03bdba7da3da19"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "69",
+    "06",
+    "00",
+    "80",
+    "g8",
+    "069",
+    "006",
+    "800",
+    "g80",
+    "0069",
+    "8006",
+    "g800",
+    "80069",
+    "g8006",
+    "g80069"
+  ],
+  "serial": "G800-69",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-03-04T23:17:18.250Z"
+  },
+  "assignmentType": "Owned",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60417039b3d10dbbbea3f2a7"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "58",
+    "85",
+    "08",
+    "00",
+    "80",
+    "g8",
+    "858",
+    "085",
+    "008",
+    "800",
+    "g80",
+    "0858",
+    "0085",
+    "8008",
+    "g800",
+    "00858",
+    "80085",
+    "g8008",
+    "800858",
+    "g80085",
+    "g800858"
+  ],
+  "serial": "G800-858",
+  "assetName": "Gap Sub",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-03-04T23:41:45.197Z"
+  },
+  "assignmentType": "Owned",
+  "retired": false,
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60652e1402150a6e4b7c3c02"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "10",
+    "11",
+    "m1",
+    "am",
+    "ca",
+    "ec",
+    "110",
+    "111",
+    "m11",
+    "am1",
+    "cam",
+    "eca",
+    "1110",
+    "m111",
+    "am11",
+    "cam1",
+    "ecam",
+    "m1110",
+    "am111",
+    "cam11",
+    "ecam1",
+    "am1110",
+    "cam111",
+    "ecam11",
+    "cam1110",
+    "ecam111",
+    "ecam1110"
+  ],
+  "serial": "ECAM111-0",
+  "assetName": "ECAM",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-04-01T02:21:08.284Z"
+  },
+  "assignmentType": "Owned",
+  "retired": false,
+  "__v": 0,
+  "assignee": "Supply Chain USA",
+  "lastUpdated": {
+    "$date": "2021-04-01T02:33:47.538Z"
+  },
+  "groupTag": "redis test 3"
+},{
+  "_id": {
+    "$oid": "60652e1402150a6e4b7c3c03"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "11",
+    "m1",
+    "am",
+    "ca",
+    "ec",
+    "111",
+    "m11",
+    "am1",
+    "cam",
+    "eca",
+    "1111",
+    "m111",
+    "am11",
+    "cam1",
+    "ecam",
+    "m1111",
+    "am111",
+    "cam11",
+    "ecam1",
+    "am1111",
+    "cam111",
+    "ecam11",
+    "cam1111",
+    "ecam111",
+    "ecam1111"
+  ],
+  "serial": "ECAM111-1",
+  "assetName": "ECAM",
+  "owner": "Supply Chain-CA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-04-01T02:21:08.459Z"
+  },
+  "assignmentType": "Owned",
+  "retired": false,
+  "__v": 0,
+  "assignee": "Supply Chain USA",
+  "lastUpdated": {
+    "$date": "2021-04-01T02:33:47.538Z"
+  },
+  "groupTag": "redis test 3"
+},{
+  "_id": {
+    "$oid": "6078a50394a122f2f7f08c29"
+  },
+  "missingItems": [],
+  "serial_fuzzy": [
+    "99",
+    "09",
+    "00",
+    "80",
+    "c8",
+    "099",
+    "009",
+    "800",
+    "c80",
+    "0099",
+    "8009",
+    "c800",
+    "80099",
+    "c8009",
+    "c80099"
+  ],
+  "serial": "C800-99",
+  "assetName": "Centralizer",
+  "owner": "Supply Chain-USA",
+  "assetType": "Asset",
+  "checkedOut": false,
+  "dateCreated": {
+    "$date": "2021-04-15T20:41:39.931Z"
+  },
+  "assignmentType": "Owned",
+  "retired": false,
+  "__v": 0
+}]

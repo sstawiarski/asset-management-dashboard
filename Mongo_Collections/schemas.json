@@ -1,0 +1,145 @@
+[{
+  "_id": {
+    "$oid": "5fa9d64ec7a4aca448b8a256"
+  },
+  "components": [
+    "Landing Sub",
+    "Crossover Sub",
+    "Centralizer",
+    "Gap Sub"
+  ],
+  "name": "Carrier",
+  "serializationFormat": "G800-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9d64ec7a4aca448b8a257"
+  },
+  "components": [
+    "Pulser",
+    "ECAM",
+    "Gamma",
+    "Directional",
+    "Female Rotatable"
+  ],
+  "name": "Electronics Probe",
+  "serializationFormat": "ELP-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9d64ec7a4aca448b8a258"
+  },
+  "components": [
+    "Transmission Rod",
+    "Gap Joint",
+    "Male Rotatable",
+    "Battery Bulkhead"
+  ],
+  "name": "Battery Probe",
+  "serializationFormat": "BAP-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9d64ec7a4aca448b8a259"
+  },
+  "components": [],
+  "name": "Kit Box",
+  "serializationFormat": "EVO-ONE-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5fa9d64ec7a4aca448b8a25a"
+  },
+  "components": [
+    "Motor",
+    "Gearbox",
+    "Pressure Feedthrough"
+  ],
+  "name": "Pulser",
+  "serializationFormat": "ELP-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60063a54b896029402ca42a8"
+  },
+  "name": "Gap Sub",
+  "serializationFormat": "G800-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6014677a484e4c33faee6005"
+  },
+  "name": "Centralizer",
+  "serializationFormat": "C800-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601467d3484e4c33faee6006"
+  },
+  "name": "Crossover Sub",
+  "serializationFormat": "X800-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601467e7484e4c33faee6007"
+  },
+  "name": "Landing Sub",
+  "serializationFormat": "L800-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "601467f8484e4c33faee6008"
+  },
+  "name": "ECAM",
+  "serializationFormat": "ECAM111-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6014681b484e4c33faee6009"
+  },
+  "name": "Female Rotatable",
+  "serializationFormat": "RCF-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60146846484e4c33faee600a"
+  },
+  "name": "Battery Bulkhead",
+  "serializationFormat": "BAP-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6014685a484e4c33faee600b"
+  },
+  "name": "Male Rotatable",
+  "serializationFormat": "RCM-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "60146870484e4c33faee600c"
+  },
+  "name": "Gap Joint",
+  "serializationFormat": "GJT-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6014687d484e4c33faee600d"
+  },
+  "name": "Transmission Rod",
+  "serializationFormat": "TXR-",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6019fb2f863a30173a83037d"
+  },
+  "name": "Directional Sensor",
+  "serializationFormat": "^ED[0-9]+HN$",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6019fbfd863a30173a83037e"
+  },
+  "name": "Gamma Sensor",
+  "serializationFormat": "^EGNF[0-9]+$",
+  "__v": 0
+}]

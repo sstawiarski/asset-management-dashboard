@@ -1,0 +1,532 @@
+[{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65e1"
+  },
+  "key_fuzzy": [
+    "01",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "101",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p101",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip101",
+    "hip10",
+    "ship1",
+    "hip101",
+    "ship10",
+    "ship101"
+  ],
+  "createdBy": "Test 2",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Abandoned",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e2"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e3"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-101",
+  "shipToOverride": {
+    "contactName": "TESTING 1 2 1 2"
+  },
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65ed"
+  },
+  "key_fuzzy": [
+    "05",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "105",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p105",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip105",
+    "hip10",
+    "ship1",
+    "hip105",
+    "ship10",
+    "ship105"
+  ],
+  "createdBy": "Test 6",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Staging",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65ee"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65ef"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-105",
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65de"
+  },
+  "key_fuzzy": [
+    "00",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "100",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p100",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip100",
+    "hip10",
+    "ship1",
+    "hip100",
+    "ship10",
+    "ship100"
+  ],
+  "createdBy": "Test 1",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Abandoned",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65df"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e0"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-100",
+  "shipFromOverride": {
+    "contactName": "Jason DeRulo",
+    "contactNumber": "1-800-867-5309"
+  },
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 1,
+  "attachments": []
+},{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65ea"
+  },
+  "key_fuzzy": [
+    "04",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "104",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p104",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip104",
+    "hip10",
+    "ship1",
+    "hip104",
+    "ship10",
+    "ship104"
+  ],
+  "createdBy": "Test 5",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Staging",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65eb"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65ec"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-104",
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65e7"
+  },
+  "key_fuzzy": [
+    "03",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "103",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p103",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip103",
+    "hip10",
+    "ship1",
+    "hip103",
+    "ship10",
+    "ship103"
+  ],
+  "createdBy": "Test 4",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Staging",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e8"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e9"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-103",
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "604aa45c1b3bd229d4ba65e4"
+  },
+  "key_fuzzy": [
+    "02",
+    "10",
+    "p1",
+    "ip",
+    "hi",
+    "sh",
+    "102",
+    "p10",
+    "ip1",
+    "hip",
+    "shi",
+    "p102",
+    "ip10",
+    "hip1",
+    "ship",
+    "ip102",
+    "hip10",
+    "ship1",
+    "hip102",
+    "ship10",
+    "ship102"
+  ],
+  "createdBy": "Test 3",
+  "created": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "updated": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "completed": {
+    "$date": "2021-03-11T23:13:57.177Z"
+  },
+  "status": "Completed",
+  "shipmentType": "Incoming",
+  "specialInstructions": "seriously, don't lose this",
+  "contractId": "345678",
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e5"
+      },
+      "serial": "X800-87650",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": "just testing this beast out!",
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa45c1b3bd229d4ba65e6"
+      },
+      "serial": "box of boxes of batteries",
+      "name": "batteries",
+      "quantity": 1500,
+      "notes": "keep batteries in individual cases!  fire hazard!  there's a lot of 'em!",
+      "serialized": false
+    }
+  ],
+  "key": "SHIP-102",
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f3"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025f9"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "604aa71a1c51452bb70575c0"
+  },
+  "key_fuzzy": [
+    "23",
+    "12",
+    "g1",
+    "ng",
+    "in",
+    "ti",
+    "st",
+    "es",
+    "te",
+    "123",
+    "g12",
+    "ng1",
+    "ing",
+    "tin",
+    "sti",
+    "est",
+    "tes",
+    "g123",
+    "ng12",
+    "ing1",
+    "ting",
+    "stin",
+    "esti",
+    "test",
+    "ng123",
+    "ing12",
+    "ting1",
+    "sting",
+    "estin",
+    "testi",
+    "ing123",
+    "ting12",
+    "sting1",
+    "esting",
+    "testin",
+    "ting123",
+    "sting12",
+    "esting1",
+    "testing",
+    "sting123",
+    "esting12",
+    "testing1",
+    "esting123",
+    "testing12",
+    "testing123"
+  ],
+  "createdBy": "92759802",
+  "created": {
+    "$date": "2021-03-11T23:26:18.922Z"
+  },
+  "updated": null,
+  "completed": null,
+  "status": "Staging",
+  "shipmentType": "Incoming",
+  "specialInstructions": "None! Just testing",
+  "contractId": null,
+  "manifest": [
+    {
+      "_id": {
+        "$oid": "604aa71a1c51452bb70575c1"
+      },
+      "serial": "2345",
+      "name": "Crossover Sub",
+      "quantity": 1,
+      "notes": null,
+      "serialized": true
+    },
+    {
+      "_id": {
+        "$oid": "604aa71a1c51452bb70575c2"
+      },
+      "serial": "N/A",
+      "name": "werfr",
+      "quantity": 1,
+      "notes": "asedfsdf",
+      "serialized": false
+    }
+  ],
+  "shipFrom": {
+    "$oid": "602b197047bcea2afc7025f8"
+  },
+  "shipTo": {
+    "$oid": "602b197047bcea2afc7025fa"
+  },
+  "key": "TESTING-123",
+  "shipFromOverride": {
+    "contactName": "Override Test!"
+  },
+  "shipToOverride": {
+    "operator": "Testing override operator!"
+  },
+  "__v": 0
+}]
