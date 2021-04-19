@@ -14,6 +14,18 @@ This project was developed in collaboration with [Evolution Engineering & Energy
 - Error-checking and **schema validation** of assemblies
 - "Shopping cart"-style tools for **creating and managing assemblies and shipments**
 
+### Live Demo
+A live demo can be found [here](https://capstone.shawnstawiarski.com).  
+  
+You may use the following credentials to log in:
+```
+Username: jsmith
+Password: password1
+```
+**Note:** The live demo is hosted on a free [Heroku](https://www.heroku.com/) server which shuts down after 30 minutes of inactivity (and deletes files with it). 
+- You may need to refresh the page multiple times to allow the server to start before login or API calls can go through
+- Some attachments may show up under a shipment's details, but attempting to view them results in a spinner because Heroku deleted the files as temporary
+  - **To test attachment functionality**, upload a new attachment and immediately view it
 
 ### Build status
 [![Build Status](https://travis-ci.com/sstawiarski/SER-401-Project-24.svg?token=yWvjuE637yC3W4EstXCj&branch=main)](https://travis-ci.com/sstawiarski/SER-401-Project-24)
@@ -88,7 +100,7 @@ Both the frontend and the backend expect `.env` files with necessary values to r
 - Users must manually be created in the database in order to log in, there is currently no user creation implementation
 - Sample data is provided and can be loaded into the database using the provided `/load` POST endpoints of each collection
 - Additional assets, assemblies, and shipments can all be created through the GUI
-### Warnings and Considerations
+### Considerations
 #### Authentication
 - **The method by which users are currently authenticated is not suitable for production** and all instances of user identification in the frontend will need to be retooled (for example user name display and how users are tied to the assets they create)
 - The team chose to forego a robust authentication system due to the company utilizing SSO / Microsoft Active Directory as their primary user authentication strategy and integration was deemed outside the scope of the project
@@ -108,6 +120,11 @@ Both the frontend and the backend expect `.env` files with necessary values to r
 - As a result of this additional complexity, **the major POST and PATCH endpoints of both modules generally perform many queries** in order to properly update all the circular references, children, etc.
   - These complex endpoints are wrapped in [transactions](https://mongoosejs.com/docs/transactions.html) in order to ensure atomicity and mitigate some of the problems
   - However, **the current logic is fairly complex, likely still has errors, and may not be as performant as it could be**
+
+#### Styling and Reponsiveness
+- The current styling is **not optimized for phones or other small screens**
+- While some responsive components (such as Material-UI's `Grid`) and CSS properties such as `flex` where used throughout the project, many pages and elements still do not render correctly on small screens
+
 ### API Reference
 ##### Frontend
 Frontend components are documented throughout the project using inline comments, [JSDoc](https://jsdoc.app/), and [prop-types](https://www.npmjs.com/package/prop-types).
