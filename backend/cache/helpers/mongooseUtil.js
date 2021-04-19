@@ -38,13 +38,13 @@ module.exports = function (mongoose) {
         Suggestion: use '.lean()' wherever possible
          */
         const populated = this.getPopulatedPaths() || [];
-
         let object = this.model.hydrate(json);
+
         removeUnwantedDefaultFields(object, this._fields);
 
         for (let path of populated) {
             let options = this.model.schema.obj[path];
-            let {ref} = options;
+            let { ref } = options;
             if (Array.isArray(options)) {
                 ref = options[0].ref;
                 object[path] = json[path].map(obj => mongoose.model(ref).hydrate(obj));
@@ -54,7 +54,18 @@ module.exports = function (mongoose) {
                 removeUnwantedDefaultFields(object[path], this.mongooseOptions().populate[path].select);
             }
         }
-        return object
+
+        if (this._fields) {
+            const removePopulated = populated.reduce((acc, curr) => {
+                if (!Object.keys(this._fields).includes(curr)) acc[curr] = 0;
+                else acc[curr] = this._fields[curr];
+                return acc;
+            }, {});
+
+            removeUnwantedDefaultFields(object, removePopulated);
+        }
+
+        return object;
     }
 
     function removeUnwantedDefaultFields(obj, fields) {

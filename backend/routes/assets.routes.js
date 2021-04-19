@@ -1030,7 +1030,7 @@ router.get("/:serial", async (req, res, err) => {
   const { serial } = req.params;
   const { project } = req.query
 
-  const projection = project ? { [project]: 1, _id: 0 } : {};
+  const projection = project ? { [project]: 1, _id: 0 } : null;
 
   try {
     let asset = await Asset
