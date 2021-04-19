@@ -1,7 +1,7 @@
 {
-  "name": "ser-401-project-24",
+  "name": "product-management-portal",
   "version": "1.0.0",
-  "description": "A full stack MERN application for asset management and tracking for Evolution Engineering &amp; Energy Technology.",
+  "description": "A full MERN stack application for the management of assets and shipments of assets (including all CRUD operations) with a modular structure and centralized dashboard",
   "main": "index.js",
   "repository": {
     "type": "git",
