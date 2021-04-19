@@ -51,9 +51,8 @@ router.post('/shipment/:key', upload, async (req, res) => {
 
     /* Map the array of uploaded files to an array of Attachment objects */
     const files = req.files.map(file => {
-
         return {
-            uuid: uuid(),
+            uuid: file.filename.split('.')[0],
             filename: file.originalname,
             link: file.filename,
             fileType: mime.extension(file["mimetype"]).toLowerCase(),
