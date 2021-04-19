@@ -89,7 +89,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-grouptag-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="change-grouptag-dialog-title">
 
             <DialogTitle id="change-grouptag-dialog-title">Change Group Tag</DialogTitle>
 
@@ -125,7 +125,7 @@ const ChangeGroupTagDialog = ({ open, setOpen, selected, onSuccess, override }) 
 };
 
 ChangeGroupTagDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 

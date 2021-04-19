@@ -79,7 +79,7 @@ const AssetEditWarning = ({ open, setOpen, items, handleOverride }) => {
 }
 
 AssetEditWarning.propTypes = {
-    open: PropTypes.func,
+    open: PropTypes.bool,
     setOpen: PropTypes.func, 
     items: PropTypes.array, 
     handleOverride: PropTypes.func

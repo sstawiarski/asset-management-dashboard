@@ -265,7 +265,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
 }
 
 AssemblySubmitDialog.propTypes = {
-    open: PropTypes.func,
+    open: PropTypes.bool,
     onSuccess: PropTypes.func, 
     isComplete: PropTypes.bool,
     submission: PropTypes.object,

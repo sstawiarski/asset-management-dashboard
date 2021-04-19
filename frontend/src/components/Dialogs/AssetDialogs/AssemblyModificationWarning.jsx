@@ -114,7 +114,7 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
 }
 
 AssemblyModificationWarning.propTypes = {
-    open: PropTypes.func,
+    open: PropTypes.bool,
     setOpen: PropTypes.func,
     assembly: PropTypes.object
 }

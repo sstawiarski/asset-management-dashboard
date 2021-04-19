@@ -160,7 +160,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters, disableStatusFilter }
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>{"Filter Shipments"}</DialogTitle>
             <DialogContent>
                 <Grid className={classes.filterList} container justify="space-evenly">
@@ -342,7 +342,7 @@ const ShipmentFilter = ({ open, setOpen, setActiveFilters, disableStatusFilter }
 };
 
 ShipmentFilter.propTypes = {
-    open: PropTypes.bool.isRequired,
+    open: PropTypes.bool,
     setOpen: PropTypes.func.isRequired,
     setActiveFilters: PropTypes.func.isRequired,
     disableStatusFilter: PropTypes.bool

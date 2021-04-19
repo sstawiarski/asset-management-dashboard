@@ -73,7 +73,7 @@ const InvalidSerialsDialog = ({ open, setOpen, items }) => {
 };
 
 InvalidSerialsDialog.propTypes = {
-    open: PropTypes.func,
+    open: PropTypes.bool,
     setOpen: PropTypes.func,
     items: PropTypes.array
 }

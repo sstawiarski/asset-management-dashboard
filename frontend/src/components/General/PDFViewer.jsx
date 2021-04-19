@@ -4,7 +4,7 @@ import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Button from '@material-ui/core/Button';
 
-const PDFViewer = ({ filepath }) => {
+const PDFViewer = ({ filepath, onError }) => {
     const [pages, setPages] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -19,7 +19,8 @@ const PDFViewer = ({ filepath }) => {
                 <Document
                     file={filepath}
                     loading={<CircularProgress color="secondary" />}
-                    onLoadSuccess={onLoadSuccess}>
+                    onLoadSuccess={onLoadSuccess}
+                    onLoadError={onError}>
                     <Page pageNumber={currentPage} scale={0.8} />
                 </Document>
             </div>

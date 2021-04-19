@@ -260,7 +260,7 @@ const Sidebar = ({ location }) => {
 
                     {/* Account icon, name, and settings header section */}
                     <List className={classes.accountHeader}>
-                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null} disableRipple={!open ? true : false}>
+                        <ListItem button={!open} style={open ? { marginLeft: "-20px" } : null} disableRipple={!open}>
                             {/* Render account icon as one of 2 types of buttons for better styling open vs. closed */}
                             {
                                 open ?
@@ -324,8 +324,8 @@ const Sidebar = ({ location }) => {
                             return (
                                 <React.Fragment key={text}>
                                     <ListItem
-                                        button
-                                        disableRipple={!open ? true : false}
+                                        button={!open}
+                                        disableRipple={!open}
                                         className={text === "Sign Out" ? classes.signOut : null}
                                         onClick={() => {
 
@@ -510,7 +510,7 @@ const Sidebar = ({ location }) => {
 };
 
 Sidebar.propTypes = {
-    location: PropTypes.string,
+    location: PropTypes.any,
 }
 
 export default Sidebar;

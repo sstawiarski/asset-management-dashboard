@@ -189,7 +189,7 @@ const AssetTimeline = ({ data, onMore, empty }) => {
 };
 
 AssetTimeline.propTypes = {
-    data: PropTypes.object, 
+    data: PropTypes.array, 
     onMore: PropTypes.func, 
     empty: PropTypes.bool
 };

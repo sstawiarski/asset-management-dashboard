@@ -15,7 +15,7 @@ import RetireAssetDialog from '../../components/Dialogs/AssetDialogs/RetireAsset
 import ChangeGroupTagDialog from '../../components/Dialogs/AssetDialogs/ChangeGroupTagDialog';
 import ChangeAssignmentDialog from '../../components/Dialogs/AssetDialogs/ChangeAssignmentDialog';
 import ChangeOwnershipDialog from '../../components/Dialogs/AssetDialogs/ChangeOwnershipDialog';
-import ChangeAssignmentTypeDialog from '../../components/Dialogs/AssetDialogs/AssignmentTypeDialogue';
+import ChangeAssignmentTypeDialog from '../../components/Dialogs/AssetDialogs/AssignmentTypeDialog';
 import AssetEditWarning from '../../components/Dialogs/AssetDialogs/AssetEditWarning';
 import CreateAssetDialog from '../../components/Dialogs/AssetDialogs/CreateAssetDialog';
 import InvalidSerialsDialog from '../../components/Dialogs/AssetDialogs/InvalidSerialsDialog'

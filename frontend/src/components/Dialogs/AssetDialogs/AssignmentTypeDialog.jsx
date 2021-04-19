@@ -136,7 +136,7 @@ const AssignmentTypeDialog = ({ open, setOpen, selected, onSuccess, override }) 
 };
 
 AssignmentTypeDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 

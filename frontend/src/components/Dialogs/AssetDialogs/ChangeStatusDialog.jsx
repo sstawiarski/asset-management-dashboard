@@ -92,7 +92,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-status-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="change-status-dialog-title">
 
             <DialogTitle id="change-status-dialog-title">Change Shipment Status</DialogTitle>
 
@@ -126,7 +126,7 @@ const ChangeStatusDialog = ({ open, setOpen, selected, onSuccess, override }) =>
 };
 
 ChangeStatusDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 

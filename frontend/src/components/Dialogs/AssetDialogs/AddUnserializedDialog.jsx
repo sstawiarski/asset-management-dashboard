@@ -95,7 +95,7 @@ const AddUnserializedDialog = ({ open, onClose, onSubmit }) => {
     }, [open])
 
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open || false} onClose={onClose}>
             <DialogTitle>
                 Add Unserialized Item
     </DialogTitle>
@@ -125,7 +125,7 @@ const AddUnserializedDialog = ({ open, onClose, onSubmit }) => {
 }
 
 AddUnserializedDialog.propTypes = {
-    open: PropTypes.func,
+    open: PropTypes.bool,
     onClose: PropTypes.func,
     onSubmit: PropTypes.func
 }

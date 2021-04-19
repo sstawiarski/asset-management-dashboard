@@ -433,6 +433,11 @@ const ShipmentDetails = () => {
                 onClose={() => setViewFile(null)}
                 title={viewFile ? `Previewing ${viewFile["filename"]}` : null}
                 prepend={key}
+                onFailure={() => {
+                    setViewFile(null);
+                    setAlertInfo({ message: "Could not preview file...", type: "error" });
+                    setAlertOpen(true);
+                }}
             />
 
             {/* Attachment upload dialog */}

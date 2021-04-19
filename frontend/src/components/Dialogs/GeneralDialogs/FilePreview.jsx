@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const FilePreview = ({ file, open, onClose, title, prepend }) => {
+const FilePreview = ({ file, open, onClose, title, prepend, onFailure }) => {
     const classes = useStyles();
 
     const [downloadURL, setDownloadURL] = useState("");
@@ -73,13 +73,14 @@ const FilePreview = ({ file, open, onClose, title, prepend }) => {
             <DialogContent className={classes.dialogContent}>
                 {
                     file?.fileType === 'pdf' ?
-                        <PDFViewer filepath={downloadURL} />
+                        <PDFViewer filepath={downloadURL} onError={onFailure} />
                         : file?.fileType && (
                             <Suspense fallback={null}>
                                 <FileViewer
                                     className={classes.fileViewer}
                                     fileType={file ? file.fileType : "jpg"}
-                                    filePath={downloadURL} />
+                                    filePath={downloadURL}
+                                    onError={onFailure} />
                             </Suspense>
                         )
 
@@ -116,6 +117,10 @@ FilePreview.propTypes = {
      * Handler function to run when the user closes the preview dialog
      */
     onClose: PropTypes.func,
+    /**
+     * Handler function to run if the file cannot be previewed
+     */
+    onFailure: PropTypes.func,
 };
 
 export default FilePreview;

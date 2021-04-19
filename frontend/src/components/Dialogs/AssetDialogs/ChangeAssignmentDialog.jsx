@@ -103,7 +103,7 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess, override }
     }, [])
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="change-assignee-dialog-title">
 
             <DialogTitle id="change-assignee-dialog-title">Change Assignee</DialogTitle>
 
@@ -137,7 +137,7 @@ const ChangeAssignmentDialog = ({ open, setOpen, selected, onSuccess, override }
 };
 
 ChangeAssignmentDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 

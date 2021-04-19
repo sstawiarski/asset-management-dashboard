@@ -79,7 +79,7 @@ const IncompleteAssemblyDialog = ({ open, setOpen, missingItems, handleOverride 
 }
 
 IncompleteAssemblyDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     missingItems: PropTypes.array, 
     handleOverride: PropTypes.func 

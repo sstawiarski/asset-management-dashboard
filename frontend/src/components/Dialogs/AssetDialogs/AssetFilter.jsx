@@ -134,7 +134,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
     }
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle>{"Filter Assets"}</DialogTitle>
 
             <DialogContent>
@@ -218,7 +218,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
                                                 state.assetTypes.slice(0, Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
                                                     return (
                                                         <FormControlLabel
-                                                            key={type.name}
+                                                            key={idx}
                                                             control={
                                                                 <Checkbox
                                                                     checked={type.checked}
@@ -240,7 +240,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
                                                 state.assetTypes.slice(Math.floor(state.assetTypes.length / 2)).map((type, idx) => {
                                                     return (
                                                         <FormControlLabel
-                                                            key={type.name}
+                                                            key={idx}
                                                             control={
                                                                 <Checkbox
                                                                     checked={type.checked}
@@ -339,7 +339,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters, assetList 
 }
 
 FormDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     setActiveFilters: PropTypes.func,
     assetList: PropTypes.array

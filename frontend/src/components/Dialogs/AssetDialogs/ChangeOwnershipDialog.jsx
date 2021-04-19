@@ -103,7 +103,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
     }, [])
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
+        <Dialog open={open || false} onClose={handleClose} aria-labelledby="change-owner-dialog-title">
 
             <DialogTitle id="change-owner-dialog-title">Change Owner</DialogTitle>
 
@@ -137,7 +137,7 @@ const ChangeOwnershipDialog = ({ open, setOpen, selected, onSuccess, override })
 };
 
 ChangeOwnershipDialog.propTypes = {
-    open: PropTypes.func, 
+    open: PropTypes.bool, 
     setOpen: PropTypes.func, 
     selected: PropTypes.array, 
     onSuccess: PropTypes.func, 
