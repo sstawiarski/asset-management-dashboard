@@ -1,8 +1,4 @@
 ### Quality Policy
->Git Master: Shawn Stawiarski 
-
->Scrum Master: Eric Fritts
-
 **GitHub Workflow** 
  
 –Branch from Development (Dev) into your US# branch (this branch shouldalways have a working version).
@@ -65,4 +61,4 @@
 
 
 **Continuous Integration**  
-  > CI tool TBD
+  > Travis-CI tests must pass.
