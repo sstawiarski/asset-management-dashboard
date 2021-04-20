@@ -67,6 +67,126 @@ const schemas = {
         type: 'boolean',
         description: 'Whether or not the asset is currently retired from service'
     },
+    created: {
+        type: 'date',
+        description: 'Date entry'
+    },
+    updated: {
+        type: 'date',
+        description: 'Date entry'
+    },
+    completed: {
+        type: 'date',
+        description: 'Date entry'
+    },
+    status: {
+        type: 'string',
+        enum: ['Staging', 'Completed', 'Abandoned']
+    },
+    shipmentType: {
+        type: 'string',
+        enum: ['Incoming', 'Outgoing']
+    },
+    shipFrom:{
+        type: 'object',
+        
+    },
+    shipTo: {
+        type: 'object'
+    },
+    specialInstructions: {
+        type: 'string',
+        description: 'Special instructions for a shipment',
+        example: 'Batteries: Handle with care'
+    },
+    contractId: {
+        type: 'string'
+    },
+    name: {
+        type: 'string',
+        description: 'Asset name on manifest'
+    },
+    quantity: {
+        type: 'number'
+    },
+    notes: {
+        type: 'string'
+    },
+    serialized: {
+        type: 'boolean'
+    },
+    Manifest: {
+        type: 'object',
+        properties: {
+            serial: {
+                $ref: '#components/schemas/serial'
+            },
+            name: {
+                $ref: '#components/schemas/name'
+
+            },
+            quantity: {
+                $ref: '#components/schemas/quantity'
+
+            },
+            notes: {
+                $ref: '#components/schemas/notes'
+
+            },
+            serialized: {
+                $ref: '#components/schemas/serialized'
+
+            }
+        }
+    },
+    Shipment: {
+        type: 'object',
+        properties: {
+            key:{
+                $ref: '#components/schemas/key'
+            },
+            createdBy: {
+                $ref: '#components/schemas/createdBy'
+            },
+            created: {
+                $ref: '#components/schemas/created'
+            },
+            updated: {
+                $ref: '#components/schemas/updated'
+
+            },
+            completed: {
+                $ref: '#components/schemas/completed'
+
+            },
+            status: {
+                $ref: '#components/schemas/status'
+            },
+            shipmentType: {
+                $ref: '#components/schemas/shipmentType'
+            },
+            shipFrom:{
+                $ref: '#components/schemas/shipFrom'
+            },
+            shipTo: {
+                $ref: '#components/schemas/shipTo'
+
+            },
+            specialInstructions: {
+                $ref: '#components/schemas/specialInstructions'
+
+            },
+            contractId: {
+                $ref: '#components/schemas/contractId'
+
+            },
+            
+            manifest: {
+                $ref: '#components/schemas/Manifest'
+
+            }
+        }
+    },
     Asset: {
         type: 'object',
         properties: {
@@ -117,7 +237,11 @@ const schemas = {
             $ref: '#/components/schemas/Asset'
         }
     },
-
+    createdBy: {
+        type: 'string',
+        description: 'User name of document originiator',
+        example: 'JSmith'
+    },
     client: {
         type: 'string',
         description: 'Plaintext client name',
@@ -396,6 +520,45 @@ const schemas = {
                     }
                 }
             }
+        }
+    },
+    attachment: {
+        type: 'object',
+        description: 'A file attachment',
+        properties: {
+            _id: {
+                type: 'string'
+            },
+            uuid: {
+                type: 'string',
+                description: 'A unique ID'
+            },
+            filename: {
+                type: 'string',
+                description: 'The "pretty" filename; the file\'s original name'
+            },
+            link: {
+                type: 'string',
+                description: 'The file\'s local name'
+            },
+            fileType: {
+                type: 'string',
+                description: 'The file\'s extension'
+            },
+            user: {
+                type: 'string',
+                description: 'The first and last name of the user who uploaded the attachment'
+            },
+            dateAdded: {
+                type: 'string',
+                description: 'The date the attachment was uploaded'
+            }
+        }
+    },
+    attachments: {
+        type: 'array',
+        items: {
+            $ref: '#/components/schemas/attachment'
         }
     }
 }

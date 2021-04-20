@@ -1,7 +1,8 @@
 .DS_Store
-*.env
+.env
 node_modules/
 .vscode
 
 dump.rdb
 
+.eslintcache

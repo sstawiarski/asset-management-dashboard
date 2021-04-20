@@ -2,24 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation, Switch, Route, Redirect } from 'react-router-dom';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
+import { CssBaseline } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 import './App.css';
 import logo from "./logo.svg";
 
-import Sidebar from './components/Sidebar';
-
-import AssetDetails from './pages/AssetDetails';
-import AssemblyManager from './pages/AssemblyManager';
-import Dashboard from './pages/Dashboard';
-import AllAssets from './pages/AllAssets';
-import AllManifests from './pages/AllManifests';
-import SearchDetails from './pages/SearchDetails';
 import LoginPage from './pages/Login';
-
+import Sidebar from './components/General/Sidebar';
+import Dashboard from './pages/Dashboard';
+import SearchDetails from './pages/SearchDetails';
 import AccountDetails from'./pages/AccountDetails';
-import ShipmentDetails from './pages/ShipmentDetails';
-import ShipmentCreator from './pages/ShipmentCreator';
+
+//Assets
+import AllAssets from './pages/Assets/AllAssets';
+import AssetDetails from './pages/Assets/AssetDetails';
+import AssemblyManager from './pages/Assets/AssemblyManager';
+
+//Shipments
+import AllShipments from './pages/Shipments/AllShipments';
+import ShipmentDetails from './pages/Shipments/ShipmentDetails';
+import ShipmentCreator from './pages/Shipments/ShipmentCreator';
 
 import useLocalStorage from './utils/auth/useLocalStorage.hook';
 
@@ -27,8 +30,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
     flexDirection: "row",
-    minHeight: "100vh",
-    backgroundColor: "#F0FCFF"
+    minHeight: "100vh"
   },
   content: {
     flexGrow: 12,
@@ -49,6 +51,15 @@ const theme = createMuiTheme({
       main: '#48656b',
     },
   },
+  overrides: {
+    MuiCssBaseline:{
+      '@global': {
+        body: {
+          backgroundColor: "#F0FCFF"
+        }
+      }
+    }
+  }
 });
 
 function App() {
@@ -69,6 +80,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Switch>
         <Route exact path="/login" render={(props) => <LoginPage {...props} />} />
         {!loggedIn && Object.keys(local).length <= 0 ? <Redirect to='/login' /> : null}
@@ -87,7 +99,7 @@ function App() {
                   <Route path="/" exact component={Dashboard} />
                   <Route exact path="/test" component={null} />
                   <Route path="/search/:query" component={SearchDetails} />
-                  <Route path="/shipments/view-all" component={AllManifests} />
+                  <Route path="/shipments/view-all" component={AllShipments} />
                   <Route path="/shipments/track" component={null} />
                   <Route exact path="/shipments/create" component={ShipmentCreator} />
                   <Route path="/shipments/:key" component={ShipmentDetails} />

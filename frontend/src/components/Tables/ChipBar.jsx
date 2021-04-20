@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+
 import { makeStyles } from '@material-ui/core/styles';
 
 import Chip from '@material-ui/core/Chip';
@@ -126,5 +128,11 @@ const ChipBar = (props) => {
         </div>
     );
 };
+
+ChipBar.propTypes = {
+    setActiveFilters: PropTypes.func,
+    activeFilters: PropTypes.object,
+    setFilters: PropTypes.func
+}
 
 export default ChipBar;

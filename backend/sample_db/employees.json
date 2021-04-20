@@ -1,0 +1,49 @@
+[{
+  "_id": {
+    "$oid": "5f88b7e460a5485411550051"
+  },
+  "employeeId": 92759802,
+  "firstName": "John",
+  "lastName": "Smith",
+  "username": "jsmith",
+  "email": "jsmith@company.com",
+  "jobTitle": "honcho",
+  "birthDate": {
+    "$date": "1975-07-01T04:00:00Z"
+  },
+  "gender": "m",
+  "password": "password1",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f88b7e460a5485411550052"
+  },
+  "employeeId": 92759805,
+  "firstName": "Joanna",
+  "lastName": "Smith",
+  "username": "jsmith2",
+  "email": "jsmith2@company.com",
+  "jobTitle": "sub-honcho",
+  "birthDate": {
+    "$date": "1976-07-02T04:00:00Z"
+  },
+  "gender": "f",
+  "password": "password1",
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "5f88b7e460a5485411550053"
+  },
+  "employeeId": 92119865,
+  "firstName": "James",
+  "lastName": "Buchanan",
+  "username": "jbukky",
+  "email": "jbukky@company.com",
+  "jobTitle": "supreme honcho",
+  "birthDate": {
+    "$date": "1977-07-03T04:00:00Z"
+  },
+  "gender": "m",
+  "password": "password1",
+  "__v": 0
+}]

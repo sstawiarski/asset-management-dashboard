@@ -4,6 +4,9 @@ const customerPaths = require('./customers.paths')
 const employeePaths = require('./employees.paths')
 const locationPaths = require('./locations.paths')
 const authPaths = require('./auth.paths');
+const shipmentPaths = require('./shipments.paths');
+const attachmentPaths = require('./attachments.paths');
+
 const paths = {
     '/assets': assetsPaths.root,
     '/assets/load': assetsPaths.load,
@@ -11,6 +14,8 @@ const paths = {
     '/assets/:searchFilter': assetsPaths.findByFilter,
     '/assets/assembly/schema': assetsPaths["assembly/schema"],
     '/assets/assembly': assetsPaths["assembly"],
+
+    '/shipments': shipmentPaths.root,
     
     '/events': eventsPaths.root,
     '/events/load': eventsPaths.load,
@@ -27,7 +32,16 @@ const paths = {
     '/locations': locationPaths.root,
     '/locations/load': locationPaths.load,
 
-    '/auth/login': authPaths.login
+    '/auth/login': authPaths.login,
+
+    '/shipments': shipmentPaths.root,
+    '/shipments/load': shipmentPaths.load,
+    '/shipments/:key': shipmentPaths.findByKey,
+
+    '/attachments/:name': attachmentPaths.getByName,
+    '/attachments/shipment/:key': attachmentPaths.postToKey,
+    '/attachments/:uuid': attachmentPaths.deleteByUUID,
+    '/attachments/shipment/:key': attachmentPaths.getForShipment
 }
 
 module.exports = paths;

@@ -1,20 +1,27 @@
-/*
- * Author: Shawn Stawiarski
- * October 2020
- * License: MIT
- */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+
+//Library Tools
 import { Link } from 'react-router-dom';
 import debounce from 'lodash/debounce'
-
 import { makeStyles } from '@material-ui/core/styles';
 
+//Material-UI Components
 import FormControl from '@material-ui/core/FormControl'
-import { Fade, InputAdornment, InputLabel, OutlinedInput, Paper, Typography, Popper, Divider } from '@material-ui/core';
-import Search from '@material-ui/icons/Search'
+import Fade from '@material-ui/core/Fade';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import InputLabel from '@material-ui/core/InputLabel';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Popper from '@material-ui/core/Popper';
+import Divider from '@material-ui/core/Divider';
 
+//Custom Components
 import AssetResult from './AssetResult'
 import EventResult from './EventResult'
+
+//Icons
+import Search from '@material-ui/icons/Search'
 
 const useStyles = makeStyles((theme) => ({
     searchbar: {
@@ -43,13 +50,13 @@ const useStyles = makeStyles((theme) => ({
 const Searchbar = () => {
 
     /* Delay API call on user input by 500ms */
-    const debounceSearch = useCallback(debounce(eventTarget =>
+    const debounceSearch = useRef(debounce(eventTarget =>
         setState({
             ...state,
             searchTerm: eventTarget.value,
             anchor: eventTarget
-        })
-        , 500), [])
+        }), 500)
+    );
 
     const classes = useStyles();
 
@@ -117,7 +124,7 @@ const Searchbar = () => {
     }, [state.searchTerm])
 
     const handleChange = (event) => {
-        debounceSearch(event.target)
+        debounceSearch.current(event.target)
     }
 
     return (
