@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Dialog from '@material-ui/core/Dialog';
@@ -19,7 +19,7 @@ const dateOptions = {
     minute: "numeric"
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     content: {
         paddingLeft: "30px",
         paddingRight: "30px",
@@ -31,15 +31,28 @@ const useStyles = makeStyles({
     link: {
         textDecoration: "none",
         color: "inherit",
+        padding: "5px",
+        cursor: "pointer",
         "&:hover": {
             backgroundColor: "#BDBDBD",
-            borderRadius: "3px"
+            borderRadius: "6px",
+            transition: theme.transitions.create('background-color', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.standard,
+            }),
+        }
+    },
+    detailsLink: {
+        cursor: "pointer",
+        "&:hover": {
+            textDecoration: "underline"
         }
     }
-})
+}))
 
-const EventDetailsViewer = ({ event, open, onClose }) => {
+const EventDetailsViewer = ({ event, open, onClose, onRedirect }) => {
     const classes = useStyles();
+    const history = useHistory();
     const [username, setUsername] = useState(null);
 
     useEffect(() => {
@@ -79,7 +92,7 @@ const EventDetailsViewer = ({ event, open, onClose }) => {
                             {
                                 username ?
                                     <Grid item xs={3} className={classes.item}>
-                                        <Typography variant="body1"><b>Created By</b></Typography>
+                                        <Typography variant="body1"><b>Initiated By</b></Typography>
                                         <Tooltip title={`ID: ${username.employeeId}`} placement="bottom-start">
                                             <Typography variant="body1">{username.name}</Typography>
                                         </Tooltip>
@@ -92,14 +105,37 @@ const EventDetailsViewer = ({ event, open, onClose }) => {
                                 {
                                     event.productIds.map((prod, idx) =>
                                         <Typography key={idx} variant="body1">
-                                            <Link className={classes.link} to={`/assets/${prod}`}>{prod}</Link>
+                                            <span
+                                                className={classes.link}
+                                                onClick={() => {
+                                                    onRedirect && (onRedirect(`${typeof prod === "object" ? prod?.serial : prod}`));
+                                                    history.push(`/assets/${typeof prod === "object" ? prod?.serial : prod}`);
+                                                }}
+                                            >{typeof prod === "object" ? `${prod?.serial} (${prod?.type})` : prod}</span>
                                         </Typography>)
                                 }
                             </Grid>
 
                             <Grid item xs={12}>
                                 <Typography variant="body1"><b>Details</b></Typography>
-                                <Typography variant="body1">{event.eventData.details}</Typography>
+                                <Typography variant="body1">
+                                    {
+                                        (event.eventData?.link && event.eventData.details.split(event.eventData.link).length === 2) ?
+                                            [
+                                                event.eventData.details.split(event.eventData.link)[0],
+                                                <span 
+                                                className={classes.detailsLink}
+                                                onClick={() => {
+                                                    onRedirect && (onRedirect());
+                                                    history.push(`/assets/${event.eventData.link}`);
+                                                }}>
+                                                    {event.eventData.link}
+                                                </span>,
+                                                event.eventData.details.split(event.eventData.link)[1]
+                                            ]
+                                            : event.eventData.details
+                                    }
+                                </Typography>
                             </Grid>
 
                         </Grid>
@@ -114,7 +150,8 @@ const EventDetailsViewer = ({ event, open, onClose }) => {
 EventDetailsViewer.propTypes = {
     event: PropTypes.object,
     open: PropTypes.bool,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    onRedirect: PropTypes.func
 };
 
 export default EventDetailsViewer;

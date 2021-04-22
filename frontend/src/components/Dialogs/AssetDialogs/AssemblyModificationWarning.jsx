@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
 //Library Tools
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles'
@@ -48,7 +47,7 @@ const useStyles = makeStyles({
     }
 });
 
-const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
+const AssemblyModificationWarning = ({ open, setOpen, assembly, onError }) => {
     const classes = useStyles();
     const history = useHistory();
     const [user,] = useLocalStorage('user', {});
@@ -96,15 +95,26 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
                                 disassembly: true,
                                 user: user.uniqueId
                             })
-                        })
-                        history.push({
-                            pathname: '/assets/assembly-manager',
-                            state: {
-                                isAssemblyEdit: true,
-                                serial: assembly.serial,
-                                assemblyType: assembly.assetName
+                        }).then(res => {
+                            if (res.status === 205) {
+                                return res.json();
+                            } else return null;
+                        }).then(json => {
+                            if (json) {
+                                history.push({
+                                    pathname: '/assets/assembly-manager',
+                                    state: {
+                                        isAssemblyEdit: true,
+                                        serial: assembly.serial,
+                                        assemblyType: assembly.assetName
+                                    }
+                                });
+                            } else {
+                                handleClose();
+                                onError && (onError());
                             }
-                        })
+                        });
+                       
                     }}
                     color="primary">Modify</Button>
 
@@ -116,6 +126,7 @@ const AssemblyModificationWarning = ({ open, setOpen, assembly }) => {
 AssemblyModificationWarning.propTypes = {
     open: PropTypes.bool,
     setOpen: PropTypes.func,
+    onError: PropTypes.func,
     assembly: PropTypes.object
 }
 

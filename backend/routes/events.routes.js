@@ -252,9 +252,16 @@ router.get('/:serial', async (req, res) => {
     const skip = parseInt(req.query.skip);
     try {
         let events = await Event.find({
-            productIds: {
-                $in: serial
-            }
+            $or: [
+                {
+                    productIds: {
+                        $in: serial
+                    }
+                },
+                {
+                   "productIds.serial": serial
+                }
+            ]
         }).sort({ eventTime: -1 }).cache({ ttl: cacheTime });
 
         if (req.query) {

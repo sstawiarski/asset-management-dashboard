@@ -457,7 +457,9 @@ router.post('/', async (req, res, err) => {
                     }
                 ]
             });
+
             /* Mark assets as checked out when they are added to a shipment */
+            // TODO: Is this correct? When are assets marked checked out? What is the relative location from which they are checked out? What does this property even mean?
             const assetUpdateQuery = {
                 checkedOut: true,
                 lastUpdated: Date.now()
@@ -465,7 +467,8 @@ router.post('/', async (req, res, err) => {
 
             /* If override is present, just ship all the supplied assets with no checks */
             if (req.body.override) {
-                await Assets.updateMany({ serial: { $in: serials } }, assetUpdateQuery).session(session);
+                await Assets.updateMany({ serial: { $in: serials } }, assetUpdateQuery).session(session); //update assemblies and lone assets
+                await Assets.updateMany({ parentId: { $in: serials } }, assetUpdateQuery).session(session); //update children of assemblies automatically excluded from the cart
                 updatedSerials = serials;
             } else {
                 /* If no override is present, only update those assets who are not checked out and either not in an assembly or whose parent is being shipped */
@@ -515,6 +518,41 @@ router.post('/', async (req, res, err) => {
                     const updateSerials = serials.filter(ser => !assemblySerials.includes(ser) && !checkedOutSerials.includes(ser));
                     await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery).session(session);
                     updatedSerials = [...updatedSerials, ...updateSerials];
+                }
+
+
+                /* Update children if the parent is in the shipment, no override needed */
+                const findChildren = await Assets.find({
+                    $and: [
+                        {
+                            parentId: {
+                                $ne: null
+                            }
+                        },
+                        {
+                            parentId: {
+                                $in: serials
+                            }
+                        }
+                    ]
+                });
+
+                if (findChildren.length) {
+                    await Assets.updateMany({
+                        $and: [
+                            {
+                                parentId: {
+                                    $ne: null
+                                }
+                            },
+                            {
+                                parentId: {
+                                    $in: serials
+                                }
+                            }
+                        ]
+                    }, assetUpdateQuery).session(session);
+                    updatedSerials.push(...findChildren.map(child => child.serial));
                 }
             }
 
@@ -578,7 +616,7 @@ router.post('/', async (req, res, err) => {
             const newKey = `SHIP-${count.next}`; //shipment doc and event doc are in separate collections so they can have the same key
 
             await Event.create([{
-                eventType: `${shipment.shipmentType} Shipment`,
+                eventType: `${req.body.shipmentType} Shipment`,
                 eventTime: Date.now(),
                 key: newKey,
                 productIds: updatedSerials,
@@ -624,6 +662,7 @@ router.post('/', async (req, res, err) => {
 
 router.patch('/', async (req, res) => {
     const session = await mongoose.startSession();
+
     /* Destructure key from request URL params to find shipment and get status from request body */
     const { shipments, user } = req.body;
     const username = JSON.parse(decrypt(user));

@@ -27,6 +27,8 @@ Password: password1
 - Some attachments may show up under a shipment's details, but attempting to view them results in a spinner because Heroku deleted the files as temporary
   - **To test attachment functionality**, upload a new attachment and immediately view it
 
+**Demo video / project overview:** [YouTube](https://youtu.be/ess9Z7cUUzs)
+
 ### Build status
 [![Build Status](https://travis-ci.com/sstawiarski/SER-401-Project-24.svg?token=yWvjuE637yC3W4EstXCj&branch=main)](https://travis-ci.com/sstawiarski/SER-401-Project-24)
 
@@ -72,6 +74,8 @@ Password: password1
 
 ### Installation
 Further details may be found in the `frontend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/README.md) and the `backend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/README.md).
+
+Node.js version >= 14 is required to run the API server due to the usage of optional chaining.
 
 The `package.json` file in the root project directory provides a few convenience scripts atop the normal ones. The simplest way to get started is to run 
 ```

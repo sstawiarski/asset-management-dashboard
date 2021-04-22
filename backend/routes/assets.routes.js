@@ -11,7 +11,7 @@ const AssemblySchema = require('../models/assembly.model');
 const sampleAssets = require("../sample_data/sampleAssets.data");
 const dateFunctions = require("date-fns");
 const decrypt = require('../auth.utils').decrypt;
-const { cacheTime } = require('../cache');
+const { cacheTime, clearCache } = require('../cache');
 
 router.get("/", async (req, res, err) => {
   const isMap = req?.query?.mapView === "true" && req?.query?.mapBounds;
@@ -404,7 +404,8 @@ router.post('/', async (req, res, err) => {
   try {
 
     await session.withTransaction(async () => {
-      const { serialBase, list, beginRange, endRange, owner, type, assetName } = req.body;
+      const { serialBase, list, beginRange, endRange, owner, type, assetName, initialLocation } = req.body;
+
       const invalid = [];
       const username = JSON.parse(decrypt(req.body.user)).employeeId; //get user info for the event document later
 
@@ -419,7 +420,7 @@ router.post('/', async (req, res, err) => {
             continue;
           } else {
             //if not already existing, create it with default info
-            await Asset.create([{
+            const assetToCreate = {
               serial: serial,
               assetName: assetName,
               owner: owner,
@@ -428,7 +429,9 @@ router.post('/', async (req, res, err) => {
               dateCreated: Date.now(),
               assignmentType: "Owned",
               retired: false
-            }], { session: session })
+            };
+            if (initialLocation) assetToCreate["deployedLocation"] = mongoose.Types.ObjectId(initialLocation._id);
+            await Asset.create([assetToCreate], { session: session })
 
             created.push(serial);
           }
@@ -447,6 +450,8 @@ router.post('/', async (req, res, err) => {
             details: `Asset(s) created in system.`
           }
         }], { session: session });
+
+        await mongoose.clearCache({ collection: ['assets', 'events'] }, true);
 
         res.status(200).json({
           message: "Successfully created assets",
@@ -568,6 +573,7 @@ router.patch("/", async (req, res) => {
       const ret = await Asset.updateMany({ serial: { $in: list }, assetType: "Assembly" }, { ...field, lastUpdated: Date.now() }).session(session);
 
       if (isDisassembly) {
+        await mongoose.clearCache({ collection: ['assets'] }, true);
         res.status(205).json({ message: "Successfully marked assembly as disassembled" });
         return;
       }
@@ -675,7 +681,6 @@ router.patch("/", async (req, res) => {
       allAffectedAssets = [...allAffectedAssets, ...parentSerials];
 
       //generate new event and save
-      //TODO: make up eventData is some kind of predefined way
       if (allAffectedAssets.length) {
         const event = await Event.create([
           {
@@ -800,10 +805,10 @@ router.post('/assembly', async (req, res, err) => {
       const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
 
       await Event.create([{
-        eventType: "Creation",
+        eventType: "Assembly Creation",
         eventTime: Date.now(),
-        key: `CRE-${count.next}`,
-        productIds: [req.body.serial, ...req.body.assets],
+        key: `ACR-${count.next}`,
+        productIds: [{ serial: req.body.serial, type: "parent" }, ...req.body.assets],
         initiatingUser: username.employeeId,
         eventData: {
           details: `Created new assembly with serial ${req.body.serial}`
@@ -839,6 +844,7 @@ router.patch('/assembly', async (req, res) => {
 
       const missing = missingItems ? missingItems : [];
 
+      /* Update actual assembly */
       await Asset.updateOne({ serial: serial, assetType: "Assembly" }, {
         missingItems: missing,
         assembled: true,
@@ -846,9 +852,9 @@ router.patch('/assembly', async (req, res) => {
         lastUpdated: Date.now()
       }).session(session);
 
+      /* Update children which are no longer apart of the assembly to remove the parent ID reference */
       const findChildren = await Asset.find({ parentId: serial });
       const missingChildren = findChildren.map(item => item.serial).filter(ser => !assets.includes(ser));
-
       await Asset.updateMany({ serial: { $in: missingChildren } }, { parentId: null, lastUpdated: Date.now() }).session(session);
 
       //find all new children that already have parents
@@ -856,9 +862,18 @@ router.patch('/assembly', async (req, res) => {
         serial: {
           $in: assets
         },
-        parentId: {
-          $ne: serial
-        }
+        $and: [
+          {
+            parentId: {
+              $ne: serial
+            }
+          },
+          {
+            parentId: {
+              $ne: null
+            }
+          }
+        ]
       });
 
       const parentSers = withParents.map(item => item.parentId);
@@ -867,7 +882,7 @@ router.patch('/assembly', async (req, res) => {
       //update children with new parent
       await Asset.updateMany({ serial: { $in: assets } }, { parentId: serial, lastUpdated: Date.now() }).session(session);
 
-      //update parents to mark incomplete
+      //update parents of newly added assets to mark them incomplete
       let i = 0;
       for (const parent of parentSers) {
         await Asset.updateOne({ serial: parent }, { $push: { missingItems: assetNames[i] }, incomplete: true, lastUpdated: Date.now() }).session(session);
@@ -877,20 +892,38 @@ router.patch('/assembly', async (req, res) => {
       const eventType = getEventType("assemblyMod");
       const count = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
 
-      const uniqueParents = [...new Set(parentSers)];
+      const uniqueParents = Array.from(new Set(parentSers).values()) || [];
 
       await Event.create([
         {
           eventType: eventType[0],
           eventTime: Date.now(),
           key: `${eventType[1]}${count.next}`,
-          productIds: [req.body.serial, ...req.body.assets, ...uniqueParents],
+          productIds: [{ serial: req.body.serial, type: "parent" }, ...req.body.assets, ...uniqueParents],
           initiatingUser: username.employeeId,
           eventData: {
-            details: `Updated assembly with serial ${req.body.serial}. Removed children from ${JSON.stringify(uniqueParents)} and added to this assembly.`
+            details: `Updated assembly with serial ${req.body.serial}.${uniqueParents.length ? ` Removed children from ${JSON.stringify(uniqueParents)} and added to this assembly.` : ""}`
           }
         }
       ], { session: session });
+
+      if (missingChildren && missingChildren.length) {
+        const missingEventType = getEventType("assemblyRem");
+        const missingEventCounter = await Counter.findOneAndUpdate({ name: "events" }, { $inc: { next: 1 } }, { useFindAndModify: false }).session(session);
+        await Event.create([
+          {
+            eventType: missingEventType[0],
+            eventTime: Date.now(),
+            key: `${missingEventType[1]}${missingEventCounter.next}`,
+            productIds: [...missingChildren],
+            initiatingUser: username.employeeId,
+            eventData: {
+              details: `Removed asset(s) from parent assembly ${serial}.`,
+              link: `${serial}`
+            }
+          }
+        ], { session: session });
+      }
 
       await mongoose.clearCache({ collection: ['assets', 'events'] }, true);
 
@@ -953,7 +986,8 @@ router.put("/assembly/schema", async (req, res) => {
 
     await AssemblySchema.create(assemblySchemas);
 
-    await mongoose.clearCache({ collection: 'schemas' }, true);
+    await
+      await mongoose.clearCache({ collection: 'schemas' }, true);
 
     res.status(200).json({
       message: "success"
@@ -1040,7 +1074,7 @@ router.get("/:serial", async (req, res, err) => {
       .cache({ ttl: cacheTime });
 
     /* if there is a location override, update the deployedLocation with the overrides and remove the override object */
-    if (asset["deployedLocationOverride"] && asset["deployedLocation"]) {
+    if (asset?.deployedLocationOverride && asset?.deployedLocation) {
       asset = asset.toObject();
       asset["deployedLocation"] = {
         ...asset["deployedLocation"],
@@ -1063,7 +1097,7 @@ router.get("/:serial", async (req, res, err) => {
     console.log(err);
     res.status(500).json({
       message: "Internal server error",
-      interalCode: "internal_server_error",
+      internalCode: "internal_server_error",
     });
   }
 
@@ -1085,6 +1119,8 @@ function getEventType(field) {
       return ["Creation", "CRE-"];
     case "assemblyMod":
       return ["Assembly Modification", "ABM-"]
+    case "assemblyRem":
+      return ["Removal from Assembly", "ASRM-"]
   }
 }
 

@@ -53,6 +53,7 @@ const AllAssets = () => {
 
     const [assets, setAssets] = useState([]);
     const [childAssets, setChildAssets] = useState([]);
+    const [parentAssemblies, setParentAssemblies] = useState([]);
     const [filters, setFilters] = useState({
         limit: 5
     });
@@ -66,7 +67,7 @@ const AllAssets = () => {
     const [override, setOverride] = useState(false);
     const [success, setSuccess] = useState({ succeeded: null, message: '' });
     const [map, toggleMap] = useState(false);
-    const [assetMarkers, setAssetMarkers] = useState([]);
+    const [assetMarkers, setAssetMarkers] = useState([]); //stores the whole document for each selected row, for mapping
     const [filteredMarkers, setFilteredMarkers] = useState(null);
     const [storedAssets, setStoredAssets] = useState(null);
     const [search, setSearch] = useState("");
@@ -93,8 +94,25 @@ const AllAssets = () => {
     const handleMenuClick = (event) => {
         setAnchor(null);
         const children = [];
+        const parents = [];
         setNext(event.target.getAttribute("name"));
 
+        assetMarkers.forEach((item, idx) => {
+            alert(JSON.stringify(item))
+            if (item.assetType === "Assembly") {
+                parents.push(item.serial);
+                return;
+            }
+            if (!item.parentId) return;
+            if (!selected.includes(item.parentId)) {
+                children.push(selected[idx]);
+            }
+        });
+
+        setParentAssemblies(parents);
+        setChildAssets(children);
+
+        /*
         Promise.all(
             selected.map(serial =>
                 fetch(`${process.env.REACT_APP_API_URL}/assets/${serial}?project=parentId`)
@@ -115,8 +133,10 @@ const AllAssets = () => {
                 }
                 return;
             })
-            setChildAssets(children)
+            setChildAssets(children);
         });
+        */
+
     }
 
     /* Successful edit event */
@@ -150,7 +170,7 @@ const AllAssets = () => {
         } else {
             setDialogs({ [nextDialog]: true });
         }
-    }, [childAssets, nextDialog]);
+    }, [childAssets, nextDialog, parentAssemblies]);
 
     /* Opens the invalid serials dialog whenever some serials could not be provisioned */
     useEffect(() => {
@@ -471,6 +491,7 @@ const AllAssets = () => {
                     setNext("")
                     setChildAssets([])
                 }}
+                containsAssemblies={Boolean(parentAssemblies.length)}
             />
 
             {/* Displays success or failure message */}

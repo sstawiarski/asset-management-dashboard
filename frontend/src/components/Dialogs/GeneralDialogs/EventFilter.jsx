@@ -121,6 +121,7 @@ export default function FormDialog({ open, setOpen, setActiveFilters }) {
                                 <MenuItem value={"Outgoing Shipment"}>Outgoing Shipment</MenuItem>
                                 <MenuItem value={"Incoming Shipment"}>Incoming Shipment</MenuItem>
                                 <MenuItem value={"Creation"}>Creation</MenuItem>
+                                <MenuItem value={"Assembly Creation"}>Assembly Creation</MenuItem>
                             </Select>
                         </FormControl>
                     </Grid>

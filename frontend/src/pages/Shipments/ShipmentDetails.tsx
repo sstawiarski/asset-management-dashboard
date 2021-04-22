@@ -267,7 +267,7 @@ const ShipmentDetails = () => {
                                         {loading ? (
                                             <Skeleton variant="text" />
                                         ) : (
-                                            <Typography variant="body1">{shipment.shipFrom.locationName}</Typography>
+                                            <Typography variant="body1">{shipment.shipFrom?.locationName}</Typography>
                                         )}
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
@@ -277,7 +277,7 @@ const ShipmentDetails = () => {
                                         {loading ? (
                                             <Skeleton variant="text" />
                                         ) : (
-                                            <Typography variant="body1">{shipment.shipTo.locationName}</Typography>
+                                            <Typography variant="body1">{shipment.shipTo?.locationName}</Typography>
                                         )}
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>

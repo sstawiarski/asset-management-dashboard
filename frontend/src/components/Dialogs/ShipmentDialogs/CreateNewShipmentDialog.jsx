@@ -94,15 +94,15 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        if(state.shipmentType===""){
+        if (state.shipmentType === "") {
             setMissingType(true);
             return;
         }
-        if(state.shipFrom===""){
+        if (state.shipFrom === "") {
             setMissingFrom(true);
             return;
         }
-        if(state.shipTo===""){
+        if (state.shipTo === "") {
             setMissingTo(true);
             return;
         }
@@ -135,14 +135,15 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                                 fullWidth
                                 labelWidth={110}
                                 value={state.shipmentType}
-                                onChange={(event)=>{
-                                    if(missingType){
+                                onChange={(event) => {
+                                    if (missingType) {
                                         setMissingType(false)
                                     }
-                                    console.log("ShipType"+state.shipmentType)
-                                    handleChange(event)}}
+                                    console.log("ShipType" + state.shipmentType)
+                                    handleChange(event)
+                                }}
                                 error={missingType}
-                                    >
+                            >
 
                                 <MenuItem value="Incoming">Incoming</MenuItem>
                                 <MenuItem value="Outgoing">Outgoing</MenuItem>
@@ -157,13 +158,14 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             value={state.shipFrom}
                             fullWidth
                             groupBy={(option) => option.locationType}
-                            onChange={(event, newValue) =>{ 
-                                if(missingFrom){
+                            onChange={(event, newValue) => {
+                                if (missingFrom) {
                                     setMissingFrom(false)
                                 }
-                                console.log("shipFrom"+state.shipFrom)
-                                setState(s => ({ ...s, shipFrom: newValue }))}}
-                            
+                                console.log("shipFrom" + state.shipFrom)
+                                setState(s => ({ ...s, shipFrom: newValue }))
+                            }}
+
                             className={classes.autocomplete}
                             renderOption={(option) => {
                                 return (
@@ -185,7 +187,7 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                                     </>
                                 )
                             }}
-                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" error={missingFrom}/>}
+                            renderInput={(params) => <TextField {...params} label="Ship From" variant="outlined" error={missingFrom} />}
                         />
                     </Grid>
                     <Grid item xs={6} className={classes.autocomplete}>
@@ -197,11 +199,11 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                             fullWidth
                             groupBy={(option) => option.locationType}
                             onChange={(event, newValue) => {
-                                if(missingTo){
+                                if (missingTo) {
                                     setMissingTo(false)
                                 }
-                                console.log("ShipTo:"+state.shipTo)
-                                setState(s => ({ ...s, shipTo: newValue }))}}
+                                setState(s => ({ ...s, shipTo: newValue }))
+                            }}
                             error={missingTo}
                             className={classes.autocomplete}
                             renderOption={(option) => {
@@ -224,7 +226,7 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
                                     </>
                                 )
                             }}
-                            renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" error={missingTo}/>}
+                            renderInput={(params) => <TextField {...params} label="Ship To" variant="outlined" error={missingTo} />}
                         />
                     </Grid>
                 </Grid>
@@ -249,9 +251,9 @@ const CreateNewShipmentDialog = ({ creatorOpen, handleCreate, handleCancel }) =>
 
 CreateNewShipmentDialog.propTypes = {
     /** Whether the dialog is open */
-    creatorOpen: PropTypes.bool, 
+    creatorOpen: PropTypes.bool,
     /** Callback to run when shipment is started */
-    handleCreate: PropTypes.func, 
+    handleCreate: PropTypes.func,
     /** Callback to run when user cancels the initialization process */
     handleCancel: PropTypes.func
 }

@@ -313,8 +313,6 @@ const ShipmentCreator = () => {
      * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
-        console.log(state.shipFrom);
-        console.log(state.shipTo);
         if(state.shipFrom==null || state.shipTo==null){
             console.log("fill out all forms")
             alert("All fields must be filled");
@@ -405,7 +403,17 @@ const ShipmentCreator = () => {
                                         return { warnings: warnings, errors: errors };
                                     }}
                                     onAdditionalSelect={setMapItems}
-                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onCompare={(item) => {
+                                        const isItselfInCart = cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])
+                                        const isParentInCart = cartItems.find(cartItem => cartItem[selectedFields[0]] === item?.parentId);
+
+                                        /* Remove children already in cart if their parent is added */
+                                        if (isItselfInCart && isParentInCart) {
+                                            setCartItems(c => c.filter(cartItem => cartItem[selectedFields[0]] !== item[selectedFields[0]]))
+                                        }
+                                        return [(isItselfInCart || isParentInCart), isParentInCart]
+                                    }
+                                    }
                                     onSelectedChange={setSelected}>
 
                                     <TableToolbar title="Shipment Creator" selected={selected}>

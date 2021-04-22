@@ -47,11 +47,15 @@ module.exports = function (mongoose) {
             let { ref } = options;
             if (Array.isArray(options)) {
                 ref = options[0].ref;
-                object[path] = json[path].map(obj => mongoose.model(ref).hydrate(obj));
-                object[path].forEach(obj => removeUnwantedDefaultFields(obj, this.mongooseOptions().populate[path].select));
+                if (json[path]) {
+                    object[path] = json[path]?.map(obj => mongoose.model(ref).hydrate(obj));
+                    object[path].forEach(obj => removeUnwantedDefaultFields(obj, this.mongooseOptions().populate[path].select));
+                }
             } else {
-                object[path] = mongoose.model(ref).hydrate(json[path]);
-                removeUnwantedDefaultFields(object[path], this.mongooseOptions().populate[path].select);
+                if (json[path]) {
+                    object[path] = mongoose.model(ref).hydrate(json[path]);
+                    removeUnwantedDefaultFields(object[path], this.mongooseOptions().populate[path].select);
+                }
             }
         }
 
@@ -70,6 +74,7 @@ module.exports = function (mongoose) {
 
     function removeUnwantedDefaultFields(obj, fields) {
         if (!fields) return;
+        if (!Object.keys(fields).length) return;
 
         if (typeof fields === 'string') {
             fields = fields.trim().split(/ +/);

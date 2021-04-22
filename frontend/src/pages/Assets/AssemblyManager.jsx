@@ -307,11 +307,12 @@ const AssemblyManager = () => {
                 groupTag: state.groupTag,
                 serializationFormat: schema["serializationFormat"],
                 serial: serialForReassembly,
-                reassembling: reassembling
+                reassembling: reassembling,
+                missingItems: []
             }));
 
             //if schema check failed then set the missing items and change state to open warning dialog
-            if (!result[0]) {
+            if (result[0] === false) {
                 setMissingItems(result[1]);
                 setSubmission(s => ({ ...s, missingItems: result[1] }))
                 setIncomplete(true);
@@ -378,10 +379,10 @@ const AssemblyManager = () => {
                                     onValidate={(asset) => {
                                         const warnings = [];
                                         const errors = [];
-                                        if (asset.parentId) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
+                                        if (asset.parentId && (asset.parentId !== history.location.state?.serial || !history.location.state?.serial )) warnings.push(`Asset is a part of assembly ${asset.parentId}`);
                                         return { warnings: warnings, errors: errors }
                                     }}
-                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]]) !== undefined}
                                     onSelectedChange={setSelected}>
 
                                     <TableToolbar title="Assembly Creator" selected={selected}>
