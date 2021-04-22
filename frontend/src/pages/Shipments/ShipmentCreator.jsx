@@ -313,8 +313,6 @@ const ShipmentCreator = () => {
      * Sets the submission information and opens the submit dialog
      */
     const handleSubmitCheck = () => {
-        console.log(state.shipFrom);
-        console.log(state.shipTo);
         if(state.shipFrom==null || state.shipTo==null){
             console.log("fill out all forms")
             alert("All fields must be filled");
