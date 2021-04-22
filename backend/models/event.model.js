@@ -4,6 +4,7 @@ const mongoose_fuzzy_searching = require('mongoose-fuzzy-searching');
 
 const eventTypes = [
     'Creation',
+    'Assembly Creation',
     'Incoming Shipment',
     'Outgoing Shipment',
     'Change of Ownership',
@@ -12,7 +13,8 @@ const eventTypes = [
     'Change of Assignment Type',
     'Reassignment',
     'Assembly Modification',
-    'Change of Location'
+    'Change of Location',
+    'Removal from Assembly'
 ]
 
 const Event = new Schema({
