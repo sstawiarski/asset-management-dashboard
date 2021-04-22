@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 })
 
 
-const AssetEditWarning = ({ open, setOpen, items, handleOverride }) => {
+const AssetEditWarning = ({ open, setOpen, items, handleOverride, containsAssemblies = false }) => {
     const classes = useStyles();
     const handleClose = () => {
         setOpen(false);
@@ -55,7 +55,14 @@ const AssetEditWarning = ({ open, setOpen, items, handleOverride }) => {
                         <WarningIcon className={classes.warning} />
                     </Grid>
                     <Grid item xs={12}>
-                        <Typography variant="h6">Editing {items.length > 1 ? "these assets" : "this asset"} will remove {items.length > 1 ? "them from their parent assemblies" : "it from its parent assembly"}.</Typography>
+                        {
+                            containsAssemblies ?
+                                <>
+                                    <Typography variant="h6">Current selections include 1 or more assemblies -- editing will also update their children.</Typography>
+                                    <Typography variant="h6">Editing {items.length > 1 ? "these assets" : "this asset"} will remove {items.length > 1 ? "them from their parent assemblies" : "it from its parent assembly"}.</Typography>
+                                </>
+                                : <Typography variant="h6">Editing {items.length > 1 ? "these assets" : "this asset"} will remove {items.length > 1 ? "them from their parent assemblies" : "it from its parent assembly"}.</Typography>
+                        }
                     </Grid>
                     <Grid item xs={12} className={classes.container}>
                         <SimpleList data={items} label="items" headers={["Serial"]} />
@@ -80,8 +87,8 @@ const AssetEditWarning = ({ open, setOpen, items, handleOverride }) => {
 
 AssetEditWarning.propTypes = {
     open: PropTypes.bool,
-    setOpen: PropTypes.func, 
-    items: PropTypes.array, 
+    setOpen: PropTypes.func,
+    items: PropTypes.array,
     handleOverride: PropTypes.func
 }
 
