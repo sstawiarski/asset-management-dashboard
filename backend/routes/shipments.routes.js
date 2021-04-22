@@ -519,6 +519,41 @@ router.post('/', async (req, res, err) => {
                     await Assets.updateMany({ serial: { $in: updateSerials } }, assetUpdateQuery).session(session);
                     updatedSerials = [...updatedSerials, ...updateSerials];
                 }
+
+
+                /* Update children if the parent is in the shipment, no override needed */
+                const findChildren = await Assets.find({
+                    $and: [
+                        {
+                            parentId: {
+                                $ne: null
+                            }
+                        },
+                        {
+                            parentId: {
+                                $in: serials
+                            }
+                        }
+                    ]
+                });
+
+                if (findChildren.length) {
+                    await Assets.updateMany({
+                        $and: [
+                            {
+                                parentId: {
+                                    $ne: null
+                                }
+                            },
+                            {
+                                parentId: {
+                                    $in: serials
+                                }
+                            }
+                        ]
+                    }, assetUpdateQuery).session(session);
+                    updatedSerials.push(...findChildren.map(child => child.serial));
+                }
             }
 
             /* If no assets were found, return 404 and don't create shipment */
