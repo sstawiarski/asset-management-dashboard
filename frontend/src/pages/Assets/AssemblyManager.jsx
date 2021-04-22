@@ -307,11 +307,12 @@ const AssemblyManager = () => {
                 groupTag: state.groupTag,
                 serializationFormat: schema["serializationFormat"],
                 serial: serialForReassembly,
-                reassembling: reassembling
+                reassembling: reassembling,
+                missingItems: []
             }));
 
             //if schema check failed then set the missing items and change state to open warning dialog
-            if (!result[0]) {
+            if (result[0] === false) {
                 setMissingItems(result[1]);
                 setSubmission(s => ({ ...s, missingItems: result[1] }))
                 setIncomplete(true);
