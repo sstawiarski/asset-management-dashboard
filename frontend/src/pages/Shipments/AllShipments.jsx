@@ -194,7 +194,6 @@ const AllShipments = (props) => {
                     filters={filters}
                     count={shipmentCount}
                     checkboxes={true}
-                    setCurrentTab={setCurrentTab}
 
                     onFilterChange={(newFilters) => setFilters(s => ({ ...s, ...newFilters }))}
                     onSelectedChange={setSelected}>
@@ -239,6 +238,7 @@ const AllShipments = (props) => {
                                     <Tab label="Abandoned" value="Abandoned" name="Abandoned" />
                                 </Tabs>
 
+
                                 <TableSearchbar
                                     searchValue={search}
                                     onInputChange={(e) => setSearch(e.target.value)}
@@ -253,6 +253,7 @@ const AllShipments = (props) => {
                                     }}
                                     disabled={selected.length > 0}
                                 />
+
 
                                 <IconButton onClick={() => setDialogs(s => ({ ...s, filter: true }))}>
                                     <FilterListIcon />
