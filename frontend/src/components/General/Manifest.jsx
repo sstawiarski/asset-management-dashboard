@@ -28,7 +28,7 @@ const useStyles = makeStyles({
     }
 });
 
-const Manifest = ({ data }) => {
+const Manifest = ({ data, onRedirect }) => {
     const classes = useStyles();
     const history = useHistory();
 
@@ -62,10 +62,14 @@ const Manifest = ({ data }) => {
                             <TableRow
                                 className={classes.body}
                                 key={item.serial}
-                                onClick={() => history.push(`/assets/${item.serial}`)}>
+                                onClick={() => {
+                                    onRedirect && (onRedirect());
+                                    history.push(`/assets/${item.serial}`);
+                                }}>
 
                                 <TableCell component="th" scope="row">{item.serial}</TableCell>
                                 <TableCell>{item.assetName}</TableCell>
+
                             </TableRow>
                         );
                     })}
@@ -76,7 +80,9 @@ const Manifest = ({ data }) => {
 };
 
 Manifest.propTypes = {
-    data: PropTypes.object.isRequired
+    data: PropTypes.object.isRequired,
+    /** Function to run when user clicks on an item and is redirected to its page */
+    onRedirect: PropTypes.func
 }
 
 export default Manifest;
