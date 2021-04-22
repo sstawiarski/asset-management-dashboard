@@ -176,7 +176,7 @@ const AssetDetails = (props) => {
                 <Grid item xs={12}>
                     <Grid container justify="center">
                         <Grid item>
-                            <Button className={classes.button} onClick={() => props.history.goBack()}>
+                            <Button className={classes.button} onClick={() => { props.history.goBack(); handleRedirect(""); }}>
                                 <ArrowBackIosIcon fontSize="inherit" />
                                 <span style={{ position: "relative", top: "-2px" }}>Back</span>
                             </Button>
