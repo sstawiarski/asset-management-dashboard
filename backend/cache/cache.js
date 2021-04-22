@@ -4,7 +4,12 @@
  * Modified to better support cache clearing
  */
 
-module.exports = function (mongoose, redisClient, cacheEnabled = false) {
+let mongo = null;
+let mUtil = null;
+let rUtil = null;
+let prom = null;
+
+function cache(mongoose, redisClient, cacheEnabled = false) {
 
     /* Setup initial functions so they still are defined even without caching enabled */
     mongoose.Query.prototype.cache = function (cache = {}) {
@@ -30,6 +35,11 @@ module.exports = function (mongoose, redisClient, cacheEnabled = false) {
     const mongooseUtil = require('./helpers/mongooseUtil')(mongoose);
     const redisUtil = require('./helpers/redisUtil')(promisifiedRedisFunctions);
 
+    mongo = redisClient;
+    mUtil = mongooseUtil;
+    rUtil = redisUtil;
+    prom = promisifiedRedisFunctions;
+
     const queryExec = mongoose.Query.prototype.exec;
     const aggregateExec = mongoose.Aggregate.prototype.exec;
 
@@ -45,10 +55,10 @@ module.exports = function (mongoose, redisClient, cacheEnabled = false) {
 
             if (!docs || typeof docs !== 'object') return docs;
             if (this.mongooseOptions().lean) return docs;
-
-            return Array.isArray(docs)
+            const result = Array.isArray(docs)
                 ? docs.map(d => mongooseUtil.hydratePopulated.call(this, d))
                 : mongooseUtil.hydratePopulated.call(this, docs);
+            return result;
         }
 
         const result = await queryExec.apply(this, arguments);
@@ -121,4 +131,50 @@ module.exports = function (mongoose, redisClient, cacheEnabled = false) {
     mongoose.Query.prototype.clearCache = mongoose.clearCache;
     mongoose.Aggregate.prototype.clearCache = mongoose.clearCache;
 
+}
+
+async function clearCache(query = null, clearAll = false)  {
+        if (!query && !clearAll) query = this;
+
+        let key = null;
+
+        if (!query || query && clearAll) {
+            if (query?.collection) {
+                const allKeys = await prom?.keys('*');
+                key = allKeys.filter(item => {
+                    const json = JSON.parse(item);
+                    if (typeof query.collection === 'string') {
+                        return json?.collection === query?.collection;
+                    } else if (Array.isArray(query.collection)) {
+                        return query.collection.includes(json?.collection);
+                    } else return false;
+                });
+            }
+        } else {
+            key = query instanceof mongoose.Query
+                ? mongo?.buildCacheKeyFromQuery.call(query)
+                : query instanceof mongoose.Aggregate
+                    ? mUtil?.buildCacheKeyFromAggregate.call(query)
+                    : null;
+        }
+
+        /* Flush entire cache if .clearCache(undefined, true) or .clearCache({}, true) */
+        if ((!query || (typeof query === 'object' && !Object.keys(query).length)) && clearAll) {
+            return await prom?.flushall();
+        }
+
+        if (!key) return;
+        if (!clearAll) return await prom?.del(key);
+        if (clearAll && Array.isArray(key)) {
+            return await(async () => {
+                for (const colKey of key) {
+                    await prom?.del(colKey);
+                }
+            })();
+        } else return;
+}
+
+module.exports = {
+    cache,
+    clearCache
 };
