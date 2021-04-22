@@ -73,6 +73,8 @@ Password: password1
 ### Installation
 Further details may be found in the `frontend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/README.md) and the `backend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/README.md).
 
+Node.js version >= 14 is required to run the API server due to the usage of optional chaining.
+
 The `package.json` file in the root project directory provides a few convenience scripts atop the normal ones. The simplest way to get started is to run 
 ```
 npm run-script launch
