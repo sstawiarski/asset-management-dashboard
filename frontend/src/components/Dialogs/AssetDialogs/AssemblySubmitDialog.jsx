@@ -199,6 +199,7 @@ const AssemblySubmitDialog = ({ open, onSuccess, onFailure, isComplete, submissi
                                         id="outlined-adornment"
                                         error={Boolean(error)}
                                         value={serial}
+                                        placeholder={submission?.serializationFormat + "XXXX" || ""}
                                         onChange={handleChange}
                                         endAdornment={
                                             <InputAdornment position="end">
