@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+//Library Tools
 import { makeStyles } from '@material-ui/core/styles';
 
+//Material-UI Components
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,11 +19,17 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
-import { Typography } from '@material-ui/core';
+import FormGroup from '@material-ui/core/FormGroup';
+import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Checkbox from '@material-ui/core/Checkbox';
+
+//Tools
 import useLocalStorage from '../../../utils/auth/useLocalStorage.hook';
 
 const useStyles = makeStyles((theme) => ({
     item: {
+
     },
     formControl: {
         marginBottom: theme.spacing(2),
@@ -38,17 +46,27 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "20px",
         width: "40%"
     },
-    owner: {
-        marginBottom: theme.spacing(2),
-        minWidth: 240,
-        marginLeft: "20px",
+    dropdown: {
+        marginBottom: theme.spacing(1),
+        width: "80%",
+        marginLeft: theme.spacing(5),
+        marginRight: "auto",
         marginTop: theme.spacing(4)
     },
+    checkboxContainer: {
+        width: "80%",
+        marginLeft: "auto",
+        marginRight: "auto",
+        paddingLeft: "16px"
+    }
 }));
 
 const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const classes = useStyles();
+
     const [options, setOptions] = useState([]);
+    const [locationOptions, setLocationOptions] = useState([]);
+    const [chosenLocation, setChosenLocation] = useState(null);
     const [serials, setSerials] = useState("");
     const [schema, setSchema] = useState("");
     const [incorrect, setIncorrect] = useState([]);
@@ -57,22 +75,36 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const [endRange, setEndRange] = useState("");
     const [owner, setOwner] = useState("");
     const [serialEntered, setEntered] = useState(true);
+
+    /* Error statuses */
     const [missingType, setMissingType] = useState(false);
     const [missingBegin, setMissingBegin] = useState(false);
     const [missingEnd, setMissingEnd] = useState(false);
     const [missingOwner, setMissingOwner] = useState(false);
-    const [user, ] = useLocalStorage('user', {});
+    const [missingLocation, setMissingLocation] = useState(false);
+    const [missingLocationOverride, setMissingLocationOverride] = useState(false); //checkbox state for creating an asset without an initial deployedLocation
 
-    /* Fetches list of asset types for dropdown */
+    const [user,] = useLocalStorage('user', {});
+
     useEffect(() => {
+        /* Fetch possible asset types */
         fetch(`${process.env.REACT_APP_API_URL}/assets/schemas`)
             .then(res => res.json())
             .then(json => setOptions(json));
+
+        /* Fetch possible locations */
+        fetch(`${process.env.REACT_APP_API_URL}/locations`)
+            .then(res => res.status < 300 ? res.json() : null)
+            .then(json => {
+                if (json) setLocationOptions(json);
+            });
     }, [])
 
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        /* Input validation */
 
         if (schema === "") {
             setMissingType(true);
@@ -87,6 +119,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
         if (owner === "") {
             setMissingOwner(true);
+            return;
+        }
+
+        if (!chosenLocation && !missingLocationOverride) {
+            setMissingLocation(true);
             return;
         }
 
@@ -140,6 +177,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                 data.assetName = schema;
                 data.owner = owner;
                 data.user = user.uniqueId;
+                if (chosenLocation) data.initialLocation = chosenLocation;
                 sendData(data).then(res => {
                     if (res.invalid.length > 0) {
                         onSemiSuccess(res.invalid);
@@ -157,6 +195,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
             data.owner = owner;
             data.assetName = schema;
             data.user = user.uniqueId;
+            if (chosenLocation) data.initialLocation = chosenLocation;
             sendData(data).then(res => {
                 if (res.invalid.length > 0) {
                     onSemiSuccess(res.invalid);
@@ -171,12 +210,15 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
     const handleEntryTypeChange = (event) => {
         setEntryType(event.target.value);
         setSerials("");
+        setChosenLocation(null);
         setBeginRange("");
         setEndRange("");
         setIncorrect([]);
         setMissingBegin(false);
         setMissingEnd(false);
         setMissingType(false);
+        setMissingLocation(false);
+        setMissingLocationOverride(false);
         setEntered(true);
     }
 
@@ -201,10 +243,13 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
         setBeginRange("");
         setEndRange("");
         setEntered(true);
+        setChosenLocation(null);
         setMissingBegin(false);
         setMissingEnd(false);
         setMissingType(false);
         setMissingOwner(false);
+        setMissingLocation(false);
+        setMissingLocationOverride(false);
         setOwner("");
         setEntryType("range");
         setIncorrect([]);
@@ -215,14 +260,9 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
     return (
         <Dialog maxWidth="xs" fullWidth open={open} onClose={handleClose} aria-labelledby="create-asset-dialog-title">
-
-
-
             <DialogTitle id="create-asset-dialog-title">Create Assets</DialogTitle>
 
             <DialogContent>
-
-
                 <div className={classes.item}>
                     <FormControl variant="outlined" className={classes.formControl}>
                         <InputLabel id="asset-type-label">Asset Name</InputLabel>
@@ -233,12 +273,11 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                             id="asset-type-label"
                             error={missingType}
                             value={schema}
-                            onChange={(event) => { 
+                            onChange={(event) => {
                                 if (missingType) setMissingType(false);
-                                setSchema(event.target.value) 
-                            }}
-                        >
-                            {options ? options.map((option, key) => <MenuItem key={key} value={option.name}>{option.name}</MenuItem>) : null}
+                                setSchema(event.target.value)
+                            }}>
+                            {options && (options.map((option, key) => <MenuItem key={key} value={option.name}>{option.name}</MenuItem>))}
 
                         </Select>
                     </FormControl>
@@ -250,60 +289,61 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                         </RadioGroup>
                     </FormControl>
                     <br />
-                    {entryType === "list"
-                        ?
-                        <div className={classes.entry}>
-                            <TextField
-                                id="serial-list"
-                                style={{ width: "100%" }}
-                                multiline
-                                rows={6}
-                                variant="outlined"
-                                error={!serialEntered}
-                                value={serials}
-                                onChange={(event) => { 
-                                    if (!serialEntered) setEntered(true);
-                                    setSerials(event.target.value) 
-                                }}
+                    {
+                        entryType === "list"
+                            ?
+                            <div className={classes.entry}>
+                                <TextField
+                                    id="serial-list"
+                                    style={{ width: "100%" }}
+                                    multiline
+                                    rows={6}
+                                    variant="outlined"
+                                    error={!serialEntered}
+                                    value={serials}
+                                    onChange={(event) => {
+                                        if (!serialEntered) setEntered(true);
+                                        setSerials(event.target.value)
+                                    }}
                                 >
 
-                            </TextField>
-                            {incorrect.length > 0 ?
-                                <>
-                                    <Typography variant="subtitle1" style={{ color: "red" }}><b>ERROR: Some serials are incorrectly formatted:</b></Typography>
-                                    <ul>
-                                        {incorrect.map(item => <><li key={item.serial}>{item.serial} (line {item.line})</li></>)}
-                                    </ul>
-                                </>
-                                : null}
-                        </div>
-                        :
-                        <div>
-                            <TextField
-                                className={classes.range}
-                                variant="outlined"
-                                value={beginRange}
-                                onChange={(event) => { 
-                                    if (missingBegin) setMissingBegin(false);
-                                    setBeginRange(event.target.value) 
-                                }}
-                                error={re.test(beginRange) ? false : beginRange !== "" ? true : missingBegin ? true : false}
-                            />
-                            <span style={{ display: "inline-block", padding: "15px 0px 15px 15px", marginRight: "-5px" }}> to </span>
-                            <TextField
-                                className={classes.range}
-                                variant="outlined"
-                                value={endRange}
-                                onChange={(event) => { 
-                                    if (missingEnd) setMissingEnd(false);
-                                    setEndRange(event.target.value) 
-                                }}
-                                error={re.test(endRange) ? false : endRange !== "" ? true : missingEnd ? true : false}
-                            />
-                        </div>
+                                </TextField>
+                                {incorrect.length > 0 ?
+                                    <>
+                                        <Typography variant="subtitle1" style={{ color: "red" }}><b>ERROR: Some serials are incorrectly formatted:</b></Typography>
+                                        <ul>
+                                            {incorrect.map(item => <><li key={item.serial}>{item.serial} (line {item.line})</li></>)}
+                                        </ul>
+                                    </>
+                                    : null}
+                            </div>
+                            :
+                            <div>
+                                <TextField
+                                    className={classes.range}
+                                    variant="outlined"
+                                    value={beginRange}
+                                    onChange={(event) => {
+                                        if (missingBegin) setMissingBegin(false);
+                                        setBeginRange(event.target.value)
+                                    }}
+                                    error={re.test(beginRange) ? false : beginRange !== "" ? true : missingBegin ? true : false}
+                                />
+                                <span style={{ display: "inline-block", padding: "15px 0px 15px 15px", marginRight: "-5px" }}> to </span>
+                                <TextField
+                                    className={classes.range}
+                                    variant="outlined"
+                                    value={endRange}
+                                    onChange={(event) => {
+                                        if (missingEnd) setMissingEnd(false);
+                                        setEndRange(event.target.value)
+                                    }}
+                                    error={re.test(endRange) ? false : endRange !== "" ? true : missingEnd ? true : false}
+                                />
+                            </div>
                     }
 
-                    <FormControl variant="outlined" className={classes.owner}>
+                    <FormControl variant="outlined" className={classes.dropdown}>
                         <InputLabel id="asset-type-label">Owner</InputLabel>
                         <Select
                             labelId="owner-label"
@@ -324,7 +364,69 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 
                         </Select>
                     </FormControl>
+
+                    {/* Location picker */}
+                    <div className={classes.dropdown}>
+                        <Autocomplete
+                            id="initial-location-picker"
+                            options={locationOptions}
+                            getOptionLabel={(option) => `${option.locationName} (${option.key})`}
+                            value={chosenLocation}
+                            fullWidth
+                            groupBy={(option) => option.locationType}
+                            onChange={(event, newValue) => { 
+                                setChosenLocation(newValue);
+                                setMissingLocation(false);
+                                setMissingLocationOverride(false);
+                            }}
+                            error={(!missingLocationOverride && missingLocation)}
+                            disabled={missingLocationOverride}
+                            renderOption={(option) => {
+                                return (
+                                    <>
+                                        <div>
+                                            {option.locationName} {`(${option.key})`}
+                                            <Typography className={classes.subtitle} variant="subtitle2">
+                                                {
+                                                    option.operator ?
+                                                        option.operator
+                                                        : option.client ?
+                                                            option.client
+                                                            : option.address ?
+                                                                option.address
+                                                                : null
+                                                }
+                                            </Typography>
+                                        </div>
+                                    </>
+                                )
+                            }}
+                            renderInput={(params) => <TextField {...params} label="Initial Location" variant="outlined" error={missingLocation} />}
+                        />
+                    </div>
                 </div>
+
+                {/* Override missing location warning */}
+                {
+                    missingLocation && (
+                        <div className={classes.checkboxContainer}>
+                            <FormGroup row>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={missingLocationOverride}
+                                            onChange={() => setMissingLocationOverride(ov => !ov) }
+                                            name="locationOverride"
+                                            color="primary"
+                                        />
+                                    }
+                                    label="Create asset with no location set?"
+                                />
+                            </FormGroup>
+                        </div>
+                    )
+                }
+
             </DialogContent>
 
             <DialogActions>
@@ -341,10 +443,10 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
 };
 
 CreateAssetDialog.propTypes = {
-    open: PropTypes.bool, 
-    setOpen: PropTypes.func, 
-    onSuccess: PropTypes.func, 
-    onSemiSuccess: PropTypes.func 
+    open: PropTypes.bool,
+    setOpen: PropTypes.func,
+    onSuccess: PropTypes.func,
+    onSemiSuccess: PropTypes.func
 };
 
 export default CreateAssetDialog;
