@@ -172,7 +172,7 @@ const getURL = (name, loggedInUser) => {
 const isHighlighted = (location, link, open) => {
     if (location) {
         const text = location.pathname;
-        if (text.includes('/assets') && (link === 'Assets' && !open)) {
+        if (text.includes('/assets') && link === 'Assets') {
             return true;
         } else if (text.includes('/shipments') && link === 'Shipments') {
             return true;
@@ -324,8 +324,8 @@ const Sidebar = ({ location }) => {
                             return (
                                 <React.Fragment key={text}>
                                     <ListItem
-                                        button={!open}
-                                        disableRipple={!open}
+                                        button={true}
+                                        disableRipple={true}
                                         className={text === "Sign Out" ? classes.signOut : null}
                                         onClick={() => {
 
