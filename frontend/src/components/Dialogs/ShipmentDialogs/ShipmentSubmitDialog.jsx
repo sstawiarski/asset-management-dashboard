@@ -60,8 +60,8 @@ const ShipmentSubmitDialog = ({ open, onSuccess, onFailure, submission, handleCa
                 specialInstructions: shipmentNotes,
                 override: submission.override || false
             };
-            if (Object.keys(shipFromOverrides).length) submit["shipFromOverrides"] = shipFromOverrides;
-            if (Object.keys(shipToOverrides).length) submit["shipToOverrides"] = shipToOverrides;
+            if (Object.keys(shipFromOverrides).length) submit["shipFromOverride"] = shipFromOverrides;
+            if (Object.keys(shipToOverrides).length) submit["shipToOverride"] = shipToOverrides;
 
             /* POST new shipment */
             fetch(`${process.env.REACT_APP_API_URL}/shipments`, {
