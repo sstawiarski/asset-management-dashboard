@@ -58,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "auto",
         marginRight: "auto",
         paddingLeft: "16px"
+    },
+    serialBase: {
+        marginLeft: "20px",
+        marginBottom: "-10px"
     }
 }));
 
@@ -288,6 +292,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                             <FormControlLabel value="list" control={<Radio />} label="List" />
                         </RadioGroup>
                     </FormControl>
+                    {schema && (<Typography className={classes.serialBase}><b>Serial base: </b>{options?.filter(item => item.name === schema)?.[0]?.serializationFormat}</Typography>)}
                     <br />
                     {
                         entryType === "list"
@@ -374,7 +379,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                             value={chosenLocation}
                             fullWidth
                             groupBy={(option) => option.locationType}
-                            onChange={(event, newValue) => { 
+                            onChange={(event, newValue) => {
                                 setChosenLocation(newValue);
                                 setMissingLocation(false);
                                 setMissingLocationOverride(false);
@@ -415,7 +420,7 @@ const CreateAssetDialog = ({ open, setOpen, onSuccess, onSemiSuccess }) => {
                                     control={
                                         <Checkbox
                                             checked={missingLocationOverride}
-                                            onChange={() => setMissingLocationOverride(ov => !ov) }
+                                            onChange={() => setMissingLocationOverride(ov => !ov)}
                                             name="locationOverride"
                                             color="primary"
                                         />
