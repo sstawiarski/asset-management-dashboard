@@ -32,6 +32,7 @@ import DynamicFeedIcon from '@material-ui/icons/DynamicFeed'; //group tag
 import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn'; //incoming AND outgoing shipments
 import CancelIcon from '@material-ui/icons/Cancel'; //removal of child assets
 import LocationOnIcon from '@material-ui/icons/LocationOn'; //location change
+import RemoveIcon from '@material-ui/icons/Remove'; //removal from assembly
 
 const dateOptions = {
     month: "long",
@@ -66,7 +67,8 @@ const useStyles = makeStyles({
         marginTop: "20px",
         backgroundColor: "#DDDDDD",
         color: "#AAAAAA",
-        borderRadius: "3px"
+        borderRadius: "3px",
+        cursor: "pointer"
     }
 });
 
@@ -107,16 +109,20 @@ const getIcon = (eventType) => {
             return (<CancelIcon style={classes.icon} />);
         case "CRE":
             return (<AddIcon style={classes.icon} />);
+        case "ACR":
+            return (<AddIcon style={classes.icon} />);
         case "ABM":
             return (<ExtensionIcon style={classes.icon} />);
         case "LOC":
             return (<LocationOnIcon style={classes.icon} />);
+        case "ASRM":
+            return (<RemoveIcon style={classes.icon} />);
         default:
             return null;
     }
 };
 
-const AssetTimeline = ({ data, onMore, empty }) => {
+const AssetTimeline = ({ data, onMore, empty, onRedirect }) => {
     const classes = useStyles();
     const history = useHistory();
 
@@ -183,14 +189,20 @@ const AssetTimeline = ({ data, onMore, empty }) => {
                     </Tooltip>
                     : <Typography variant="subtitle2">No remaining events</Typography>
             }
-            <EventDetailsViewer event={event} open={Boolean(event)} onClose={() => setEvent(null)} />
+            <EventDetailsViewer
+                event={event}
+                open={Boolean(event)}
+                onClose={() => setEvent(null)}
+                onRedirect={onRedirect} />
         </>
     );
 };
 
 AssetTimeline.propTypes = {
-    data: PropTypes.array, 
-    onMore: PropTypes.func, 
+    data: PropTypes.array,
+    onMore: PropTypes.func,
+    /** Function to run when the event details viewer redirects the user on click of a serial */
+    onRedirect: PropTypes.func,
     empty: PropTypes.bool
 };
 

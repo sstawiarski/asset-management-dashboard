@@ -11,6 +11,10 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Tooltip from '@material-ui/core/Tooltip';
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
+
+//Icons
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import EditIcon from '@material-ui/icons/Edit';
@@ -96,6 +100,13 @@ const AssetDetails = (props) => {
     //warning dialog open status for when assembly is being disassembled
     const [warningOpen, setWarning] = useState(false);
 
+    //Notify user if asset cannot be fetched
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertInfo, setAlertInfo] = useState({
+        type: "",
+        message: "",
+    });
+
     /* Fetch asset information and first events page */
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/assets/${serial}`)
@@ -103,11 +114,32 @@ const AssetDetails = (props) => {
                 if (response.status < 300) {
                     return response.json();
                 } else {
+                    if (response.status === 500) {
+                        response.json().then((json) => {
+                            setAlertInfo({
+                                type: "error",
+                                message: `Couldn't fetch asset information. (Error code: "${json?.internalCode}")`,
+                            });
+                        })
+                    } else {
+                        setAlertInfo({
+                            type: "error",
+                            message: "Could not fetch asset information...",
+                        });
+                    }
+                    setAlertOpen(true);
                     return {};
                 }
             })
             .then(json => {
                 setAsset(json);
+            })
+            .catch(err => {
+                setAlertInfo({
+                    type: "error",
+                    message: "Could not fetch some asset information...",
+                });
+                setAlertOpen(true);
             });
 
         fetch(`${process.env.REACT_APP_API_URL}/events/${serial}?limit=5&skip=${page}`)
@@ -123,6 +155,18 @@ const AssetDetails = (props) => {
                 setEvents(e => [...e, ...json]);
             });
     }, [page, serial]);
+
+    /**
+     * Clear state when user clicks a link to another asset
+     * React-Router using same component and state on redirect, causes issues with events be duplicated 
+     */
+    const handleRedirect = (link) => {
+        if (link === serial) return;
+        setAsset({});
+        setEvents([]);
+        setPage(0);
+        setEmpty(false);
+    }
 
     return (
         <div className={classes.root}>
@@ -150,7 +194,7 @@ const AssetDetails = (props) => {
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Status</Typography>
-                                        <Typography variant="body1">{asset.retired ? "Retired" : "Active"}</Typography>
+                                        <Typography variant="body1">{asset.retired ? "Retired" : asset?.retired === false ? "Active" : null}</Typography>
                                     </Grid>
                                     <Grid item xs={3} className={classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Checked Out</Typography>
@@ -224,7 +268,9 @@ const AssetDetails = (props) => {
                                                 </div>
 
                                                 {/* List of child components */}
-                                                <Manifest data={asset} />
+                                                <Manifest
+                                                    data={asset}
+                                                    onRedirect={handleRedirect} />
 
                                                 {/* Use this page's asset serial and push state to the assembly creator page to modify an existing assembly */}
                                                 <Button variant="text" startIcon={<EditIcon />} style={{ float: "left" }} onClick={() => {
@@ -260,7 +306,11 @@ const AssetDetails = (props) => {
                                     {/* Display asset timeline */}
                                     <Grid item xs={12} sm={12} md={asset.assetType !== "Assembly" ? 8 : 6} className={asset.assetType !== "Assembly" ? classes.center : classes.item}>
                                         <Typography variant="subtitle1" className={classes.break}>Asset Timeline</Typography>
-                                        <AssetTimeline data={events} onMore={() => setPage(page + 1)} empty={empty} />
+                                        <AssetTimeline
+                                            data={events}
+                                            onMore={() => setPage(page + 1)}
+                                            empty={empty}
+                                            onRedirect={handleRedirect} />
                                     </Grid>
                                 </Grid>
                             </Paper>
@@ -270,7 +320,37 @@ const AssetDetails = (props) => {
             </Grid>
 
             {/* Warning dialog for when assembly is about to be edited but it is still marked 'assembled' */}
-            <AssemblyModificationWarning open={warningOpen} setOpen={setWarning} assembly={asset} />
+            <AssemblyModificationWarning
+                open={warningOpen}
+                setOpen={setWarning}
+                assembly={asset}
+                onError={() => {
+                    setAlertInfo({ message: "Couldn't disassemble assembly!", type: "error" });
+                    setAlertOpen(true);
+                }}
+            />
+
+            {/* Alert snackbar for upload or delete response display */}
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={8000}
+                onClose={() => {
+                    setAlertInfo({ message: "", type: "" });
+                    setAlertOpen(false);
+                }}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+
+                <Alert
+                    elevation={3}
+                    onClose={() => {
+                        setAlertInfo({ message: "", type: "" });
+                        setAlertOpen(false);
+                    }}
+                    severity={alertInfo["type"]}>
+                    {alertInfo["message"]}
+                </Alert>
+
+            </Snackbar>
         </div>
     );
 };
