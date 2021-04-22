@@ -59,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: "8px"
     },
     inactive: {
-        backgroundColor: theme.palette.action.disabledBackground
+        opacity: 0.7,
+        backgroundColor: "rgba(0,0,0,0.1)"
     }
 }));
 
@@ -234,12 +235,21 @@ const NewTable = (props) => {
                             {
                                 data.map((item, index) => {
                                     const isItemSelected = isSelected(item[selectedFields[0]]);
-                                    const isItemCompared = onCompare ? onCompare(item) : false;
+
+                                    /* Either mark as in cart or if it is a child of an assembly in the cart, disable it */
+                                    const compareResult = onCompare ? onCompare(item) : false;
+                                    const isItemCompared = typeof compareResult === "boolean" ?
+                                        compareResult
+                                        : (Array.isArray(compareResult) && compareResult.length) ?
+                                            compareResult[0]
+                                            : false;
+                                    const isChild = compareResult?.length === 2 ? compareResult[1] : false;
+
                                     const labelId = `enhanced-table-checkbox-${index}`;
 
                                     return (
                                         <TableRow key={index}
-                                            hover
+                                            hover={!isChild}
                                             onClick={(event) => {
                                                 if (variant === "event" && item.eventType && (item.eventType === "Incoming Shipment" || item.eventType === "Outgoing Shipment")) {
                                                     event.stopPropagation();
@@ -257,7 +267,7 @@ const NewTable = (props) => {
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
                                             selected={isItemSelected}
-                                            className="row">
+                                            className={[isChild ? classes.inactive : "", "row"].join(' ')}>
 
                                             {
                                                 checkboxes ?
@@ -287,19 +297,27 @@ const NewTable = (props) => {
 
                                             {
                                                 selectedFields.map((arrayItem) => {
+                                                    const fieldIsDate = arrayItem.includes("Time") || arrayItem.includes("date") || arrayItem === "created" || arrayItem === "updated";
+                                                    const fieldIsLocation = (arrayItem.includes("ship") && !arrayItem.includes("shipment")) || arrayItem === "deployedLocation";
+                                                    const fieldIsBoolean = typeof item[arrayItem] === "boolean";
+
                                                     //translate raw dates and times into nice MM/DD/YYYY format
-                                                    if (arrayItem.includes("Time") || arrayItem.includes("date") || arrayItem === "created" || arrayItem === "updated") {
-                                                        const date = new Date(item[arrayItem]);
-                                                        const suffix = date.getHours() > 12 ? "PM" : "AM";
-                                                        const hoursInTwelve = ((date.getHours() + 11) % 12) + 1;
-                                                        const dateTime = `${hoursInTwelve}:${date.getMinutes()} ${suffix}`;
+                                                    if (fieldIsDate) {
+                                                        const date = item[arrayItem] ? new Date(item[arrayItem]) : null;
+                                                        const suffix = date?.getHours() > 12 ? "PM" : "AM";
+                                                        const hoursInTwelve = ((date?.getHours() + 11) % 12) + 1;
+                                                        const dateTime = `${hoursInTwelve}:${date?.getMinutes()} ${suffix}`;
+
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
-                                                                {date.toLocaleDateString('en-US', dateOptions)}
+                                                                {date ? date?.toLocaleDateString('en-US', dateOptions) : "N/A"}
                                                                 <br />
-                                                                <span style={{ color: "grey" }}>{dateTime}</span>
-                                                            </TableCell>)
-                                                    } else if ((arrayItem.includes("ship") && !arrayItem.includes("shipment")) || arrayItem === "deployedLocation") {
+                                                                <span style={{ color: "grey" }}>{date && (dateTime)}</span>
+                                                            </TableCell>
+                                                        )
+
+                                                    } else if (fieldIsLocation) {
+
                                                         return (
                                                             <TableCell key={arrayItem} align="left">
                                                                 {item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationName : item[arrayItem]}
@@ -307,25 +325,29 @@ const NewTable = (props) => {
                                                                 <span style={{ color: "grey" }}>{item[arrayItem] && typeof item[arrayItem] === "object" ? item[arrayItem].locationType : null}</span>
                                                             </TableCell>
                                                         );
-                                                    } else if (typeof item[arrayItem] === "boolean") {
-                                                        return (<TableCell key={arrayItem} align="left">
-                                                            {item[arrayItem] ? "Yes" : "No"}
-                                                            <br />
-                                                            {
-                                                                arrayItem === "checkedOut" ?
-                                                                    <>
-                                                                        <Typography variant="caption" style={{ color: "#838383" }}>{item["assignee"]}</Typography>
-                                                                    </>
-                                                                    : null
-                                                            }
-                                                            <br />
-                                                        </TableCell>);
+
+                                                    } else if (fieldIsBoolean) {
+
+                                                        return (
+                                                            <TableCell key={arrayItem} align="left">
+                                                                {item[arrayItem] ? "Yes" : "No"}
+                                                                <br />
+                                                                {
+                                                                    arrayItem === "checkedOut" ?
+                                                                        <>
+                                                                            <Typography variant="caption" style={{ color: "#838383" }}>{item["assignee"]}</Typography>
+                                                                        </>
+                                                                        : <br />
+                                                                }
+                                                            </TableCell>
+                                                        );
                                                     }
 
                                                     return (<TableCell key={arrayItem} align="left">{item[arrayItem]}</TableCell>)
                                                 })
                                             }
 
+                                            {/* Run validation callback to render warnings */}
                                             {
                                                 onValidate ?
                                                     <TableCell align="inherit">

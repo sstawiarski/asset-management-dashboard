@@ -405,7 +405,17 @@ const ShipmentCreator = () => {
                                         return { warnings: warnings, errors: errors };
                                     }}
                                     onAdditionalSelect={setMapItems}
-                                    onCompare={(item) => cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])}
+                                    onCompare={(item) => {
+                                        const isItselfInCart = cartItems.find(cartItem => cartItem[selectedFields[0]] === item[selectedFields[0]])
+                                        const isParentInCart = cartItems.find(cartItem => cartItem[selectedFields[0]] === item?.parentId);
+
+                                        /* Remove children already in cart if their parent is added */
+                                        if (isItselfInCart && isParentInCart) {
+                                            setCartItems(c => c.filter(cartItem => cartItem[selectedFields[0]] !== item[selectedFields[0]]))
+                                        }
+                                        return [(isItselfInCart || isParentInCart), isParentInCart]
+                                    }
+                                    }
                                     onSelectedChange={setSelected}>
 
                                     <TableToolbar title="Shipment Creator" selected={selected}>
