@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "SER-401 back end",
+  "description": "Asset Management Dashboard server and API",
   "main": "server.js",
   "scripts": {
     "test": "mocha",

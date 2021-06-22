@@ -1,6 +1,6 @@
-## Product Management Portal
+## Asset Management Dashboard
   
-Product Management Portal is a full [MERN](https://www.mongodb.com/mern-stack) stack application for the management of assets and shipments of assets (including all CRUD operations) with a modular structure and centralized dashboard.
+Asset Management Dashboard is a full [MERN](https://www.mongodb.com/mern-stack) stack application for the management of assets and shipments of assets (including all CRUD operations) with a modular structure and centralized dashboard. Formerly known as Product Management Portal.
   
 [![Frontend language](https://img.shields.io/badge/Built%20with-React-blue)](https://reactjs.org/)&nbsp;[![Backend language](https://img.shields.io/badge/Built%20with-Node.js-brightgreen)](https://reactjs.org/)&nbsp;[![Stack](https://img.shields.io/badge/Stack-MERN-yellowgreen)](https://www.mongodb.com/mern-stack)
 
@@ -30,7 +30,7 @@ Password: password1
 **Demo video / project overview:** [YouTube](https://youtu.be/ess9Z7cUUzs)
 
 ### Build status
-[![Build Status](https://travis-ci.com/sstawiarski/SER-401-Project-24.svg?token=yWvjuE637yC3W4EstXCj&branch=main)](https://travis-ci.com/sstawiarski/SER-401-Project-24)
+[![Build Status](https://travis-ci.com/sstawiarski/asset-management-dashboard.svg?branch=main&status=passed)](https://travis-ci.com/github/sstawiarski/asset-management-dashboard)
 
 ### Technology
 ##### Frontend
@@ -73,7 +73,7 @@ Password: password1
 ![Shipment creator tool with a submission dialog listing the source and destination locations of the shipments and possible overrides on the location properties](https://206e126d-9f30-4cd7-90d7-80d8d2207339.s3.us-east-2.amazonaws.com/images/screenshots/team24/submitshipment.webp)
 
 ### Installation
-Further details may be found in the `frontend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/README.md) and the `backend` folder [README.md](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/README.md).
+Further details may be found in the `frontend` folder [README.md](https://github.com/sstawiarski/asset-management-dashboard/blob/main/frontend/README.md) and the `backend` folder [README.md](https://github.com/sstawiarski/asset-management-dashboard/blob/main/backend/README.md).
 
 Node.js version >= 14 is required to run the API server due to the usage of optional chaining.
 
@@ -95,10 +95,10 @@ To manually launch the frontend from the `frontend` directory, ensure dependenci
 
 To manually launch the backend server from the `backend` directory, ensure dependencies are installed with `npm install`, then the server can be started with either `node server.js` for a single invocation, or `nodemon server.js` for restarting the server when files are updated.
   
-Both the frontend and the backend expect `.env` files with necessary values to run. See [here](https://github.com/sstawiarski/SER-401-Project-24/blob/main/frontend/sample.env) for the example frontend `.env` and [here](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/sample.env) for the example backend `.env`.
+Both the frontend and the backend expect `.env` files with necessary values to run. See [here](https://github.com/sstawiarski/asset-management-dashboard/blob/main/frontend/sample.env) for the example frontend `.env` and [here](https://github.com/sstawiarski/asset-management-dashboard/blob/main/backend/sample.env) for the example backend `.env`.
 
 ##### Dependencies
-- If you wish to utilize data caching for the API server, ensure you have a [Redis](https://redis.io/) server setup and running, and its URL in the backend `.env` file (see [sample .env](https://github.com/sstawiarski/SER-401-Project-24/blob/main/backend/sample.env))
+- If you wish to utilize data caching for the API server, ensure you have a [Redis](https://redis.io/) server setup and running, and its URL in the backend `.env` file (see [sample .env](https://github.com/sstawiarski/asset-management-dashboard/blob/main/backend/sample.env))
 
 ### Usage
 - Users must manually be created in the database in order to log in, there is currently no user creation implementation
@@ -145,4 +145,4 @@ The backend server API documentation is written in OpenAPI and hosted at `/api-d
 ### License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Full license available [here](https://raw.githubusercontent.com/sstawiarski/SER-401-Project-24/main/LICENSE?token=AJHKDBCIXWFEISBN6AXUQXTAQBX4U).
+Full license available [here](https://github.com/sstawiarski/asset-management-dashboard/blob/main/LICENSE).
