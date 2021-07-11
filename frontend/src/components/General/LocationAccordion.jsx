@@ -168,7 +168,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                     return (
                                         <div key={key}>
                                             <Grid container direction="row" justify="space-between">
-                                                <Grid item xs={6}>
+                                                <Grid item xs={5}>
                                                     <Typography><b>{capitalizedKey}:</b></Typography>
                                                 </Grid>
                                                 <Grid item xs={1} />
@@ -267,7 +267,7 @@ const LocationAccordion = ({ expanded, submission, onExpand, location, overrides
                                     return (
                                         <div key={key}>
                                             <Grid container justify="space-between">
-                                                <Grid item xs={6}>
+                                                <Grid item xs={5}>
                                                     <Typography><b>{capitalizedKey}:</b></Typography>
                                                 </Grid>
                                                 <Grid item xs={5}>
